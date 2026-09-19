@@ -20,39 +20,66 @@ jobs:
 
       - name: Validate source image
         run: |
+          set -euo pipefail
           test -f deepseek_20260919_88c59e.png
           file deepseek_20260919_88c59e.png
           sha256sum deepseek_20260919_88c59e.png
 
-      - name: Diagnose secret availability
+      - name: Exchange refresh token for access token
+        id: dropbox-token
         env:
-          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
+          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
           DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
           DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
         run: |
           set -euo pipefail
-          check_secret() {
-            name="$1"
-            value="$2"
-            if [ -n "$value" ]; then
-              printf '%s: PRESENT (length=%s)\n' "$name" "${#value}"
-            else
-              printf '%s: EMPTY\n' "$name"
-            fi
-          }
-          check_secret "DROPBOX_ACCESS_TOKEN" "$DROPBOX_ACCESS_TOKEN"
-          check_secret "DROPBOX_APP_KEY" "$DROPBOX_APP_KEY"
-          check_secret "DROPBOX_APP_SECRET" "$DROPBOX_APP_SECRET"
+          test -n "$DROPBOX_REFRESH_TOKEN"
+          test -n "$DROPBOX_APP_KEY"
+          test -n "$DROPBOX_APP_SECRET"
 
-      - name: Use Dropbox access token
-        id: dropbox-token
-        env:
-          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
-        run: |
-          set -euo pipefail
-          test -n "$DROPBOX_ACCESS_TOKEN"
-          echo "::add-mask::$DROPBOX_ACCESS_TOKEN"
-          echo "access_token=$DROPBOX_ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
+          HTTP_STATUS=$(curl --silent --show-error \
+            --request POST \
+            --header "Content-Type: application/x-www-form-urlencoded" \
+            --data-urlencode "refresh_token=$DROPBOX_REFRESH_TOKEN" \
+            --data-urlencode "grant_type=refresh_token" \
+            --data-urlencode "client_id=$DROPBOX_APP_KEY" \
+            --data-urlencode "client_secret=$DROPBOX_APP_SECRET" \
+            --output /tmp/token.json \
+            --write-out "%{http_code}" \
+            https://api.dropboxapi.com/oauth2/token)
+
+          echo "Dropbox OAuth refresh HTTP status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          body = Path("/tmp/token.json").read_text(encoding="utf-8", errors="replace").strip()
+          try:
+              data = json.loads(body)
+              print("Dropbox OAuth error:", data.get("error", "unknown"))
+              print("Description:", data.get("error_description", "not provided"))
+          except Exception:
+              print("Dropbox returned a non-JSON error response.")
+              print(body[:500])
+          PY
+            exit 1
+          fi
+
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/token.json"))
+          token = data.get("access_token")
+          if not token:
+              raise SystemExit("No access_token returned by Dropbox")
+          print("Fresh Dropbox access token received.")
+          with open("/tmp/access_token", "w", encoding="utf-8") as f:
+              f.write(token)
+          PY
+
+          TOKEN=$(cat /tmp/access_token)
+          echo "::add-mask::$TOKEN"
+          echo "access_token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Upload exact source image to Dropbox
         env:
@@ -87,7 +114,6 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-
           local_size = Path("deepseek_20260919_88c59e.png").stat().st_size
           meta = json.load(open("/tmp/dropbox-metadata.json"))
           remote_size = meta["size"]
