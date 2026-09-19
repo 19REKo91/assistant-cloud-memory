@@ -1,0 +1,56 @@
+name: dropbox-get-refresh-token
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exchange-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exchange Dropbox authorization code
+        env:
+          DROPBOX_AUTH_CODE: ${{ secrets.DROPBOX_AUTH_CODE }}
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+        run: |
+          set -euo pipefail
+
+          test -n "$DROPBOX_AUTH_CODE"
+          test -n "$DROPBOX_APP_KEY"
+          test -n "$DROPBOX_APP_SECRET"
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Content-Type: application/x-www-form-urlencoded" \
+            --data-urlencode "code=$DROPBOX_AUTH_CODE" \
+            --data-urlencode "grant_type=authorization_code" \
+            --data-urlencode "client_id=$DROPBOX_APP_KEY" \
+            --data-urlencode "client_secret=$DROPBOX_APP_SECRET" \
+            https://api.dropboxapi.com/oauth2/token \
+            > /tmp/token.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.load(open("/tmp/token.json"))
+
+          refresh = data.get("refresh_token")
+          if not refresh:
+              raise SystemExit("No refresh_token returned by Dropbox")
+
+          Path("/tmp/dropbox-refresh-token.txt").write_text(
+              refresh + "\n",
+              encoding="utf-8"
+          )
+
+          print("Refresh token generated successfully.")
+          PY
+
+      - name: Upload refresh token as temporary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dropbox-refresh-token
+          path: /tmp/dropbox-refresh-token.txt
+          retention-days: 1
