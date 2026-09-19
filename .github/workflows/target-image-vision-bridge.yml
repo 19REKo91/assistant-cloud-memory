@@ -9,9 +9,18 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
+      - name: Build size variants from exact source image
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          src = Image.open("deepseek_20260919_88c59e.png").convert("RGBA")
+          for w,h in [(270,600),(540,1200),(1080,2399)]:
+              img = src.resize((w,h), Image.Resampling.LANCZOS)
+              img.save(f"vision_variant_{w}x{h}.png", format="PNG")
+          PY
       - uses: actions/upload-artifact@v4
         with:
-          name: target-deepseek-88c59e
-          path: deepseek_20260919_88c59e.png
+          name: target-deepseek-88c59e-variants
+          path: vision_variant_*.png
           if-no-files-found: error
-# exact target test
+# multi-size vision bridge test
