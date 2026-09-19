@@ -14,3 +14,4 @@ jobs:
         with:
           name: deepseek-vision-bridge
           path: deepseek_20260919_373ee3.png
+# trigger vision bridge
