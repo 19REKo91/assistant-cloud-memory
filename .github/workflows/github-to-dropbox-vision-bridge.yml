@@ -34,31 +34,12 @@ jobs:
           echo "::add-mask::$DROPBOX_ACCESS_TOKEN"
           echo "access_token=$DROPBOX_ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
 
-      - name: Ensure Dropbox bridge folder exists
-        env:
-          DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
-        run: |
-          set -euo pipefail
-          curl --silent --show-error \
-            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
-            --header "Content-Type: application/json" \
-            --data '{"path":"/ChatGPT-Vision-Bridge","autorename":false}' \
-            https://api.dropboxapi.com/2/files/create_folder_v2 \
-            >/tmp/dropbox-folder-response.json || true
-
-          curl --fail-with-body --silent --show-error \
-            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
-            --header "Content-Type: application/json" \
-            --data '{"path":"/ChatGPT-Vision-Bridge"}' \
-            https://api.dropboxapi.com/2/files/get_metadata \
-            >/dev/null
-
       - name: Upload exact source image to Dropbox
         env:
           DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
         run: |
           set -euo pipefail
-          API_ARG='{"path":"/ChatGPT-Vision-Bridge/deepseek_20260919_88c59e.png","mode":"overwrite","autorename":false,"mute":true}'
+          API_ARG='{"path":"/deepseek_20260919_88c59e.png","mode":"overwrite","autorename":false,"mute":true}'
           curl --fail-with-body --silent --show-error \
             --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
             --header "Content-Type: application/octet-stream" \
@@ -75,7 +56,7 @@ jobs:
           curl --fail-with-body --silent --show-error \
             --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
             --header "Content-Type: application/json" \
-            --data '{"path":"/ChatGPT-Vision-Bridge/deepseek_20260919_88c59e.png"}' \
+            --data '{"path":"/deepseek_20260919_88c59e.png"}' \
             https://api.dropboxapi.com/2/files/get_metadata \
             > /tmp/dropbox-metadata.json
 
