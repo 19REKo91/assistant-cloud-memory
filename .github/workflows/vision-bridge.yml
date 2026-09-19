@@ -1,0 +1,16 @@
+name: vision-bridge
+on:
+  push:
+    paths:
+      - ".github/workflows/vision-bridge.yml"
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deepseek-vision-bridge
+          path: deepseek_20260919_373ee3.png
