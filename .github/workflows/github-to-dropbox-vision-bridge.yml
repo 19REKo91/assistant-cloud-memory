@@ -24,6 +24,26 @@ jobs:
           file deepseek_20260919_88c59e.png
           sha256sum deepseek_20260919_88c59e.png
 
+      - name: Diagnose secret availability
+        env:
+          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+        run: |
+          set -euo pipefail
+          check_secret() {
+            name="$1"
+            value="$2"
+            if [ -n "$value" ]; then
+              printf '%s: PRESENT (length=%s)\n' "$name" "${#value}"
+            else
+              printf '%s: EMPTY\n' "$name"
+            fi
+          }
+          check_secret "DROPBOX_ACCESS_TOKEN" "$DROPBOX_ACCESS_TOKEN"
+          check_secret "DROPBOX_APP_KEY" "$DROPBOX_APP_KEY"
+          check_secret "DROPBOX_APP_SECRET" "$DROPBOX_APP_SECRET"
+
       - name: Use Dropbox access token
         id: dropbox-token
         env:
@@ -40,7 +60,14 @@ jobs:
         run: |
           set -euo pipefail
           API_ARG='{"path":"/deepseek_20260919_88c59e.png","mode":"overwrite","autorename":false,"mute":true}'
-          HTTP_STATUS=$(curl --silent --show-error             --output /tmp/dropbox-upload.json             --write-out "%{http_code}"             --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN"             --header "Content-Type: application/octet-stream"             --header "Dropbox-API-Arg: $API_ARG"             --data-binary @deepseek_20260919_88c59e.png             https://content.dropboxapi.com/2/files/upload)
+          HTTP_STATUS=$(curl --silent --show-error \
+            --output /tmp/dropbox-upload.json \
+            --write-out "%{http_code}" \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/octet-stream" \
+            --header "Dropbox-API-Arg: $API_ARG" \
+            --data-binary @deepseek_20260919_88c59e.png \
+            https://content.dropboxapi.com/2/files/upload)
           echo "Dropbox upload HTTP status: $HTTP_STATUS"
           cat /tmp/dropbox-upload.json
           test "$HTTP_STATUS" = "200"
@@ -50,7 +77,12 @@ jobs:
           DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
         run: |
           set -euo pipefail
-          curl --fail-with-body --silent --show-error             --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN"             --header "Content-Type: application/json"             --data '{"path":"/deepseek_20260919_88c59e.png"}'             https://api.dropboxapi.com/2/files/get_metadata             > /tmp/dropbox-metadata.json
+          curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"path":"/deepseek_20260919_88c59e.png"}' \
+            https://api.dropboxapi.com/2/files/get_metadata \
+            > /tmp/dropbox-metadata.json
 
           python - <<'PY'
           import json
