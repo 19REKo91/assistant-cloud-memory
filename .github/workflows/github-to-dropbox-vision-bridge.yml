@@ -24,29 +24,15 @@ jobs:
           file deepseek_20260919_88c59e.png
           sha256sum deepseek_20260919_88c59e.png
 
-      - name: Get Dropbox access token
+      - name: Use Dropbox access token
         id: dropbox-token
         env:
-          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
-          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
-          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
         run: |
           set -euo pipefail
-          test -n "$DROPBOX_APP_KEY"
-          test -n "$DROPBOX_APP_SECRET"
-          test -n "$DROPBOX_REFRESH_TOKEN"
-
-          TOKEN_JSON="$(
-            curl --fail-with-body --silent --show-error \
-              --user "$DROPBOX_APP_KEY:$DROPBOX_APP_SECRET" \
-              --data-urlencode "grant_type=refresh_token" \
-              --data-urlencode "refresh_token=$DROPBOX_REFRESH_TOKEN" \
-              https://api.dropboxapi.com/oauth2/token
-          )"
-
-          ACCESS_TOKEN="$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$TOKEN_JSON")"
-          echo "::add-mask::$ACCESS_TOKEN"
-          echo "access_token=$ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
+          test -n "$DROPBOX_ACCESS_TOKEN"
+          echo "::add-mask::$DROPBOX_ACCESS_TOKEN"
+          echo "access_token=$DROPBOX_ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Ensure Dropbox bridge folder exists
         env:
@@ -58,11 +44,7 @@ jobs:
             --header "Content-Type: application/json" \
             --data '{"path":"/ChatGPT-Vision-Bridge","autorename":false}' \
             https://api.dropboxapi.com/2/files/create_folder_v2 \
-            >/tmp/dropbox-folder-response.json || {
-              code=$?
-              # A 409 here normally means the folder already exists; verify it below.
-              true
-            }
+            >/tmp/dropbox-folder-response.json || true
 
           curl --fail-with-body --silent --show-error \
             --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
