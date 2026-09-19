@@ -1,0 +1,25 @@
+name: Deploy vision bridge (temporary)
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "vision-bridge/**"
+      - ".github/workflows/deploy-vision-bridge.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: vision-bridge
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Deploy temporary Worker
+        run: npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge
