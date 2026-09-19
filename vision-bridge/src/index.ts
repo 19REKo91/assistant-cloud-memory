@@ -30,34 +30,70 @@ export default {
     if (!/^https?:\/\//i.test(imageUrl)) return json({ error: "image_url_required" }, 400);
     if (!env.GEMINI_API_KEY) return json({ error: "GEMINI_API_KEY_not_configured" }, 503);
 
-    const upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-goog-api-key": env.GEMINI_API_KEY,
+    // Fetch the image on the Worker side. The image bytes never enter ChatGPT.
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      return json({ error: "image_fetch_failed", status: imageResponse.status }, 502);
+    }
+
+    const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+    if (!contentType.toLowerCase().startsWith("image/")) {
+      return json({ error: "not_an_image", content_type: contentType }, 415);
+    }
+
+    const imageBytes = new Uint8Array(await imageResponse.arrayBuffer());
+    if (imageBytes.byteLength > 20 * 1024 * 1024) {
+      return json({ error: "image_too_large" }, 413);
+    }
+
+    // Gemini GenerateContent: image bytes are sent from Worker directly to Gemini.
+    const upstream = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-goog-api-key": env.GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              {
+                inline_data: {
+                  mime_type: contentType.split(";")[0],
+                  data: uint8ToBase64(imageBytes),
+                },
+              },
+              { text: prompt },
+            ],
+          }],
+        }),
       },
-      body: JSON.stringify({
-        model: "gemini-3.8-flash",
-        input: [
-          { type: "text", text: prompt },
-          { type: "image", uri: imageUrl, mime_type: "image/jpeg" }
-        ],
-        response_format: { type: "text" }
-      }),
-    });
+    );
 
     const raw = await upstream.text();
-    if (!upstream.ok) return json({ error: "gemini_error", status: upstream.status, detail: raw.slice(0, 1000) }, 502);
+    if (!upstream.ok) {
+      return json({ error: "gemini_error", status: upstream.status, detail: raw.slice(0, 1000) }, 502);
+    }
 
     let data: any;
     try { data = JSON.parse(raw); } catch { return json({ error: "gemini_invalid_response" }, 502); }
 
-    const text =
-      data?.outputText ??
-      data?.output?.find?.((x: any) => typeof x?.text === "string")?.text ??
-      data?.response?.text ??
-      "";
+    const text = data?.candidates?.[0]?.content?.parts
+      ?.filter((p: any) => typeof p?.text === "string")
+      ?.map((p: any) => p.text)
+      ?.join("\n")
+      ?.trim() || "";
 
-    return json({ ok: true, text: typeof text === "string" ? text : String(text) });
+    return json({ ok: true, text });
   }
 } satisfies ExportedHandler<Env>;
+
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + chunk, bytes.length)));
+  }
+  return btoa(binary);
+}
