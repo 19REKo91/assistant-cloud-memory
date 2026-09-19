@@ -1,0 +1,111 @@
+name: github-to-dropbox-vision-bridge
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "deepseek_20260919_88c59e.png"
+      - ".github/workflows/github-to-dropbox-vision-bridge.yml"
+  workflow_dispatch:
+
+jobs:
+  upload-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Validate source image
+        run: |
+          test -f deepseek_20260919_88c59e.png
+          file deepseek_20260919_88c59e.png
+          sha256sum deepseek_20260919_88c59e.png
+
+      - name: Get Dropbox access token
+        id: dropbox-token
+        env:
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$DROPBOX_APP_KEY"
+          test -n "$DROPBOX_APP_SECRET"
+          test -n "$DROPBOX_REFRESH_TOKEN"
+
+          TOKEN_JSON="$(
+            curl --fail-with-body --silent --show-error \
+              --user "$DROPBOX_APP_KEY:$DROPBOX_APP_SECRET" \
+              --data-urlencode "grant_type=refresh_token" \
+              --data-urlencode "refresh_token=$DROPBOX_REFRESH_TOKEN" \
+              https://api.dropboxapi.com/oauth2/token
+          )"
+
+          ACCESS_TOKEN="$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$TOKEN_JSON")"
+          echo "::add-mask::$ACCESS_TOKEN"
+          echo "access_token=$ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure Dropbox bridge folder exists
+        env:
+          DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          curl --silent --show-error \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"path":"/ChatGPT-Vision-Bridge","autorename":false}' \
+            https://api.dropboxapi.com/2/files/create_folder_v2 \
+            >/tmp/dropbox-folder-response.json || {
+              code=$?
+              # A 409 here normally means the folder already exists; verify it below.
+              true
+            }
+
+          curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"path":"/ChatGPT-Vision-Bridge"}' \
+            https://api.dropboxapi.com/2/files/get_metadata \
+            >/dev/null
+
+      - name: Upload exact source image to Dropbox
+        env:
+          DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          API_ARG='{"path":"/ChatGPT-Vision-Bridge/deepseek_20260919_88c59e.png","mode":"overwrite","autorename":false,"mute":true}'
+          curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/octet-stream" \
+            --header "Dropbox-API-Arg: $API_ARG" \
+            --data-binary @deepseek_20260919_88c59e.png \
+            https://content.dropboxapi.com/2/files/upload \
+            > /tmp/dropbox-upload.json
+
+      - name: Verify Dropbox upload
+        env:
+          DROPBOX_ACCESS_TOKEN: ${{ steps.dropbox-token.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $DROPBOX_ACCESS_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"path":"/ChatGPT-Vision-Bridge/deepseek_20260919_88c59e.png"}' \
+            https://api.dropboxapi.com/2/files/get_metadata \
+            > /tmp/dropbox-metadata.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          local_size = Path("deepseek_20260919_88c59e.png").stat().st_size
+          meta = json.load(open("/tmp/dropbox-metadata.json"))
+          remote_size = meta["size"]
+          assert local_size == remote_size, (local_size, remote_size)
+          print(f"Verified Dropbox size: {remote_size} bytes")
+          print(f"Dropbox path: {meta.get('path_display', meta.get('path_lower', 'unknown'))}")
+          print(f"Dropbox content hash: {meta.get('content_hash', 'n/a')}")
+          PY
