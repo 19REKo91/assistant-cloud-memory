@@ -14,3 +14,4 @@ jobs:
           name: target-deepseek-88c59e
           path: deepseek_20260919_88c59e.png
           if-no-files-found: error
+# exact target test
