@@ -1,8 +1,6 @@
 name: vision-bridge
 on:
-  push:
-    paths:
-      - ".github/workflows/vision-bridge.yml"
+  workflow_dispatch:
 jobs:
   package:
     runs-on: ubuntu-latest
