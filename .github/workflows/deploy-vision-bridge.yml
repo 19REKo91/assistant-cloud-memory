@@ -21,15 +21,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Deploy temporary Worker
-        shell: bash
-        run: |
-          set -o pipefail
-          npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge 2>&1 | tee deploy-output.txt
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "### Vision Bridge deployment" >> "$GITHUB_STEP_SUMMARY"
-          echo "URL:" >> "$GITHUB_STEP_SUMMARY"
-          grep -Eo 'https://[^[:space:]]+workers\.dev' deploy-output.txt | tail -1 >> "$GITHUB_STEP_SUMMARY" || true
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Claim URL (open within 60 minutes to keep this temporary account):" >> "$GITHUB_STEP_SUMMARY"
-          grep -Eo 'https://dash\.cloudflare\.com/claim-preview\?claimToken=[^[:space:]]+' deploy-output.txt | tail -1 >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler@latest deploy --name chatgpt-vision-bridge
