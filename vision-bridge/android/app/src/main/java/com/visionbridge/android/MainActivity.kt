@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
         bridgeInput = EditText(this).apply {
             hint = "Bridge URL"
-            setText("")
+            setText("https://chatgpt-vision-bridge.flourish-gerbil.workers.dev")
             isSingleLine = true
         }
 
@@ -179,11 +179,6 @@ class MainActivity : ComponentActivity() {
             )
             .toString()
             .toRequestBody("application/json".toMediaType())
-
-        if (bridgeUrl.isBlank()) {
-            runOnUiThread { status.text = "ضع رابط Bridge أولاً." }
-            return
-        }
 
         val request = Request.Builder()
             .url(bridgeUrl.removeSuffix("/") + "/vision")
