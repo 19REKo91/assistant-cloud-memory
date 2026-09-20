@@ -33,13 +33,13 @@ class MainActivity : ComponentActivity() {
 
         streamInput = EditText(this).apply {
             hint = "ScreenStream URL"
-            setText("http://192.168.0.197:8080/stream.mjpeg")
+            setText("http://192.168.0.197:8080")
             isSingleLine = true
         }
 
         bridgeInput = EditText(this).apply {
             hint = "Bridge URL"
-            setText("http://10.0.2.2:8787")
+            setText("")
             isSingleLine = true
         }
 
@@ -73,9 +73,9 @@ class MainActivity : ComponentActivity() {
 
         executor.execute {
             try {
-                val frame = fetchFirstJpeg(streamUrl)
+                val frame = fetchSingleFrame(streamUrl)
                 if (frame == null) {
-                    runOnUiThread { status.text = "لم أجد صورة JPEG في بث ScreenStream." }
+                    runOnUiThread { status.text = "تعذر أخذ Frame من ScreenStream. تأكد أن Local/MJPEG يعمل وأن الرابط صحيح." }
                     return@execute
                 }
 
@@ -88,12 +88,38 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun normalizeStreamUrl(url: String): String {
-        if (url.isBlank()) return url
-        val clean = url.removeSuffix("/")
-        return if (clean.endsWith(".mjpeg") || clean.endsWith(".jpeg")) {
-            clean
-        } else {
-            "$clean/stream.mjpeg"
+        return url.removeSuffix("/")
+    }
+
+    private fun fetchSingleFrame(baseUrl: String): ByteArray? {
+        val clean = normalizeStreamUrl(baseUrl)
+        if (clean.endsWith(".jpeg")) return fetchDirectJpeg(clean)
+        if (clean.endsWith(".mjpeg")) return fetchFirstJpeg(clean)
+        return try {
+            fetchDirectJpeg("$clean/stream.jpeg")
+        } catch (_: Exception) {
+            fetchFirstJpeg("$clean/stream.mjpeg")
+        }
+    }
+
+    private fun fetchDirectJpeg(url: String): ByteArray {
+        val request = Request.Builder()
+            .url(url)
+            .header("Accept", "image/jpeg")
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IllegalStateException("HTTP " + response.code + " from " + url)
+            }
+            val body = response.body ?: throw IllegalStateException("لا توجد صورة")
+            val bytes = body.bytes()
+            if (bytes.isEmpty()) throw IllegalStateException("الصورة فارغة")
+            if (bytes.size > 8 * 1024 * 1024) {
+                throw IllegalStateException("Frame أكبر من 8MB")
+            }
+            return bytes
         }
     }
 
@@ -154,8 +180,13 @@ class MainActivity : ComponentActivity() {
             .toString()
             .toRequestBody("application/json".toMediaType())
 
+        if (bridgeUrl.isBlank()) {
+            runOnUiThread { status.text = "ضع رابط Bridge أولاً." }
+            return
+        }
+
         val request = Request.Builder()
-            .url(bridgeUrl + "/vision")
+            .url(bridgeUrl.removeSuffix("/") + "/vision")
             .post(body)
             .build()
 
