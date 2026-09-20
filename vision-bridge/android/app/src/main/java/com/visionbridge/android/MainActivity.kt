@@ -1,10 +1,5 @@
 package com.visionbridge.android
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.media.ImageReader
-import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Base64
 import android.widget.Button
@@ -12,145 +7,166 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType.Companion.toMediaType
 import org.json.JSONObject
+import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
     private val client = OkHttpClient()
     private val executor = Executors.newSingleThreadExecutor()
-    private var latestFrame: ByteArray? = null
-    private var projection: android.media.projection.MediaProjection? = null
-    private var virtualDisplay: android.hardware.display.VirtualDisplay? = null
-    private var reader: ImageReader? = null
     private lateinit var status: TextView
-    private lateinit var urlInput: EditText
-
-    private val capturePermission = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode != RESULT_OK || result.data == null) {
-            status.text = "لم تُمنح صلاحية التقاط الشاشة"
-            return@registerForActivityResult
-        }
-        val mgr = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        projection = mgr.getMediaProjection(result.resultCode, result.data!!)
-        startCapture()
-    }
+    private lateinit var streamInput: EditText
+    private lateinit var bridgeInput: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 32, 32, 32)
         }
-        urlInput = EditText(this).apply {
+
+        streamInput = EditText(this).apply {
+            hint = "ScreenStream URL"
+            setText("http://192.168.0.197:8080")
+            isSingleLine = true
+        }
+
+        bridgeInput = EditText(this).apply {
             hint = "Bridge URL"
             setText("http://10.0.2.2:8787")
             isSingleLine = true
         }
-        val start = Button(this).apply {
-            text = "بدء التقاط الشاشة"
-            setOnClickListener { requestCapture() }
-        }
+
         val see = Button(this).apply {
             text = "شوف الشاشة"
-            setOnClickListener { sendLatestFrame() }
+            setOnClickListener { fetchAndSendFrame() }
         }
+
         status = TextView(this).apply {
-            text = "جاهز. ابدأ التقاط الشاشة."
+            text = "جاهز. شغّل ScreenStream ثم اضغط «شوف الشاشة»."
             textSize = 16f
         }
-        root.addView(urlInput)
-        root.addView(start)
+
+        root.addView(streamInput)
+        root.addView(bridgeInput)
         root.addView(see)
         root.addView(status)
         setContentView(root)
     }
 
-    private fun requestCapture() {
-        val mgr = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        capturePermission.launch(mgr.createScreenCaptureIntent())
-    }
+    private fun fetchAndSendFrame() {
+        val streamUrl = streamInput.text.toString().trim()
+        val bridgeUrl = bridgeInput.text.toString().trim().removeSuffix("/")
 
-    private fun startCapture() {
-        val metrics = resources.displayMetrics
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        val density = metrics.densityDpi
-        reader?.close()
-        reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-        reader!!.setOnImageAvailableListener({ ir ->
-            val image = ir.acquireLatestImage() ?: return@setOnImageAvailableListener
-            try {
-                val plane = image.planes[0]
-                val buffer = plane.buffer
-                val pixelStride = plane.pixelStride
-                val rowStride = plane.rowStride
-                val rowPadding = rowStride - pixelStride * width
-                val bmpWidth = width + rowPadding / pixelStride
-                val bitmap = Bitmap.createBitmap(bmpWidth, height, Bitmap.Config.ARGB_8888)
-                bitmap.copyPixelsFromBuffer(buffer)
-                val cropped = if (bmpWidth != width) Bitmap.createBitmap(bitmap, 0, 0, width, height) else bitmap
-                val out = ByteArrayOutputStream()
-                cropped.compress(Bitmap.CompressFormat.JPEG, 70, out)
-                latestFrame = out.toByteArray()
-                if (cropped !== bitmap) cropped.recycle()
-                bitmap.recycle()
-            } finally {
-                image.close()
-            }
-        }, null)
-        virtualDisplay?.release()
-        virtualDisplay = projection!!.createVirtualDisplay(
-            "VisionBridge", width, height, density, 0, reader!!.surface, null, null
-        )
-        status.text = "التقاط الشاشة يعمل — آخر Frame محفوظ فقط."
-    }
-
-    private fun sendLatestFrame() {
-        val frame = latestFrame ?: run {
-            status.text = "لا توجد لقطة بعد. اضغط بدء التقاط الشاشة."
+        if (streamUrl.isBlank() || bridgeUrl.isBlank()) {
+            status.text = "أدخل رابط ScreenStream ورابط Bridge."
             return
         }
+
+        status.text = "جارٍ أخذ أحدث Frame من ScreenStream..."
+
+        executor.execute {
+            try {
+                val frame = fetchFirstJpeg(streamUrl)
+                if (frame == null) {
+                    runOnUiThread { status.text = "لم أجد صورة JPEG في بث ScreenStream." }
+                    return@execute
+                }
+
+                runOnUiThread { status.text = "تم أخذ Frame — جارٍ إرساله للرؤية..." }
+                sendFrame(frame, bridgeUrl)
+            } catch (e: Exception) {
+                runOnUiThread { status.text = "فشل ScreenStream: " + e.message }
+            }
+        }
+    }
+
+    private fun fetchFirstJpeg(url: String): ByteArray? {
+        val request = Request.Builder()
+            .url(url)
+            .header("Accept", "multipart/x-mixed-replace, image/jpeg, */*")
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IllegalStateException("HTTP " + response.code)
+            }
+
+            val body = response.body ?: throw IllegalStateException("لا يوجد بث")
+            val input = BufferedInputStream(body.byteStream(), 64 * 1024)
+            val out = ByteArrayOutputStream()
+            var started = false
+            var previous = -1
+
+            while (true) {
+                val current = input.read()
+                if (current == -1) break
+
+                if (!started) {
+                    if (previous == 0xFF && current == 0xD8) {
+                        started = true
+                        out.write(0xFF)
+                        out.write(0xD8)
+                    }
+                } else {
+                    out.write(current)
+                    if (previous == 0xFF && current == 0xD9) {
+                        return out.toByteArray()
+                    }
+                    if (out.size() > 8 * 1024 * 1024) {
+                        throw IllegalStateException("Frame أكبر من 8MB")
+                    }
+                }
+
+                previous = current
+            }
+        }
+
+        return null
+    }
+
+    private fun sendFrame(frame: ByteArray, bridgeUrl: String) {
         val base64 = Base64.encodeToString(frame, Base64.NO_WRAP)
         val body = JSONObject()
             .put("image_base64", base64)
             .put("mime_type", "image/jpeg")
-            .put("prompt", "Describe exactly what is visible on this phone screen. Mention important text, buttons, dialogs, and the current screen state. Be concise.")
+            .put(
+                "prompt",
+                "Describe exactly what is visible on this phone screen. Mention important text, buttons, dialogs, and the current screen state. Be concise."
+            )
             .toString()
             .toRequestBody("application/json".toMediaType())
-        val base = urlInput.text.toString().trim().removeSuffix("/")
-        val request = Request.Builder().url("$base/vision").post(body).build()
-        status.text = "جارٍ إرسال آخر Frame..."
-        executor.execute {
-            try {
-                client.newCall(request).execute().use { response ->
-                    val responseText = response.body?.string().orEmpty()
-                    runOnUiThread {
-                        if (response.isSuccessful) {
-                            val answer = JSONObject(responseText).optString("text", responseText)
-                            status.text = answer.ifBlank { "لم يصل وصف." }
-                        } else {
-                            status.text = "خطأ ${response.code}: $responseText"
-                        }
+
+        val request = Request.Builder()
+            .url(bridgeUrl + "/vision")
+            .post(body)
+            .build()
+
+        try {
+            client.newCall(request).execute().use { response ->
+                val responseText = response.body?.string().orEmpty()
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        val answer = JSONObject(responseText).optString("text", responseText)
+                        status.text = answer.ifBlank { "لم يصل وصف." }
+                    } else {
+                        status.text = "خطأ Bridge " + response.code + ": " + responseText
                     }
                 }
-            } catch (e: Exception) {
-                runOnUiThread { status.text = "فشل الاتصال: ${e.message}" }
             }
+        } catch (e: Exception) {
+            runOnUiThread { status.text = "فشل الاتصال بالـ Bridge: " + e.message }
         }
     }
 
     override fun onDestroy() {
-        virtualDisplay?.release()
-        reader?.close()
-        projection?.stop()
         executor.shutdownNow()
         super.onDestroy()
     }
