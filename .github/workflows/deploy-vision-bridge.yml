@@ -22,4 +22,12 @@ jobs:
         with:
           node-version: 22
       - name: Deploy temporary Worker
-        run: npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge
+        shell: bash
+        run: |
+          set -o pipefail
+          npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge 2>&1 |
+            sed -E 's#https://dash\.cloudflare\.com/claim-preview\?claimToken=[^[:space:]]+#CLAIM_URL_REDACTED#g' |
+            tee deploy-output.txt
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Vision Bridge deployment URL" >> "$GITHUB_STEP_SUMMARY"
+          grep -Eo 'https://[^[:space:]]+workers\.dev' deploy-output.txt | tail -1 >> "$GITHUB_STEP_SUMMARY" || true
