@@ -1,0 +1,86 @@
+name: Gemini vision bridge
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Question or instruction for Gemini"
+        required: true
+        type: string
+      image_url:
+        description: "Optional temporary/public image URL"
+        required: false
+        type: string
+
+jobs:
+  ask-gemini:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Ask Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PROMPT: ${{ inputs.prompt }}
+          IMAGE_URL: ${{ inputs.image_url }}
+        run: |
+          set -euo pipefail
+          test -n "$GEMINI_API_KEY"
+
+          python - <<'PY'
+          import base64, json, os, urllib.request
+
+          prompt = os.environ["PROMPT"]
+          image_url = os.environ.get("IMAGE_URL", "").strip()
+          parts = [{"text": prompt}]
+
+          if image_url:
+              req = urllib.request.Request(image_url, method="GET")
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  raw = r.read()
+                  mime = r.headers.get("content-type", "image/jpeg").split(";")[0]
+              if not mime.startswith("image/"):
+                  raise SystemExit(f"URL did not return an image: {mime}")
+              if len(raw) > 20 * 1024 * 1024:
+                  raise SystemExit("Image exceeds 20 MB.")
+              parts.insert(0, {
+                  "inline_data": {
+                      "mime_type": mime,
+                      "data": base64.b64encode(raw).decode("ascii")
+                  }
+              })
+
+          payload = {"contents": [{"parts": parts}]}
+          req = urllib.request.Request(
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+              data=json.dumps(payload).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": os.environ["GEMINI_API_KEY"]
+              },
+              method="POST"
+          )
+
+          try:
+              with urllib.request.urlopen(req, timeout=90) as r:
+                  data = json.load(r)
+          except Exception as e:
+              raise SystemExit(f"Gemini request failed: {e}")
+
+          text = "\n".join(
+              p["text"]
+              for p in data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+              if isinstance(p.get("text"), str)
+          ).strip()
+
+          if not text:
+              raise SystemExit("Gemini returned no text.")
+
+          print("===== GEMINI RESPONSE =====")
+          print(text)
+          print("===== END RESPONSE =====")
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("## Gemini response\n\n")
+              f.write(text + "\n")
+          PY
