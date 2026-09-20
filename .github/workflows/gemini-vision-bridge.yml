@@ -11,6 +11,10 @@ on:
         description: "Optional temporary/public image URL. Leave blank to use the Dropbox test image."
         required: false
         type: string
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/gemini-vision-bridge.yml"
 
 jobs:
   ask-gemini:
@@ -27,21 +31,16 @@ jobs:
           DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
         run: |
           set -euo pipefail
-
           if [ -n "${IMAGE_URL_INPUT:-}" ]; then
             echo "image_url=${IMAGE_URL_INPUT}" >> "$GITHUB_OUTPUT"
             echo "Using supplied image URL."
             exit 0
           fi
-
           test -n "$DROPBOX_REFRESH_TOKEN"
           test -n "$DROPBOX_APP_KEY"
           test -n "$DROPBOX_APP_SECRET"
-
-          HTTP_STATUS=$(curl --silent --show-error             --request POST             --header "Content-Type: application/x-www-form-urlencoded"             --data-urlencode "refresh_token=$DROPBOX_REFRESH_TOKEN"             --data-urlencode "grant_type=refresh_token"             --data-urlencode "client_id=$DROPBOX_APP_KEY"             --data-urlencode "client_secret=$DROPBOX_APP_SECRET"             --output /tmp/token.json             --write-out "%{http_code}"             https://api.dropboxapi.com/oauth2/token)
-
+          HTTP_STATUS=$(curl --silent --show-error --request POST             --header "Content-Type: application/x-www-form-urlencoded"             --data-urlencode "refresh_token=$DROPBOX_REFRESH_TOKEN"             --data-urlencode "grant_type=refresh_token"             --data-urlencode "client_id=$DROPBOX_APP_KEY"             --data-urlencode "client_secret=$DROPBOX_APP_SECRET"             --output /tmp/token.json --write-out "%{http_code}"             https://api.dropboxapi.com/oauth2/token)
           test "$HTTP_STATUS" = "200"
-
           python - <<'PY'
           import json
           token = json.load(open("/tmp/token.json")).get("access_token")
@@ -49,21 +48,16 @@ jobs:
               raise SystemExit("Dropbox did not return an access token.")
           open("/tmp/access_token", "w").write(token)
           PY
-
           TOKEN=$(cat /tmp/access_token)
           echo "::add-mask::$TOKEN"
-
-          curl --fail-with-body --silent --show-error             --header "Authorization: Bearer $TOKEN"             --header "Content-Type: application/json"             --data '{"path":"/deepseek_20260919_88c59e.png"}'             https://api.dropboxapi.com/2/files/get_temporary_link             > /tmp/link.json
-
+          curl --fail-with-body --silent --show-error             --header "Authorization: Bearer $TOKEN"             --header "Content-Type: application/json"             --data '{"path":"/deepseek_20260919_88c59e.png"}'             https://api.dropboxapi.com/2/files/get_temporary_link > /tmp/link.json
           python - <<'PY'
           import json
           link = json.load(open("/tmp/link.json")).get("link")
           if not link:
               raise SystemExit("Dropbox did not return a temporary link.")
-          with open("/tmp/image_url", "w") as f:
-              f.write(link)
+          open("/tmp/image_url", "w").write(link)
           PY
-
           LINK=$(cat /tmp/image_url)
           echo "::add-mask::$LINK"
           echo "image_url=$LINK" >> "$GITHUB_OUTPUT"
@@ -72,20 +66,16 @@ jobs:
       - name: Ask Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          PROMPT: ${{ inputs.prompt }}
+          PROMPT: ${{ inputs.prompt || 'Describe this image accurately. List the main visible elements and any readable text.' }}
           IMAGE_URL: ${{ steps.image.outputs.image_url }}
         run: |
           set -euo pipefail
           test -n "$GEMINI_API_KEY"
           test -n "$IMAGE_URL"
-
           python - <<'PY'
           import base64, json, os, time, urllib.error, urllib.request
-
           prompt = os.environ["PROMPT"]
           image_url = os.environ["IMAGE_URL"].strip()
-          parts = [{"text": prompt}]
-
           req = urllib.request.Request(image_url, method="GET")
           with urllib.request.urlopen(req, timeout=60) as r:
               raw = r.read()
@@ -94,32 +84,18 @@ jobs:
               raise SystemExit(f"URL did not return an image: {mime}")
           if len(raw) > 20 * 1024 * 1024:
               raise SystemExit("Image exceeds 20 MB.")
-
-          parts.insert(0, {
-              "inline_data": {
-                  "mime_type": mime,
-                  "data": base64.b64encode(raw).decode("ascii")
-              }
-          })
-
-          payload = {"contents": [{"parts": parts}]}
+          payload = {"contents": [{"parts": [
+              {"inline_data": {"mime_type": mime, "data": base64.b64encode(raw).decode("ascii")}},
+              {"text": prompt}
+          ]}]}
           body = json.dumps(payload).encode("utf-8")
-          endpoint = (
-              "https://generativelanguage.googleapis.com/v1beta/"
-              "models/gemini-3.7-flash:generateContent"
-          )
-
+          endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent"
           last_error = None
           for attempt in range(1, 4):
-              req = urllib.request.Request(
-                  endpoint,
-                  data=body,
-                  headers={
-                      "Content-Type": "application/json",
-                      "x-goog-api-key": os.environ["GEMINI_API_KEY"]
-                  },
-                  method="POST"
-              )
+              req = urllib.request.Request(endpoint, data=body, headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": os.environ["GEMINI_API_KEY"]
+              }, method="POST")
               try:
                   with urllib.request.urlopen(req, timeout=90) as r:
                       data = json.load(r)
@@ -137,21 +113,15 @@ jobs:
                   raise SystemExit(f"Gemini request failed: {e}")
           else:
               raise SystemExit(f"Gemini request failed: {last_error}")
-
           text = "\n".join(
-              p["text"]
-              for p in data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+              p["text"] for p in data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
               if isinstance(p.get("text"), str)
           ).strip()
-
           if not text:
               raise SystemExit("Gemini returned no text.")
-
           print("===== GEMINI RESPONSE =====")
           print(text)
           print("===== END RESPONSE =====")
-
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
-              f.write("## Gemini response\n\n")
-              f.write(text + "\n")
+              f.write("## Gemini response\n\n" + text + "\n")
           PY
