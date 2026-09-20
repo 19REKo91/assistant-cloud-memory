@@ -1,4 +1,4 @@
-name: Deploy vision bridge (temporary)
+name: Deploy vision bridge
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     defaults:
@@ -25,9 +25,11 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge 2>&1 |
-            sed -E 's#https://dash\.cloudflare\.com/claim-preview\?claimToken=[^[:space:]]+#CLAIM_URL_REDACTED#g' |
-            tee deploy-output.txt
+          npx wrangler@latest deploy --temporary --name chatgpt-vision-bridge 2>&1 | tee deploy-output.txt
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "### Vision Bridge deployment URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Vision Bridge deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "URL:" >> "$GITHUB_STEP_SUMMARY"
           grep -Eo 'https://[^[:space:]]+workers\.dev' deploy-output.txt | tail -1 >> "$GITHUB_STEP_SUMMARY" || true
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Claim URL (open within 60 minutes to keep this temporary account):" >> "$GITHUB_STEP_SUMMARY"
+          grep -Eo 'https://dash\.cloudflare\.com/claim-preview\?claimToken=[^[:space:]]+' deploy-output.txt | tail -1 >> "$GITHUB_STEP_SUMMARY" || true
