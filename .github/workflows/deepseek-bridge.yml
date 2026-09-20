@@ -1,0 +1,76 @@
+name: DeepSeek bridge
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Question or instruction for DeepSeek"
+        required: true
+        type: string
+      image_url:
+        description: "Optional public image URL"
+        required: false
+        type: string
+
+jobs:
+  ask-deepseek:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Ask DeepSeek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PROMPT: ${{ inputs.prompt }}
+          IMAGE_URL: ${{ inputs.image_url }}
+        run: |
+          set -euo pipefail
+          test -n "$DEEPSEEK_API_KEY"
+
+          python - <<'PY'
+          import json, os, urllib.request
+
+          prompt = os.environ["PROMPT"]
+          image_url = os.environ.get("IMAGE_URL", "").strip()
+
+          content = [{"type": "text", "text": prompt}]
+          if image_url:
+              content.append({
+                  "type": "image_url",
+                  "image_url": {"url": image_url, "detail": "auto"}
+              })
+
+          payload = {
+              "model": "deepseek-flash",
+              "messages": [{"role": "user", "content": content}],
+              "max_tokens": 4096
+          }
+
+          req = urllib.request.Request(
+              "https://api.deepseek.com/chat/completions",
+              data=json.dumps(payload).encode(),
+              headers={
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer " + os.environ["DEEPSEEK_API_KEY"],
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(req, timeout=90) as r:
+                  data = json.load(r)
+          except Exception as e:
+              raise SystemExit(f"DeepSeek request failed: {e}")
+
+          text = data["choices"][0]["message"].get("content", "")
+          if not text:
+              raise SystemExit("DeepSeek returned no text.")
+
+          print("===== DEEPSEEK RESPONSE =====")
+          print(text)
+          print("===== END RESPONSE =====")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("## DeepSeek response\n\n")
+              f.write(text.replace("\n", "\n"))
+              f.write("\n")
+          PY
