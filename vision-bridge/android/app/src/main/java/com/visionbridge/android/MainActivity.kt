@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
         streamInput = EditText(this).apply {
             hint = "ScreenStream URL"
-            setText("http://192.168.0.197:8080")
+            setText("http://192.168.0.197:8080/stream.mjpeg")
             isSingleLine = true
         }
 
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun fetchAndSendFrame() {
-        val streamUrl = streamInput.text.toString().trim()
+        val streamUrl = normalizeStreamUrl(streamInput.text.toString().trim())
         val bridgeUrl = bridgeInput.text.toString().trim().removeSuffix("/")
 
         if (streamUrl.isBlank() || bridgeUrl.isBlank()) {
@@ -84,6 +84,16 @@ class MainActivity : ComponentActivity() {
             } catch (e: Exception) {
                 runOnUiThread { status.text = "فشل ScreenStream: " + e.message }
             }
+        }
+    }
+
+    private fun normalizeStreamUrl(url: String): String {
+        if (url.isBlank()) return url
+        val clean = url.removeSuffix("/")
+        return if (clean.endsWith(".mjpeg") || clean.endsWith(".jpeg")) {
+            clean
+        } else {
+            "$clean/stream.mjpeg"
         }
     }
 
