@@ -42,18 +42,30 @@ export default {
     if (Math.floor(imageBase64.length * 0.75) > 20 * 1024 * 1024) return json({error:"image_too_large"},413);
     if (!env.GEMINI_API_KEY) return json({error:"GEMINI_API_KEY_not_configured"},503);
 
-    const upstream = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
-      { method:"POST", headers:{"content-type":"application/json","x-goog-api-key":env.GEMINI_API_KEY},
-        body:JSON.stringify({contents:[{parts:[
-          {inline_data:{mime_type:contentType.split(";")[0],data:imageBase64}},
-          {text:prompt}
-        ]}]}) }
-    );
-    const raw = await upstream.text();
-    if (!upstream.ok) return json({error:"gemini_error",status:upstream.status,detail:raw.slice(0,1000)},502);
+    const payload = JSON.stringify({contents:[{parts:[
+      {inline_data:{mime_type:contentType.split(";")[0],data:imageBase64}},
+      {text:prompt}
+    ]}]});
+
+    let raw = "";
+    let upstreamStatus = 0;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const upstream = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+        { method:"POST", headers:{"content-type":"application/json","x-goog-api-key":env.GEMINI_API_KEY},
+          body:payload }
+      );
+      upstreamStatus = upstream.status;
+      raw = await upstream.text();
+
+      if (upstream.ok) break;
+      if (![429, 500, 502, 503, 504].includes(upstream.status) || attempt === 3) {
+        return json({error:"gemini_error",status:upstream.status,detail:raw.slice(0,1000)},502);
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    }
     let data:any;
-    try { data=JSON.parse(raw); } catch { return json({error:"gemini_invalid_response"},502); }
+    try { data=JSON.parse(raw); } catch { return json({error:"gemini_invalid_response",status:upstreamStatus},502); }
     const text = data?.candidates?.[0]?.content?.parts?.filter((p:any)=>typeof p?.text==="string")
       ?.map((p:any)=>p.text)?.join("\n")?.trim() || "";
     return json({ok:true,text});
