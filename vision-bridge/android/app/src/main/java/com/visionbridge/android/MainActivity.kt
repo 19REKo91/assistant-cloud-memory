@@ -1,6 +1,5 @@
 package com.visionbridge.android
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
@@ -12,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -21,7 +21,7 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
 
-class MainActivity : Activity() {
+class MainActivity : ComponentActivity() {
     private val client = OkHttpClient()
     private val executor = Executors.newSingleThreadExecutor()
     private var latestFrame: ByteArray? = null
@@ -52,7 +52,7 @@ class MainActivity : Activity() {
         urlInput = EditText(this).apply {
             hint = "Bridge URL"
             setText("http://10.0.2.2:8787")
-            singleLine = true
+            isSingleLine = true
         }
         val start = Button(this).apply {
             text = "بدء التقاط الشاشة"
@@ -102,7 +102,9 @@ class MainActivity : Activity() {
                 latestFrame = out.toByteArray()
                 if (cropped !== bitmap) cropped.recycle()
                 bitmap.recycle()
-            } finally { image.close() }
+            } finally {
+                image.close()
+            }
         }, null)
         virtualDisplay?.release()
         virtualDisplay = projection!!.createVirtualDisplay(
