@@ -1,3 +1,19 @@
+Skip to content
+assistant-cloud-memory
+Repository navigation
+Code
+Issues
+Pull requests
+assistant-cloud-memory/vision-bridge/src
+/index.ts
+19REKo91
+19REKo91
+18 hours ago
+79 lines (71 loc) · 3.82 KB
+
+Code
+
+Blame
 export interface Env {
   GEMINI_API_KEY: string;
   BRIDGE_TOKEN?: string;
@@ -77,3 +93,4 @@ function uint8ToBase64(bytes: Uint8Array): string {
   for (let i=0;i<bytes.length;i+=chunk) binary += String.fromCharCode(...bytes.subarray(i,Math.min(i+chunk,bytes.length)));
   return btoa(binary);
 }
+ 
