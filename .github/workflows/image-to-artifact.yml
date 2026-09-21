@@ -8,10 +8,11 @@ on:
       - "**/*.jpg"
       - "**/*.jpeg"
       - "**/*.webp"
+      - ".github/workflows/image-to-artifact.yml"
   workflow_dispatch:
     inputs:
       image_path:
-        description: "Optional image path. Leave empty to use images changed by the latest push."
+        description: "Optional image path. Leave empty to use the most recently committed image."
         required: false
         type: string
 
@@ -25,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Select image files
         id: select
@@ -44,21 +45,23 @@ jobs:
             esac
             cp -- "$INPUT_IMAGE_PATH" /tmp/images/
           else
-            mapfile -t images < <(
-              git diff --name-only HEAD^ HEAD -- \
-                '*.png' '*.jpg' '*.jpeg' '*.webp' |
-              grep -E '\\.(png|jpe?g|webp)$' || true
-            )
+            image="$(
+              git ls-files -- '*.png' '*.jpg' '*.jpeg' '*.webp' |
+              while IFS= read -r f; do
+                printf '%s\t%s\n' "$(git log -1 --format=%ct -- "$f")" "$f"
+              done |
+              sort -nr |
+              head -n 1 |
+              cut -f2-
+            )"
 
-            if [ "${#images[@]}" -eq 0 ]; then
-              echo "No image was changed by the latest commit."
+            if [ -z "$image" ]; then
+              echo "No image file exists in the repository."
               exit 1
             fi
 
-            for image in "${images[@]}"; do
-              test -f "$image"
-              cp -- "$image" /tmp/images/
-            done
+            echo "Selected latest image: $image"
+            cp -- "$image" /tmp/images/
           fi
 
           echo "Selected image files:"
