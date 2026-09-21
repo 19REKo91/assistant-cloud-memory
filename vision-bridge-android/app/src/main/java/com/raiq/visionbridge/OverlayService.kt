@@ -7,29 +7,40 @@ import android.graphics.PixelFormat
 import android.os.*
 import android.provider.Settings
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.TextView
 
 class OverlayService : Service() {
     private lateinit var wm: WindowManager
-    private var bubble: View? = null
+    private var container: View? = null
+    private var logView: TextView? = null
     private val action = "com.raiq.visionbridge.SHOW_BUBBLE"
+    private val logAction = "com.raiq.visionbridge.DIAGNOSTIC_LOG"
 
     override fun onCreate() {
         super.onCreate()
+        registerReceiver(logReceiver, IntentFilter(logAction), RECEIVER_NOT_EXPORTED)
         showBubble()
+        appendLog("✓ التطبيق بدأ / OverlayService")
     }
 
     private fun showBubble() {
-        if (bubble != null || !Settings.canDrawOverlays(this)) return
+        if (container != null || !Settings.canDrawOverlays(this)) return
         wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val v = TextView(this).apply {
-            text = "看"
-            textSize = 18f
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(4, 4, 4, 4)
+            setBackgroundColor(Color.argb(210, 35, 35, 35))
+        }
+        val button = TextView(this).apply {
+            text = "شوف الشاشة"
+            textSize = 16f
             setTextColor(Color.WHITE)
             setBackgroundColor(Color.DKGRAY)
             gravity = Gravity.CENTER
-            setPadding(18, 10, 18, 10)
+            setPadding(18, 12, 18, 12)
             setOnClickListener {
+                appendLog("→ الضغط على شوف الشاشة")
                 val i = Intent(this@OverlayService, MainActivity::class.java).apply {
                     action = action
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -37,6 +48,15 @@ class OverlayService : Service() {
                 startActivity(i)
             }
         }
+        logView = TextView(this).apply {
+            text = "السجل: جاهز"
+            textSize = 11f
+            setTextColor(Color.WHITE)
+            setPadding(8, 6, 8, 6)
+            maxLines = 8
+        }
+        root.addView(button)
+        root.addView(logView)
         val type = if (Build.VERSION.SDK_INT >= 26)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         else WindowManager.LayoutParams.TYPE_PHONE
@@ -51,7 +71,7 @@ class OverlayService : Service() {
             x = 30
             y = 250
         }
-        v.setOnTouchListener(object : View.OnTouchListener {
+        root.setOnTouchListener(object : View.OnTouchListener {
             var downX=0f; var downY=0f; var startX=0; var startY=0; var moved=false
             override fun onTouch(view: View, e: MotionEvent): Boolean {
                 when(e.actionMasked) {
@@ -60,7 +80,8 @@ class OverlayService : Service() {
                         return false
                     }
                     MotionEvent.ACTION_MOVE -> {
-                        val dx=(e.rawX-downX).toInt(); val dy=(e.rawY-downY).toInt()
+                        val dx=(e.rawX-downX).toInt()
+                        val dy=(e.rawY-downY).toInt()
                         if (kotlin.math.abs(dx)>8 || kotlin.math.abs(dy)>8) moved=true
                         if (moved) {
                             p.x=startX+dx; p.y=startY+dy
@@ -72,20 +93,25 @@ class OverlayService : Service() {
                 return false
             }
         })
-        bubble=v
-        wm.addView(v,p)
+        container=root
+        wm.addView(root,p)
     }
 
-    private val receiver=object : BroadcastReceiver() {
+    private val logReceiver=object : BroadcastReceiver() {
         override fun onReceive(c: Context?, i: Intent?) {
-            if (i?.action=="com.raiq.visionbridge.HIDE_BUBBLE") hideBubble()
-            if (i?.action==action) showBubble()
+            i?.getStringExtra("message")?.let { appendLog(it) }
         }
     }
 
+    private fun appendLog(message: String) {
+        val current=logView?.text?.toString().orEmpty()
+        logView?.text=(current.lines()+message).takeLast(8).joinToString("\n")
+    }
+
     private fun hideBubble() {
-        bubble?.let { runCatching { wm.removeView(it) } }
-        bubble=null
+        container?.let { runCatching { wm.removeView(it) } }
+        container=null
+        logView=null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -94,8 +120,10 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        runCatching { unregisterReceiver(logReceiver) }
         hideBubble()
         super.onDestroy()
     }
+
     override fun onBind(intent: Intent?) = null
 }
