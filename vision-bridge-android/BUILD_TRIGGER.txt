@@ -1,1 +1,1 @@
-Trigger Android APK build.
+Trigger Android APK build - floating Watch button + one-shot screen capture.
