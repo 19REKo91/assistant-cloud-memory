@@ -29,10 +29,8 @@ class CaptureService : Service() {
             .build())
 
         val resultCode = intent?.getIntExtra("resultCode", Activity.RESULT_CANCELED) ?: return START_NOT_STICKY
-        val data = if (Build.VERSION.SDK_INT >= 33)
-            intent.getParcelableExtra("data", Intent::class.java)
-        else
-            @Suppress("DEPRECATION") intent.getParcelableExtra("data")
+        @Suppress("DEPRECATION")
+        val data = intent.getParcelableExtra<Intent>("data")
 
         if (data == null) return START_NOT_STICKY
         val mgr = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
