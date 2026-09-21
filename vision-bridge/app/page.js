@@ -1,0 +1,1 @@
+export default function Home(){return <main style={{padding:24,fontFamily:"sans-serif"}}><h1>Vision Bridge</h1><p>Latest-frame test is ready.</p><p>Upload to <code>/api/upload</code>.</p><p>Read latest image at <code>/api/latest</code>.</p></main>}
