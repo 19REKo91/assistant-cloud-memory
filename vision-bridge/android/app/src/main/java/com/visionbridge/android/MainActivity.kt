@@ -9,15 +9,19 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build()
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var status: TextView
     private lateinit var streamInput: EditText
@@ -69,7 +73,7 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        status.text = "جارٍ أخذ أحدث Frame من ScreenStream..."
+        status.text = "جارٍ أخذ أول Frame من ScreenStream..."
 
         executor.execute {
             try {
@@ -82,45 +86,34 @@ class MainActivity : ComponentActivity() {
                 runOnUiThread { status.text = "تم أخذ Frame — جارٍ إرساله للرؤية..." }
                 sendFrame(frame, bridgeUrl)
             } catch (e: Exception) {
-                runOnUiThread { status.text = "فشل ScreenStream: " + e.message }
+                runOnUiThread { status.text = "فشل ScreenStream: " + (e.message ?: e.javaClass.simpleName) }
             }
         }
     }
 
-    private fun normalizeStreamUrl(url: String): String {
-        return url.removeSuffix("/")
-    }
+    private fun normalizeStreamUrl(url: String): String = url.removeSuffix("/")
 
+    /**
+     * Read exactly one JPEG from an MJPEG stream and return immediately.
+     * This avoids waiting forever for /stream.jpeg when it is actually a live stream.
+     */
     private fun fetchSingleFrame(baseUrl: String): ByteArray? {
         val clean = normalizeStreamUrl(baseUrl)
-        if (clean.endsWith(".jpeg")) return fetchDirectJpeg(clean)
-        if (clean.endsWith(".mjpeg")) return fetchFirstJpeg(clean)
-        return try {
-            fetchDirectJpeg("$clean/stream.jpeg")
-        } catch (_: Exception) {
-            fetchFirstJpeg("$clean/stream.mjpeg")
+        val candidates = when {
+            clean.endsWith(".mjpeg", ignoreCase = true) -> listOf(clean)
+            clean.endsWith(".jpeg", ignoreCase = true) || clean.endsWith(".jpg", ignoreCase = true) -> listOf(clean)
+            else -> listOf("$clean/stream.mjpeg", "$clean/mjpeg", "$clean/stream.jpeg")
         }
-    }
 
-    private fun fetchDirectJpeg(url: String): ByteArray {
-        val request = Request.Builder()
-            .url(url)
-            .header("Accept", "image/jpeg")
-            .get()
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                throw IllegalStateException("HTTP " + response.code + " from " + url)
+        var lastError: Exception? = null
+        for (url in candidates) {
+            try {
+                return fetchFirstJpeg(url)
+            } catch (e: Exception) {
+                lastError = e
             }
-            val body = response.body ?: throw IllegalStateException("لا توجد صورة")
-            val bytes = body.bytes()
-            if (bytes.isEmpty()) throw IllegalStateException("الصورة فارغة")
-            if (bytes.size > 8 * 1024 * 1024) {
-                throw IllegalStateException("Frame أكبر من 8MB")
-            }
-            return bytes
         }
+        throw lastError ?: IllegalStateException("لم أجد بث MJPEG")
     }
 
     private fun fetchFirstJpeg(url: String): ByteArray? {
@@ -132,7 +125,7 @@ class MainActivity : ComponentActivity() {
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                throw IllegalStateException("HTTP " + response.code)
+                throw IllegalStateException("HTTP ${response.code} from $url")
             }
 
             val body = response.body ?: throw IllegalStateException("لا يوجد بث")
@@ -193,12 +186,12 @@ class MainActivity : ComponentActivity() {
                         val answer = JSONObject(responseText).optString("text", responseText)
                         status.text = answer.ifBlank { "لم يصل وصف." }
                     } else {
-                        status.text = "خطأ Bridge " + response.code + ": " + responseText
+                        status.text = "خطأ Bridge ${response.code}: $responseText"
                     }
                 }
             }
         } catch (e: Exception) {
-            runOnUiThread { status.text = "فشل الاتصال بالـ Bridge: " + e.message }
+            runOnUiThread { status.text = "فشل الاتصال بالـ Bridge: " + (e.message ?: e.javaClass.simpleName) }
         }
     }
 
