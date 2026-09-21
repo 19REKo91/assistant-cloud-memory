@@ -1,0 +1,90 @@
+name: image-to-artifact
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.webp"
+  workflow_dispatch:
+    inputs:
+      image_path:
+        description: "Optional image path. Leave empty to use images changed by the latest push."
+        required: false
+        type: string
+
+jobs:
+  upload-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Select image
+        id: select
+        env:
+          INPUT_IMAGE_PATH: ${{ inputs.image_path }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$INPUT_IMAGE_PATH" ]; then
+            test -f "$INPUT_IMAGE_PATH"
+            case "$INPUT_IMAGE_PATH" in
+              *.png|*.jpg|*.jpeg|*.webp) ;;
+              *) echo "Unsupported image type: $INPUT_IMAGE_PATH"; exit 1 ;;
+            esac
+            echo "path=$INPUT_IMAGE_PATH" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mapfile -t images < <(
+            git diff --name-only HEAD^ HEAD --               '*.png' '*.jpg' '*.jpeg' '*.webp' |
+            grep -E '\.(png|jpe?g|webp)$' || true
+          )
+
+          if [ "${#images[@]}" -eq 0 ]; then
+            echo "No image was changed by the latest commit."
+            exit 1
+          fi
+
+          if [ "${#images[@]}" -gt 1 ]; then
+            echo "More than one image changed; uploading all changed images."
+            printf '%s\n' "${images[@]}" > /tmp/image-list.txt
+            echo "path_list=/tmp/image-list.txt" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=${images[0]}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate selected image
+        if: steps.select.outputs.path != ''
+        run: |
+          set -euo pipefail
+          file "${{ steps.select.outputs.path }}"
+          sha256sum "${{ steps.select.outputs.path }}"
+          stat -c 'Size: %s bytes' "${{ steps.select.outputs.path }}"
+
+      - name: Upload image artifact
+        if: steps.select.outputs.path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-latest
+          path: ${{ steps.select.outputs.path }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload changed images artifact
+        if: steps.select.outputs.path_list != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: images-changed
+          path: |
+            ${{ steps.select.outputs.path_list }}
+          if-no-files-found: error
+          retention-days: 7
