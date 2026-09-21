@@ -1,0 +1,2 @@
+import { head } from '@vercel/blob';
+export async function GET(){try{const b=await head('latest-frame.png');return Response.redirect(b.url,302)}catch(e){return Response.json({error:'no frame yet'},{status:404})}}
