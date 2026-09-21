@@ -2,39 +2,36 @@ package com.raiq.visionbridge
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.provider.Settings
+import android.view.View
+import android.widget.Toast
 
 class MainActivity : Activity() {
     private val requestCode = 9001
-    private lateinit var status: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        status = TextView(this).apply {
-            text = "Vision Bridge جاهز"
-            textSize = 18f
-            setPadding(24,24,24,24)
+        setContentView(View(this).apply { setBackgroundColor(Color.TRANSPARENT) })
+
+        if (!Settings.canDrawOverlays(this)) {
+            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")))
+            return
         }
-        val start = Button(this).apply { text = "ابدأ مشاركة الشاشة" }
-        val stop = Button(this).apply { text = "إيقاف" }
-        start.setOnClickListener {
-            val mgr = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-            startActivityForResult(mgr.createScreenCaptureIntent(), requestCode)
+
+        startService(Intent(this, OverlayService::class.java))
+        if (intent?.action == "com.raiq.visionbridge.SHOW_BUBBLE") {
+            requestCapture()
         }
-        stop.setOnClickListener {
-            stopService(Intent(this, CaptureService::class.java))
-            status.text = "متوقف"
-        }
-        setContentView(LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            addView(status)
-            addView(start)
-            addView(stop)
-        })
+    }
+
+    private fun requestCapture() {
+        val mgr = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(mgr.createScreenCaptureIntent(), requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -45,7 +42,9 @@ class MainActivity : Activity() {
                 putExtra("data", data)
             }
             startForegroundService(i)
-            status.text = "التقاط الشاشة يعمل"
+        } else if (requestCode == this.requestCode) {
+            Toast.makeText(this, "لم تتم الموافقة على التقاط الشاشة", Toast.LENGTH_SHORT).show()
         }
+        finish()
     }
 }
