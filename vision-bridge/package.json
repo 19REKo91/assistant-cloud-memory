@@ -1,0 +1,15 @@
+{
+  "name": "vision-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev"
+  },
+  "dependencies": {
+    "@vercel/blob": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}
