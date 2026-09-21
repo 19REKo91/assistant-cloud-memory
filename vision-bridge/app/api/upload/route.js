@@ -1,0 +1,2 @@
+import { put } from '@vercel/blob';
+export async function POST(request){const form=await request.formData();const file=form.get('file');if(!file||typeof file==='string')return Response.json({error:'file required'},{status:400});const blob=await put('latest-frame.png',file,{access:'public',addRandomSuffix:false,allowOverwrite:true});return Response.json({url:blob.url});}
