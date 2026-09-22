@@ -70,7 +70,7 @@ export default {
     if (request.method !== "POST") return json({
       ok: true,
       service: "vision-bridge",
-      usage: "POST /vision {image_base64,mime_type,prompt}"
+      usage: "POST /vision {image_base64,mime_type,prompt} OR {image_url,prompt}"
     });
 
     if (env.BRIDGE_TOKEN && request.headers.get("x-bridge-token") !== env.BRIDGE_TOKEN) {
