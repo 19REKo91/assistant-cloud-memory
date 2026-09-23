@@ -6,6 +6,10 @@ on:
     paths:
       - "vision-bridge/**"
       - ".github/workflows/deploy-vision-bridge.yml"
+  pull_request:
+    paths:
+      - "vision-bridge/**"
+      - ".github/workflows/deploy-vision-bridge.yml"
   workflow_dispatch:
 
 jobs:
