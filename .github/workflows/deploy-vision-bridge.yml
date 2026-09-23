@@ -41,7 +41,7 @@ jobs:
       - name: End-to-end remote image vision test
         working-directory: .
         env:
-          IMAGE_URL: "https://1drv.ms/i/c/083c9002e9811882/IQA7YAJnTm02RokOcX1Z4uQAARIRWzP_xIg0fgasxyWF2ew"
+          IMAGE_URL: "https://1drv.ms/i/c/083c9002e9811882/IQA1MUUwDTHrSI5D0Q8x-pS9AYHkyJwwBTx9hQeOVTLTalM"
           BRIDGE_URL: "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/vision"
         run: |
           set -euo pipefail
