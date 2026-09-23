@@ -38,11 +38,18 @@ jobs:
           BRIDGE_URL: "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/vision"
         run: |
           set -euo pipefail
-          RESPONSE="$(curl -fsS --retry 2 --retry-delay 2 -G "${BRIDGE_URL}" \
+          set +e
+          RESPONSE="$(curl -sS --retry 2 --retry-delay 2 -G "${BRIDGE_URL}" \
             --data-urlencode "image_url=${IMAGE_URL}" \
             --data-urlencode 'prompt=Describe exactly what is visible in this image. Return concise text only.')"
+          CURL_STATUS=$?
+          set -e
+          echo "Bridge HTTP/curl status: ${CURL_STATUS}"
           echo "Bridge response:"
           echo "${RESPONSE}"
+          if [ "${CURL_STATUS}" -ne 0 ]; then
+            exit "${CURL_STATUS}"
+          fi
           node -e '
             const r = JSON.parse(process.argv[1]);
             if (r.ok !== true || typeof r.text !== "string" || !r.text.trim()) {
