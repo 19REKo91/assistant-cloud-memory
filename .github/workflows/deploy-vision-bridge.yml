@@ -6,6 +6,10 @@ on:
     paths:
       - "vision-bridge/**"
       - ".github/workflows/deploy-vision-bridge.yml"
+  pull_request:
+    paths:
+      - "vision-bridge/**"
+      - ".github/workflows/deploy-vision-bridge.yml"
   workflow_dispatch:
 
 jobs:
@@ -21,6 +25,13 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Configure Gemini secret
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: printf '%s' "$GEMINI_API_KEY" | npx wrangler@latest secret put GEMINI_API_KEY --name chatgpt-vision-bridge
+
       - name: Deploy Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -30,15 +41,22 @@ jobs:
       - name: End-to-end remote image vision test
         working-directory: .
         env:
-          IMAGE_URL: "https://1drv.ms/i/c/083c9002e9811882/IQA7YAJnTm02RokOcX1Z4uQAARIRWzP_xIg0fgasxyWF2ew"
+          IMAGE_URL: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Random_landscape_photo_I_took.jpg"
           BRIDGE_URL: "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/vision"
         run: |
           set -euo pipefail
-          RESPONSE="$(curl -fsS --retry 2 --retry-delay 2 -G "${BRIDGE_URL}" \
+          set +e
+          RESPONSE="$(curl -sS --retry 2 --retry-delay 2 -G "${BRIDGE_URL}" \
             --data-urlencode "image_url=${IMAGE_URL}" \
             --data-urlencode 'prompt=Describe exactly what is visible in this image. Return concise text only.')"
+          CURL_STATUS=$?
+          set -e
+          echo "Bridge HTTP/curl status: ${CURL_STATUS}"
           echo "Bridge response:"
           echo "${RESPONSE}"
+          if [ "${CURL_STATUS}" -ne 0 ]; then
+            exit "${CURL_STATUS}"
+          fi
           node -e '
             const r = JSON.parse(process.argv[1]);
             if (r.ok !== true || typeof r.text !== "string" || !r.text.trim()) {

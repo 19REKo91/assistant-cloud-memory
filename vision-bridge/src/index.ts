@@ -144,10 +144,23 @@ async function analyzeRemoteImage(
   imageUrl: string,
   prompt: string
 ): Promise<Response> {
+  let targetUrl = imageUrl;
+
+  if (isOneDriveShareUrl(imageUrl)) {
+    try {
+      targetUrl = await resolveOneDriveDownloadUrl(imageUrl);
+    } catch (error) {
+      return json({
+        error: "onedrive_direct_url_failed",
+        detail: error instanceof Error ? error.message : "unknown_error"
+      }, 502);
+    }
+  }
+
   let imageResponse: Response;
 
   try {
-    imageResponse = await fetch(imageUrl, {
+    imageResponse = await fetch(targetUrl, {
       redirect: "follow",
       headers: { "accept": "image/*,*/*;q=0.8" }
     });
@@ -167,7 +180,8 @@ async function analyzeRemoteImage(
   if (!contentType.toLowerCase().startsWith("image/")) {
     return json({
       error: "not_an_image",
-      content_type: contentType
+      content_type: contentType,
+      final_url: imageResponse.url
     }, 415);
   }
 
@@ -183,6 +197,77 @@ async function analyzeRemoteImage(
     contentType.split(";")[0],
     prompt
   );
+}
+
+function isOneDriveShareUrl(imageUrl: string): boolean {
+  try {
+    const host = new URL(imageUrl).hostname.toLowerCase();
+    return host === "1drv.ms" || host === "onedrive.live.com" || host.endsWith(".onedrive.live.com");
+  } catch {
+    return false;
+  }
+}
+
+async function resolveOneDriveDownloadUrl(shareUrl: string): Promise<string> {
+  const badgerResponse = await fetch(
+    "https://api-badgerp.svc.ms/v1.0/token",
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "accept": "application/json"
+      },
+      body: JSON.stringify({
+        appId: "5cbed6ac-a083-4e14-b191-b4ba07653de2"
+      })
+    }
+  );
+
+  if (!badgerResponse.ok) {
+    throw new Error("badger_token_request_failed:" + badgerResponse.status);
+  }
+
+  const badgerData: any = await badgerResponse.json();
+  const badgerToken = typeof badgerData?.token === "string" ? badgerData.token : "";
+
+  if (!badgerToken) {
+    throw new Error("badger_token_missing");
+  }
+
+  const encodedShareUrl = uint8ToBase64(new TextEncoder().encode(shareUrl))
+    .replace(/=+$/g, "")
+    .replace(/\//g, "_")
+    .replace(/\+/g, "-");
+
+  const infoUrl =
+    "https://my.microsoftpersonalcontent.com/_api/v2.0/shares/u!" +
+    encodedShareUrl +
+    "/driveitem?%24select=%40content.downloadUrl%2Cname";
+
+  const infoResponse = await fetch(infoUrl, {
+    method: "GET",
+    headers: {
+      "accept": "application/json",
+      "prefer": "autoredeem",
+      "authorization": "Badger " + badgerToken,
+      "origin": "https://onedrive.live.com",
+      "referer": "https://onedrive.live.com/"
+    }
+  });
+
+  if (!infoResponse.ok) {
+    const detail = (await infoResponse.text()).slice(0, 500);
+    throw new Error("onedrive_share_lookup_failed:" + infoResponse.status + ":" + detail);
+  }
+
+  const item: any = await infoResponse.json();
+  const downloadUrl = item?.["@content.downloadUrl"];
+
+  if (typeof downloadUrl !== "string" || !downloadUrl.startsWith("http")) {
+    throw new Error("onedrive_download_url_missing");
+  }
+
+  return downloadUrl;
 }
 
 async function analyzeBase64Image(

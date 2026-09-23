@@ -148,3 +148,77 @@ OneDrive → جلب/مرجع خارجي → Vision مباشرة **من دون `/
 وهذا يفسر لماذا كانت تجربتنا السابقة مهمة: **المشاهدة نفسها ممكنة، لكن علينا إعادة التجربة بدون `download_raw_file=true` حتى نعرف هل يمكن تمرير الصورة إلى Vision دون إنشاء نسخة محلية.**
 
 سجلت هذه النتيجة كتصحيح أساسي للمسار.
+
+
+## ✅ 2026-09-23 — أول نجاح مؤكد للمسار الخارجي المباشر
+
+**الهدف:** إثبات أن صورة مستضافة خارجيًا يمكن أن تُرى عبر الـVision Bridge دون تحويلها إلى ملف داخل بيئة ChatGPT.
+
+**المسار الذي نجح فعليًا:**
+
+OneDrive share URL
+↓
+Cloudflare Worker: chatgpt-vision-bridge / GET /vision?image_url=...
+↓
+حل رابط OneDrive ثم جلب الصورة داخل الـWorker
+↓
+إرسال الصورة إلى Gemini Vision
+↓
+إرجاع JSON يحتوي **نصًا فقط**
+
+**Workflow:** Deploy vision bridge
+**Run:** 35857305213 (Run #43)
+**Job:** 107173092157
+**Commit tested:** 9b1321242499e9b83066de011813b6e8cd4afb40 عبر merge ref الخاص بالـPR
+
+### النتيجة
+- Configure Gemini secret: ✅ success
+- Deploy Worker: ✅ success
+- End-to-end remote image vision test: ✅ success
+- HTTP/curl status: 0
+- Response: {"ok":true,"text":"..."}
+- Marker: REMOTE_VISION_TEST_OK
+- Output length: 282
+
+### ما تمّت رؤيته فعليًا
+الاستجابة وصفت صورة اختبار تحتوي على إطار أسود ومستطيل أبيض، دائرة برتقالية، مستطيل أزرق، والنص الصغير VISION TEST 2026-09-23.
+
+هذا يثبت **أن محتوى الصورة نفسه وصل إلى نموذج الرؤية**، وليس مجرد أن الرابط كان صالحًا.
+
+### الأثر على هدف المشروع
+هذا هو أول إثبات end-to-end للمسار المطلوب:
+**صورة خارجية → Vision Bridge → Vision → نص فقط**
+من دون المسار السابق download_raw_file=true الذي أنشأ File Reference ونسخة /mnt/data.
+
+**ملاحظة:** اختبار 2026-09-23 استخدم رابط OneDrive نفسه الموجود في الـworkflow، لكنه في هذه التجربة كان يشير إلى صورة اختبار VISION TEST 2026-09-23؛ لذلك نجاح الرؤية مؤكد، بينما لا ينبغي وصفه بأنه اختبار لصورة الحصان 1790001424526.jpg إلا بعد اختبار رابط تلك الصورة تحديدًا.
+
+
+## ✅ 2026-09-23 — نجاح الصورة الحقيقية + اكتمال المسار الأساسي
+
+تم رفع صورة فعلية من Library إلى OneDrive باسم `VISION_BRIDGE_REAL_TEST_2026-09-23.jpg` وإنشاء رابط مشاركة anonymous/view.
+
+تم تحديث Workflow لاختبار رابط الصورة الجديدة، ثم نجح Run #45:
+- Run ID: `35859216540`
+- Job ID: `107175008866`
+- Configure Gemini secret: ✅
+- Deploy Worker: ✅
+- End-to-end remote image vision test: ✅
+- `REMOTE_VISION_TEST_OK` ✅
+- `TEXT_ONLY_LENGTH=378`
+
+الاستجابة النصية وصفت محتوى الصورة فعليًا: نهر أزرق متعرج في وادٍ أخضر، أشجار كثيفة، جبال بنية جرداء، وقمة ثلجية كبيرة في الخلفية.
+
+### حالة المشروع
+**المسار الأساسي المطلوب لتقليل نزيف المحادثات أصبح مثبتًا end-to-end:**
+`OneDrive image → public share URL → Cloudflare Vision Bridge → Gemini Vision → text-only JSON`
+
+لا تحتاج الصورة إلى أن تكون مرفقًا في محادثة ChatGPT كي تتم الرؤية في هذا المسار، ولا يعتمد الاختبار الناجح على `download_raw_file=true` أو `/mnt/data` كجزء من مسار الرؤية.
+
+### نقطة التشغيل
+واجهة Worker نفسها عامة وقابلة لاستقبال أي `http/https` image URL عبر:
+`GET /vision?image_url=<url>&prompt=<question>`
+
+اختبار CI الحالي يحتفظ برابط صورة اختبار ثابتة لأغراض التحقق، لكنه لا يقيّد الـWorker؛ رابط الصورة يمكن تغييره لكل صورة جديدة.
+
+### ما لم يكتمل بعد
+ربط هذا المسار تلقائيًا بتطبيق Android/زر `شوف الشاشة` ما زال مرحلة مستقلة. لا نعتبر ذلك جزءًا من نجاح OneDrive → Worker → Gemini الحالي.
