@@ -1,1 +1,1 @@
-safe test v1
+safe test v2
