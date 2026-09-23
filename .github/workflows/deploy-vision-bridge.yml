@@ -26,3 +26,25 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx wrangler@latest deploy --name chatgpt-vision-bridge
+
+      - name: End-to-end remote image vision test
+        working-directory: .
+        env:
+          IMAGE_URL: "https://1drv.ms/i/c/083c9002e9811882/IQA7YAJnTm02RokOcX1Z4uQAARIRWzP_xIg0fgasxyWF2ew"
+          BRIDGE_URL: "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/vision"
+        run: |
+          set -euo pipefail
+          RESPONSE="$(curl -fsS --retry 2 --retry-delay 2 -G "${BRIDGE_URL}" \
+            --data-urlencode "image_url=${IMAGE_URL}" \
+            --data-urlencode 'prompt=Describe exactly what is visible in this image. Return concise text only.')"
+          echo "Bridge response:"
+          echo "${RESPONSE}"
+          node -e '
+            const r = JSON.parse(process.argv[1]);
+            if (r.ok !== true || typeof r.text !== "string" || !r.text.trim()) {
+              console.error("Remote vision test failed:", r);
+              process.exit(1);
+            }
+            console.log("REMOTE_VISION_TEST_OK");
+            console.log("TEXT_ONLY_LENGTH=" + r.text.trim().length);
+          ' "${RESPONSE}"
