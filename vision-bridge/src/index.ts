@@ -22,45 +22,6 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // Isolated OneDrive image proxy test.
-    // Does not modify the existing /vision -> Gemini path.
-    if (request.method === "GET" && url.pathname === "/onedrive-image") {
-      const upstream = await fetch(
-        "https://1drv.ms/i/c/083c9002e9811882/IQChRw3wYFs_R6B9uP8XbI4rAbUFBaMY3Cg-g2NRa9hfIAs?e=9kpcQJ",
-        {
-          redirect: "follow",
-          headers: { "accept": "image/*,*/*;q=0.8" }
-        }
-      );
-
-      const contentType = upstream.headers.get("content-type") || "";
-
-      if (!upstream.ok) {
-        return json({
-          error: "onedrive_fetch_failed",
-          status: upstream.status,
-          content_type: contentType
-        }, 502);
-      }
-
-      if (!contentType.toLowerCase().startsWith("image/")) {
-        return json({
-          error: "onedrive_did_not_return_image",
-          content_type: contentType,
-          final_url: upstream.url
-        }, 415);
-      }
-
-      return new Response(upstream.body, {
-        status: upstream.status,
-        headers: {
-          "content-type": contentType,
-          "cache-control": "no-store",
-          "access-control-allow-origin": "*"
-        }
-      });
-    }
-
     // Text-only vision gateway:
     // The worker fetches the image and Gemini sees it.
     // ChatGPT only receives compact JSON text, not image bytes.

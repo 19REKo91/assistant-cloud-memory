@@ -62,11 +62,10 @@ Repository contains more than one Android Vision Bridge project:
 - vision-bridge-android/...
 
 There are also multiple workflows:
-- .github/workflows/vision-bridge-android-build.yml
 - .github/workflows/build-vision-bridge-android.yml
 - .github/workflows/deploy-vision-bridge.yml
 - .github/workflows/gemini-vision-bridge.yml
-- .github/workflows/github-to-dropbox-vision-bridge.yml
+
 
 Do not accidentally modify the wrong Android project or workflow. Inspect the current baseline files before editing.
 
@@ -148,3 +147,18 @@ OneDrive → جلب/مرجع خارجي → Vision مباشرة **من دون `/
 وهذا يفسر لماذا كانت تجربتنا السابقة مهمة: **المشاهدة نفسها ممكنة، لكن علينا إعادة التجربة بدون `download_raw_file=true` حتى نعرف هل يمكن تمرير الصورة إلى Vision دون إنشاء نسخة محلية.**
 
 سجلت هذه النتيجة كتصحيح أساسي للمسار.
+
+
+## Cleanup — 2026-09-24
+Removed confirmed obsolete clutter from the repository:
+- `tmp/verify_image.b64` — temporary Base64 diagnostic artifact.
+- `.github/workflows/image-to-artifact.yml` — legacy artifact path; this was intentionally costly and is no longer the preferred route.
+- `.github/workflows/github-to-dropbox-vision-bridge.yml` — legacy Dropbox transfer workflow.
+- `vision-bridge-trigger.txt`, `vision-bridge/DEPLOY_TRIGGER.txt`, `vision-bridge-android/BUILD_TRIGGER.txt` — manual trigger-only files.
+- Removed the hard-coded `/onedrive-image` proxy test endpoint from the Worker; the active remote-vision path is `/vision`.
+
+Preserved:
+- `vision-bridge-android/` as the preferred Android baseline.
+- `vision-bridge/android/` as a separate implementation/reference.
+- `.github/workflows/gemini-vision-bridge.yml` as a manual fallback test workflow.
+- The main `/vision` GET/POST gateway and Gemini integration.
