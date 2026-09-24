@@ -1,3 +1,0 @@
-Trigger audited Vision Bridge APK build.
-
-Audit 2026-09-21: verified MainActivity launches only OverlayService; CaptureActivity alone requests MediaProjection; CaptureService is declared mediaProjection FGS and uses the required permission/type; endpoint remains https://assistant-cloud-memory.vercel.app/api/upload; no API key is embedded. Android official docs checked for API 34/35 FGS and background-launch rules.
