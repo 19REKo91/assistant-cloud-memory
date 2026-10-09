@@ -1,32 +1,15 @@
-# Assistant Cloud Memory
+# assistant-cloud-memory
 
-هذا المستودع مساحة خارجية مخصصة للمساعد لتنظيم الذاكرة والمشاريع وسجل العمل بصورة واضحة وقابلة للمراجعة.
+## قواعد القراءة الآلية
+- الفرع: main
+- الصيغة: HTML / Markdown فقط
+- لا JavaScript
+- لا fetch / AJAX
+- الحجم الأقصى: 100KB لكل ملف
+- الترميز: UTF-8
+- المستودع: Public
 
-## الغرض
-- حفظ المعرفة التي نقرر أنها تستحق الرجوع إليها.
-- فصل المعرفة الأساسية عن المشاريع الجارية والأرشيف.
-- الحفاظ على سجل تغييرات واضح.
-- إبقاء كل شيء قابلًا للقراءة والتحديث عند الحاجة.
-
-## البنية
-
-```
-assistant-cloud-memory/
-├── README.md
-├── CORE/
-│   ├── memory-index.md
-│   └── operating-rules.md
-├── PROJECTS/
-│   └── raiq/
-│       ├── overview.md
-│       ├── axioms.md
-│       ├── mechanisms.md
-│       ├── equations.md
-│       ├── tests.md
-│       ├── open-problems.md
-│       └── changelog.md
-├── SESSIONS/
-└── ARCHIVE/
-```
-
-> هذا المستودع ليس ذاكرة تلقائية أو مراقبة مستمرة؛ هو مساحة خارجية يمكن للمساعد الوصول إليها أو تحديثها عندما يتم ذلك عبر الاتصال المسموح به.
+## الروابط المباشرة
+- الفهرس: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/index.html
+- آخر تحديث: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/latest.md
+- المحادثة الكاملة: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/memory.html
