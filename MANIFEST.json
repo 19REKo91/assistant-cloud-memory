@@ -2,15 +2,15 @@
   "schema_version": 1,
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "deepseek-index-priority1-2026-10-11",
-  "tree_sha": "ee6164d6c5e769cc872dcb4b126af413e64eea1d",
+  "inventory_source_tree_sha": "0c3a07e840ed3f60c481e078c87e6de341666993",
   "generated_at": "2026-10-11",
   "last_verified": "2026-10-11",
   "inventory_complete": true,
-  "total_files": 110,
-  "total_directories": 35,
-  "total_tree_entries": 145,
-  "total_size_bytes": 44457757,
-  "checksum_scheme": "Git blob SHA-1 from Git Trees API; not a separately computed SHA-256 checksum.",
+  "total_files": 111,
+  "total_directories": 36,
+  "total_tree_entries": 147,
+  "total_size_bytes": 44468280,
+  "checksum_scheme": "Git blob SHA-1 from Git Trees API; not a separately computed SHA-256 checksum. git_blob_sha is null for MANIFEST.json to avoid a self-referential checksum.",
   "last_updated_note": "Git Trees API does not supply per-path last-commit timestamps. last_updated is null rather than guessed; retrieve each path's commit history if exact dates are required.",
   "missing_paths": [
     "PROJECTS/raiq/source-audit-complete.md"
@@ -76,8 +76,8 @@
       "path": "CONTEXT.md",
       "kind": "file",
       "type": "markdown",
-      "size_bytes": 1886,
-      "git_blob_sha": "46fee6ea5d36c435b4c166119573cddbea17110b",
+      "size_bytes": 3634,
+      "git_blob_sha": "d78c3c51b2aa90066acbd81b4600d3d107fc73cd",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CONTEXT.md",
       "read_priority": 3,
@@ -103,7 +103,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/birthday-gift.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "CORE/memory-index.md",
@@ -136,7 +136,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-(%20%20%D9%82%D8%B3%D9%85%20%20)%20%D8%A2%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%B1%D8%B9%20%D8%A8%D8%A7%D9%84%D8%AC%D8%A7%D8%B0%D8%A8%D9%8A%D8%A9-20260915-1656.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-(  قسم  ) آلية التسارع بالجاذبية-20260915-2154.md",
@@ -147,7 +147,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-(%20%20%D9%82%D8%B3%D9%85%20%20)%20%D8%A2%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%B1%D8%B9%20%D8%A8%D8%A7%D9%84%D8%AC%D8%A7%D8%B0%D8%A8%D9%8A%D8%A9-20260915-2154.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-(  قسم  الجزء الثاني ) آلية التسارع بالجاذبية-20260915-2243.md",
@@ -158,7 +158,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-(%20%20%D9%82%D8%B3%D9%85%20%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A1%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%20)%20%D8%A2%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%B1%D8%B9%20%D8%A8%D8%A7%D9%84%D8%AC%D8%A7%D8%B0%D8%A8%D9%8A%D8%A9-20260915-2243.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-(  قسم الجزء الاول   ) آلية التسارع بالجاذبية-20260915-2230.md",
@@ -169,7 +169,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-(%20%20%D9%82%D8%B3%D9%85%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A1%20%D8%A7%D9%84%D8%A7%D9%88%D9%84%20%20%20)%20%D8%A2%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%B1%D8%B9%20%D8%A8%D8%A7%D9%84%D8%AC%D8%A7%D8%B0%D8%A8%D9%8A%D8%A9-20260915-2230.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-آلية التسارع بالجاذبية-20260915-1718.md",
@@ -180,7 +180,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%A2%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%B1%D8%B9%20%D8%A8%D8%A7%D9%84%D8%AC%D8%A7%D8%B0%D8%A8%D9%8A%D8%A9-20260915-1718.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-اختبار الشحنات الناشئة-20260915-1717.md",
@@ -191,7 +191,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B4%D8%AD%D9%86%D8%A7%D8%AA%20%D8%A7%D9%84%D9%86%D8%A7%D8%B4%D8%A6%D8%A9-20260915-1717.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-استكمال الدردشة المتوقفة-20260915-1712.md",
@@ -202,7 +202,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%A7%D8%B3%D8%AA%D9%83%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%AF%D8%B1%D8%AF%D8%B4%D8%A9%20%D8%A7%D9%84%D9%85%D8%AA%D9%88%D9%82%D9%81%D8%A9-20260915-1712.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-اشتقاق نصف القطر Erotiske-20260915-1715.md",
@@ -213,7 +213,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%A7%D8%B4%D8%AA%D9%82%D8%A7%D9%82%20%D9%86%D8%B5%D9%81%20%D8%A7%D9%84%D9%82%D8%B7%D8%B1%20Erotiske-20260915-1715.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-بناء الحلقة رياضيا-20260915-1717.md",
@@ -224,7 +224,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%A8%D9%86%D8%A7%D8%A1%20%D8%A7%D9%84%D8%AD%D9%84%D9%82%D8%A9%20%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%D8%A7-20260915-1717.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-تذكّر نظرية رائق-20260915-1726.md",
@@ -235,7 +235,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%AA%D8%B0%D9%83%D9%91%D8%B1%20%D9%86%D8%B8%D8%B1%D9%8A%D8%A9%20%D8%B1%D8%A7%D8%A6%D9%82-20260915-1726.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-تعريف التشوه الفيزيائي-20260915-1726.md",
@@ -246,7 +246,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%AA%D8%B9%D8%B1%D9%8A%D9%81%20%D8%A7%D9%84%D8%AA%D8%B4%D9%88%D9%87%20%D8%A7%D9%84%D9%81%D9%8A%D8%B2%D9%8A%D8%A7%D8%A6%D9%8A-20260915-1726.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-حدود النظرية المكتشفة @@-20260915-1715.md",
@@ -257,7 +257,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%AD%D8%AF%D9%88%D8%AF%20%D8%A7%D9%84%D9%86%D8%B8%D8%B1%D9%8A%D8%A9%20%D8%A7%D9%84%D9%85%D9%83%D8%AA%D8%B4%D9%81%D8%A9%20%40%40-20260915-1715.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-شرح الثقب الأسود-20260915-1719.md",
@@ -268,7 +268,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%AB%D9%82%D8%A8%20%D8%A7%D9%84%D8%A3%D8%B3%D9%88%D8%AF-20260915-1719.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "ChatGPT-مناقشة الثقب الأسود-20260915-1719.md",
@@ -279,7 +279,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/ChatGPT-%D9%85%D9%86%D8%A7%D9%82%D8%B4%D8%A9%20%D8%A7%D9%84%D8%AB%D9%82%D8%A8%20%D8%A7%D9%84%D8%A3%D8%B3%D9%88%D8%AF-20260915-1719.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "DEEPSEEK_WELCOME.txt",
@@ -290,7 +290,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/DEEPSEEK_WELCOME.txt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "FB_IMG_1788761922751.jpg",
@@ -318,8 +318,8 @@
       "path": "INDEX.md",
       "kind": "file",
       "type": "markdown",
-      "size_bytes": 6398,
-      "git_blob_sha": "0a5801d23feb09084b6b12e6fdd4060957b591ca",
+      "size_bytes": 10085,
+      "git_blob_sha": "e57a621928d1a17319fa7823b374973f8abec88c",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/INDEX.md",
       "read_priority": 1,
@@ -329,11 +329,11 @@
       "path": "MANIFEST.json",
       "kind": "file",
       "type": "json",
-      "size_bytes": 72510,
+      "size_bytes": 73268,
       "git_blob_sha": null,
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MANIFEST.json",
-      "read_priority": null,
+      "read_priority": 4,
       "summary": "جرد آلي لشجرة المستودع"
     },
     {
@@ -345,7 +345,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MOON_POEM.txt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "PROJECTS",
@@ -373,22 +373,22 @@
       "path": "PROJECTS/raiq/README.md",
       "kind": "file",
       "type": "markdown",
-      "size_bytes": 3396,
-      "git_blob_sha": "8b79b56737f688b02015661242653e272de99ffd",
+      "size_bytes": 5611,
+      "git_blob_sha": "4f39f18e85feaa3f2a676209969b95af3a468368",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/README.md",
-      "read_priority": 4,
+      "read_priority": 5,
       "summary": "دليل قراءة مشروع فرضية رائق"
     },
     {
       "path": "PROJECTS/raiq/changelog.md",
       "kind": "file",
       "type": "markdown",
-      "size_bytes": 2139,
-      "git_blob_sha": "a0e0dac59edc3cead3c0fdaee1d95a0463e72f8c",
+      "size_bytes": 3562,
+      "git_blob_sha": "ddbe49542f917c9f3854ae7aa59d336626f0e6fa",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/changelog.md",
-      "read_priority": 6,
+      "read_priority": 7,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -421,7 +421,7 @@
       "git_blob_sha": "698aa899d9d3720739ed240b5b45c7cb98c524f5",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/derivation-reset-01.md",
-      "read_priority": 10,
+      "read_priority": 11,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -443,7 +443,7 @@
       "git_blob_sha": "4b4e6de90e8e182a3d18fd349cba9e0b5258f7ac",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/overview.md",
-      "read_priority": 5,
+      "read_priority": 6,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -465,7 +465,7 @@
       "git_blob_sha": "cf01852318f45f1fbfe3af83efce599e9337bcd0",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-01.md",
-      "read_priority": 8,
+      "read_priority": 9,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -476,7 +476,7 @@
       "git_blob_sha": "774daf5b35af9274205cbf582d1b4bb3e9deb52f",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-02.md",
-      "read_priority": 9,
+      "read_priority": 10,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -487,7 +487,7 @@
       "git_blob_sha": "bfb3d1d1e3070198fe6f24ffb986d66609103600",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-index.md",
-      "read_priority": 7,
+      "read_priority": 8,
       "summary": "ملف ضمن مشروع فرضية رائق؛ راجع المحتوى لتحديد التفاصيل"
     },
     {
@@ -521,7 +521,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_COMPLETE_MASTER.md",
@@ -532,7 +532,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_COMPLETE_MASTER.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md",
@@ -543,7 +543,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_CONVERSATION_2026-09-24.txt",
@@ -554,7 +554,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_CONVERSATION_2026-09-24.txt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_EQUATIONS_MERGED.md",
@@ -564,8 +564,8 @@
       "git_blob_sha": "9bf4a5861407ac0b6bca1b35f09a72fcf4f4c438",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_EQUATIONS_MERGED.md",
-      "read_priority": 13,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "read_priority": 14,
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_MASTER.md",
@@ -575,8 +575,8 @@
       "git_blob_sha": "a429900bcf48505b4ebf48e7a6f375cf5e80cf0d",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER.md",
-      "read_priority": 12,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "read_priority": 13,
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_MASTER_NEW.md",
@@ -586,8 +586,8 @@
       "git_blob_sha": "986dadaa23f5fde353b506c9cdb0adf57de817c4",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER_NEW.md",
-      "read_priority": 11,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "read_priority": 12,
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "RAEQ_RAW_ARCHIVE.md",
@@ -597,7 +597,7 @@
       "git_blob_sha": "585f7b980ff72b6b485cfa878d0bbd07f9e53e51",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_RAW_ARCHIVE.md",
-      "read_priority": 14,
+      "read_priority": 15,
       "summary": "الأرشيف الخام الأصلي المحفوظ"
     },
     {
@@ -609,7 +609,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/README.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "Screenshot_٢٠٢٦٠٧١٣-١٩١٤٤٢.jpg",
@@ -686,7 +686,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/VISION_BRIDGE_NOTES.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "content.json",
@@ -697,7 +697,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/content.json",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "deepseek_20260919_373ee3.png",
@@ -862,14 +862,14 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/index.html",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "latest.md",
       "kind": "file",
       "type": "markdown",
-      "size_bytes": 2482,
-      "git_blob_sha": "53469eaf34892540923c6e414648cb2fa8922602",
+      "size_bytes": 1835,
+      "git_blob_sha": "7cbe7b51ef2393e80fdccb197d014da90a26b526",
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/latest.md",
       "read_priority": 2,
@@ -884,7 +884,29 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/memory.html",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
+    },
+    {
+      "path": "notes",
+      "kind": "directory",
+      "type": "directory",
+      "size_bytes": null,
+      "git_blob_sha": null,
+      "last_updated": null,
+      "raw_url": null,
+      "read_priority": null,
+      "summary": "مجلد يحتوي على ملفات فرعية"
+    },
+    {
+      "path": "notes/DEEPSEEK_READER_NOTES.md",
+      "kind": "file",
+      "type": "markdown",
+      "size_bytes": 1339,
+      "git_blob_sha": "2a7ef6cdaae9eb57a4deff732b75683515f26a7d",
+      "last_updated": null,
+      "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/notes/DEEPSEEK_READER_NOTES.md",
+      "read_priority": null,
+      "summary": "سجل اختبارات وملاحظات القارئ الآلي"
     },
     {
       "path": "test.html",
@@ -895,7 +917,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/test.html",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android",
@@ -928,7 +950,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/build.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src",
@@ -961,7 +983,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/AndroidManifest.xml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src/main/java",
@@ -1016,7 +1038,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/java/com/raiq/visionbridge/CaptureActivity.kt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src/main/java/com/raiq/visionbridge/CaptureService.kt",
@@ -1027,7 +1049,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/java/com/raiq/visionbridge/CaptureService.kt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src/main/java/com/raiq/visionbridge/MainActivity.kt",
@@ -1038,7 +1060,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/java/com/raiq/visionbridge/MainActivity.kt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src/main/java/com/raiq/visionbridge/OverlayService.kt",
@@ -1049,7 +1071,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/java/com/raiq/visionbridge/OverlayService.kt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/app/src/main/res",
@@ -1082,7 +1104,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/app/src/main/res/values/styles.xml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/build.gradle.kts",
@@ -1093,7 +1115,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/build.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/gradle.properties",
@@ -1104,7 +1126,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/gradle.properties",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge-android/settings.gradle.kts",
@@ -1115,7 +1137,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge-android/settings.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge",
@@ -1170,7 +1192,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/.github/workflows/android-build.yml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/README.md",
@@ -1181,7 +1203,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/README.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/app",
@@ -1203,7 +1225,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/app/build.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/app/src",
@@ -1236,7 +1258,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/app/src/main/AndroidManifest.xml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/app/src/main/java",
@@ -1291,7 +1313,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/app/src/main/java/com/visionbridge/android/MainActivity.kt",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/app/src/main/res",
@@ -1324,7 +1346,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/app/src/main/res/values/strings.xml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/app/src/main/res/values/styles.xml",
@@ -1335,7 +1357,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/app/src/main/res/values/styles.xml",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/build.gradle.kts",
@@ -1346,7 +1368,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/build.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/gradle.properties",
@@ -1357,7 +1379,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/gradle.properties",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/android/settings.gradle.kts",
@@ -1368,7 +1390,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/android/settings.gradle.kts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/app",
@@ -1412,7 +1434,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/app/api/latest/route.js",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/app/api/upload",
@@ -1434,7 +1456,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/app/api/upload/route.js",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/app/api/vision",
@@ -1456,7 +1478,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/app/api/vision/route.js",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/app/page.js",
@@ -1467,7 +1489,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/app/page.js",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/package.json",
@@ -1478,7 +1500,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/package.json",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/src",
@@ -1500,7 +1522,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/src/index.ts",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "vision-bridge/wrangler.json",
@@ -1511,7 +1533,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/vision-bridge/wrangler.json",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "استئناف فرضية رائق-ChatGPT-20260917-0025.md",
@@ -1522,7 +1544,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/%D8%A7%D8%B3%D8%AA%D8%A6%D9%86%D8%A7%D9%81%20%D9%81%D8%B1%D8%B6%D9%8A%D8%A9%20%D8%B1%D8%A7%D8%A6%D9%82-ChatGPT-20260917-0025.md",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "الاشتقاقات الرياضية لفرضية رائق - Google Gemini",
@@ -1533,7 +1555,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D9%82%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%D8%A9%20%D9%84%D9%81%D8%B1%D8%B6%D9%8A%D8%A9%20%D8%B1%D8%A7%D8%A6%D9%82%20-%20Google%20Gemini",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "الاشتقاقات الرياضية لفرضية رائق - Google Gemini (11)",
@@ -1544,7 +1566,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D9%82%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%D8%A9%20%D9%84%D9%81%D8%B1%D8%B6%D9%8A%D8%A9%20%D8%B1%D8%A7%D8%A6%D9%82%20-%20Google%20Gemini%20(11)",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "الاشتقاقات الرياضية لفرضية رائق -2 Google Gemini",
@@ -1555,7 +1577,7 @@
       "last_updated": null,
       "raw_url": "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D9%82%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%D8%A9%20%D9%84%D9%81%D8%B1%D8%B6%D9%8A%D8%A9%20%D8%B1%D8%A7%D8%A6%D9%82%20-2%20Google%20Gemini",
       "read_priority": null,
-      "summary": "ملف بالمستودع؛ راجع المحتوى لتحديد وظيفته"
+      "summary": "ملف بالمستودع؛ راجع محتواه لتحديد وظيفته"
     },
     {
       "path": "بلا عنوان - Google Gemini.pdf",
