@@ -58,3 +58,14 @@
 - المسار `PROJECTS/raiq/source-audit-complete.md` غير موجود في شجرة الفرع التي جرى فحصها. ورد ذكره في وثائق أخرى، لذا سُجّل بوصفه مفقودًا بدل اختلاق رابط.
 - وجود رابط لا يعني أن الملف قُرئ كاملًا. سجّل نتيجة القراءة في [ملاحظات القارئ الآلي](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/notes/DEEPSEEK_READER_NOTES.md).
 - لا تُحذف الأصول الأصلية أو تُستبدل. أي أجزاء تُنشأ لاحقًا هي نسخ مشتقة للقراءة فقط.
+
+
+## نسخ القراءة المشتقة للملفات الكبيرة
+
+هذه النسخ مجزأة لتسهيل القراءة الآلية، ولا تستبدل المصادر الأصلية:
+- [فهرس الأرشيف الخام](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/raw-archive/00-index.md)
+- [فهرس إعادة الاشتقاق 01](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/derived-read/derivation-reset-01/00-index.md)
+- [فهرس سجل المعادلات](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/derived-read/RAEQ_EQUATIONS_MERGED/00-index.md)
+- [فهرس RAEQ_MASTER](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/derived-read/RAEQ_MASTER/00-index.md)
+
+كل جزء أصغر من 90,000 بايت؛ اتبع فهرس كل مجموعة وأعد جمع الأجزاء بالترتيب دون إدخال فواصل.
