@@ -27,3 +27,9 @@
 - دُمج PR #3 في `main` بنجاح.
 - اختبارات Raw قبل الدمج نجحت للملفات الأربعة: INDEX.md، CONTEXT.md، MANIFEST.json، وPROJECTS/raiq/README.md؛ استُرجع محتوى غير فارغ لكل رابط.
 - بعد الدمج، وُحّدت الروابط إلى `main`. يجب تكرار الاختبار على الروابط النهائية بعد استكمال تحديث MANIFEST.
+
+
+### 2026-10-11 — تحقق Raw النهائي على main
+- جُلبت الروابط النهائية الأربعة من raw.githubusercontent.com على `main`، وعاد محتوى غير فارغ لكل ملف.
+- `MANIFEST.json` صالح كـ JSON، ويعلن `inventory_complete: true` و`tree_truncated: false`، وعدد الملفات والمجلدات يطابق Git Trees API.
+- روابط INDEX موحدة إلى `main`، وتأكد وجود البنود المطلوبة في CONTEXT ودليل المشروع.
