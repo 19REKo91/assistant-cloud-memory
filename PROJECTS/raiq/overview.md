@@ -17,6 +17,6 @@
 الوثائق التنظيمية الحالية تشمل:
 - `source-index.md` — فهرس المصادر.
 - `source-audit-01.md` و`source-audit-02.md` — تدقيقات تفصيلية للمصادر الأولى.
-- `source-audit-complete.md` — خريطة التدقيق الشامل وتصنيف طبقات المصادر.
+- `source-audit-complete.md` — **مفقود في شجرة المستودع المفحوصة**؛ الإشارة إليه لا تعني وجوده. راجع MANIFEST.json قبل الاعتماد عليه.
 - `RAEQ_MASTER.md` — الوثيقة التركيبية.
 - `RAEQ_RAW_ARCHIVE.md` — الأرشيف الخام.
