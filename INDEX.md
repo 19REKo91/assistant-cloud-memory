@@ -2,36 +2,59 @@
 
 > المستودع: `19REKo91/assistant-cloud-memory`  
 > الفرع الجاري اختباره: `deepseek-index-priority1-2026-10-11`  
-> الترميز: UTF-8. استخدم روابط `raw.githubusercontent.com` أدناه؛ روابط واجهة `blob` ليست المسار المفضل لقارئات النص.
+> جميع روابط الملفات في هذا الفهرس تشير إلى الفرع نفسه حتى يتم الاختبار والدمج. بعد الدمج، تُوحّد الروابط إلى `main`.
 
-## نقطة البداية
+## ابدأ هنا
 
 | الملف | رابط Raw | الوصف | المشروع |
 |---|---|---|---|
-| تعليمات السياق الثابتة | [CONTEXT.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CONTEXT.md) | طريقة القراءة والعمل وحدود الوصول | عام |
-| آخر تحديث | [latest.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/latest.md) | آخر حالة موثقة والخطوة التالية | عام |
-| قواعد التشغيل | [CORE/operating-rules.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/operating-rules.md) | قواعد التعامل مع المستودع والفرضيات | عام |
-| فهرس الذاكرة الحالي | [CORE/memory-index.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/memory-index.md) | توجيه إلى مواد الذاكرة | عام |
-| دليل العمل الآمن | [AI_WORKING_GUIDE.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/maintenance/ai-working-guide-2026-10-10/AI_WORKING_GUIDE.md) | إرشادات عمل المساعد؛ موجود في فرع الصيانة | عام |
-| مدخل فرضية رائق | [PROJECTS/raiq/README.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/README.md) | ترتيب القراءة وحالة الوثائق | فرضية رائق |
-| نظرة عامة على فرضية رائق | [PROJECTS/raiq/overview.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/overview.md) | هدف المشروع وقواعد بنائه | فرضية رائق |
-| سجل تغييرات فرضية رائق | [PROJECTS/raiq/changelog.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/changelog.md) | تاريخ التغييرات التنظيمية | فرضية رائق |
-| فهرس المصادر | [source-index.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-index.md) | فهرس المصادر | فرضية رائق |
-| التدقيق الأول | [source-audit-01.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-01.md) | تدقيق مصدر | فرضية رائق |
-| التدقيق الثاني | [source-audit-02.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-02.md) | تدقيق مصدر | فرضية رائق |
-| خريطة التدقيق الشامل | غير متاح: `PROJECTS/raiq/source-audit-complete.md` لم يُعثر عليه في الفرع الجاري اختباره | لا تعتمد عليه قبل العثور على الملف أو استعادته من مصدر موثوق | فرضية رائق |
-| إعادة ضبط الاشتقاق | [derivation-reset-01.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/derivation-reset-01.md) | ملف اشتقاق كبير؛ اقرأه على دفعات | فرضية رائق |
-| الماستر | [RAEQ_MASTER.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER.md) | وثيقة تركيبية؛ اقرأ على دفعات إن تعذر كاملًا | فرضية رائق |
-| الماستر الجديد | [RAEQ_MASTER_NEW.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER_NEW.md) | نسخة تركيبية أحدث وفق سجل الملفات | فرضية رائق |
-| المواد القابلة للاسترجاع | [RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt) | تجميع محفوظ للمواد | فرضية رائق |
-| المعادلات المدمجة | [RAEQ_EQUATIONS_MERGED.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_EQUATIONS_MERGED.md) | معادلات مجمعة؛ اقرأ على دفعات | فرضية رائق |
-| الأرشيف الخام | [RAEQ_RAW_ARCHIVE.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_RAW_ARCHIVE.md) | الأرشيف الأصلي؛ لم يُحذف أو يُستبدل، وقد يتجاوز حدود القراءة | فرضية رائق |
-| آخر محادثة HTML | [memory.html](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/memory.html) | سجل HTML ثابت؛ ليس بديلًا عن الأرشيف الكامل | الذاكرة |
-| فهرس HTML | [index.html](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/index.html) | صفحة HTML الحالية | الذاكرة |
+| [`INDEX.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/INDEX.md) | فهرس القراءة الآلية | عام |
+| [`CONTEXT.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CONTEXT.md) | تعليمات القراءة والاستئناف | عام |
+| [`latest.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/latest.md) | آخر حالة موثقة والخطوة التالية | عام |
+| [`MANIFEST.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MANIFEST.json) | جرد الشجرة والأحجام ومعرّفات Git blob | عام |
+| [`README.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/README.md) | تعريف المستودع | عام |
+| [`CORE/operating-rules.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/operating-rules.md) | قواعد التشغيل والقراءة الآلية | عام |
+| [`CORE/memory-index.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/memory-index.md) | فهرس الذاكرة | عام |
+| [`PROJECTS/raiq/README.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/README.md) | دليل قراءة فرضية رائق | فرضية رائق |
+| [`PROJECTS/raiq/overview.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/overview.md) | نظرة عامة على المشروع | فرضية رائق |
+| [`PROJECTS/raiq/changelog.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/changelog.md) | سجل التغييرات | فرضية رائق |
+| [`PROJECTS/raiq/source-index.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-index.md) | فهرس المصادر | فرضية رائق |
+| [`PROJECTS/raiq/source-audit-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-01.md) | تدقيق المصادر الأول | فرضية رائق |
+| [`PROJECTS/raiq/source-audit-02.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-audit-02.md) | تدقيق المصادر الثاني | فرضية رائق |
+| [`PROJECTS/raiq/energy-provenance-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/energy-provenance-01.md) | تتبّع منشأ الطاقة | فرضية رائق |
+| [`PROJECTS/raiq/river-flow-local-disturbance-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/river-flow-local-disturbance-01.md) | التشوه المحلي وتدفق النهر | فرضية رائق |
+| [`PROJECTS/raiq/state-to-gravity-closure-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/state-to-gravity-closure-01.md) | مسار الحالة إلى إغلاق الجاذبية | فرضية رائق |
+| [`PROJECTS/raiq/symbol-audit-K-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/symbol-audit-K-01.md) | تدقيق الرمز K | فرضية رائق |
+| [`PROJECTS/raiq/conversations/2026-09-24-resume-raeq.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/conversations/2026-09-24-resume-raeq.md) | محادثة استئناف محفوظة | فرضية رائق |
+| [`PROJECTS/raiq/derivation-reset-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/derivation-reset-01.md) | إعادة ضبط الاشتقاق؛ اقرأ على دفعات | فرضية رائق |
+| [`RAEQ_MASTER_NEW.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER_NEW.md) | الوثيقة التركيبية الجديدة | فرضية رائق |
+| [`RAEQ_MASTER.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER.md) | الوثيقة التركيبية | فرضية رائق |
+| [`RAEQ_COMPLETE_MASTER.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_COMPLETE_MASTER.md) | الوثيقة الشاملة؛ اقرأ على دفعات | فرضية رائق |
+| [`RAEQ_EQUATIONS_MERGED.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_EQUATIONS_MERGED.md) | المعادلات المدمجة؛ اقرأ على دفعات | فرضية رائق |
+| [`RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md) | المحادثات المدمجة؛ اقرأ على دفعات | فرضية رائق |
+| [`RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt) | مواد محفوظة دون تعديل | فرضية رائق |
+| [`RAEQ_RAW_ARCHIVE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_RAW_ARCHIVE.md) | الأرشيف الخام الأصلي؛ لا يُحذف أو يُستبدل | فرضية رائق |
+| [`DEEPSEEK_WELCOME.txt`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/DEEPSEEK_WELCOME.txt) | رسالة الترحيب | عام |
+| [`VISION_BRIDGE_NOTES.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/VISION_BRIDGE_NOTES.md) | ملاحظات Vision Bridge | Vision Bridge |
+| [`.github/workflows/deploy-vision-bridge.yml`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/.github/workflows/deploy-vision-bridge.yml) | سير نشر Vision Bridge | Vision Bridge |
+| [`.github/workflows/build-vision-bridge-android.yml`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/.github/workflows/build-vision-bridge-android.yml) | بناء Android | Vision Bridge |
+| [`.github/workflows/vision-bridge-android-build.yml`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/.github/workflows/vision-bridge-android-build.yml) | سير بناء Android | Vision Bridge |
 
-## ملاحظات مهمة
+## ملفات كبيرة — اقرأ على دفعات
 
-- هذه **قائمة أولية بالملفات المهمة المعروفة** وليست تأكيدًا بأن كل ملف في المستودع قد أُحصي؛ راجع `MANIFEST.json` لمعرفة نطاق الجرد.
-- وجود رابط في الفهرس لا يعني أن الملف قُرئ أو دُقّق. يجب تسجيل ما فُتح وما قُرئ كاملًا وما قُرئ جزئيًا.
-- الملفات الكبيرة تُقرأ على دفعات محددة، ولا تُختزل إلى ملخص على أنه الأصل الكامل.
-- لا تغيّر أسماء الملفات الأصلية ولا تحذفها أثناء التنظيم.
+| الملف | الحجم بالبايت | عدد دفعات تقريبي عند حد 100,000 بايت |
+|---|---:|---:|
+| [`RAEQ_RAW_ARCHIVE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_RAW_ARCHIVE.md) | 1585930 | 16 |
+| [`PROJECTS/raiq/derivation-reset-01.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/derivation-reset-01.md) | 299459 | 3 |
+| [`RAEQ_EQUATIONS_MERGED.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_EQUATIONS_MERGED.md) | 291950 | 3 |
+| [`RAEQ_MASTER.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_MASTER.md) | 101713 | 2 |
+| [`RAEQ_COMPLETE_MASTER.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_COMPLETE_MASTER.md) | 455139 | 5 |
+| [`RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/RAEQ_CONVERSATIONS_MERGED_EXPLANATION_FIRST.md) | 1364778 | 14 |
+
+## ملاحظات
+
+- هذه نقطة دخول للملفات المهمة، وليست بديلًا عن الجرد الكامل في [MANIFEST.json](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MANIFEST.json).
+- `MANIFEST.json` مبني على Git Trees API، ويضم المسارات والأحجام ومعرّفات Git blob؛ الحقول غير المتاحة تُسجّل `null` ولا تُخمّن.
+- المسار `PROJECTS/raiq/source-audit-complete.md` غير موجود في شجرة الفرع التي جرى فحصها. ورد ذكره في وثائق أخرى، لذا سُجّل بوصفه مفقودًا بدل اختلاق رابط.
+- وجود رابط لا يعني أن الملف قُرئ كاملًا. سجّل نتيجة القراءة في [ملاحظات القارئ الآلي](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/notes/DEEPSEEK_READER_NOTES.md).
+- لا تُحذف الأصول الأصلية أو تُستبدل. أي أجزاء تُنشأ لاحقًا هي نسخ مشتقة للقراءة فقط.
