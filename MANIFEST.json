@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "repository": "19REKo91/assistant-cloud-memory",
+  "branch": "deepseek-index-priority1-2026-10-11",
+  "generated_on": "2026-10-11",
+  "encoding": "UTF-8",
+  "inventory_complete": false,
+  "inventory_note": "هذا جرد أولي للملفات المهمة المعروفة، وليس جردًا كاملًا لشجرة المستودع. يلزم استعراض Git Trees API للتحقق من كل المسارات والأحجام وآخر تحديث لكل ملف. لم تُخمن أحجام أو تواريخ الملفات التي لم تُتحقق.",
+  "files": [
+    {
+      "path": "INDEX.md",
+      "type": "markdown",
+      "project": "general",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "new"
+    },
+    {
+      "path": "MANIFEST.json",
+      "type": "json",
+      "project": "general",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "new"
+    },
+    {
+      "path": "CONTEXT.md",
+      "type": "markdown",
+      "project": "general",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "new"
+    },
+    {
+      "path": "latest.md",
+      "type": "markdown",
+      "project": "general",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "updated"
+    },
+    {
+      "path": "CORE/operating-rules.md",
+      "type": "markdown",
+      "project": "general",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "updated"
+    },
+    {
+      "path": "CORE/memory-index.md",
+      "type": "markdown",
+      "project": "general",
+      "size_bytes": 905,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "PROJECTS/raiq/README.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "new"
+    },
+    {
+      "path": "PROJECTS/raiq/overview.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": null,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "PROJECTS/raiq/changelog.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": null,
+      "last_updated": "2026-10-11",
+      "status": "updated"
+    },
+    {
+      "path": "PROJECTS/raiq/derivation-reset-01.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": 300000,
+      "last_updated": null,
+      "status": "existing; size approximate from DeepSeek report"
+    },
+    {
+      "path": "RAEQ_MASTER.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": 101713,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "RAEQ_MASTER_NEW.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": 38619,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "RAEQ_EQUATIONS_MERGED.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": 291950,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "RAEQ_RAW_ARCHIVE.md",
+      "type": "markdown",
+      "project": "raiq",
+      "size_bytes": 1585930,
+      "last_updated": null,
+      "status": "existing; original preserved"
+    },
+    {
+      "path": "RAEQ_ALL_RETRIEVABLE_MATERIAL_UNCHANGED.txt",
+      "type": "text",
+      "project": "raiq",
+      "size_bytes": 60740,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "index.html",
+      "type": "html",
+      "project": "memory",
+      "size_bytes": null,
+      "last_updated": null,
+      "status": "existing"
+    },
+    {
+      "path": "memory.html",
+      "type": "html",
+      "project": "memory",
+      "size_bytes": null,
+      "last_updated": null,
+      "status": "existing"
+    }
+  ]
+}
