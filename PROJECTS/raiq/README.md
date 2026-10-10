@@ -3,12 +3,12 @@
 ## أولوية القراءة
 
 **إذا كان الوقت محدودًا، اقرأ أول أربعة عناصر فقط:**
-1. [نظرة عامة — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/overview.md)
-2. [سجل التغييرات — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/changelog.md)
-3. [فهرس المصادر — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/PROJECTS/raiq/source-index.md)
-4. [قواعد التشغيل — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/CORE/operating-rules.md)
+1. [نظرة عامة — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/overview.md)
+2. [سجل التغييرات — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/changelog.md)
+3. [فهرس المصادر — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/source-index.md)
+4. [قواعد التشغيل — Raw](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/CORE/operating-rules.md)
 
-ثم ارجع إلى [الفهرس الرئيسي INDEX.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/INDEX.md) و[الجرد MANIFEST.json](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MANIFEST.json) للتحقق من المسارات والأحجام وحالة الملفات.
+ثم ارجع إلى [الفهرس الرئيسي INDEX.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/INDEX.md) و[الجرد MANIFEST.json](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/MANIFEST.json) للتحقق من المسارات والأحجام وحالة الملفات.
 
 ## ترتيب القراءة الكامل
 
@@ -21,7 +21,7 @@
 7. [RAEQ_MASTER.md](../../RAEQ_MASTER.md) و[RAEQ_MASTER_NEW.md](../../RAEQ_MASTER_NEW.md) — وثائق تركيبية، وليستا بديلًا عن الأصول.
 8. [RAEQ_EQUATIONS_MERGED.md](../../RAEQ_EQUATIONS_MERGED.md) — مراجعة الاشتقاقات والمعادلات على دفعات.
 9. [RAEQ_RAW_ARCHIVE.md](../../RAEQ_RAW_ARCHIVE.md) — الأرشيف الخام الأصلي، محفوظ كما هو؛ لا يُفترض إمكان قراءته دفعة واحدة.
-10. ملفات المحادثات والمصادر الأخرى: راجع [INDEX.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/INDEX.md) و[MANIFEST.json](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/MANIFEST.json) بدل افتراض أن هذه القائمة شاملة.
+10. ملفات المحادثات والمصادر الأخرى: راجع [INDEX.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/INDEX.md) و[MANIFEST.json](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/MANIFEST.json) بدل افتراض أن هذه القائمة شاملة.
 
 ## أحجام الملفات الكبيرة
 
@@ -36,7 +36,7 @@
 
 ## أين تُسجّل الملاحظات؟
 
-استخدم [notes/DEEPSEEK_READER_NOTES.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/deepseek-index-priority1-2026-10-11/notes/DEEPSEEK_READER_NOTES.md) لتسجيل ما قُرئ كاملًا أو جزئيًا، وروابط فشلت، وأرقام الأجزاء أو الأسطر، والأسئلة التي تحتاج متابعة. لا تضع استنتاجات غير مؤكدة في خانة النتائج المثبتة.
+استخدم [notes/DEEPSEEK_READER_NOTES.md](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/notes/DEEPSEEK_READER_NOTES.md) لتسجيل ما قُرئ كاملًا أو جزئيًا، وروابط فشلت، وأرقام الأجزاء أو الأسطر، والأسئلة التي تحتاج متابعة. لا تضع استنتاجات غير مؤكدة في خانة النتائج المثبتة.
 
 ## حالة الملفات
 
