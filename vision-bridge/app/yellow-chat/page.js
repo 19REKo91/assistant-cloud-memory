@@ -96,12 +96,24 @@ export default function YellowChatPage() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [statusType, setStatusType] = useState("info");
+  const [configured, setConfigured] = useState(false);
+  const [checkingSetup, setCheckingSetup] = useState(true);
   const endRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, busy]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/chat", { cache: "no-store" })
+      .then(response => response.json())
+      .then(data => { if (!cancelled) setConfigured(data.configured === true); })
+      .catch(() => { if (!cancelled) setConfigured(false); })
+      .finally(() => { if (!cancelled) setCheckingSetup(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   async function sendMessage(event) {
     event?.preventDefault?.();
@@ -167,7 +179,7 @@ export default function YellowChatPage() {
               <div style={styles.brandTitle}>المحادثة الصفراء</div>
             </div>
           </div>
-          <div style={styles.status}><span style={styles.dot} /> اتصال ينتظر الإعداد</div>
+          <div style={styles.status} aria-live="polite"><span style={styles.dot} /> {checkingSetup ? "جارٍ فحص الإعداد" : configured ? "الإعداد موجود" : "اتصال ينتظر الإعداد"}</div>
         </header>
 
         <section style={styles.heading}>
