@@ -27,10 +27,11 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx wrangler@latest deploy --name chatgpt-vision-bridge
 
+      # Use a direct public JPEG URL; OneDrive's redirect may return HTML instead of image bytes.
       - name: End-to-end remote image vision test
         working-directory: .
         env:
-          IMAGE_URL: "https://1drv.ms/i/c/083c9002e9811882/IQA7YAJnTm02RokOcX1Z4uQAARIRWzP_xIg0fgasxyWF2ew"
+          IMAGE_URL: "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/Horse_.jpeg"
           BRIDGE_URL: "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/vision"
         run: |
           set -euo pipefail
