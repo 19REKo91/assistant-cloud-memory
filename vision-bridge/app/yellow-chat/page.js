@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const STARTER = {
   role: "assistant",
-  content: "أهلًا بك 👋\nهذه مساحة المحادثة الصفراء. اكتب رسالتك، وسنحافظ على هذا المظهر الداكن والنص الأصفر الواضح.\n\nملاحظة: قبل أن يجيب النموذج الحقيقي، يلزم إعداد رمز الوصول ومفتاح الخدمة على الخادم."
+  content: "أهلًا بك 👋\nهذه مساحة المحادثة الصفراء. اكتب رسالتك، وسنحافظ على هذا المظهر الداكن والنص الأصفر الواضح.\n\nملاحظة: الاتصال الحقيقي يمر عبر جسر Gemini المحمي؛ يلزم تطابق رمز الحماية بين Vercel وCloudflare."
 };
 
 const SUGGESTIONS = [
@@ -140,11 +140,13 @@ export default function YellowChatPage() {
 
       if (!response.ok || !data.ok) {
         const messagesByError = {
-          chat_not_configured: "الاتصال الحقيقي لم يُفعّل بعد. يلزم إضافة OPENAI_API_KEY وYELLOW_CHAT_ACCESS_TOKEN في إعدادات Vercel.",
-          unauthorized: "رمز الوصول غير صحيح. تأكد أنه يطابق YELLOW_CHAT_ACCESS_TOKEN في إعدادات الخادم.",
+          chat_not_configured: "الربط غير جاهز بعد. اضبط BRIDGE_TOKEN سرًا في Cloudflare وأضف القيمة نفسها باسم YELLOW_CHAT_ACCESS_TOKEN في Vercel، وتأكد من وجود GEMINI_API_KEY على Worker.",
+          unauthorized: "رمز الوصول غير صحيح. تأكد أنه يطابق YELLOW_CHAT_ACCESS_TOKEN في Vercel.",
+          bridge_token_mismatch: "رمز الحماية في Cloudflare لا يطابق الرمز المحفوظ في Vercel.",
+          worker_unreachable: "تعذّر الوصول إلى جسر Gemini على Cloudflare.",
           rate_limited: "توقفنا لحظيًا لتقليل الطلبات. انتظر دقيقة ثم حاول مجددًا.",
           invalid_messages: "تعذّر قبول الرسائل. قصّر الرسالة وحاول ثانية.",
-          provider_error: "وصلنا إلى خدمة الذكاء الاصطناعي لكن تعذّر إكمال الطلب. تحقق من مفتاح الخدمة ورصيد واجهة API."
+          provider_error: "تعذّر على Gemini إكمال الرد. تحقق من جاهزية Worker وإعداد مفتاح Gemini وحدود استخدامه."
         };
         throw new Error(messagesByError[data.error] || data.message || data.error || "تعذّر الاتصال.");
       }
@@ -267,7 +269,7 @@ export default function YellowChatPage() {
         </footer>
 
         <div style={styles.notice}>
-          الخصوصية والأمان: مفتاح OpenAI لا يُرسل إلى المتصفح. اتصال الخدمة لا يعمل إلا بعد إعداد <code>OPENAI_API_KEY</code> ورمز الخادم <code>YELLOW_CHAT_ACCESS_TOKEN</code> في Vercel.
+          الخصوصية والأمان: مفتاح Gemini يبقى داخل Cloudflare Worker ولا يصل إلى المتصفح. يجب أن تتطابق قيمة <code>BRIDGE_TOKEN</code> في Cloudflare مع <code>YELLOW_CHAT_ACCESS_TOKEN</code> في Vercel.
         </div>
       </div>
     </main>
