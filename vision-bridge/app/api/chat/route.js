@@ -6,17 +6,13 @@ export const dynamic = "force-dynamic";
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 10;
 const requestsByIp = new Map();
+const DEFAULT_WORKER_URL = "https://chatgpt-vision-bridge.flourish-gerbil.workers.dev/chat";
 
 function json(data, status = 200) {
   return Response.json(data, {
     status,
     headers: { "Cache-Control": "no-store, max-age=0" }
   });
-}
-
-export async function GET() {
-  const configured = Boolean(process.env.OPENAI_API_KEY && process.env.YELLOW_CHAT_ACCESS_TOKEN);
-  return json({ ok: true, configured });
 }
 
 function safeEqual(received, expected) {
@@ -26,7 +22,18 @@ function safeEqual(received, expected) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-// Best-effort per-instance protection. The access token remains the primary gate.
+function workerEndpoint() {
+  const raw = process.env.YELLOW_CHAT_WORKER_URL || DEFAULT_WORKER_URL;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:") return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+// Best-effort per-instance protection. The shared access token is the primary gate.
 function allowedRequest(ip) {
   const now = Date.now();
   const entry = requestsByIp.get(ip);
@@ -39,11 +46,35 @@ function allowedRequest(ip) {
   return true;
 }
 
-export async function POST(request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+export async function GET() {
   const accessToken = process.env.YELLOW_CHAT_ACCESS_TOKEN;
+  const endpoint = workerEndpoint();
+  if (!accessToken || !endpoint) {
+    return json({ ok: true, configured: false });
+  }
 
-  if (!apiKey || !accessToken) {
+  try {
+    const upstream = await fetch(endpoint, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000)
+    });
+    const data = await upstream.json().catch(() => ({}));
+    return json({
+      ok: true,
+      configured: Boolean(upstream.ok && data?.ok === true && data?.configured === true)
+    });
+  } catch {
+    return json({ ok: true, configured: false });
+  }
+}
+
+export async function POST(request) {
+  const accessToken = process.env.YELLOW_CHAT_ACCESS_TOKEN;
+  const endpoint = workerEndpoint();
+
+  if (!accessToken || !endpoint) {
     return json({ ok: false, error: "chat_not_configured" }, 503);
   }
 
@@ -52,7 +83,6 @@ export async function POST(request) {
     return json({ ok: false, error: "unauthorized" }, 401);
   }
 
-  // Vercel provides x-forwarded-for; use only the first address for a light throttle.
   const ip = (request.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
   if (!allowedRequest(ip)) {
     return json({ ok: false, error: "rate_limited" }, 429);
@@ -89,48 +119,35 @@ export async function POST(request) {
 
   let upstream;
   try {
-    upstream = await fetch("https://api.openai.com/v1/responses", {
+    upstream = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Authorization": "Bearer " + apiKey,
-        "Content-Type": "application/json"
+        "x-bridge-token": accessToken,
+        "Content-Type": "application/json",
+        Accept: "application/json"
       },
       cache: "no-store",
-      signal: AbortSignal.timeout(60_000),
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-5-mini",
-        instructions: "You are a helpful, honest assistant. Reply in the language used by the user. Be clear and accurate. Do not claim to have performed actions you have not performed.",
-        input: messages,
-        max_output_tokens: 1400,
-        store: false
-      })
+      signal: AbortSignal.timeout(70_000),
+      body: JSON.stringify({ messages })
     });
   } catch {
-    return json({ ok: false, error: "provider_error" }, 502);
+    return json({ ok: false, error: "worker_unreachable" }, 502);
   }
 
-  const raw = await upstream.text();
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    return json({ ok: false, error: "provider_error" }, 502);
-  }
-
+  const data = await upstream.json().catch(() => ({}));
   if (!upstream.ok || data?.error) {
-    return json({ ok: false, error: "provider_error", status: upstream.status }, 502);
+    if (data?.error === "unauthorized") {
+      return json({ ok: false, error: "bridge_token_mismatch" }, 401);
+    }
+    if (data?.error === "chat_not_configured") {
+      return json({ ok: false, error: "chat_not_configured" }, 503);
+    }
+    return json({ ok: false, error: "provider_error", status: upstream.status || 502 }, 502);
   }
 
-  const text = typeof data.output_text === "string"
-    ? data.output_text.trim()
-    : (data.output || [])
-        .filter(item => item?.type === "message")
-        .flatMap(item => item.content || [])
-        .filter(item => item?.type === "output_text" && typeof item.text === "string")
-        .map(item => item.text)
-        .join("\n")
-        .trim();
+  if (typeof data?.text !== "string" || !data.text.trim()) {
+    return json({ ok: false, error: "provider_error" }, 502);
+  }
 
-  if (!text) return json({ ok: false, error: "provider_error" }, 502);
-  return json({ ok: true, text });
+  return json({ ok: true, text: data.text.trim() });
 }
