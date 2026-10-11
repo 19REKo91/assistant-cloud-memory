@@ -22,6 +22,10 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
+    if (request.method === "GET" && url.pathname === "/chat") {
+      return json({ ok: true, configured: Boolean(env.GEMINI_API_KEY && env.BRIDGE_TOKEN) });
+    }
+
     // Text-only vision gateway:
     // The worker fetches the image and Gemini sees it.
     // ChatGPT only receives compact JSON text, not image bytes.
@@ -50,11 +54,15 @@ export default {
       }
     });
 
+    if (request.method === "POST" && url.pathname === "/chat") {
+      return handleChat(request, env);
+    }
+
     if (request.method !== "POST") return json({
       ok: true,
       service: "vision-bridge",
       usage:
-        "GET /vision?image_url=<url>&prompt=<question> OR POST /vision {image_base64,mime_type,prompt}"
+        "GET /chat (readiness) OR POST /chat {messages} (requires BRIDGE_TOKEN); GET /vision?... OR POST /vision ..."
     });
 
     if (env.BRIDGE_TOKEN && request.headers.get("x-bridge-token") !== env.BRIDGE_TOKEN) {
@@ -99,6 +107,99 @@ export default {
     return analyzeBase64Image(env, imageBase64, contentType, prompt);
   }
 } satisfies ExportedHandler<Env>;
+
+
+async function handleChat(request: Request, env: Env): Promise<Response> {
+  if (!env.BRIDGE_TOKEN) {
+    return json({ error: "chat_not_configured" }, 503);
+  }
+  if ((request.headers.get("x-bridge-token") || "") !== env.BRIDGE_TOKEN) {
+    return json({ error: "unauthorized" }, 401);
+  }
+  if (!env.GEMINI_API_KEY) {
+    return json({ error: "chat_not_configured" }, 503);
+  }
+
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "invalid_json" }, 400);
+  }
+
+  if (!Array.isArray(body?.messages) || body.messages.length < 1 || body.messages.length > 16) {
+    return json({ error: "invalid_messages" }, 400);
+  }
+
+  const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
+  let totalLength = 0;
+
+  for (const item of body.messages) {
+    if (!item || !["user", "assistant"].includes(item.role) || typeof item.content !== "string") {
+      return json({ error: "invalid_messages" }, 400);
+    }
+    const content = item.content.trim();
+    if (!content || content.length > 4000) {
+      return json({ error: "invalid_messages" }, 400);
+    }
+    totalLength += content.length;
+    contents.push({
+      role: item.role === "assistant" ? "model" : "user",
+      parts: [{ text: content }]
+    });
+  }
+
+  if (totalLength > 20000 || contents[contents.length - 1]?.role !== "user") {
+    return json({ error: "invalid_messages" }, 400);
+  }
+
+  let upstream: Response;
+  try {
+    upstream = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-goog-api-key": env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{
+              text: "You are a helpful and honest assistant. Reply in the user's language. Be clear and accurate. Do not claim to have performed actions you have not performed."
+            }]
+          },
+          contents,
+          generationConfig: { maxOutputTokens: 1400 }
+        }),
+        signal: AbortSignal.timeout(60_000)
+      }
+    );
+  } catch {
+    return json({ error: "gemini_unreachable" }, 502);
+  }
+
+  const raw = await upstream.text();
+  let data: any;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return json({ error: "gemini_invalid_response" }, 502);
+  }
+
+  if (!upstream.ok || data?.error) {
+    return json({ error: "gemini_error", status: upstream.status }, 502);
+  }
+
+  const text = data?.candidates?.[0]?.content?.parts
+    ?.filter((part: any) => typeof part?.text === "string")
+    ?.map((part: any) => part.text)
+    ?.join("\n")
+    ?.trim() || "";
+
+  if (!text) return json({ error: "gemini_empty_response" }, 502);
+  return json({ ok: true, text });
+}
 
 async function analyzeRemoteImage(
   env: Env,
