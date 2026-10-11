@@ -14,6 +14,11 @@ function json(data, status = 200) {
   });
 }
 
+export async function GET() {
+  const configured = Boolean(process.env.OPENAI_API_KEY && process.env.YELLOW_CHAT_ACCESS_TOKEN);
+  return json({ ok: true, configured });
+}
+
 function safeEqual(received, expected) {
   if (typeof received !== "string" || typeof expected !== "string") return false;
   const a = Buffer.from(received);
