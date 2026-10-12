@@ -65,14 +65,32 @@ async function pollCommand() {
       const { pending } = await chrome.storage.local.get(["pending"]);
       if (pending && !pending.recording && typeof pending.tabId === "number") {
         try {
-          const pendingTab = await chrome.tabs.get(pending.tabId);
-          if (pendingTab.status === "complete") {
-            await finishNavigation(pending.tabId, pendingTab);
+          let pendingTab = null;
+          try {
+            pendingTab = await chrome.tabs.get(pending.tabId);
+          } catch {
+            // Some mobile Chromium builds can lose/stale tab IDs across worker suspension.
+            // Recover only by matching the approved public URL, never by reading page contents.
+            const tabs = await chrome.tabs.query({});
+            const expected = jsonSafeUrl(pending.requestedUrl);
+            pendingTab = tabs.find((candidate) => {
+              const candidateUrl = jsonSafeUrl(candidate.url || "");
+              return expected && candidateUrl &&
+                candidateUrl.origin + candidateUrl.pathname === expected.origin + expected.pathname;
+            }) || null;
           }
-        } catch {
+          if (pendingTab && pendingTab.status === "complete" && typeof pendingTab.id === "number") {
+            await finishNavigation(pendingTab.id, pendingTab);
+          } else {
+            await statusPatch({
+              status: "Pending navigation remains; no completed matching approved test tab was found."
+            });
+          }
+        } catch (error) {
           // Keep pending state for diagnosis; do not silently discard a possible result.
           await statusPatch({
-            status: "Pending navigation tab could not be rechecked; pending state retained."
+            status: "Pending navigation recovery failed: " +
+              (error instanceof Error ? error.message : String(error))
           });
         }
       }
