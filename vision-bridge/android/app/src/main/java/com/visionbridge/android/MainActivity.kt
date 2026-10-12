@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.text.InputType
 import android.view.Gravity
 import android.view.ViewGroup
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
         root.addView(title, matchWrap())
 
         val description = TextView(this).apply {
-            text = "استقبل رد DeepSeek بالمشاركة، أو حمّل رسالة ChatGPT، ثم احفظ الرد في أرشيف مستقل داخل GitHub. لا يعدّل هذا التطبيق ملف APK الخاص بـ DeepSeek."
+            text = "حمّل رسالة ChatGPT وشارك النصوص يدويًا. يمكن اختياريًا التقاط رد DeepSeek تلقائيًا بعد تفعيل خدمة إمكانية الوصول بنفسك. لا يعدّل هذا التطبيق تطبيق DeepSeek."
             textSize = 14f
             setTextColor(0xFFE0E3E7.toInt())
             setPadding(0, 0, 0, dp(12))
@@ -110,6 +111,9 @@ class MainActivity : ComponentActivity() {
         }
         root.addView(savedButton, matchWrap())
         root.addView(makeButton("افتح فهرس أرشيف رائق") { openUrl(archiveIndexUrl) }, matchWrap())
+        root.addView(makeButton("احفظ مفتاح الكتابة بأمان") { saveRelayKeySecurely() }, matchWrap())
+        root.addView(makeButton("إعدادات إمكانية الوصول") { openAccessibilitySettings() }, matchWrap())
+        root.addView(makeButton("احذف المفتاح المحفوظ") { clearSavedRelayKey() }, matchWrap())
         root.addView(makeButton("افتح تطبيق DeepSeek") { openDeepSeek() }, matchWrap())
 
         status = TextView(this).apply {
@@ -255,6 +259,35 @@ class MainActivity : ComponentActivity() {
             return
         }
         openUrl(url)
+    }
+
+    private fun saveRelayKeySecurely() {
+        val key = keyInput.text.toString()
+        if (key.isBlank()) {
+            status.text = "أدخل SYNC_WRITE_KEY أولًا."
+            return
+        }
+        runCatching { SecretStore.save(this, key) }
+            .onSuccess {
+                keyInput.setText("")
+                status.text = "حُفظ مفتاح الكتابة مشفّرًا باستخدام Android Keystore."
+            }
+            .onFailure {
+                status.text = "تعذّر حفظ المفتاح بأمان: ${it.message ?: "خطأ"}"
+            }
+    }
+
+    private fun clearSavedRelayKey() {
+        SecretStore.clear(this)
+        status.text = "حُذف مفتاح الكتابة المحفوظ."
+    }
+
+    private fun openAccessibilitySettings() {
+        runCatching {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }.onFailure {
+            status.text = "تعذّر فتح إعدادات إمكانية الوصول."
+        }
     }
 
     private fun openDeepSeek() {
