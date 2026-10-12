@@ -120,6 +120,38 @@ async function pollCommand() {
   }
 }
 
+async function postResult(result) {
+  const response = await fetch(RESULT_URL, {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(result)
+  });
+  const body = await response.json().catch(() => ({}));
+  if (response.status === 409 && body.error === "result_already_recorded") {
+    return { alreadyRecorded: true, status: response.status, body };
+  }
+  if (!response.ok || body.ok !== true) {
+    throw new Error("Result endpoint HTTP " + response.status + ": " + String(body.error || "unexpected_response"));
+  }
+  return { alreadyRecorded: false, status: response.status, body };
+}
+
+async function retryLastResult() {
+  const { lastResult } = await chrome.storage.local.get(["lastResult"]);
+  if (!lastResult || typeof lastResult.id !== "string") {
+    return { ok: false, error: "No saved local result is available to retry." };
+  }
+  const outcome = await postResult(lastResult);
+  await statusPatch({
+    status: outcome.alreadyRecorded ? "Result was already recorded by the server." : "Saved result successfully sent.",
+    lastResult,
+    resultEndpointStatus: outcome.status,
+    resultAcknowledgement: outcome.body
+  });
+  return { ok: true, alreadyRecorded: outcome.alreadyRecorded };
+}
+
 async function finishNavigation(tabId, tab) {
   const { pending } = await chrome.storage.local.get(["pending"]);
   if (!pending || pending.tabId !== tabId || pending.recording) return;
@@ -141,23 +173,14 @@ async function finishNavigation(tabId, tab) {
     source: "lemur-extension-poc"
   };
 
+  await chrome.storage.local.set({ lastResult: result });
   try {
-    const response = await fetch(RESULT_URL, {
-      method: "POST",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(result)
-    });
-    const responseBody = await response.json().catch(() => ({}));
-    if (!response.ok && response.status !== 409) {
-      throw new Error("Result endpoint HTTP " + response.status);
-    }
-    await chrome.storage.local.set({ lastResult: result });
+    const outcome = await postResult(result);
     await statusPatch({
-      status: response.status === 409 ? "Result already recorded for this command." : "Page result sent.",
+      status: outcome.alreadyRecorded ? "Result was already recorded by the server." : "Page result sent and acknowledged.",
       lastResult: result,
-      resultEndpointStatus: response.status,
-      resultAcknowledgement: responseBody
+      resultEndpointStatus: outcome.status,
+      resultAcknowledgement: outcome.body
     });
   } catch (error) {
     // Keep the local result so it can still be inspected even if the network path fails.
@@ -217,6 +240,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const result = await chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId", "pending"]);
       sendResponse(result);
     }).catch((error) => sendResponse({ error: String(error) }));
+    return true;
+  }
+  if (message?.action === "retryResult") {
+    retryLastResult().then(sendResponse).catch(async (error) => {
+      await statusPatch({ status: "Result retry failed: " + (error instanceof Error ? error.message : String(error)) });
+      sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) });
+    });
     return true;
   }
   if (message?.action === "readState") {
