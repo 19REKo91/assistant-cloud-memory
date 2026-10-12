@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lemur Command Bridge (Prototype)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A narrow proof of concept: receive one allowlisted public-page navigation command from this repository and show its result locally.",
   "permissions": [
     "storage",
