@@ -3,6 +3,8 @@
     <application
         android:theme="@style/Theme.VisionBridge"
         android:label="جسر رائق"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
         android:allowBackup="false"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false">
