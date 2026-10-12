@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Lemur Command Bridge (Prototype)",
-  "version": "0.1.1",
-  "description": "A narrow proof of concept: receive one allowlisted public-page navigation command from this repository and show its result locally.",
+  "version": "0.1.2",
+  "description": "A narrow proof of concept for checking approved public-page navigation and its locally recorded result.",
   "permissions": [
     "storage",
     "alarms",
@@ -17,8 +17,8 @@
   "background": {
     "service_worker": "background.js"
   },
+  "options_page": "diagnostics.html",
   "action": {
-    "default_title": "Lemur Command Bridge",
-    "default_popup": "popup.html"
+    "default_title": "Lemur Command Bridge — open diagnostics"
   }
 }
