@@ -26,6 +26,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
+          echo "Prototype policy: each fresh build may have a new extension ID; remove the previous prototype before installing this CRX."
           npx --yes crx3@2.0.0 ./lemur-bridge-extension \
             --crxPath ./dist/lemur-command-bridge.crx \
             --zipPath ./dist/lemur-command-bridge.zip \
