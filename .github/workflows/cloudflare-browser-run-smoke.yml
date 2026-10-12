@@ -1,0 +1,76 @@
+name: Cloudflare Browser Run smoke test
+
+on:
+  push:
+    branches:
+      - cloudflare-browser-run-smoke
+    paths:
+      - "browser-run-smoke/**"
+      - ".github/workflows/cloudflare-browser-run-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install smoke-test dependencies
+        working-directory: browser-run-smoke
+        run: npm install --no-audit --no-fund
+
+      - name: Test Cloudflare Browser Run without deploying a public endpoint
+        working-directory: browser-run-smoke
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOG="$RUNNER_TEMP/wrangler-browser-run.log"
+          OUT="$RUNNER_TEMP/browser-run-result.json"
+
+          npx wrangler dev --remote --ip 127.0.0.1 --port 8787 >"$LOG" 2>&1 &
+          PID=$!
+          cleanup() { kill "$PID" 2>/dev/null || true; }
+          trap cleanup EXIT
+
+          READY=0
+          for i in $(seq 1 45); do
+            if curl -fsS --max-time 25 "http://127.0.0.1:8787/smoke" -o "$OUT"; then
+              READY=1
+              break
+            fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              cat "$LOG"
+              exit 1
+            fi
+            sleep 2
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            cat "$LOG"
+            echo "Browser Run smoke request did not succeed"
+            exit 1
+          fi
+
+          cat "$OUT"
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const r = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (r.ok !== true || r.status !== 200 || !/Example Domain/.test(r.title || "")) {
+              console.error("VALIDATION_FAILED", r);
+              process.exit(1);
+            }
+            console.log("CLOUDFLARE_BROWSER_RUN_SMOKE_OK");
+          ' "$OUT"
+          cat "$LOG"
