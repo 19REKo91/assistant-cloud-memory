@@ -37,4 +37,9 @@ Test whether the existing Android app "جسر رائق" can capture a reply from
 - Do not claim full automation unless both prompt delivery and reply capture are tested.
 
 ## Current repository baseline
-The existing app supports manually loading the ChatGPT message, sharing text into the app, and saving a response. It does not currently declare an AccessibilityService.
+
+On this experimental branch, the Android app now declares `DeepSeekReplyAccessibilityService` in `app/src/main/AndroidManifest.xml`, with its event filter in `app/src/main/res/xml/deepseek_reply_accessibility.xml`. The service is opt-in: Android Accessibility must be enabled manually by the device owner; it is not silently enabled by the app.
+
+The manual path previews the full shared/pasted response before archiving it through `/api/archive`. The experimental accessibility path uses `/api/sync` to update `SYNC/DEEPSEEK_REPLY.md`. These are separate workflows and are not interchangeable.
+
+The accessibility candidate is still heuristic (last long text leaf after a debounce). The state machine bounds retries and avoids concurrent writes, but it cannot prove that the captured text is the final assistant reply. A successful CI build does not replace manual device testing. No merge into `main` is implied by this branch.
