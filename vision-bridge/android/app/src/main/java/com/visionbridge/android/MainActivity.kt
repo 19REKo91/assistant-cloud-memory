@@ -13,6 +13,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -208,8 +209,8 @@ class MainActivity : ComponentActivity() {
     private fun confirmSaveReply() {
         if (savingReply) return
 
-        val text = contentInput.text.toString().trim()
-        if (text.isBlank()) {
+        val replyText = contentInput.text.toString().trim()
+        if (replyText.isBlank()) {
             status.text = "ألصق رد DeepSeek أو شاركه إلى التطبيق أولًا."
             return
         }
@@ -222,7 +223,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val previewText = TextView(this).apply {
-            text = text
+            text = replyText
             textSize = 14f
             setTextColor(0xFFE0E3E7.toInt())
             setPadding(dp(10), dp(8), dp(10), dp(8))
@@ -230,18 +231,20 @@ class MainActivity : ComponentActivity() {
         }
         val previewScroll = ScrollView(this).apply {
             isFillViewport = false
-            addView(
-                previewText,
-                ScrollView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+        }
+        previewScroll.addView(
+            previewText,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            layoutParams = ViewGroup.LayoutParams(
+        )
+        previewScroll.setLayoutParams(
+            FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 dp(380)
             )
-        }
+        )
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("راجع الرد كاملًا قبل الحفظ")
@@ -252,7 +255,7 @@ class MainActivity : ComponentActivity() {
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 dialog.dismiss()
-                saveReply(text, key)
+                saveReply(replyText, key)
             }
         }
         dialog.show()
