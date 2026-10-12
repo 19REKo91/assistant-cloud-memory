@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "lemur-poc-navigate-20261012-03",
+  "id": "lemur-poc-navigate-20261012-04",
   "action": "navigate",
   "url": "https://example.com/",
-  "note": "Retry after introducing full-page diagnostics. Public example page only; no signed-in or private page."
+  "note": "Fresh command for Lemur Command Bridge 0.1.8 test. Public example page only."
 }
