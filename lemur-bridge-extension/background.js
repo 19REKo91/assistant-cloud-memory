@@ -267,6 +267,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId", "pending"]).then(sendResponse);
     return true;
   }
+  if (message?.action === "openUpdate") {
+    chrome.storage.local.get(["state"]).then(async ({ state = {} }) => {
+      if (!state.updateAvailable || state.updatePackageUrl !== UPDATE_PACKAGE_URL) {
+        sendResponse({ error: "No verified update package is currently available." });
+        return;
+      }
+      await chrome.tabs.create({ url: UPDATE_PACKAGE_URL, active: true });
+      sendResponse({ ok: true });
+    }).catch((error) => sendResponse({ error: error instanceof Error ? error.message : String(error) }));
+    return true;
+  }
   return false;
 });
 
