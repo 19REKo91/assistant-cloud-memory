@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lemur Bridge Diagnostics</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; padding: 18px; background: #f6f7fb; color: #172033; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; }
+    header, section { background: white; border: 1px solid #dfe3ed; border-radius: 14px; padding: 16px; margin: 0 0 14px; }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    h2 { font-size: 17px; margin: 0 0 10px; }
+    p { margin: 6px 0 12px; overflow-wrap: anywhere; }
+    .muted { color: #5b6475; font-size: 13px; }
+    .status { white-space: pre-wrap; overflow-wrap: anywhere; background: #f0f3f8; padding: 12px; border-radius: 8px; min-height: 46px; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { min-height: 44px; padding: 10px 14px; border: 0; border-radius: 9px; font: inherit; background: #2446a6; color: white; }
+    button.secondary { background: #5d6678; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: auto; max-height: 45vh; background: #111827; color: #e5edf9; padding: 12px; border-radius: 8px; font-size: 13px; }
+    .warning { border-left: 4px solid #d4a017; padding-left: 10px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Lemur Command Bridge</h1>
+      <p>Diagnostics · Prototype v0.1.2</p>
+      <p class="muted">This page reads extension-local status and only tests the approved public pages example.com and www.iana.org/help/example-domains. It does not read page contents or control signed-in websites.</p>
+      <div class="buttons">
+        <button id="check">Check command now</button>
+        <button id="start">Start listening</button>
+        <button id="stop" class="secondary">Stop listening</button>
+      </div>
+    </header>
+
+    <section>
+      <h2>Current status</h2>
+      <div id="status" class="status">Loading extension state…</div>
+      <p id="refresh" class="muted">Waiting for first refresh.</p>
+    </section>
+
+    <section>
+      <h2>Last recorded result</h2>
+      <pre id="result">No result recorded locally yet.</pre>
+    </section>
+
+    <section>
+      <h2>Raw local diagnostic state</h2>
+      <p class="muted">This helps distinguish a missing command poll from a tab-opening or result-return failure.</p>
+      <pre id="raw">Loading…</pre>
+    </section>
+
+    <section class="warning">
+      <h2>Safety boundary</h2>
+      <p class="muted">Commands are accepted only from the dedicated repository branch and URLs are restricted to the public test allowlist. No passwords, page text, cookies, or browsing history are sent.</p>
+    </section>
+    <script src="diagnostics.js"></script>
+  </main>
+</body>
+</html>
