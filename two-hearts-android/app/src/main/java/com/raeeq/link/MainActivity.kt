@@ -36,6 +36,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -110,7 +111,13 @@ class MainActivity : Activity() {
         super.onResume()
         if (active && pair != null) {
             if (hasBluetoothPermissions()) {
-                if (!startRadio()) { active = false; renderScreen() }
+                if (!startRadio()) {
+                    active = false
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    renderScreen()
+                } else {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
             } else {
                 active = false
                 latestRadioError = "امنح أذونات الأجهزة القريبة ثم فعّل التجربة."
@@ -121,6 +128,7 @@ class MainActivity : Activity() {
 
     override fun onPause() {
         if (active) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             stopRadio()
             proximity.reset()
         }
@@ -234,7 +242,9 @@ class MainActivity : Activity() {
         activateButton = makeButton("تفعيل التجربة", true) { requestBluetoothAndActivate() }
         hideQrButton = makeButton("إخفاء الرمز", false) { showingQr = false; renderScreen() }
         stopButton = makeButton("إيقاف التجربة", false) {
-            active = false; latestRadioError = null; stopRadio(); proximity.reset(); releaseTone(); renderScreen()
+            active = false; latestRadioError = null
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            stopRadio(); proximity.reset(); releaseTone(); renderScreen()
         }
         resetButton = makeButton("إعادة الاقتران", false) { confirmResetPair() }
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
@@ -415,6 +425,7 @@ class MainActivity : Activity() {
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("حذف") { _, _ ->
                 active = false; stopRadio(); releaseTone(); pair = null; role = null
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 showingQr = false; latestRadioError = null; proximity.reset()
                 preferences.edit().clear().apply(); renderScreen()
             }.show()
@@ -444,8 +455,15 @@ class MainActivity : Activity() {
         }
     }
     private fun activateExperience() {
-        latestRadioError = null; proximity.reset(); active = true
-        if (!startRadio()) active = false
+        latestRadioError = null
+        proximity.reset()
+        active = true
+        if (!startRadio()) {
+            active = false
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
         renderScreen()
     }
 
@@ -473,7 +491,7 @@ class MainActivity : Activity() {
             .setConnectable(false).setTimeout(0).build()
         val advData = AdvertiseData.Builder().setIncludeDeviceName(false)
             .setIncludeTxPowerLevel(false).addServiceUuid(ParcelUuid(localUuid)).build()
-        advertiseCallback = object : AdvertiseCallback() {
+        val advCb = object : AdvertiseCallback() {
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
                 runOnUiThread { if (active) updateInteractionUi() }
             }
@@ -491,11 +509,12 @@ class MainActivity : Activity() {
                 }
             }
         }
+        advertiseCallback = advCb
         return try {
-            localAdvertiser.startAdvertising(advSettings, advData, advertiseCallback)
+            localAdvertiser.startAdvertising(advSettings, advData, advCb)
             val filter = ScanFilter.Builder().setServiceUuid(ParcelUuid(partnerUuid)).build()
             val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-            scanCallback = object : ScanCallback() {
+            val scanCb = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) { handleRssi(result.rssi) }
                 override fun onBatchScanResults(results: MutableList<ScanResult>) { results.forEach { handleRssi(it.rssi) } }
                 override fun onScanFailed(errorCode: Int) {
@@ -505,7 +524,8 @@ class MainActivity : Activity() {
                     }
                 }
             }
-            localScanner.startScan(listOf(filter), scanSettings, scanCallback)
+            scanCallback = scanCb
+            localScanner.startScan(listOf(filter), scanSettings, scanCb)
             isRadioRunning = true; latestRadioError = null
             handler.removeCallbacks(tickTask); handler.post(tickTask)
             true
