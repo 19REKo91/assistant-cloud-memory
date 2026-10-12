@@ -35,6 +35,14 @@
     </header>
 
     <section>
+      <h2>Software updates</h2>
+      <p id="version">Checking published version…</p>
+      <p id="updateStatus" class="muted">The checker compares this installed package with the manifest on the test branch.</p>
+      <div class="buttons"><button id="update" class="secondary" hidden>Open package download</button></div>
+      <p class="muted">For safety, downloading a CRX does not silently replace the installed extension. Lemur must accept the package and its signing identity.</p>
+    </section>
+
+    <section>
       <h2>Current status</h2>
       <div id="status" class="status">Loading extension state…</div>
       <p id="refresh" class="muted">Waiting for first refresh.</p>
