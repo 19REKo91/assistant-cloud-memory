@@ -7,6 +7,12 @@ on:
     paths:
       - "browser-run-smoke/**"
       - ".github/workflows/cloudflare-browser-run-smoke.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "browser-run-smoke/**"
+      - ".github/workflows/cloudflare-browser-run-smoke.yml"
 
 permissions:
   contents: read
