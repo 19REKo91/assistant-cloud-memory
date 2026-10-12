@@ -183,9 +183,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
-  const { enabled } = await chrome.storage.local.get(["enabled"]);
-  await statusPatch({ listening: Boolean(enabled), status: "Installed. Press Start listening in the extension popup." });
-  if (enabled) await chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
+  // Auto-start on install/update so the prototype works even when the browser
+  // does not expose extension action popups in its toolbar.
+  await statusPatch({
+    listening: true,
+    status: "Auto-listening enabled. Checking the approved public test command."
+  });
+  await setEnabled(true);
 });
 
 chrome.runtime.onStartup.addListener(async () => {
