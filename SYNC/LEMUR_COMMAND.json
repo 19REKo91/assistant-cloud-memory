@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "lemur-poc-navigate-20261012-01",
+  "id": "lemur-poc-navigate-20261012-02",
   "action": "navigate",
   "url": "https://example.com/",
-  "note": "One-shot smoke test: navigate only to example.com and return the public page title. Do not use on any signed-in or private page."
+  "note": "Retry smoke test after the first result was not recorded. Public example page only; no signed-in or private page."
 }
