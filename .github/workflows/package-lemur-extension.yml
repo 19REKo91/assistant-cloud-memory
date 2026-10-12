@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
@@ -34,6 +34,18 @@ jobs:
           test -s ./dist/lemur-command-bridge.zip
           # The private signing key must never be included in the downloadable artifact.
           rm -f ./dist/lemur-command-bridge.pem
+      - name: Publish CRX file on the isolated branch for phone download
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/lemur-command-bridge.crx
+          if git diff --cached --quiet; then
+            echo "CRX unchanged; no branch commit needed."
+          else
+            git commit -m "Build standalone Lemur prototype CRX"
+            git push origin HEAD:lemur-browser-command-poc
+          fi
       - name: Upload install artifacts
         uses: actions/upload-artifact@v4
         with:
