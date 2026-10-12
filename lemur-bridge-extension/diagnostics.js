@@ -63,6 +63,17 @@ document.getElementById("check").addEventListener("click", async () => {
   render(await send("poll"));
 });
 
+document.getElementById("retryResult").addEventListener("click", async () => {
+  statusEl.textContent = "Retrying the last locally saved result…";
+  const response = await send("retryResult");
+  if (response.error) {
+    statusEl.textContent = "Result retry failed: " + response.error;
+    await refresh();
+    return;
+  }
+  await refresh();
+});
+
 document.getElementById("start").addEventListener("click", async () => {
   statusEl.textContent = "Starting listener and checking the feed…";
   const response = await send("start");
