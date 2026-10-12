@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1020" viewBox="0 0 900 1020">
+<rect width="900" height="1020" fill="#101820"/>
+<text x="450" y="48" font-family="Arial,sans-serif" font-size="28" fill="#f5f5f5" text-anchor="middle" font-weight="700">THE TACTICAL MOVE</text>
+<text x="450" y="80" font-family="Arial,sans-serif" font-size="20" fill="#f4d35e" text-anchor="middle">23. Bh5!   •   Chess.com evaluation: +4.44</text>
+<g transform="translate(90,120)">
+<rect width="720" height="720" fill="#eee3cf" stroke="#f5f5f5" stroke-width="3"/>
+<rect x="0" y="0" width="90" height="90" fill="#eeeed2"/><rect x="90" y="0" width="90" height="90" fill="#769656"/><rect x="180" y="0" width="90" height="90" fill="#eeeed2"/><rect x="270" y="0" width="90" height="90" fill="#769656"/><rect x="360" y="0" width="90" height="90" fill="#eeeed2"/><rect x="450" y="0" width="90" height="90" fill="#769656"/><rect x="540" y="0" width="90" height="90" fill="#eeeed2"/><rect x="630" y="0" width="90" height="90" fill="#769656"/><rect x="0" y="90" width="90" height="90" fill="#769656"/><rect x="90" y="90" width="90" height="90" fill="#eeeed2"/><rect x="180" y="90" width="90" height="90" fill="#769656"/><rect x="270" y="90" width="90" height="90" fill="#eeeed2"/><rect x="360" y="90" width="90" height="90" fill="#769656"/><rect x="450" y="90" width="90" height="90" fill="#eeeed2"/><rect x="540" y="90" width="90" height="90" fill="#769656"/><rect x="630" y="90" width="90" height="90" fill="#eeeed2"/><rect x="0" y="180" width="90" height="90" fill="#eeeed2"/><rect x="90" y="180" width="90" height="90" fill="#769656"/><rect x="180" y="180" width="90" height="90" fill="#eeeed2"/><rect x="270" y="180" width="90" height="90" fill="#769656"/><rect x="360" y="180" width="90" height="90" fill="#eeeed2"/><rect x="450" y="180" width="90" height="90" fill="#769656"/><rect x="540" y="180" width="90" height="90" fill="#eeeed2"/><rect x="630" y="180" width="90" height="90" fill="#769656"/><rect x="0" y="270" width="90" height="90" fill="#769656"/><rect x="90" y="270" width="90" height="90" fill="#eeeed2"/><rect x="180" y="270" width="90" height="90" fill="#769656"/><rect x="270" y="270" width="90" height="90" fill="#eeeed2"/><rect x="360" y="270" width="90" height="90" fill="#769656"/><rect x="450" y="270" width="90" height="90" fill="#eeeed2"/><rect x="540" y="270" width="90" height="90" fill="#769656"/><rect x="630" y="270" width="90" height="90" fill="#eeeed2"/><rect x="0" y="360" width="90" height="90" fill="#eeeed2"/><rect x="90" y="360" width="90" height="90" fill="#769656"/><rect x="180" y="360" width="90" height="90" fill="#eeeed2"/><rect x="270" y="360" width="90" height="90" fill="#769656"/><rect x="360" y="360" width="90" height="90" fill="#eeeed2"/><rect x="450" y="360" width="90" height="90" fill="#769656"/><rect x="540" y="360" width="90" height="90" fill="#eeeed2"/><rect x="630" y="360" width="90" height="90" fill="#769656"/><rect x="0" y="450" width="90" height="90" fill="#769656"/><rect x="90" y="450" width="90" height="90" fill="#eeeed2"/><rect x="180" y="450" width="90" height="90" fill="#769656"/><rect x="270" y="450" width="90" height="90" fill="#eeeed2"/><rect x="360" y="450" width="90" height="90" fill="#769656"/><rect x="450" y="450" width="90" height="90" fill="#eeeed2"/><rect x="540" y="450" width="90" height="90" fill="#769656"/><rect x="630" y="450" width="90" height="90" fill="#eeeed2"/><rect x="0" y="540" width="90" height="90" fill="#eeeed2"/><rect x="90" y="540" width="90" height="90" fill="#769656"/><rect x="180" y="540" width="90" height="90" fill="#eeeed2"/><rect x="270" y="540" width="90" height="90" fill="#769656"/><rect x="360" y="540" width="90" height="90" fill="#eeeed2"/><rect x="450" y="540" width="90" height="90" fill="#769656"/><rect x="540" y="540" width="90" height="90" fill="#eeeed2"/><rect x="630" y="540" width="90" height="90" fill="#769656"/><rect x="0" y="630" width="90" height="90" fill="#769656"/><rect x="90" y="630" width="90" height="90" fill="#eeeed2"/><rect x="180" y="630" width="90" height="90" fill="#769656"/><rect x="270" y="630" width="90" height="90" fill="#eeeed2"/><rect x="360" y="630" width="90" height="90" fill="#769656"/><rect x="450" y="630" width="90" height="90" fill="#eeeed2"/><rect x="540" y="630" width="90" height="90" fill="#769656"/><rect x="630" y="630" width="90" height="90" fill="#eeeed2"/>
+<rect x="630" y="270" width="90" height="90" fill="#f4d35e" opacity="0.85"/>
+<g font-family="DejaVu Sans,Arial,sans-serif" text-anchor="middle" dominant-baseline="central" font-size="62" paint-order="stroke">
+<text x="45" y="45" fill="#222">♜</text><text x="315" y="45" fill="#222">♛</text><text x="585" y="45" fill="#222">♜</text><text x="675" y="45" fill="#222">♚</text>
+<text x="135" y="135" fill="#222">♟</text><text x="225" y="135" fill="#222">♟</text><text x="405" y="135" fill="#222">♟</text><text x="585" y="135" fill="#222">♟</text><text x="675" y="135" fill="#222">♟</text>
+<text x="45" y="225" fill="#222">♝</text>
+<text x="225" y="225" fill="#222">♟</text><text x="315" y="225" fill="#222">♟</text><text x="495" y="225" fill="#222">♞</text>
+<text x="315" y="315" fill="#fff" stroke="#222" stroke-width="1">♗</text>
+<text x="585" y="315" fill="#222">♟</text>
+<text x="135" y="405" fill="#fff" stroke="#222" stroke-width="1">♘</text><text x="315" y="405" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="405" y="495" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="495" y="585" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="675" y="585" fill="#fff" stroke="#222" stroke-width="1">♕</text>
+<text x="45" y="675" fill="#fff" stroke="#222" stroke-width="1">♖</text><text x="135" y="675" fill="#fff" stroke="#222" stroke-width="1">♙</text><text x="585" y="675" fill="#fff" stroke="#222" stroke-width="1">♙</text><text x="675" y="675" fill="#fff" stroke="#222" stroke-width="1">♔</text>
+<text x="585" y="495" fill="#fff" stroke="#222" stroke-width="1">♖</text>
+<text x="405" y="585" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="495" y="315" fill="#222">♟</text>
+<text x="405" y="225" fill="#222">♝</text>
+<text x="225" y="405" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="135" y="495" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+<text x="675" y="315" fill="#fff" stroke="#222" stroke-width="1">♗</text>
+<text x="225" y="495" fill="#fff" stroke="#222" stroke-width="1">♙</text>
+</g>
+<g font-family="Arial,sans-serif" font-size="16" fill="#f8f8f8" text-anchor="middle">
+<text x="45" y="748">a</text><text x="135" y="748">b</text><text x="225" y="748">c</text><text x="315" y="748">d</text><text x="405" y="748">e</text><text x="495" y="748">f</text><text x="585" y="748">g</text><text x="675" y="748">h</text>
+<text x="-20" y="48">8</text><text x="-20" y="138">7</text><text x="-20" y="228">6</text><text x="-20" y="318">5</text><text x="-20" y="408">4</text><text x="-20" y="498">3</text><text x="-20" y="588">2</text><text x="-20" y="678">1</text>
+</g>
+</g>
+<text x="450" y="895" font-family="Arial,sans-serif" font-size="22" fill="#f5f5f5" text-anchor="middle">White's idea: queen + bishop pressure on the black king</text>
+<text x="450" y="930" font-family="Arial,sans-serif" font-size="18" fill="#c7d5e0" text-anchor="middle">Position after 23.Bh5 in the supplied PGN</text>
+<text x="450" y="975" font-family="Arial,sans-serif" font-size="15" fill="#8fa3b0" text-anchor="middle">Archived chess position • RekookerXX (White) vs satisforeveer (Black)</text>
+</svg>
