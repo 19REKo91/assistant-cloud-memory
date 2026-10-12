@@ -93,7 +93,6 @@ async function pollCommand() {
       }
     }
 
-    await chrome.storage.local.set({ lastCommandId: command.id });
     await statusPatch({ status: "Opening approved public test page…", commandId: command.id });
     const tab = await chrome.tabs.create({ url: target.href, active: true });
     const item = {
@@ -103,7 +102,8 @@ async function pollCommand() {
       startedAt: new Date().toISOString(),
       recording: false
     };
-    await chrome.storage.local.set({ pending: item });
+    // Only mark a command handled after the browser confirms a tab was created.
+    await chrome.storage.local.set({ lastCommandId: command.id, pending: item });
 
     // In case the page completed before pending was saved.
     if (typeof tab.id === "number") {
@@ -183,23 +183,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Without a popup configured in the manifest, tapping the extension icon opens
 // a full diagnostics tab. This works around mobile browsers that do not show
 // extension popups reliably.
-chrome.action.onClicked.addListener(async () => {
-  const diagnosticsUrl = chrome.runtime.getURL("diagnostics.html");
-  try {
-    const matches = await chrome.tabs.query({ url: diagnosticsUrl });
-    const existing = matches.find((tab) => typeof tab.id === "number");
-    if (existing && typeof existing.id === "number") {
-      await chrome.tabs.update(existing.id, { active: true });
-      return;
+if (chrome.action?.onClicked) {
+  chrome.action.onClicked.addListener(async () => {
+    const diagnosticsUrl = chrome.runtime.getURL("diagnostics.html");
+    try {
+      const matches = await chrome.tabs.query({ url: diagnosticsUrl });
+      const existing = matches.find((tab) => typeof tab.id === "number");
+      if (existing && typeof existing.id === "number") {
+        await chrome.tabs.update(existing.id, { active: true });
+        return;
+      }
+      await chrome.tabs.create({ url: diagnosticsUrl, active: true });
+    } catch (error) {
+      await statusPatch({
+        status: "Could not open diagnostics page: " +
+          (error instanceof Error ? error.message : String(error))
+      });
     }
-    await chrome.tabs.create({ url: diagnosticsUrl, active: true });
-  } catch (error) {
-    await statusPatch({
-      status: "Could not open diagnostics page: " +
-        (error instanceof Error ? error.message : String(error))
-    });
-  }
-});
+  });
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.action === "start") {
