@@ -73,7 +73,24 @@ async function pollCommand() {
 
     const { pending } = await chrome.storage.local.get(["pending"]);
     if (pending && pending.commandId !== command.id) {
-      throw new Error("A previous navigation is still pending; wait for its result.");
+      // Recover a stale completed navigation left behind by a suspended mobile worker.
+      if (pending.recording) {
+        await chrome.storage.local.remove("pending");
+      } else if (typeof pending.tabId === "number") {
+        try {
+          const previousTab = await chrome.tabs.get(pending.tabId);
+          if (previousTab.status === "complete") {
+            await finishNavigation(pending.tabId, previousTab);
+          }
+        } catch {
+          // The previous tab no longer exists; no result can be completed from it.
+          await chrome.storage.local.remove("pending");
+        }
+      }
+      const afterRecovery = await chrome.storage.local.get(["pending"]);
+      if (afterRecovery.pending && afterRecovery.pending.commandId !== command.id) {
+        throw new Error("A previous navigation is still pending; close or finish that public test tab, then check again.");
+      }
     }
 
     await chrome.storage.local.set({ lastCommandId: command.id });
