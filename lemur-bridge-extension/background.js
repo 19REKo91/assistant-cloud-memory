@@ -52,8 +52,48 @@ async function setEnabled(enabled) {
 async function recoverPendingNavigation(pending) {
   const match = await findCompletedMatchingTab(pending);
   if (!match) {
+    const ageMs = Date.now() - Date.parse(pending.startedAt || "");
+    const retryCount = Number(pending.retryCount || 0);
+
+    // Lemur on Android can occasionally return a tab ID without exposing the
+    // created tab in a subsequent query. Retry exactly once after a timeout.
+    // The URL still passes the same strict public-test allowlist.
+    if (Number.isFinite(ageMs) && ageMs >= 60000 && retryCount < 1) {
+      const target = jsonSafeUrl(pending.requestedUrl);
+      if (target) {
+        try {
+          const retryTab = await chrome.tabs.create({ url: target.href, active: true });
+          const retried = {
+            ...pending,
+            tabId: retryTab.id,
+            retryCount: retryCount + 1,
+            startedAt: new Date().toISOString()
+          };
+          await chrome.storage.local.set({ pending: retried });
+          await statusPatch({
+            status: "First tab was not found; automatically retried the approved navigation once."
+          });
+          if (typeof retryTab.id === "number") {
+            const current = await chrome.tabs.get(retryTab.id);
+            if (isMatchingCompletedTab(current, target.href)) {
+              await finishNavigation(retryTab.id, current);
+              return true;
+            }
+          }
+          return false;
+        } catch (error) {
+          await statusPatch({
+            status: "Automatic navigation retry failed: " +
+              (error instanceof Error ? error.message : String(error))
+          });
+          return false;
+        }
+      }
+    }
     await statusPatch({
-      status: "Pending navigation remains; no completed matching approved test tab was found."
+      status: retryCount >= 1
+        ? "Pending navigation remains after one automatic retry; no completed matching approved test tab was found."
+        : "Pending navigation remains; no completed matching approved test tab was found."
     });
     return false;
   }
