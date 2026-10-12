@@ -23,6 +23,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -43,8 +44,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var contentInput: EditText
     private lateinit var keyInput: EditText
     private lateinit var status: TextView
+    private lateinit var saveButton: Button
     private lateinit var savedButton: Button
     private var savedUrl: String? = null
+    private var savingReply = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +108,8 @@ class MainActivity : ComponentActivity() {
 
         root.addView(makeButton("حمّل رسالة ChatGPT") { loadOutgoingMessage() }, matchWrap())
         root.addView(makeButton("انسخ النص الحالي") { copyCurrentText() }, matchWrap())
-        root.addView(makeButton("احفظ رد DeepSeek في الأرشيف") { saveReply() }, matchWrap())
+        saveButton = makeButton("احفظ رد DeepSeek في الأرشيف") { confirmSaveReply() }
+        root.addView(saveButton, matchWrap())
         savedButton = makeButton("افتح الرد المحفوظ") { openSavedReply() }.apply {
             isEnabled = false
         }
@@ -197,21 +201,72 @@ class MainActivity : ComponentActivity() {
         status.text = "نُسخ النص إلى الحافظة."
     }
 
-    private fun saveReply() {
+    /**
+     * Presents the complete reply for an explicit user review before any network request.
+     * The manually entered key takes precedence over the key stored in Android Keystore.
+     */
+    private fun confirmSaveReply() {
+        if (savingReply) return
+
         val text = contentInput.text.toString().trim()
-        val key = keyInput.text.toString()
         if (text.isBlank()) {
             status.text = "ألصق رد DeepSeek أو شاركه إلى التطبيق أولًا."
             return
         }
+
+        val enteredKey = keyInput.text.toString()
+        val key = if (enteredKey.isNotBlank()) enteredKey else SecretStore.read(this).orEmpty()
         if (key.isBlank()) {
-            status.text = "أدخل مفتاح الكتابة SYNC_WRITE_KEY الذي أعددته في Vercel."
+            status.text = "أدخل مفتاح الكتابة، أو احفظه أولًا باستخدام «احفظ مفتاح الكتابة بأمان»."
             return
         }
 
+        val previewText = TextView(this).apply {
+            text = text
+            textSize = 14f
+            setTextColor(0xFFE0E3E7.toInt())
+            setPadding(dp(10), dp(8), dp(10), dp(8))
+            setTextIsSelectable(true)
+        }
+        val previewScroll = ScrollView(this).apply {
+            isFillViewport = false
+            addView(
+                previewText,
+                ScrollView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(380)
+            )
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("راجع الرد كاملًا قبل الحفظ")
+            .setView(previewScroll)
+            .setNegativeButton("إلغاء", null)
+            .setPositiveButton("تأكيد الحفظ", null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                dialog.dismiss()
+                saveReply(text, key)
+            }
+        }
+        dialog.show()
+    }
+
+    private fun saveReply(text: String, key: String) {
+        if (savingReply) return
+        savingReply = true
         savedUrl = null
         savedButton.isEnabled = false
+        saveButton.isEnabled = false
+        keyInput.setText("")
         status.text = "جارٍ حفظ الرد في ملف أرشيف جديد..."
+
         executor.execute {
             try {
                 val json = JSONObject().put("content", text).toString()
@@ -229,10 +284,13 @@ class MainActivity : ComponentActivity() {
                         val error = data.optString("error", "archive_failed")
                         throw IllegalStateException(when (error) {
                             "unauthorized" -> "مفتاح الكتابة غير صحيح."
-                            "sync_not_configured" -> "الحفظ غير مفعّل؛ يلزم إعداد GITHUB_SYNC_TOKEN وSYNC_WRITE_KEY على Vercel."
-                            "content_too_large" -> "النص أكبر من الحد المسموح."
+                            "sync_not_configured" -> "الحفظ غير مفعّل؛ يلزم إعداد أسرار الخادم في Vercel."
+                            "request_too_large" -> "الطلب أكبر من الحد المسموح."
+                            "invalid_json" -> "لم يستطع الخادم قراءة الطلب."
+                            "content_required" -> "لم يتلقّ الخادم نصًا صالحًا."
+                            "content_too_large" -> "النص أكبر من الحد المسموح للأرشفة."
                             "github_write_failed" -> "رفض GitHub الحفظ (HTTP ${data.optInt("status")})."
-                            "github_unreachable" -> "تعذّر الاتصال بـ GitHub."
+                            "github_unreachable" -> "تعذّر اتصال الخادم بـ GitHub."
                             else -> "فشل الحفظ: $error"
                         })
                     }
@@ -240,14 +298,26 @@ class MainActivity : ComponentActivity() {
                     val url = data.optString("url")
                     val path = data.optString("path")
                     runOnUiThread {
+                        savingReply = false
+                        saveButton.isEnabled = true
                         savedUrl = url.takeIf { it.startsWith("https://github.com/") }
                         savedButton.isEnabled = savedUrl != null
-                        keyInput.setText("")
-                        status.text = "تم الحفظ في ملف جديد: $path"
+                        status.text = if (path.isNotBlank()) {
+                            "تم الحفظ في ملف أرشيف جديد: $path"
+                        } else {
+                            "أكد الخادم الحفظ، لكنه لم يُرجع مسار الملف."
+                        }
                     }
                 }
             } catch (e: Exception) {
-                runOnUiThread { status.text = e.message ?: "تعذّر حفظ الرد." }
+                runOnUiThread {
+                    savingReply = false
+                    saveButton.isEnabled = true
+                    status.text = when (e) {
+                        is IOException -> "تعذّر الاتصال بالخادم. تحقق من الإنترنت ثم حاول مجددًا."
+                        else -> e.message ?: "تعذّر حفظ الرد."
+                    }
+                }
             }
         }
     }
@@ -278,8 +348,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun clearSavedRelayKey() {
-        SecretStore.clear(this)
-        status.text = "حُذف مفتاح الكتابة المحفوظ."
+        val cleared = SecretStore.clear(this)
+        status.text = if (cleared) {
+            "حُذف مفتاح الكتابة المحفوظ وبياناته المشفّرة."
+        } else {
+            "حُذفت البيانات المشفّرة، لكن تعذّر تأكيد حذف مدخل المفتاح من Android Keystore."
+        }
     }
 
     private fun openAccessibilitySettings() {
