@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "id": "lemur-poc-idle-20261012-01",
+  "action": "idle",
+  "url": "https://example.com/",
+  "note": "Isolated proof of concept. Only public test domains are allowed; do not send private-page data."
+}
