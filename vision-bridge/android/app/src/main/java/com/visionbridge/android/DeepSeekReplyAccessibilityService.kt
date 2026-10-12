@@ -48,6 +48,7 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
     private var activeCandidate: String? = null
     private var activeHash: String? = null
     private var pendingCandidate: String? = null
+    private var pendingCandidateIsAlreadySaved = false
     private var lastConfirmedHash: String? = null
     private var lastMissingKeyHash: String? = null
     private var failureCount = 0
@@ -91,8 +92,32 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
         val digest = sha256(candidate)
 
         if (digest == lastConfirmedHash) {
-            // If the visible tree has returned to the already-saved reply, discard a stale queued candidate.
-            if (state == ReplyState.IN_FLIGHT) pendingCandidate = null
+            when (state) {
+                ReplyState.IN_FLIGHT -> {
+                    // Remember that the newest visible text is already saved; cancel stale retries after
+                    // the active request completes instead of re-uploading an older in-flight candidate.
+                    pendingCandidate = null
+                    pendingCandidateIsAlreadySaved = digest != activeHash
+                }
+                ReplyState.RETRY_WAIT -> {
+                    cancelRetry()
+                    activeCandidate = null
+                    activeHash = null
+                    pendingCandidate = null
+                    pendingCandidateIsAlreadySaved = false
+                    failureCount = 0
+                    state = ReplyState.IDLE
+                }
+                ReplyState.EXHAUSTED -> {
+                    activeCandidate = null
+                    activeHash = null
+                    pendingCandidate = null
+                    pendingCandidateIsAlreadySaved = false
+                    failureCount = 0
+                    state = ReplyState.IDLE
+                }
+                ReplyState.IDLE -> Unit
+            }
             return
         }
 
@@ -100,6 +125,7 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
             ReplyState.IN_FLIGHT -> {
                 // Keep only the newest observed candidate; do not launch concurrent writes.
                 pendingCandidate = if (digest != activeHash) candidate else null
+                pendingCandidateIsAlreadySaved = false
                 return
             }
 
@@ -107,6 +133,7 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
                 if (digest == activeHash) return
                 cancelRetry()
                 pendingCandidate = null
+                pendingCandidateIsAlreadySaved = false
                 activeCandidate = null
                 activeHash = null
                 failureCount = 0
@@ -212,11 +239,10 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
     private fun completeAttempt(candidate: String, digest: String, result: AttemptResult) {
         if (destroyed || state != ReplyState.IN_FLIGHT || activeHash != digest) return
 
-        val newerCandidate = pendingCandidate?.takeIf {
-            val nextHash = sha256(it)
-            nextHash != digest && nextHash != lastConfirmedHash
-        }
+        val newerCandidate = pendingCandidate?.takeIf { sha256(it) != digest }
+        val cancelStaleAttempt = pendingCandidateIsAlreadySaved || newerCandidate != null
         pendingCandidate = null
+        pendingCandidateIsAlreadySaved = false
 
         if (result.success) {
             lastConfirmedHash = digest
@@ -241,14 +267,17 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
             notifyUser(result.message)
         }
 
-        // If the UI changed while the request was running, handle only the newest distinct candidate next.
-        if (newerCandidate != null) {
+        // If the UI changed while the request was running, cancel retries for the stale candidate.
+        // Process a newer unsaved candidate, but never re-upload text already saved before this request.
+        if (cancelStaleAttempt) {
             cancelRetry()
             activeCandidate = null
             activeHash = null
             failureCount = 0
             state = ReplyState.IDLE
-            processCandidate(newerCandidate)
+            if (newerCandidate != null && sha256(newerCandidate) != lastConfirmedHash) {
+                processCandidate(newerCandidate)
+            }
         }
     }
 
@@ -318,6 +347,7 @@ class DeepSeekReplyAccessibilityService : AccessibilityService() {
         pendingCapture = null
         cancelRetry()
         pendingCandidate = null
+        pendingCandidateIsAlreadySaved = false
         worker.shutdownNow()
         super.onDestroy()
     }
