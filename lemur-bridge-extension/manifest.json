@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Lemur Command Bridge (Prototype)",
-  "version": "0.1.10",
-  "description": "A narrow proof of concept for approved public-page navigation, stale-pending recovery, and locally recorded results.",
+  "version": "0.1.11",
+  "description": "A narrow proof of concept for approved public-page navigation, stale-pending recovery, one bounded navigation retry, and locally recorded results.",
   "permissions": [
     "storage",
     "alarms",
