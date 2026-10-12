@@ -59,7 +59,25 @@ async function pollCommand() {
       commandId: command.id,
       status: "Command feed checked."
     });
-    if (command.id === lastCommandId) return;
+    if (command.id === lastCommandId) {
+      // Recovery path: mobile service workers can miss the one-shot tab update
+      // while suspended. Re-check the pending tab even when the command ID is unchanged.
+      const { pending } = await chrome.storage.local.get(["pending"]);
+      if (pending && !pending.recording && typeof pending.tabId === "number") {
+        try {
+          const pendingTab = await chrome.tabs.get(pending.tabId);
+          if (pendingTab.status === "complete") {
+            await finishNavigation(pending.tabId, pendingTab);
+          }
+        } catch {
+          // Keep pending state for diagnosis; do not silently discard a possible result.
+          await statusPatch({
+            status: "Pending navigation tab could not be rechecked; pending state retained."
+          });
+        }
+      }
+      return;
+    }
 
     if (command.action === "idle") {
       await chrome.storage.local.set({ lastCommandId: command.id });
