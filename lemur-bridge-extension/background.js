@@ -80,6 +80,10 @@ async function pollCommand() {
             }) || null;
           }
           if (pendingTab && pendingTab.status === "complete" && typeof pendingTab.id === "number") {
+            if (pendingTab.id !== pending.tabId) {
+              // Rebind the pending record to the recovered tab before finalizing it.
+              await chrome.storage.local.set({ pending: { ...pending, tabId: pendingTab.id } });
+            }
             await finishNavigation(pendingTab.id, pendingTab);
           } else {
             await statusPatch({
