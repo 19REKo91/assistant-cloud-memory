@@ -58,7 +58,16 @@ async function getCurrentCommand(): Promise<any | null> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (request.method === "OPTIONS") return json({}, 204);
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET,POST,OPTIONS",
+          "access-control-allow-headers": "content-type"
+        }
+      });
+    }
 
     if (request.method === "GET" && url.pathname === "/health") {
       return json({
