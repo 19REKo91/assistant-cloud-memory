@@ -25,7 +25,7 @@
   <main>
     <header>
       <h1>Lemur Command Bridge</h1>
-      <p>Diagnostics · Prototype v0.1.2</p>
+      <p>Diagnostics · Prototype <span id="installedVersion">checking version…</span></p>
       <p class="muted">This page reads extension-local status and only tests the approved public pages example.com and www.iana.org/help/example-domains. It does not read page contents or control signed-in websites.</p>
       <div class="buttons">
         <button id="check">Check command now</button>
@@ -33,14 +33,6 @@
         <button id="stop" class="secondary">Stop listening</button>
       </div>
     </header>
-
-    <section>
-      <h2>Software updates</h2>
-      <p id="version">Checking published version…</p>
-      <p id="updateStatus" class="muted">The checker compares this installed package with the manifest on the test branch.</p>
-      <div class="buttons"><button id="update" class="secondary" hidden>Open package download</button></div>
-      <p class="muted">For safety, downloading a CRX does not silently replace the installed extension. Lemur must accept the package and its signing identity.</p>
-    </section>
 
     <section>
       <h2>Current status</h2>
