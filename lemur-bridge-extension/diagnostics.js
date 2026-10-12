@@ -1,3 +1,6 @@
+const versionEl = document.getElementById("version");
+const updateStatusEl = document.getElementById("updateStatus");
+const updateButton = document.getElementById("update");
 const statusEl = document.getElementById("status");
 const resultEl = document.getElementById("result");
 const rawEl = document.getElementById("raw");
@@ -49,6 +52,11 @@ function render(data) {
     pending: data.pending || null,
     lastResult: result || null
   }, null, 2);
+  const currentVersion = state.currentVersion || "unknown";
+  const latestVersion = state.latestVersion || "not checked";
+  versionEl.textContent = "Installed: " + currentVersion + " · Published: " + latestVersion;
+  updateStatusEl.textContent = state.updateCheckStatus || "Update status is not available yet.";
+  updateButton.hidden = !state.updateAvailable;
   refreshEl.textContent = "Last refreshed: " + new Date().toLocaleString();
 }
 
@@ -77,3 +85,14 @@ document.getElementById("stop").addEventListener("click", async () => {
 
 void refresh();
 setInterval(() => { void refresh(); }, 3000);
+
+
+updateButton.addEventListener("click", () => {
+  void send("openUpdate").then((result) => {
+    if (result && result.error) {
+      updateStatusEl.textContent = "Could not open the package URL: " + result.error;
+    } else {
+      updateStatusEl.textContent = "Opened package download. The browser may ask you to confirm installing or replacing the extension.";
+    }
+  });
+});
