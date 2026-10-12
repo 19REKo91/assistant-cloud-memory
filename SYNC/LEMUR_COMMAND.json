@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "lemur-poc-navigate-20261012-04",
+  "id": "lemur-poc-navigate-20261012-05",
   "action": "navigate",
   "url": "https://example.com/",
-  "note": "Fresh command for Lemur Command Bridge 0.1.8 test. Public example page only."
+  "note": "Fresh command for Lemur Command Bridge 0.1.9 test. Public example page only."
 }
