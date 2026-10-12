@@ -1,0 +1,14 @@
+{
+  "name": "cloudflare-browser-run-smoke",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --remote --ip 127.0.0.1 --port 8787"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^1.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
