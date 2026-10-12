@@ -42,9 +42,20 @@ internal object SecretStore {
         }.getOrNull()
     }
 
+    /**
+     * Clears the encrypted preference values and removes the dedicated Keystore alias.
+     * Returns false if Keystore cleanup could not be confirmed.
+     */
     @Synchronized
-    fun clear(context: Context) {
+    fun clear(context: Context): Boolean {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
+        return runCatching {
+            val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+            if (store.containsAlias(ALIAS)) {
+                store.deleteEntry(ALIAS)
+            }
+            true
+        }.getOrDefault(false)
     }
 
     private fun getOrCreateKey(): SecretKey {
