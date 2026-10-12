@@ -193,13 +193,29 @@ async function retryLastResult() {
 }
 
 async function finishNavigation(tabId, tab) {
-  const { pending } = await chrome.storage.local.get(["pending"]);
-  if (!pending || pending.tabId !== tabId || pending.recording) return;
+  let { pending } = await chrome.storage.local.get(["pending"]);
+  if (!pending || pending.recording || typeof tabId !== "number") return;
+
+  const requested = jsonSafeUrl(pending.requestedUrl);
   const actual = jsonSafeUrl(tab.url || "");
   if (!actual) {
-    await chrome.storage.local.remove("pending");
-    await statusPatch({ status: "Navigation ended outside the test allowlist; result was not shared." });
+    // Ignore unrelated tabs. Only clear pending if its own tracked tab left the allowlist.
+    if (pending.tabId === tabId) {
+      await chrome.storage.local.remove("pending");
+      await statusPatch({ status: "Navigation ended outside the test allowlist; result was not shared." });
+    }
     return;
+  }
+
+  const requestedPath = requested && requested.origin + requested.pathname;
+  const actualPath = actual.origin + actual.pathname;
+  if (!requestedPath || actualPath !== requestedPath || tab.status !== "complete") return;
+
+  // On some mobile Chromium builds the tab ID returned by create() can become stale.
+  // Recover only when a completed tab matches the exact approved URL requested by this command.
+  if (pending.tabId !== tabId) {
+    pending = { ...pending, tabId };
+    await chrome.storage.local.set({ pending });
   }
 
   await chrome.storage.local.set({ pending: { ...pending, recording: true } });
