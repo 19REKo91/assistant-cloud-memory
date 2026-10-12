@@ -50,7 +50,7 @@ function render(data) {
     pending: data.pending || null,
     lastResult: result || null
   }, null, 2);
-  installedVersionEl.textContent = chrome.runtime.getManifest().version;
+  installedVersionEl.textContent = chrome.runtime.getManifest().version + " · ID " + chrome.runtime.id;
   refreshEl.textContent = "Last refreshed: " + new Date().toLocaleString();
 }
 
