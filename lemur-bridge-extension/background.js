@@ -117,7 +117,17 @@ async function pollCommand() {
       }
       const afterRecovery = await chrome.storage.local.get(["pending"]);
       if (afterRecovery.pending && afterRecovery.pending.commandId !== command.id) {
-        throw new Error("A previous navigation is still pending; close or finish that public test tab, then check again.");
+        // If the new approved command targets a different allowlisted page,
+        // retire the stale pending record. The old tab cannot be mistaken for
+        // the new result because finishNavigation validates the requested URL.
+        if (afterRecovery.pending.requestedUrl !== target.href) {
+          await chrome.storage.local.remove("pending");
+          await statusPatch({
+            status: "Discarded stale pending navigation for a different approved test URL."
+          });
+        } else {
+          throw new Error("A previous navigation to the same test URL is still pending; refusing to associate an ambiguous tab with a new command.");
+        }
       }
     }
 
