@@ -15,6 +15,21 @@ function jsonSafeUrl(value) {
   }
 }
 
+function isMatchingCompletedTab(tab, requestedUrl) {
+  if (!tab || tab.status !== "complete" || typeof tab.id !== "number") return false;
+  const expected = jsonSafeUrl(requestedUrl);
+  const actual = jsonSafeUrl(tab.url || "");
+  return Boolean(expected && actual &&
+    actual.origin + actual.pathname === expected.origin + expected.pathname);
+}
+
+async function findCompletedMatchingTab(pending) {
+  // Query the full tab list even if tabs.get(pending.tabId) succeeds:
+  // on some mobile builds that ID can resolve to a different tab after suspension.
+  const tabs = await chrome.tabs.query({});
+  return tabs.find((tab) => isMatchingCompletedTab(tab, pending.requestedUrl)) || null;
+}
+
 async function statusPatch(patch) {
   const old = await chrome.storage.local.get(["state"]);
   await chrome.storage.local.set({
@@ -32,6 +47,22 @@ async function setEnabled(enabled) {
     await statusPatch({ listening: false, status: "Stopped by user." });
   }
   return { ok: true, enabled };
+}
+
+async function recoverPendingNavigation(pending) {
+  const match = await findCompletedMatchingTab(pending);
+  if (!match) {
+    await statusPatch({
+      status: "Pending navigation remains; no completed matching approved test tab was found."
+    });
+    return false;
+  }
+  if (match.id !== pending.tabId) {
+    pending = { ...pending, tabId: match.id };
+    await chrome.storage.local.set({ pending });
+  }
+  await finishNavigation(match.id, match);
+  return true;
 }
 
 async function pollCommand() {
@@ -60,43 +91,9 @@ async function pollCommand() {
       status: "Command feed checked."
     });
     if (command.id === lastCommandId) {
-      // Recovery path: mobile service workers can miss the one-shot tab update
-      // while suspended. Re-check the pending tab even when the command ID is unchanged.
       const { pending } = await chrome.storage.local.get(["pending"]);
-      if (pending && !pending.recording && typeof pending.tabId === "number") {
-        try {
-          let pendingTab = null;
-          try {
-            pendingTab = await chrome.tabs.get(pending.tabId);
-          } catch {
-            // Some mobile Chromium builds can lose/stale tab IDs across worker suspension.
-            // Recover only by matching the approved public URL, never by reading page contents.
-            const tabs = await chrome.tabs.query({});
-            const expected = jsonSafeUrl(pending.requestedUrl);
-            pendingTab = tabs.find((candidate) => {
-              const candidateUrl = jsonSafeUrl(candidate.url || "");
-              return expected && candidateUrl &&
-                candidateUrl.origin + candidateUrl.pathname === expected.origin + expected.pathname;
-            }) || null;
-          }
-          if (pendingTab && pendingTab.status === "complete" && typeof pendingTab.id === "number") {
-            if (pendingTab.id !== pending.tabId) {
-              // Rebind the pending record to the recovered tab before finalizing it.
-              await chrome.storage.local.set({ pending: { ...pending, tabId: pendingTab.id } });
-            }
-            await finishNavigation(pendingTab.id, pendingTab);
-          } else {
-            await statusPatch({
-              status: "Pending navigation remains; no completed matching approved test tab was found."
-            });
-          }
-        } catch (error) {
-          // Keep pending state for diagnosis; do not silently discard a possible result.
-          await statusPatch({
-            status: "Pending navigation recovery failed: " +
-              (error instanceof Error ? error.message : String(error))
-          });
-        }
+      if (pending && !pending.recording) {
+        await recoverPendingNavigation(pending);
       }
       return;
     }
@@ -113,19 +110,10 @@ async function pollCommand() {
 
     const { pending } = await chrome.storage.local.get(["pending"]);
     if (pending && pending.commandId !== command.id) {
-      // Recover a stale completed navigation left behind by a suspended mobile worker.
       if (pending.recording) {
         await chrome.storage.local.remove("pending");
-      } else if (typeof pending.tabId === "number") {
-        try {
-          const previousTab = await chrome.tabs.get(pending.tabId);
-          if (previousTab.status === "complete") {
-            await finishNavigation(pending.tabId, previousTab);
-          }
-        } catch {
-          // The previous tab no longer exists; no result can be completed from it.
-          await chrome.storage.local.remove("pending");
-        }
+      } else {
+        await recoverPendingNavigation(pending);
       }
       const afterRecovery = await chrome.storage.local.get(["pending"]);
       if (afterRecovery.pending && afterRecovery.pending.commandId !== command.id) {
@@ -142,13 +130,12 @@ async function pollCommand() {
       startedAt: new Date().toISOString(),
       recording: false
     };
-    // Only mark a command handled after the browser confirms a tab was created.
     await chrome.storage.local.set({ lastCommandId: command.id, pending: item });
 
-    // In case the page completed before pending was saved.
     if (typeof tab.id === "number") {
       const current = await chrome.tabs.get(tab.id);
-      if (current.status === "complete") await finishNavigation(tab.id, current);
+      if (isMatchingCompletedTab(current, target.href)) await finishNavigation(tab.id, current);
+      else await recoverPendingNavigation(item);
     }
   } catch (error) {
     await statusPatch({
@@ -199,7 +186,6 @@ async function finishNavigation(tabId, tab) {
   const requested = jsonSafeUrl(pending.requestedUrl);
   const actual = jsonSafeUrl(tab.url || "");
   if (!actual) {
-    // Ignore unrelated tabs. Only clear pending if its own tracked tab left the allowlist.
     if (pending.tabId === tabId) {
       await chrome.storage.local.remove("pending");
       await statusPatch({ status: "Navigation ended outside the test allowlist; result was not shared." });
@@ -211,8 +197,6 @@ async function finishNavigation(tabId, tab) {
   const actualPath = actual.origin + actual.pathname;
   if (!requestedPath || actualPath !== requestedPath || tab.status !== "complete") return;
 
-  // On some mobile Chromium builds the tab ID returned by create() can become stale.
-  // Recover only when a completed tab matches the exact approved URL requested by this command.
   if (pending.tabId !== tabId) {
     pending = { ...pending, tabId };
     await chrome.storage.local.set({ pending });
@@ -239,7 +223,6 @@ async function finishNavigation(tabId, tab) {
       resultAcknowledgement: outcome.body
     });
   } catch (error) {
-    // Keep the local result so it can still be inspected even if the network path fails.
     await chrome.storage.local.set({ lastResult: result });
     await statusPatch({
       status: "Page opened; result stayed local because the return path failed: " +
@@ -259,9 +242,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") void finishNavigation(tabId, tab);
 });
 
-// Without a popup configured in the manifest, tapping the extension icon opens
-// a full diagnostics tab. This works around mobile browsers that do not show
-// extension popups reliably.
 if (chrome.action?.onClicked) {
   chrome.action.onClicked.addListener(async () => {
     const diagnosticsUrl = chrome.runtime.getURL("diagnostics.html");
