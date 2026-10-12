@@ -14,6 +14,10 @@ on:
       - "browser-run-smoke/**"
       - ".github/workflows/cloudflare-browser-run-smoke.yml"
 
+concurrency:
+  group: browser-run-smoke-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -51,8 +55,9 @@ jobs:
           trap cleanup EXIT
 
           READY=0
-          for i in $(seq 1 45); do
-            if curl -fsS --max-time 25 "http://127.0.0.1:8787/smoke" -o "$OUT"; then
+          for i in $(seq 1 25); do
+            CODE="$(curl -sS --max-time 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:8787/ || true)"
+            if [ "$CODE" = "404" ] || [ "$CODE" = "200" ]; then
               READY=1
               break
             fi
@@ -60,16 +65,33 @@ jobs:
               cat "$LOG"
               exit 1
             fi
-            sleep 2
+            sleep 1
           done
 
           if [ "$READY" -ne 1 ]; then
             cat "$LOG"
-            echo "Browser Run smoke request did not succeed"
+            echo "Wrangler dev server did not become ready"
             exit 1
           fi
 
-          cat "$OUT"
+          set +e
+          HTTP_CODE="$(curl -sS --max-time 40 -o "$OUT" -w '%{http_code}' http://127.0.0.1:8787/smoke)"
+          CURL_CODE=$?
+          set -e
+
+          echo "SMOKE_HTTP_STATUS=$HTTP_CODE"
+          echo "SMOKE_CURL_EXIT=$CURL_CODE"
+          if [ -f "$OUT" ]; then
+            cat "$OUT"
+            echo
+          fi
+          cat "$LOG"
+
+          if [ "$CURL_CODE" -ne 0 ] || [ "$HTTP_CODE" != "200" ]; then
+            echo "BROWSER_RUN_SMOKE_HTTP_FAILED"
+            exit 1
+          fi
+
           node --input-type=module -e '
             import fs from "node:fs";
             const r = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
@@ -79,4 +101,3 @@ jobs:
             }
             console.log("CLOUDFLARE_BROWSER_RUN_SMOKE_OK");
           ' "$OUT"
-          cat "$LOG"
