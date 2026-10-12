@@ -8,8 +8,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // A deliberately fixed, read-only smoke test. It accepts no target URL
-    // and exposes no arbitrary browser-control endpoint.
+    // Fixed, read-only smoke test. No arbitrary target URL or public control API.
     if (request.method !== "GET" || url.pathname !== "/smoke") {
       return new Response("Not found", { status: 404 });
     }
@@ -23,14 +22,19 @@ export default {
         timeout: 20000
       });
 
+      const anchors = await page.$$("a");
+      const firstLink = anchors.length
+        ? await page.$eval("a", (element: Element) => element.textContent?.trim() || null).catch(() => null)
+        : null;
+
       return Response.json({
         ok: true,
         engine: "Cloudflare Browser Run via Puppeteer",
         status: response?.status() ?? null,
         url: page.url(),
         title: await page.title(),
-        links: await page.locator("a").count(),
-        firstLink: await page.locator("a").first().innerText().catch(() => null)
+        links: anchors.length,
+        firstLink
       }, {
         headers: { "cache-control": "no-store" }
       });
