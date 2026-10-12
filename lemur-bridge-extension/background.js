@@ -36,7 +36,10 @@ async function setEnabled(enabled) {
 
 async function pollCommand() {
   const { enabled = false } = await chrome.storage.local.get(["enabled"]);
-  if (!enabled) return;
+  if (!enabled) {
+    await statusPatch({ status: "Listening is OFF. Tap Start listening in diagnostics." });
+    return;
+  }
   try {
     const response = await fetch(COMMAND_URL + "?_=" + Date.now(), {
       cache: "no-store",
@@ -53,6 +56,7 @@ async function pollCommand() {
       listening: true,
       feed: "connected",
       lastPollAt: new Date().toISOString(),
+      commandId: command.id,
       status: "Command feed checked."
     });
     if (command.id === lastCommandId) return;
@@ -159,32 +163,51 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") void finishNavigation(tabId, tab);
 });
 
+// Without a popup configured in the manifest, tapping the extension icon opens
+// a full diagnostics tab. This works around mobile browsers that do not show
+// extension popups reliably.
+chrome.action.onClicked.addListener(async () => {
+  const diagnosticsUrl = chrome.runtime.getURL("diagnostics.html");
+  try {
+    const matches = await chrome.tabs.query({ url: diagnosticsUrl });
+    const existing = matches.find((tab) => typeof tab.id === "number");
+    if (existing && typeof existing.id === "number") {
+      await chrome.tabs.update(existing.id, { active: true });
+      return;
+    }
+    await chrome.tabs.create({ url: diagnosticsUrl, active: true });
+  } catch (error) {
+    await statusPatch({
+      status: "Could not open diagnostics page: " +
+        (error instanceof Error ? error.message : String(error))
+    });
+  }
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.action === "start") {
-    setEnabled(true).then(sendResponse);
+    setEnabled(true).then(sendResponse).catch((error) => sendResponse({ error: String(error) }));
     return true;
   }
   if (message?.action === "stop") {
-    setEnabled(false).then(sendResponse);
+    setEnabled(false).then(sendResponse).catch((error) => sendResponse({ error: String(error) }));
     return true;
   }
   if (message?.action === "poll") {
     pollCommand().then(async () => {
-      const result = await chrome.storage.local.get(["state", "lastResult", "enabled"]);
+      const result = await chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId", "pending"]);
       sendResponse(result);
-    });
+    }).catch((error) => sendResponse({ error: String(error) }));
     return true;
   }
   if (message?.action === "readState") {
-    chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId"]).then(sendResponse);
+    chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId", "pending"]).then(sendResponse);
     return true;
   }
   return false;
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
-  // Auto-start on install/update so the prototype works even when the browser
-  // does not expose extension action popups in its toolbar.
   await statusPatch({
     listening: true,
     status: "Auto-listening enabled. Checking the approved public test command."
