@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "lemur-poc-navigate-20261012-05",
+  "id": "lemur-poc-navigate-20261012-06",
   "action": "navigate",
-  "url": "https://www.iana.org/help/example-domains",
-  "note": "Fresh distinct-URL test for Lemur Command Bridge 0.1.10. Public example page only."
+  "url": "https://example.com/",
+  "note": "Automatic polling test for Lemur Command Bridge 0.1.10. Public example page only; do not press Check command now."
 }
