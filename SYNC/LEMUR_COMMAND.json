@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "lemur-poc-navigate-20261012-02",
+  "id": "lemur-poc-navigate-20261012-03",
   "action": "navigate",
   "url": "https://example.com/",
-  "note": "Retry smoke test after the first result was not recorded. Public example page only; no signed-in or private page."
+  "note": "Retry after introducing full-page diagnostics. Public example page only; no signed-in or private page."
 }
