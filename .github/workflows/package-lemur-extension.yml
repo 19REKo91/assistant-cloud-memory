@@ -1,0 +1,45 @@
+name: Package Lemur Command Bridge Extension
+
+on:
+  push:
+    branches: ["lemur-browser-command-poc"]
+    paths:
+      - "lemur-bridge-extension/**"
+      - ".github/workflows/package-lemur-extension.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Package CRX3 and fallback ZIP
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          npx --yes crx3@2.0.0 ./lemur-bridge-extension \
+            --crxPath ./dist/lemur-command-bridge.crx \
+            --zipPath ./dist/lemur-command-bridge.zip \
+            --keyPath ./dist/lemur-command-bridge.pem
+          test -s ./dist/lemur-command-bridge.crx
+          test -s ./dist/lemur-command-bridge.zip
+          # The private signing key must never be included in the downloadable artifact.
+          rm -f ./dist/lemur-command-bridge.pem
+      - name: Upload install artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lemur-command-bridge-install
+          path: |
+            dist/lemur-command-bridge.crx
+            dist/lemur-command-bridge.zip
+          if-no-files-found: error
+          retention-days: 14
