@@ -1,199 +1,289 @@
 package com.visionbridge.android
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
+import android.text.InputType
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AlertDialog
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
+    private val apiBase = "https://assistant-cloud-memory.vercel.app"
+    private val outgoingMessageUrl =
+        "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/SYNC/CHATGPT_TO_DEEPSEEK.md"
+    private val archiveIndexUrl =
+        "https://github.com/19REKo91/assistant-cloud-memory/blob/main/PROJECTS/raiq/derived-read/RAEQ_MASTER/00-index.md"
+
     private val client = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(12, TimeUnit.SECONDS)
+        .readTimeout(35, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
         .build()
     private val executor = Executors.newSingleThreadExecutor()
+
+    private lateinit var contentInput: EditText
+    private lateinit var keyInput: EditText
     private lateinit var status: TextView
-    private lateinit var streamInput: EditText
-    private lateinit var bridgeInput: EditText
+    private lateinit var savedButton: Button
+    private var savedUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(32, 32, 32, 32)
+            setPadding(dp(18), dp(18), dp(18), dp(22))
+            setBackgroundColor(0xFF101318.toInt())
         }
 
-        streamInput = EditText(this).apply {
-            hint = "ScreenStream URL"
-            setText("http://192.168.0.197:8080")
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            addView(root)
+        }
+
+        val title = TextView(this).apply {
+            text = "جسر رائق"
+            textSize = 27f
+            setTextColor(0xFFFFD54F.toInt())
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(0, dp(4), 0, dp(8))
+        }
+        root.addView(title, matchWrap())
+
+        val description = TextView(this).apply {
+            text = "استقبل رد DeepSeek بالمشاركة، أو حمّل رسالة ChatGPT، ثم احفظ الرد في أرشيف مستقل داخل GitHub. لا يعدّل هذا التطبيق ملف APK الخاص بـ DeepSeek."
+            textSize = 14f
+            setTextColor(0xFFE0E3E7.toInt())
+            setPadding(0, 0, 0, dp(12))
+        }
+        root.addView(description, matchWrap())
+
+        contentInput = EditText(this).apply {
+            hint = "شارك رد DeepSeek إلى هذا التطبيق، أو الصق النص هنا..."
+            setTextColor(0xFFFFFFFF.toInt())
+            setHintTextColor(0xFF9AA4B2.toInt())
+            setBackgroundColor(0xFF252A33.toInt())
+            inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            gravity = Gravity.TOP or Gravity.START
+            minLines = 9
+            maxLines = 18
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+        }
+        root.addView(contentInput, matchWrap().apply { bottomMargin = dp(12) })
+
+        keyInput = EditText(this).apply {
+            hint = "مفتاح الكتابة SYNC_WRITE_KEY"
+            setTextColor(0xFFFFFFFF.toInt())
+            setHintTextColor(0xFF9AA4B2.toInt())
+            setBackgroundColor(0xFF252A33.toInt())
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             isSingleLine = true
+            setPadding(dp(12), dp(8), dp(12), dp(8))
         }
+        root.addView(keyInput, matchWrap().apply { bottomMargin = dp(10) })
 
-        bridgeInput = EditText(this).apply {
-            hint = "Bridge URL"
-            setText("https://chatgpt-vision-bridge.flourish-gerbil.workers.dev")
-            isSingleLine = true
+        root.addView(makeButton("حمّل رسالة ChatGPT") { loadOutgoingMessage() }, matchWrap())
+        root.addView(makeButton("انسخ النص الحالي") { copyCurrentText() }, matchWrap())
+        root.addView(makeButton("احفظ رد DeepSeek في الأرشيف") { saveReply() }, matchWrap())
+        savedButton = makeButton("افتح الرد المحفوظ") { openSavedReply() }.apply {
+            isEnabled = false
         }
-
-        val see = Button(this).apply {
-            text = "شوف الشاشة"
-            setOnClickListener { fetchAndSendFrame() }
-        }
+        root.addView(savedButton, matchWrap())
+        root.addView(makeButton("افتح فهرس أرشيف رائق") { openUrl(archiveIndexUrl) }, matchWrap())
+        root.addView(makeButton("افتح تطبيق DeepSeek") { openDeepSeek() }, matchWrap())
 
         status = TextView(this).apply {
-            text = "جاهز. شغّل ScreenStream ثم اضغط «شوف الشاشة»."
-            textSize = 16f
+            text = "جاهز. يمكن مشاركة النص من DeepSeek إلى «جسر رائق»."
+            textSize = 14f
+            setTextColor(0xFFFFD54F.toInt())
+            setPadding(0, dp(12), 0, dp(4))
         }
+        root.addView(status, matchWrap())
 
-        root.addView(streamInput)
-        root.addView(bridgeInput)
-        root.addView(see)
-        root.addView(status)
-        setContentView(root)
+        setContentView(scroll)
+        receiveSharedText(intent)
     }
 
-    private fun fetchAndSendFrame() {
-        val streamUrl = normalizeStreamUrl(streamInput.text.toString().trim())
-        val bridgeUrl = bridgeInput.text.toString().trim().removeSuffix("/")
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        receiveSharedText(intent)
+    }
 
-        if (streamUrl.isBlank() || bridgeUrl.isBlank()) {
-            status.text = "أدخل رابط ScreenStream ورابط Bridge."
+    private fun receiveSharedText(source: Intent?) {
+        if (source == null) return
+        val shared = when (source.action) {
+            Intent.ACTION_SEND -> source.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
+            Intent.ACTION_PROCESS_TEXT -> source.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+            else -> null
+        }
+        if (!shared.isNullOrBlank()) {
+            contentInput.setText(shared)
+            contentInput.setSelection(contentInput.text.length)
+            status.text = "وصل النص من تطبيق آخر. راجعه ثم اضغط «احفظ رد DeepSeek في الأرشيف»."
+            savedUrl = null
+            savedButton.isEnabled = false
+        }
+    }
+
+    private fun loadOutgoingMessage() {
+        if (contentInput.text.toString().isNotBlank()) {
+            AlertDialog.Builder(this)
+                .setTitle("استبدال النص الحالي؟")
+                .setMessage("تحميل رسالة ChatGPT سيستبدل النص الظاهر في المربع. انسخه أو احفظه أولًا إن كنت تحتاجه.")
+                .setNegativeButton("إلغاء", null)
+                .setPositiveButton("تحميل") { _, _ -> fetchOutgoingMessage() }
+                .show()
+        } else {
+            fetchOutgoingMessage()
+        }
+    }
+
+    private fun fetchOutgoingMessage() {
+        status.text = "جارٍ جلب رسالة ChatGPT من المستودع..."
+        executor.execute {
+            try {
+                val request = Request.Builder().url(outgoingMessageUrl).get().build()
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw IllegalStateException("HTTP ${response.code}")
+                    val text = response.body?.string().orEmpty()
+                    if (text.isBlank()) throw IllegalStateException("الملف فارغ")
+                    runOnUiThread {
+                        contentInput.setText(text)
+                        contentInput.setSelection(0)
+                        status.text = "تم تحميل رسالة ChatGPT. انسخها ثم افتح DeepSeek والصقها في المحادثة."
+                        savedUrl = null
+                        savedButton.isEnabled = false
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread { status.text = "تعذّر جلب الرسالة: ${e.message ?: e.javaClass.simpleName}" }
+            }
+        }
+    }
+
+    private fun copyCurrentText() {
+        val text = contentInput.text.toString()
+        if (text.isBlank()) {
+            status.text = "لا يوجد نص لنسخه."
+            return
+        }
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("RAEQ bridge text", text))
+        status.text = "نُسخ النص إلى الحافظة."
+    }
+
+    private fun saveReply() {
+        val text = contentInput.text.toString().trim()
+        val key = keyInput.text.toString()
+        if (text.isBlank()) {
+            status.text = "ألصق رد DeepSeek أو شاركه إلى التطبيق أولًا."
+            return
+        }
+        if (key.isBlank()) {
+            status.text = "أدخل مفتاح الكتابة SYNC_WRITE_KEY الذي أعددته في Vercel."
             return
         }
 
-        status.text = "جارٍ أخذ أول Frame من ScreenStream..."
-
+        savedUrl = null
+        savedButton.isEnabled = false
+        status.text = "جارٍ حفظ الرد في ملف أرشيف جديد..."
         executor.execute {
             try {
-                val frame = fetchSingleFrame(streamUrl)
-                if (frame == null) {
-                    runOnUiThread { status.text = "تعذر أخذ Frame من ScreenStream. تأكد أن Local/MJPEG يعمل وأن الرابط صحيح." }
-                    return@execute
-                }
+                val json = JSONObject().put("content", text).toString()
+                val body = json.toRequestBody("application/json; charset=utf-8".toMediaType())
+                val request = Request.Builder()
+                    .url("$apiBase/api/archive")
+                    .header("x-sync-write-key", key)
+                    .post(body)
+                    .build()
 
-                runOnUiThread { status.text = "تم أخذ Frame — جارٍ إرساله للرؤية..." }
-                sendFrame(frame, bridgeUrl)
+                client.newCall(request).execute().use { response ->
+                    val raw = response.body?.string().orEmpty()
+                    val data = runCatching { JSONObject(raw) }.getOrElse { JSONObject() }
+                    if (!response.isSuccessful || !data.optBoolean("ok")) {
+                        val error = data.optString("error", "archive_failed")
+                        throw IllegalStateException(when (error) {
+                            "unauthorized" -> "مفتاح الكتابة غير صحيح."
+                            "sync_not_configured" -> "الحفظ غير مفعّل؛ يلزم إعداد GITHUB_SYNC_TOKEN وSYNC_WRITE_KEY على Vercel."
+                            "content_too_large" -> "النص أكبر من الحد المسموح."
+                            "github_write_failed" -> "رفض GitHub الحفظ (HTTP ${data.optInt("status")})."
+                            "github_unreachable" -> "تعذّر الاتصال بـ GitHub."
+                            else -> "فشل الحفظ: $error"
+                        })
+                    }
+
+                    val url = data.optString("url")
+                    val path = data.optString("path")
+                    runOnUiThread {
+                        savedUrl = url.takeIf { it.startsWith("https://github.com/") }
+                        savedButton.isEnabled = savedUrl != null
+                        keyInput.setText("")
+                        status.text = "تم الحفظ في ملف جديد: $path"
+                    }
+                }
             } catch (e: Exception) {
-                runOnUiThread { status.text = "فشل ScreenStream: " + (e.message ?: e.javaClass.simpleName) }
+                runOnUiThread { status.text = e.message ?: "تعذّر حفظ الرد." }
             }
         }
     }
 
-    private fun normalizeStreamUrl(url: String): String = url.removeSuffix("/")
-
-    /**
-     * Read exactly one JPEG from an MJPEG stream and return immediately.
-     * This avoids waiting forever for /stream.jpeg when it is actually a live stream.
-     */
-    private fun fetchSingleFrame(baseUrl: String): ByteArray? {
-        val clean = normalizeStreamUrl(baseUrl)
-        val candidates = when {
-            clean.endsWith(".mjpeg", ignoreCase = true) -> listOf(clean)
-            clean.endsWith(".jpeg", ignoreCase = true) || clean.endsWith(".jpg", ignoreCase = true) -> listOf(clean)
-            else -> listOf("$clean/stream.mjpeg", "$clean/mjpeg", "$clean/stream.jpeg")
+    private fun openSavedReply() {
+        val url = savedUrl
+        if (url.isNullOrBlank()) {
+            status.text = "لا يوجد رابط محفوظ بعد."
+            return
         }
-
-        var lastError: Exception? = null
-        for (url in candidates) {
-            try {
-                return fetchFirstJpeg(url)
-            } catch (e: Exception) {
-                lastError = e
-            }
-        }
-        throw lastError ?: IllegalStateException("لم أجد بث MJPEG")
+        openUrl(url)
     }
 
-    private fun fetchFirstJpeg(url: String): ByteArray? {
-        val request = Request.Builder()
-            .url(url)
-            .header("Accept", "multipart/x-mixed-replace, image/jpeg, */*")
-            .get()
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                throw IllegalStateException("HTTP ${response.code} from $url")
-            }
-
-            val body = response.body ?: throw IllegalStateException("لا يوجد بث")
-            val input = BufferedInputStream(body.byteStream(), 64 * 1024)
-            val out = ByteArrayOutputStream()
-            var started = false
-            var previous = -1
-
-            while (true) {
-                val current = input.read()
-                if (current == -1) break
-
-                if (!started) {
-                    if (previous == 0xFF && current == 0xD8) {
-                        started = true
-                        out.write(0xFF)
-                        out.write(0xD8)
-                    }
-                } else {
-                    out.write(current)
-                    if (previous == 0xFF && current == 0xD9) {
-                        return out.toByteArray()
-                    }
-                    if (out.size() > 8 * 1024 * 1024) {
-                        throw IllegalStateException("Frame أكبر من 8MB")
-                    }
-                }
-
-                previous = current
-            }
-        }
-
-        return null
-    }
-
-    private fun sendFrame(frame: ByteArray, bridgeUrl: String) {
-        val base64 = Base64.encodeToString(frame, Base64.NO_WRAP)
-        val body = JSONObject()
-            .put("image_base64", base64)
-            .put("mime_type", "image/jpeg")
-            .put(
-                "prompt",
-                "Describe exactly what is visible on this phone screen. Mention important text, buttons, dialogs, and the current screen state. Be concise."
-            )
-            .toString()
-            .toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url(bridgeUrl.removeSuffix("/") + "/vision")
-            .post(body)
-            .build()
-
-        try {
-            client.newCall(request).execute().use { response ->
-                val responseText = response.body?.string().orEmpty()
-                runOnUiThread {
-                    if (response.isSuccessful) {
-                        val answer = JSONObject(responseText).optString("text", responseText)
-                        status.text = answer.ifBlank { "لم يصل وصف." }
-                    } else {
-                        status.text = "خطأ Bridge ${response.code}: $responseText"
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            runOnUiThread { status.text = "فشل الاتصال بالـ Bridge: " + (e.message ?: e.javaClass.simpleName) }
+    private fun openDeepSeek() {
+        val launch = packageManager.getLaunchIntentForPackage("com.deepseek.chat")
+        if (launch == null) {
+            openUrl("https://chat.deepseek.com/")
+        } else {
+            startActivity(launch)
         }
     }
+
+    private fun openUrl(url: String) {
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }.onFailure {
+            status.text = "تعذّر فتح الرابط: ${it.message ?: it.javaClass.simpleName}"
+        }
+    }
+
+    private fun makeButton(label: String, action: () -> Unit): Button =
+        Button(this).apply {
+            text = label
+            setOnClickListener { action() }
+        }
+
+    private fun matchWrap() =
+        LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     override fun onDestroy() {
         executor.shutdownNow()
