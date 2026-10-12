@@ -45,6 +45,9 @@ jobs:
             echo "CRX unchanged; no branch commit needed."
           else
             git commit -m "Build standalone Lemur prototype CRX"
+            # Rebase in case a source commit landed after this run checked out the branch.
+            git fetch origin lemur-browser-command-poc
+            git rebase origin/lemur-browser-command-poc
             git push origin HEAD:lemur-browser-command-poc
           fi
       - name: Upload install artifacts
