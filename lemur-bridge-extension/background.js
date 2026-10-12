@@ -1,8 +1,6 @@
 const COMMAND_URL = "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/lemur-browser-command-poc/SYNC/LEMUR_COMMAND.json";
 const RESULT_URL = "https://lemur-browser-bridge-poc.flourish-gerbil.workers.dev/result";
 const ALARM_NAME = "lemur-command-poll";
-const UPDATE_MANIFEST_URL = "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/lemur-browser-command-poc/lemur-bridge-extension/manifest.json";
-const UPDATE_PACKAGE_URL = "https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/lemur-browser-command-poc/dist/lemur-command-bridge.crx";
 const ALLOWED_HOSTS = new Set(["example.com", "www.iana.org"]);
 
 function jsonSafeUrl(value) {
@@ -24,53 +22,11 @@ async function statusPatch(patch) {
   });
 }
 
-function compareVersions(a, b) {
-  const parse = (value) => String(value).split(/[.+-]/).slice(0, 3).map((part) => Number.parseInt(part, 10) || 0);
-  const left = parse(a);
-  const right = parse(b);
-  for (let i = 0; i < 3; i += 1) {
-    if ((left[i] || 0) > (right[i] || 0)) return 1;
-    if ((left[i] || 0) < (right[i] || 0)) return -1;
-  }
-  return 0;
-}
-
-async function checkForUpdate() {
-  const currentVersion = chrome.runtime.getManifest().version;
-  try {
-    const response = await fetch(UPDATE_MANIFEST_URL + "?_=" + Date.now(), {
-      cache: "no-store",
-      headers: { Accept: "application/json" }
-    });
-    if (!response.ok) throw new Error("Version feed HTTP " + response.status);
-    const latestManifest = await response.json();
-    if (typeof latestManifest.version !== "string") throw new Error("Remote manifest has no version.");
-    const updateAvailable = compareVersions(latestManifest.version, currentVersion) > 0;
-    await statusPatch({
-      currentVersion,
-      latestVersion: latestManifest.version,
-      updateAvailable,
-      updatePackageUrl: updateAvailable ? UPDATE_PACKAGE_URL : "",
-      updateCheckedAt: new Date().toISOString(),
-      updateCheckStatus: updateAvailable ? "A newer package is available. Download and install it manually." : "This installed version matches the published version."
-    });
-    return { ok: true, updateAvailable, currentVersion, latestVersion: latestManifest.version };
-  } catch (error) {
-    await statusPatch({
-      currentVersion,
-      updateCheckedAt: new Date().toISOString(),
-      updateCheckStatus: "Update check failed: " + (error instanceof Error ? error.message : String(error))
-    });
-    return { ok: false, error: String(error) };
-  }
-}
-
 async function setEnabled(enabled) {
   await chrome.storage.local.set({ enabled });
   if (enabled) {
     await chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
     await pollCommand();
-    void checkForUpdate();
   } else {
     await chrome.alarms.clear(ALARM_NAME);
     await statusPatch({ listening: false, status: "Stopped by user." });
@@ -217,7 +173,7 @@ async function finishNavigation(tabId, tab) {
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARM_NAME) { void pollCommand(); void checkForUpdate(); }
+  if (alarm.name === ALARM_NAME) void pollCommand();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -267,17 +223,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.local.get(["state", "lastResult", "enabled", "lastCommandId", "pending"]).then(sendResponse);
     return true;
   }
-  if (message?.action === "openUpdate") {
-    chrome.storage.local.get(["state"]).then(async ({ state = {} }) => {
-      if (!state.updateAvailable || state.updatePackageUrl !== UPDATE_PACKAGE_URL) {
-        sendResponse({ error: "No verified update package is currently available." });
-        return;
-      }
-      await chrome.tabs.create({ url: UPDATE_PACKAGE_URL, active: true });
-      sendResponse({ ok: true });
-    }).catch((error) => sendResponse({ error: error instanceof Error ? error.message : String(error) }));
-    return true;
-  }
   return false;
 });
 
@@ -287,10 +232,9 @@ chrome.runtime.onInstalled.addListener(async () => {
     status: "Auto-listening enabled. Checking the approved public test command."
   });
   await setEnabled(true);
-  void checkForUpdate();
 });
 
 chrome.runtime.onStartup.addListener(async () => {
   const { enabled } = await chrome.storage.local.get(["enabled"]);
-  if (enabled) { await chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 }); void checkForUpdate(); }
+  if (enabled) await chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
 });
