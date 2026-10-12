@@ -46,6 +46,7 @@ import android.widget.Toast
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.integration.android.IntentIntegrator
+import com.google.zxing.qrcode.QRCodeWriter
 import com.journeyapps.barcodescanner.CaptureActivity
 import java.util.EnumMap
 
@@ -130,7 +131,6 @@ class MainActivity : Activity() {
         if (active) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             stopRadio()
-            proximity.reset()
         }
         super.onPause()
     }
@@ -505,7 +505,7 @@ class MainActivity : Activity() {
                         ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
                         else -> "فشل إعلان BLE، الرمز: $errorCode"
                     }
-                    active = false; stopRadio(); renderScreen()
+                    active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
                 }
             }
         }
@@ -520,7 +520,7 @@ class MainActivity : Activity() {
                 override fun onScanFailed(errorCode: Int) {
                     runOnUiThread {
                         latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
-                        active = false; stopRadio(); renderScreen()
+                        active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
                     }
                 }
             }
