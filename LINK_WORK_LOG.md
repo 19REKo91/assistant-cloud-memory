@@ -180,3 +180,9 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - User reports the connection test succeeded and displayed the confirmation text: «استلمنا».
 - Record this as a successful first observed receipt/confirmation, based on the user's report; do not yet generalize to screen-off reliability or both-direction operation.
 - Remaining validation: repeat the test with the receiving phone screen off, then initiate the test from the other phone. Preserve installed fallback until both checks are complete.
+
+
+## 2026-10-14 — confirmed screen-off receiving test
+- User clarified that the successful «استلمنا» result occurred with the receiving phone's screen turned off.
+- Treat as a successful user-observed test of request/response while the receiving phone screen was off.
+- Still unverified: reverse-direction test, both phones screen-off simultaneously, long-duration background reliability, and behavior under Android battery restrictions.
