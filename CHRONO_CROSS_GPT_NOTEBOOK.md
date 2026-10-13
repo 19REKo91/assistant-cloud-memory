@@ -137,3 +137,35 @@ The user's central requirement is not to reproduce only the assistant's current 
 6. Evaluate a supported browser automation runtime and code execution.
 7. Add provider discovery/integration workflow with explicit approval gates for secrets, paid services, publishing, or broader permissions.
 
+## Deployment strategy: free-first tools + remote capability bridges
+The user approved a practical split architecture: first assemble useful and necessary free/open-source tools, then host capabilities that cannot run in Floot on another suitable site/server and connect them back to CHRONO CROSS GPT.
+
+### Rules
+- Prefer free/open-source tools that are actively maintained and cover multiple use cases.
+- Distinguish open-source software from hosted services with free tiers; free tiers may have quotas, changing terms, cold starts, or require payment details.
+- Evaluate runtime compatibility, mobile use, CPU/RAM/storage, network egress, file-size limits, licensing, privacy, security, maintenance, and API limits before selecting.
+- Do not assume a tool is free forever, deployable to a free host, or usable without credentials. Verify current terms and test before adoption.
+- Avoid redundant tools; select one primary tool and, where worthwhile, one fallback for each capability.
+- Keep the front-end/orchestrator in Floot where practical. Run incompatible or heavy tasks in a separate service, reachable through a narrow authenticated API adapter.
+- Never expose tokens in client code, public repositories, URLs, or logs. Keep credentials server-side and use least privilege, quotas, timeouts, input validation, and explicit source-access permissions.
+- Do not publish, incur charges, create external accounts, or grant broad permissions without user authorization.
+- Record for every candidate: capability, license, deployment target, free-tier conditions, setup requirements, security/privacy considerations, test result, and status.
+
+### Capability inventory to build and validate
+1. Web retrieval and extraction, including metadata, alternate readers, and JavaScript-rendered pages if a supported browser runtime exists.
+2. PDF/document parsers; OCR for scanned pages and images.
+3. Image understanding and diagram/table extraction.
+4. Audio extraction and speech-to-text with timestamps and language detection.
+5. Video captions/transcript extraction, Arabic translation, timestamp-preserving SRT/VTT export; optional frame analysis and dubbing only when actually supported.
+6. Code execution and automated tests in a sandboxed service, if a suitable host exists.
+7. Browser automation only after confirming a compatible, maintained runtime and safe deployment target.
+8. A capability registry and adapter layer so local and remote tools look consistent to the orchestrator.
+
+### Implementation sequence
+A. Audit the current Floot project, runtime constraints, dependencies, and free-tier deployment options.
+B. Create a candidate matrix; choose high-coverage free/open-source tools and verify licensing/hosting terms.
+C. Implement one safe, authenticated remote-tool adapter and a capability/status registry.
+D. Integrate and test one capability end-to-end at a time, starting with web/document extraction, then OCR, then audio/video.
+E. Maintain fallback routes and clearly distinguish **working**, **partially working**, **planned**, and **blocked**.
+F. Update this notebook with decisions, test evidence, and next steps; never mark a capability complete based only on theoretical feasibility.
+
