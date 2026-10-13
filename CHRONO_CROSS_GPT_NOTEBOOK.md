@@ -185,3 +185,19 @@ References checked during preliminary research:
 - Cloudflare Workers limits: https://developers.cloudflare.com/workers/platform/limits/
 - Hugging Face Spaces overview and sleep/billing behavior: https://huggingface.co/docs/hub/main/en/spaces-overview and https://huggingface.co/docs/hub/spaces-gpus
 
+## Reversible suspension of currently unused components
+User asks to disable currently unused items only if they can be re-enabled later without breaking the app.
+
+### Safety rule
+Do not delete source files or dependencies, remove environment variables, rotate secrets, alter authentication/security controls, change data/storage, or modify deployment configuration merely to reduce activity. First identify the exact component and evidence that it is unused. Prefer a reversible runtime switch, disabled-by-default feature flag, lazy loading, or pausing an independent scheduled/background task. Preserve configuration and document the exact re-enable path.
+
+### Before any change
+1. Inventory the current project and all entry points, imports, references, endpoints, scheduled/background jobs, provider calls, and environment variables.
+2. Classify each candidate: safe to suspend / needs dependency analysis / essential or security-critical.
+3. Record current state and a rollback method before changing anything.
+4. Change one isolated component at a time; run typecheck and relevant tests; verify the core app, authentication, main reading path, and reactivation path.
+5. Only report a component as safely suspended if the change and re-enable path have actually been tested. Otherwise report it as a recommendation or blocked.
+
+### Current status on 2026-10-13
+No components have been disabled. An attempt to inventory the Floot project was blocked because the account's daily build-action limit has been reached; tools that read project files are currently paused until the stated reset. Do not infer which features are unused before inspection. Resume inventory after the limit resets, then apply the reversible-suspension procedure.
+
