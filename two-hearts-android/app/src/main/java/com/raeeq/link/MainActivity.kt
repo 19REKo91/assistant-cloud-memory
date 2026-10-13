@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity() {
         private const val KEY_SIDE_B = "side_b"
         private const val KEY_ROLE = "role"
         private const val KEY_ACTIVE = "active"
+        private const val KEY_LAST_RECEIVED_MESSAGE = "last_received_message"
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -175,6 +176,9 @@ class MainActivity : ComponentActivity() {
         window.navigationBarColor = Color.rgb(24, 29, 44)
         loadPair()
         buildUi()
+        preferences.getString(KEY_LAST_RECEIVED_MESSAGE, null)?.takeIf { it.isNotBlank() }?.let {
+            messageInbox.text = "آخر رسالة مستلمة: $it"
+        }
         renderScreen()
     }
 
@@ -784,10 +788,21 @@ class LinkProximityService : android.app.Service() {
                 if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
                 return
             }
+            // Persist before acknowledging the GATT write, so a closed Activity cannot lose the inbox update.
+            val saved = getSharedPreferences("link_pair", MODE_PRIVATE).edit()
+                .putString("last_received_message", message)
+                .putLong("last_received_message_at", System.currentTimeMillis())
+                .commit()
+            if(!saved) {
+                if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
+                note("message persistence failed",now)
+                publish()
+                return
+            }
             if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_SUCCESS,offset,null)
             sendBroadcast(android.content.Intent(ACTION_MESSAGE_RECEIVED).setPackage(packageName)
                 .putExtra(EXTRA_MESSAGE,message))
-            note("message received (${value.size} bytes)",now)
+            note("message received and saved (${value.size} bytes)",now)
             publish()
         }
     }
