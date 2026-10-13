@@ -128,3 +128,16 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - **What CI verifies:** Kotlin compilation, unit tests and APK assembly/upload. It does not prove that background/screen-off BLE works on the two real phones.
 - **Required device validation:** update over the installed LINK 0.5.0 without uninstalling; test approach/separation/re-approach in foreground; then background the app and turn off both screens, check the ongoing LINK notification, and finally stop using the notification and confirm returning to LINK does not silently restart it.
 - The `main` branch remains untouched.
+
+
+## 2026-10-13 — User-reported real-phone validation of LINK 0.6.0
+- User confirms LINK 0.6.0 installed successfully.
+- On the two phones, approach responses were synchronized in the user's test.
+- On the two phones, separation responses were synchronized in the user's test.
+- The Stop button/action worked; after stopping, the user manually restarted LINK and confirmed it worked again.
+- Background test passed on both phones: while LINK was running, the user opened another app on each phone and reported that LINK continued working in the background.
+- These are user-observed device results, not CI-only claims. No code changes were made in this update.
+- Still untested: whether LINK remains active with both phone screens turned off/locked, and behavior after device reboot. Do not claim those scenarios pass yet.
+- Next test: on both phones, start LINK and confirm the ongoing service notification is present; lock/turn off the screens and test approach/separation. Then use the notification's Stop action and reopen the app to confirm it does not restart BLE by itself.
+- Build reference remains LINK 0.6.0, code commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77`, Actions run #27: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38412370531
+- Keep `main` untouched.
