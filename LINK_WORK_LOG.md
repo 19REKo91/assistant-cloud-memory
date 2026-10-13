@@ -78,3 +78,16 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Corrected only the experiment branch `anniversary-ble-proximity-prototype` to `versionCode = 5`, `versionName = "0.5.0"` in commit `8143e4076b76bde7c0a7e4727f6d96da36a2161f`. This should permit updating APK 4 if signing identity matches.
 - No new GitHub Actions run appeared after the API-created commit (latest run remains #22). The APK is not yet rebuilt. Trigger the existing workflow manually from GitHub Actions on branch `anniversary-ble-proximity-prototype`, or create a normal push that triggers it. Do not call the APK ready until the run succeeds and the artifact is present.
 - Next: verify the new workflow run, send its artifact link, and ask the user to install it over the existing app without uninstalling.
+
+
+## 2026-10-13 — LINK 0.6.0 background-service build candidate
+- Updated experiment branch only: `anniversary-ble-proximity-prototype`; `main` was not changed.
+- Commit: `daa4d79971746cd55f8a8cc4de9f8990a0a9fa15` — “Add background BLE service and prepare LINK 0.6.0”.
+- Changes: `MainActivity.kt` now delegates BLE scan/advertising and proximity evaluation to a foreground service; the manifest declares `connectedDevice` service type and its foreground-service permissions; app version is `versionCode = 6`, `versionName = "0.6.0"`.
+- The existing `ProximityEngine` and partner UUID matching approach were reused; the current -56 dBm threshold and 10-second departure delay were not changed.
+- The Activity no longer stops BLE merely because it enters `onPause()`. The service publishes state/diagnostics and supplies an ongoing notification with an explicit Stop action.
+- The approach/separation beep calls were removed, consistent with the previously recorded product requirement.
+- A static source check confirmed the service declaration, manifest permissions, lifecycle wiring, current threshold usage, and version bump. This is **not** a substitute for compilation, unit tests, or real-phone verification.
+- **Build/test status at memo time:** pending; do not install or present this candidate as verified until the GitHub Actions run and artifact upload succeed.
+- Previously user-confirmed behavior to preserve: LINK 5 on the two test phones repeatedly reacted to approach, separation at approximately one metre, and approach again while both apps were foregrounded. The approximate distance is not calibrated.
+- Next steps: (1) verify GitHub Actions on this exact commit; (2) inspect test/build steps and artifact; (3) only if successful, install 0.6.0 over the existing app without uninstalling; (4) check foreground regression, then background and screen-off on both phones; (5) record all results and any failure here.
