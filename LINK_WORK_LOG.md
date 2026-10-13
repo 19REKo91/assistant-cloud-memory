@@ -157,3 +157,13 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Likely areas to diagnose before changing thresholds: Android/TECNO battery background restrictions, BLE scan delivery under screen-off, and whether the foreground service/ongoing notification remains active. Do not assume the exact cause without diagnostics.
 - Next: while screen is on, long-press LINK title to show diagnostics; note service active state, raw scan count, partner matches, and RSSI. Then lock that phone for a short interval while the other phone remains active and approaches; wake it and inspect whether raw results/matches increased and whether an error is shown. Repeat on the other phone. No code change/build has been made for this defect yet.
 - Preserve version 0.6.0 as the current tested baseline; do not alter RSSI thresholds or remove foreground service without evidence. Keep main untouched.
+
+
+## 2026-10-13 — LINK BLE connection confirmation button (build pending)
+- User authorized autonomous implementation of a persistent connection-test button for the finished LINK app.
+- Code commit: `1df3532358b3c72da80b75c874806818e95c0ef7` on `anniversary-ble-proximity-prototype`; `main` untouched.
+- Added an active-session UI button labelled "اختبار الاتصال بالهاتف الآخر". It asks the foreground service to connect over BLE GATT to the latest scanned partner device, read a dedicated confirmation characteristic, and only report success when the returned device UUID matches the saved partner UUID. A toast reports success/failure.
+- The service now opens a GATT server with a read-only confirmation characteristic, and BLE advertising is configured as connectable to permit GATT connections. Existing UUID-based discovery and proximity thresholds remain unchanged.
+- GitHub Actions build run #28 started and was still in progress at the time of this note: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38425625074
+- **Not yet verified:** compilation/build result, APK artifact, GATT compatibility across the two actual phones, and successful response while the receiving phone screen is off. Do not ask the user to install an APK until the build succeeds and the artifact is confirmed.
+- Next: verify Actions run #28; fix any compile errors, then provide the APK only after successful build. Device testing must be done on both phones with the new build, since the button requires the new GATT protocol on both ends. Keep the current installed 0.6.0 baseline intact until a tested update is available.
