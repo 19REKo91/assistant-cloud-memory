@@ -522,11 +522,11 @@ class MainActivity : ComponentActivity() {
                 runOnUiThread {
                     advertisingStatus = "فشل: $errorCode"
                     latestRadioError = when (errorCode) {
-                        ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
-                        ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
-                        ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
-                        ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
-                        ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
+                        AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
+                        AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
+                        AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
+                        AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
+                        AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
                         else -> "فشل إعلان BLE، الرمز: $errorCode"
                     }
                     active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
