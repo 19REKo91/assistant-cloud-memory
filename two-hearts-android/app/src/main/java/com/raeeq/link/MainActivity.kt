@@ -656,8 +656,7 @@ class LinkProximityService : android.app.Service() {
     private var firstStrong:Long?=null
     private var latestError:String?=null
 
-    private val ticker=object:android.os.Handler.Callback, Runnable {
-        override fun handleMessage(msg:android.os.Message?):Boolean=false
+    private val ticker=object:Runnable {
         override fun run() {
             if(!running) return
             val now=android.os.SystemClock.elapsedRealtime()
@@ -700,6 +699,7 @@ class LinkProximityService : android.app.Service() {
         lastPublished=0L
         createChannel()
         running=true
+        persistActive(true)
         try {
             startForeground(NOTIFICATION_ID,makeNotification(),
                 android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
@@ -788,15 +788,19 @@ class LinkProximityService : android.app.Service() {
     }
 
     private fun stopSession() {
-        running=false; stopRadio(); engine.reset(); latestError=null
+        running=false; persistActive(false); stopRadio(); engine.reset(); latestError=null
         note("session stopped",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun fail(message:String) {
-        latestError=message; running=false; stopRadio(); engine.reset()
+        latestError=message; running=false; persistActive(false); stopRadio(); engine.reset()
         note("error",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf()
+    }
+
+    private fun persistActive(value:Boolean) {
+        getSharedPreferences("link_pair", MODE_PRIVATE).edit().putBoolean("active", value).apply()
     }
 
     private fun hasBluetoothPermissions():Boolean =
