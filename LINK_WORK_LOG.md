@@ -192,3 +192,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - User confirms connection test succeeded in both directions between the two LINK phones.
 - User also confirms the receiving phone's screen was off during the relevant test; the app displayed a receipt confirmation.
 - Mark bidirectional request/response as passed in the user's tested conditions. Do not infer simultaneous both-screens-off reliability or long-duration background reliability; those remain untested.
+
+
+## 2026-10-14 — short-message exchange build completed
+- Added UI for composing and sending a short message to the paired phone, with a received-message display.
+- Reused the paired BLE GATT connection and existing partner UUID verification before sending; remote GATT characteristic now accepts bounded writes (up to 180 bytes) and the receiver displays the message.
+- GitHub Actions run #29 succeeded: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38483876774
+- Build/test/assemble and APK upload succeeded. Artifact `link-debug-apk`, ID `11857528818`, is available until 2026-10-20T23:25:03Z.
+- Device-level message delivery is NOT yet verified. Install this build on both phones only when ready to test; keep the current installed build until update installation is confirmed.
