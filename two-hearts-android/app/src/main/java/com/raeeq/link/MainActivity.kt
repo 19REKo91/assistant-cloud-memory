@@ -48,9 +48,17 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import java.util.ArrayDeque
 import java.util.EnumMap
 
 class MainActivity : ComponentActivity() {
+    private data class ScanEvent(
+        val elapsedMs: Long,
+        val rssi: Int,
+        val uuids: List<String>,
+        val active: Boolean,
+        val radio: Boolean
+    )
     companion object {
         private const val REQUEST_BLUETOOTH = 3101
         private const val REQUEST_CAMERA = 3102
@@ -86,6 +94,16 @@ class MainActivity : ComponentActivity() {
     private var showDiagnostics = false
     private var active = false
     private var latestRadioError: String? = null
+    private var latestAdvertiseError: String? = null
+    private var latestScanError: String? = null
+    private var radioStarts = 0
+    private var radioStartElapsed: Long = 0L
+    private val recentScanEvents = ArrayDeque<ScanEvent>(3)
+    private var diagnosticLocalUuid: String? = null
+    private var diagnosticPartnerUuid: String? = null
+    private var lastRssi: Int? = null
+    private var lastRssiElapsedMs: Long? = null
+    private var lastMatchElapsedMs: Long? = null
     private var isRadioRunning = false
     private var scanResultsSeen = 0
     private var partnerMatches = 0
@@ -236,7 +254,10 @@ class MainActivity : ComponentActivity() {
             gravity = Gravity.CENTER
             visibility = View.GONE
         }
-        addFixed(diagnostic, 28)
+        root.addView(diagnostic, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            topMargin = dp(8); bottomMargin = dp(8)
+        })
 
         qrImage = ImageView(this).apply {
             visibility = View.GONE
@@ -521,6 +542,9 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingPermission")
     private fun startRadio(): Boolean {
+        radioStarts++
+        latestAdvertiseError = null
+        latestScanError = null
         val payload = pair ?: return false
         val savedRole = role ?: return false
         if (!hasBluetoothPermissions()) { latestRadioError = "امنح أذونات الأجهزة القريبة ثم فعّل التجربة."; return false }
@@ -537,6 +561,8 @@ class MainActivity : ComponentActivity() {
         scanner = localScanner; advertiser = localAdvertiser
         val localUuid = payload.ownUuid(savedRole)
         val partnerUuid = payload.partnerUuid(savedRole)
+        diagnosticLocalUuid = localUuid.toString()
+        diagnosticPartnerUuid = partnerUuid.toString()
         val advSettings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
@@ -549,6 +575,11 @@ class MainActivity : ComponentActivity() {
         resultsWithoutScanRecord = 0
         resultsWithoutServiceUuids = 0
         scanStartedAtMs = SystemClock.elapsedRealtime()
+        radioStartElapsed = scanStartedAtMs ?: SystemClock.elapsedRealtime()
+        recentScanEvents.clear()
+        lastRssi = null
+        lastRssiElapsedMs = null
+        lastMatchElapsedMs = null
         advertisingStatus = "جارٍ البدء"
         scanningStatus = "جارٍ البدء"
         val advCb = object : AdvertiseCallback() {
@@ -569,6 +600,7 @@ class MainActivity : ComponentActivity() {
                         AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
                         else -> "فشل إعلان BLE، الرمز: $errorCode"
                     }
+                    latestAdvertiseError = latestRadioError
                     active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
                 }
             }
@@ -589,6 +621,7 @@ class MainActivity : ComponentActivity() {
                     runOnUiThread {
                         scanningStatus = "فشل: $errorCode"
                         latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
+                        latestScanError = latestRadioError
                         active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
                     }
                 }
@@ -612,6 +645,16 @@ class MainActivity : ComponentActivity() {
         val uuids = record?.serviceUuids
         runOnUiThread {
             rawScanResultsReceived++
+            if (recentScanEvents.size == 3) recentScanEvents.removeFirst()
+            recentScanEvents.addLast(
+                ScanEvent(
+                    elapsedMs = SystemClock.elapsedRealtime() - radioStartElapsed,
+                    rssi = result.rssi,
+                    uuids = uuids?.map { it.uuid.toString() } ?: emptyList(),
+                    active = active,
+                    radio = isRadioRunning
+                )
+            )
             if (record == null) {
                 resultsWithoutScanRecord++
             } else if (uuids.isNullOrEmpty()) {
@@ -624,6 +667,9 @@ class MainActivity : ComponentActivity() {
             scanResultsSeen++
             if (uuids?.contains(ParcelUuid(partnerUuid)) == true) {
                 partnerMatches++
+                lastMatchElapsedMs = SystemClock.elapsedRealtime() - radioStartElapsed
+                lastRssi = result.rssi
+                lastRssiElapsedMs = lastMatchElapsedMs
                 proximity.onRssi(result.rssi, SystemClock.elapsedRealtime())?.let(::onTransition)
             }
             updateDiagnostic()
@@ -650,12 +696,25 @@ class MainActivity : ComponentActivity() {
                 "لا تصل أي نتيجة من ماسح BLE منذ ${elapsedSeconds}ث"
             else -> "بانتظار أول نتيجة"
         }
-        val errorLine = latestRadioError?.let { "\nالتفصيل: $it" } ?: ""
+        val rawDelta = rawScanResultsReceived
+        val seenDelta = scanResultsSeen
+        val matchDelta = partnerMatches
+        val eventLines = recentScanEvents.toList().asReversed().mapIndexed { index, event ->
+            "#${index + 1} +${event.elapsedMs}ms RSSI=${event.rssi} active=${event.active} radio=${event.radio} UUIDs=${event.uuids.ifEmpty { listOf("—") }.joinToString(",")}"
+        }.joinToString("\\n")
+        val eventBlock = if (eventLines.isEmpty()) "لا توجد أحداث مسح بعد" else eventLines
+        val errorLine = latestRadioError?.let { "\\nالخطأ العام: $it" } ?: ""
+        val lastRssiLine = lastRssi?.let { "$it dBm عند +${lastRssiElapsedMs ?: 0L}ms" } ?: "—"
+        val lastMatchLine = lastMatchElapsedMs?.let { "+${it}ms" } ?: "—"
         diagnostic.text =
-            "RSSI الشريك: ${proximity.latestRssi ?: "—"} dBm | نتائج معالجة: $scanResultsSeen | تطابق الشريك: $partnerMatches\n" +
-            "الإعلان: $advertisingStatus | المسح: $scanningStatus\n" +
-            "نتائج خام: $rawScanResultsReceived | سجل بلا بيانات: $resultsWithoutScanRecord | بلا UUID: $resultsWithoutServiceUuids\n" +
-            "حالة الاستقبال: $receiveState$errorLine"
+            "الدور المحفوظ: ${role ?: "—"} | active=$active | isRadioRunning=$isRadioRunning | radioStarts=$radioStarts\\n" +
+            "localUuid=${diagnosticLocalUuid ?: "—"}\\npartnerUuid=${diagnosticPartnerUuid ?: "—"}\\n" +
+            "RSSI الأخير: $lastRssiLine | آخر مطابقة: $lastMatchLine\\n" +
+            "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\\n" +
+            "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\\n" +
+            "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\\n" +
+            "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\\n" +
+            "حالة الاستقبال: $receiveState\\nآخر 3 أحداث (الأحدث أولًا):\\n$eventBlock$errorLine"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
