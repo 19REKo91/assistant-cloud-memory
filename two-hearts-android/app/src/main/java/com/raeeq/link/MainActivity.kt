@@ -86,6 +86,10 @@ class MainActivity : ComponentActivity() {
     private var active = false
     private var latestRadioError: String? = null
     private var isRadioRunning = false
+    private var scanResultsSeen = 0
+    private var partnerMatches = 0
+    private var advertisingStatus = "لم يبدأ"
+    private var scanningStatus = "لم يبدأ"
     private var scanner: BluetoothLeScanner? = null
     private var advertiser: BluetoothLeAdvertiser? = null
     private var scanCallback: ScanCallback? = null
@@ -503,12 +507,20 @@ class MainActivity : ComponentActivity() {
             .setConnectable(false).setTimeout(0).build()
         val advData = AdvertiseData.Builder().setIncludeDeviceName(false)
             .setIncludeTxPowerLevel(false).addServiceUuid(ParcelUuid(localUuid)).build()
+        scanResultsSeen = 0
+        partnerMatches = 0
+        advertisingStatus = "جارٍ البدء"
+        scanningStatus = "جارٍ البدء"
         val advCb = object : AdvertiseCallback() {
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-                runOnUiThread { if (active) updateInteractionUi() }
+                runOnUiThread {
+                    advertisingStatus = "يعمل"
+                    if (active) updateDiagnostic()
+                }
             }
             override fun onStartFailure(errorCode: Int) {
                 runOnUiThread {
+                    advertisingStatus = "فشل: $errorCode"
                     latestRadioError = when (errorCode) {
                         ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
                         ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
@@ -524,20 +536,26 @@ class MainActivity : ComponentActivity() {
         advertiseCallback = advCb
         return try {
             localAdvertiser.startAdvertising(advSettings, advData, advCb)
-            val filter = ScanFilter.Builder().setServiceUuid(ParcelUuid(partnerUuid)).build()
+            // Scan without an OS-level UUID filter for diagnosis; validate the partner UUID ourselves.
             val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
             val scanCb = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) { handleRssi(result.rssi) }
-                override fun onBatchScanResults(results: MutableList<ScanResult>) { results.forEach { handleRssi(it.rssi) } }
+                override fun onScanResult(callbackType: Int, result: ScanResult) {
+                    inspectScanResult(result, partnerUuid)
+                }
+                override fun onBatchScanResults(results: MutableList<ScanResult>) {
+                    results.forEach { inspectScanResult(it, partnerUuid) }
+                }
                 override fun onScanFailed(errorCode: Int) {
                     runOnUiThread {
+                        scanningStatus = "فشل: $errorCode"
                         latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
                         active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
                     }
                 }
             }
             scanCallback = scanCb
-            localScanner.startScan(listOf(filter), scanSettings, scanCb)
+            localScanner.startScan(null, scanSettings, scanCb)
+            scanningStatus = "بدأ الطلب؛ بانتظار النتائج"
             isRadioRunning = true; latestRadioError = null
             handler.removeCallbacks(tickTask); handler.post(tickTask)
             true
@@ -549,10 +567,15 @@ class MainActivity : ComponentActivity() {
             stopRadio(); false
         }
     }
-    private fun handleRssi(rssi: Int) {
+    private fun inspectScanResult(result: ScanResult, partnerUuid: java.util.UUID) {
+        val uuids = result.scanRecord?.serviceUuids
         runOnUiThread {
             if (!active || !isRadioRunning) return@runOnUiThread
-            proximity.onRssi(rssi, SystemClock.elapsedRealtime())?.let(::onTransition)
+            scanResultsSeen++
+            if (uuids?.contains(ParcelUuid(partnerUuid)) == true) {
+                partnerMatches++
+                proximity.onRssi(result.rssi, SystemClock.elapsedRealtime())?.let(::onTransition)
+            }
             updateDiagnostic()
         }
     }
@@ -566,7 +589,7 @@ class MainActivity : ComponentActivity() {
     private fun updateDiagnostic() {
         if (!::diagnostic.isInitialized) return
         diagnostic.visibility = if (showDiagnostics) View.VISIBLE else View.GONE
-        diagnostic.text = "RSSI: ${proximity.latestRssi ?: "—"} dBm  |  حد القرب: -56 dBm"
+        diagnostic.text = "RSSI الشريك: ${proximity.latestRssi ?: "—"} dBm | نتائج BLE: $scanResultsSeen | تطابق الشريك: $partnerMatches\nالإعلان: $advertisingStatus | المسح: $scanningStatus"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
