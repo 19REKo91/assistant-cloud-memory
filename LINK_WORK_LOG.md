@@ -109,3 +109,9 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - GitHub Actions run #27 targets the newest stop-action guard commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77`; it was queued at the last status check. Prefer #27 for final verification because it includes the current source.
 - Run #24 failed due the ticker implementation and event-list identifier. Run #25 failed on the event-list mismatch in its older intermediate commit. Those failures are recorded for audit; neither produced an APK artifact.
 - **Do not install yet:** the latest source remains unverified until the relevant current-head run passes unit tests, assembles the APK, and uploads `link-debug-apk`. Real-phone background behavior still requires testing after a successful build.
+
+
+## CI status correction — 2026-10-13
+- Run #26 completed successfully for commit `03489dfb18c5d7842fa1b7c1ddd23950d931c490`: the unit-test/build step and artifact upload both succeeded.
+- Run #26 artifact `link-debug-apk`: artifact ID `11822396957`; ZIP size 2,287,937 bytes; created 2026-10-13 14:19:32 UTC; expires 2026-10-20 14:19:30 UTC. This artifact predates the Activity stop-action guard commit, so it is retained only as build evidence and is **not the preferred install candidate**.
+- Run #27 for the latest commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77` is still the preferred candidate to verify because it includes the final stop-action guard. Its unit-test/build step was in progress at this check.
