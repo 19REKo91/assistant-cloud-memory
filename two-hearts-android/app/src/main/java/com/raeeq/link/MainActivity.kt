@@ -42,6 +42,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -94,6 +95,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var showQrButton: Button
     private lateinit var stopButton: Button
     private lateinit var connectionButton: Button
+    private lateinit var messageInput: EditText
+    private lateinit var sendMessageButton: Button
+    private lateinit var messageInbox: TextView
     private lateinit var resetButton: Button
     private lateinit var bluetoothSettingsButton: Button
 
@@ -110,6 +114,14 @@ class MainActivity : ComponentActivity() {
             if (intent?.action == LinkProximityService.ACTION_CONNECTION_RESULT) {
                 val result = intent.getStringExtra(LinkProximityService.EXTRA_CONNECTION_RESULT).orEmpty()
                 if (result.isNotBlank()) Toast.makeText(this@MainActivity, result, Toast.LENGTH_LONG).show()
+                return
+            }
+            if (intent?.action == LinkProximityService.ACTION_MESSAGE_RECEIVED) {
+                val message = intent.getStringExtra(LinkProximityService.EXTRA_MESSAGE).orEmpty()
+                if (message.isNotBlank()) {
+                    messageInbox.text = "آخر رسالة مستلمة: $message"
+                    Toast.makeText(this@MainActivity, "رسالة من الهاتف المرتبط: $message", Toast.LENGTH_LONG).show()
+                }
                 return
             }
             if (intent?.action != LinkProximityService.ACTION_UPDATE) return
@@ -172,6 +184,7 @@ class MainActivity : ComponentActivity() {
             val filter = IntentFilter().apply {
                 addAction(LinkProximityService.ACTION_UPDATE)
                 addAction(LinkProximityService.ACTION_CONNECTION_RESULT)
+                addAction(LinkProximityService.ACTION_MESSAGE_RECEIVED)
             }
             if (Build.VERSION.SDK_INT >= 33) {
                 registerReceiver(serviceUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
@@ -342,6 +355,43 @@ class MainActivity : ComponentActivity() {
                 startService(Intent(this, LinkProximityService::class.java).setAction(LinkProximityService.ACTION_TEST_CONNECTION))
             }
         }
+        messageInput = EditText(this).apply {
+            hint = "اكتب رسالة قصيرة للهاتف المرتبط"
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.rgb(174, 184, 203))
+            textSize = 15f
+            maxLines = 3
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = GradientDrawable().apply {
+                cornerRadius = dp(12).toFloat()
+                setColor(Color.rgb(53, 49, 70))
+            }
+        }
+        root.addView(messageInput, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) })
+        messageInbox = TextView(this).apply {
+            text = "لا توجد رسائل مستلمة بعد."
+            setTextColor(Color.rgb(218, 222, 235))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setPadding(dp(4), dp(8), dp(4), dp(4))
+        }
+        root.addView(messageInbox, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        sendMessageButton = makeButton("إرسال رسالة للهاتف الآخر", true) {
+            val message = messageInput.text?.toString()?.trim().orEmpty()
+            if (!active) {
+                Toast.makeText(this, "فعّل LINK على الهاتفين أولًا.", Toast.LENGTH_LONG).show()
+            } else if (message.isBlank()) {
+                Toast.makeText(this, "اكتب رسالة أولًا.", Toast.LENGTH_SHORT).show()
+            } else if (message.toByteArray(Charsets.UTF_8).size > 180) {
+                Toast.makeText(this, "اجعل الرسالة أقصر من 180 بايت.", Toast.LENGTH_LONG).show()
+            } else {
+                startService(Intent(this, LinkProximityService::class.java)
+                    .setAction(LinkProximityService.ACTION_SEND_MESSAGE)
+                    .putExtra(LinkProximityService.EXTRA_MESSAGE, message))
+                Toast.makeText(this, "جارٍ إرسال الرسالة…", Toast.LENGTH_SHORT).show()
+            }
+        }
         stopButton = makeButton("إيقاف التجربة", false) {
             active = false
             preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
@@ -356,8 +406,8 @@ class MainActivity : ComponentActivity() {
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
         }
-        listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, connectionButton, stopButton,
-            resetButton, bluetoothSettingsButton).forEach(::addButton)
+        listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, connectionButton,
+            sendMessageButton, stopButton, resetButton, bluetoothSettingsButton).forEach(::addButton)
     }
 
     private fun addFixed(view: View, heightDp: Int) {
@@ -652,9 +702,12 @@ class LinkProximityService : android.app.Service() {
         const val ACTION_START="com.raeeq.link.action.START_PROXIMITY"
         const val ACTION_STOP="com.raeeq.link.action.STOP_PROXIMITY"
         const val ACTION_TEST_CONNECTION="com.raeeq.link.action.TEST_CONNECTION"
+        const val ACTION_SEND_MESSAGE="com.raeeq.link.action.SEND_MESSAGE"
+        const val ACTION_MESSAGE_RECEIVED="com.raeeq.link.action.MESSAGE_RECEIVED"
         const val ACTION_UPDATE="com.raeeq.link.action.PROXIMITY_UPDATE"
         const val ACTION_CONNECTION_RESULT="com.raeeq.link.action.CONNECTION_RESULT"
         const val EXTRA_CONNECTION_RESULT="connection_result"
+        const val EXTRA_MESSAGE="message"
         const val EXTRA_LOCAL_UUID="local_uuid"
         const val EXTRA_PARTNER_UUID="partner_uuid"
         const val EXTRA_STATE="state"
@@ -688,6 +741,7 @@ class LinkProximityService : android.app.Service() {
     private var gattServer:android.bluetooth.BluetoothGattServer?=null
     private var clientGatt:android.bluetooth.BluetoothGatt?=null
     private var connectionTestPending=false
+    private var pendingMessage:String?=null
 
     private val serverCallback=object:android.bluetooth.BluetoothGattServerCallback() {
         override fun onConnectionStateChange(device:android.bluetooth.BluetoothDevice,status:Int,newState:Int) {
@@ -716,6 +770,26 @@ class LinkProximityService : android.app.Service() {
                 publish()
             }
         }
+        override fun onCharacteristicWriteRequest(
+            device:android.bluetooth.BluetoothDevice,requestId:Int,characteristic:android.bluetooth.BluetoothGattCharacteristic,
+            preparedWrite:Boolean,responseNeeded:Boolean,offset:Int,value:ByteArray
+        ) {
+            val now=android.os.SystemClock.elapsedRealtime()
+            if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID || preparedWrite || offset!=0 || value.size>180) {
+                if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
+                return
+            }
+            val message=value.toString(Charsets.UTF_8).trim()
+            if(message.isBlank()) {
+                if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
+                return
+            }
+            if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_SUCCESS,offset,null)
+            sendBroadcast(android.content.Intent(ACTION_MESSAGE_RECEIVED).setPackage(packageName)
+                .putExtra(EXTRA_MESSAGE,message))
+            note("message received (${value.size} bytes)",now)
+            publish()
+        }
     }
 
     private val clientCallback=object:android.bluetooth.BluetoothGattCallback() {
@@ -738,6 +812,16 @@ class LinkProximityService : android.app.Service() {
             }
             if(!gatt.readCharacteristic(characteristic)) finishConnectionTest(false,"تعذّر طلب تأكيد من الهاتف الآخر.",gatt)
         }
+        override fun onCharacteristicWrite(
+            gatt:android.bluetooth.BluetoothGatt,characteristic:android.bluetooth.BluetoothGattCharacteristic,status:Int
+        ) {
+            if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID || pendingMessage==null) return
+            if(status==android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                finishConnectionTest(true,"أُرسلت الرسالة إلى الهاتف المرتبط.",gatt)
+            } else {
+                finishConnectionTest(false,"فشل إرسال الرسالة (رمز $status).",gatt)
+            }
+        }
         override fun onCharacteristicRead(
             gatt:android.bluetooth.BluetoothGatt,characteristic:android.bluetooth.BluetoothGattCharacteristic,status:Int
         ) {
@@ -747,8 +831,18 @@ class LinkProximityService : android.app.Service() {
             }
             val remoteUuid=characteristic.value?.toString(Charsets.UTF_8)
             val expected=partnerUuid?.toString()
-            if(remoteUuid==expected) finishConnectionTest(true,"نجح الاتصال: استلمنا تأكيد الهاتف المرتبط.",gatt)
-            else finishConnectionTest(false,"وصل رد، لكن هوية الهاتف لا تطابق الاقتران المحفوظ.",gatt)
+            if(remoteUuid!=expected) {
+                finishConnectionTest(false,"وصل رد، لكن هوية الهاتف لا تطابق الاقتران المحفوظ.",gatt)
+            } else {
+                val message=pendingMessage
+                if(message==null) {
+                    finishConnectionTest(true,"نجح الاتصال: استلمنا تأكيد الهاتف المرتبط.",gatt)
+                } else {
+                    characteristic.writeType=android.bluetooth.BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                    characteristic.value=message.toByteArray(Charsets.UTF_8)
+                    if(!gatt.writeCharacteristic(characteristic)) finishConnectionTest(false,"تم التحقق من الهاتف لكن تعذّر إرسال الرسالة.",gatt)
+                }
+            }
         }
     }
 
@@ -769,6 +863,7 @@ class LinkProximityService : android.app.Service() {
         when(intent?.action) {
             ACTION_STOP -> { stopSession(); stopSelf(startId) }
             ACTION_TEST_CONNECTION -> requestConnectionTest()
+            ACTION_SEND_MESSAGE -> requestConnectionTest(intent.getStringExtra(EXTRA_MESSAGE)?.trim().orEmpty())
             ACTION_START -> {
                 val local=intent.getStringExtra(EXTRA_LOCAL_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
                 val partner=intent.getStringExtra(EXTRA_PARTNER_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
@@ -890,8 +985,8 @@ class LinkProximityService : android.app.Service() {
             ).apply {
                 addCharacteristic(android.bluetooth.BluetoothGattCharacteristic(
                     PROBE_CHARACTERISTIC_UUID,
-                    android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ,
-                    android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ
+                    android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ or android.bluetooth.BluetoothGattCharacteristic.PROPERTY_WRITE,
+                    android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ or android.bluetooth.BluetoothGattCharacteristic.PERMISSION_WRITE
                 ))
             }
             gattServer=server
@@ -905,7 +1000,7 @@ class LinkProximityService : android.app.Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun requestConnectionTest() {
+    private fun requestConnectionTest(message:String?=null) {
         if(!running) { sendConnectionResult("فعّل LINK على هذا الهاتف أولًا."); return }
         if(!hasBluetoothPermissions()) { sendConnectionResult("أذونات البلوتوث غير متاحة."); return }
         if(connectionTestPending) { sendConnectionResult("اختبار الاتصال جارٍ بالفعل."); return }
@@ -915,7 +1010,8 @@ class LinkProximityService : android.app.Service() {
             return
         }
         connectionTestPending=true
-        sendConnectionResult("جارٍ طلب تأكيد من الهاتف المرتبط…")
+        pendingMessage=message?.takeIf { it.isNotBlank() }
+        sendConnectionResult(if(pendingMessage==null) "جارٍ طلب تأكيد من الهاتف المرتبط…" else "جارٍ الاتصال لإرسال الرسالة…")
         try {
             clientGatt=device.connectGatt(this,false,clientCallback,android.bluetooth.BluetoothDevice.TRANSPORT_LE)
             if(clientGatt==null) finishConnectionTest(false,"تعذّر بدء اتصال BLE.",null)
@@ -928,6 +1024,7 @@ class LinkProximityService : android.app.Service() {
     private fun finishConnectionTest(success:Boolean,message:String,gatt:android.bluetooth.BluetoothGatt?) {
         if(!connectionTestPending && gatt!=null) return
         connectionTestPending=false
+        pendingMessage=null
         sendConnectionResult(message)
         note(if(success) "connection test success" else "connection test failed",android.os.SystemClock.elapsedRealtime())
         if(gatt!=null) {
