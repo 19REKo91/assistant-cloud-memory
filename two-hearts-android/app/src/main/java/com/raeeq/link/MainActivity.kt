@@ -5,7 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.activity.ComponentActivity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -45,12 +45,12 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
-import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.qrcode.QRCodeWriter
-import com.journeyapps.barcodescanner.CaptureActivity
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.util.EnumMap
 
-class MainActivity : Activity() {
+class MainActivity : ComponentActivity() {
     companion object {
         private const val REQUEST_BLUETOOTH = 3101
         private const val REQUEST_CAMERA = 3102
@@ -60,6 +60,9 @@ class MainActivity : Activity() {
     }
 
     private val handler = Handler(Looper.getMainLooper())
+    private val qrScanLauncher = registerForActivityResult(ScanContract()) { result ->
+        handleQrScanResult(result.contents)
+    }
     private val preferences by lazy { getSharedPreferences("link_pair", MODE_PRIVATE) }
     private val proximity = ProximityEngine()
     private lateinit var root: LinearLayout
@@ -389,31 +392,40 @@ class MainActivity : Activity() {
         else requestPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA)
     }
     private fun startQrScan() {
-        IntentIntegrator(this).apply {
-            setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+        val options = ScanOptions().apply {
+            setDesiredBarcodeFormats(ScanOptions.QR_CODE)
             setPrompt("امسح رمز الاقتران من الهاتف الأول")
-            setBeepEnabled(false); setOrientationLocked(true)
-            setCaptureActivity(CaptureActivity::class.java)
-        }.initiateScan()
+            setBeepEnabled(false)
+            setOrientationLocked(true)
+        }
+        try {
+            qrScanLauncher.launch(options)
+        } catch (error: Exception) {
+            Toast.makeText(
+                this,
+                "تعذّر فتح الماسح: ${error.localizedMessage ?: "خطأ غير معروف"}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
-    @Deprecated("Retained for ZXing activity-result compatibility.")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            val contents = result.contents
-            if (contents == null) {
-                Toast.makeText(this, "تم إلغاء المسح.", Toast.LENGTH_SHORT).show()
-            } else {
-                val payload = PairingPayload.parse(contents)
-                if (payload == null) {
-                    Toast.makeText(this, "هذا الرمز ليس رمز اقتران صالحًا.", Toast.LENGTH_LONG).show()
-                } else {
-                    pair = payload; role = "B"; showingQr = false; active = false; latestRadioError = null
-                    savePair(payload, "B"); renderScreen()
-                    Toast.makeText(this, "تم حفظ الاقتران على هذا الهاتف.", Toast.LENGTH_LONG).show()
-                }
-            }
-        } else super.onActivityResult(requestCode, resultCode, data)
+    private fun handleQrScanResult(contents: String?) {
+        if (contents == null) {
+            Toast.makeText(this, "تم إلغاء المسح.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val payload = PairingPayload.parse(contents)
+        if (payload == null) {
+            Toast.makeText(this, "هذا الرمز ليس رمز اقتران صالحًا.", Toast.LENGTH_LONG).show()
+        } else {
+            pair = payload
+            role = "B"
+            showingQr = false
+            active = false
+            latestRadioError = null
+            savePair(payload, "B")
+            renderScreen()
+            Toast.makeText(this, "تم حفظ الاقتران على هذا الهاتف.", Toast.LENGTH_LONG).show()
+        }
     }
     private fun savePair(payload: PairingPayload, savedRole: String) {
         preferences.edit().putString(KEY_SIDE_A, payload.sideA).putString(KEY_SIDE_B, payload.sideB)
