@@ -169,3 +169,19 @@ D. Integrate and test one capability end-to-end at a time, starting with web/doc
 E. Maintain fallback routes and clearly distinguish **working**, **partially working**, **planned**, and **blocked**.
 F. Update this notebook with decisions, test evidence, and next steps; never mark a capability complete based only on theoretical feasibility.
 
+### Initial candidate shortlist (research only; not integrated yet)
+- **Document ingestion:** Unstructured OSS (https://github.com/Unstructured-IO/unstructured) as a broad parser for PDF, HTML, Word and other documents; evaluate dependency size and OCR requirements before deployment.
+- **OCR:** Tesseract (https://github.com/tesseract-ocr/tesseract) as a lightweight baseline; evaluate PaddleOCR as a stronger alternative where CPU/RAM/runtime allow.
+- **Speech-to-text:** faster-whisper (https://github.com/SYSTRAN/faster-whisper) or whisper.cpp (https://github.com/ggml-org/whisper.cpp). These are software we can self-host, not guaranteed free hosted APIs; model inference needs meaningful RAM/CPU and can be slow without suitable hardware. faster-whisper documents CPU int8 operation and timestamped segments.
+- **Browser automation:** Playwright (https://playwright.dev/) with its matching browser binaries, only on a host that supports long-running processes, browser dependencies and safe sandboxing.
+- **Lightweight API/orchestration:** Cloudflare Workers can be considered for authenticated routing and lightweight requests, not for heavy model inference; current documented free limits include 128 MB memory and 10 ms CPU per request.
+- **Possible remote compute candidate:** Hugging Face Spaces may be worth evaluating for demos or some CPU tasks, but free hardware can sleep when idle and plan/space rules vary; verify current availability and limits before relying on it for production.
+- **Important:** this is a research shortlist, not a declaration that any of these tools are installed, deployed, or working in the project. Verify each license, hosting terms, resource requirements and current free-tier conditions at adoption time.
+
+References checked during preliminary research:
+- Unstructured OSS: https://github.com/Unstructured-IO/unstructured
+- faster-whisper: https://github.com/SYSTRAN/faster-whisper
+- Playwright browser/runtime requirements: https://playwright.dev/docs/browsers and https://playwright.dev/docs/docker
+- Cloudflare Workers limits: https://developers.cloudflare.com/workers/platform/limits/
+- Hugging Face Spaces overview and sleep/billing behavior: https://huggingface.co/docs/hub/main/en/spaces-overview and https://huggingface.co/docs/hub/spaces-gpus
+
