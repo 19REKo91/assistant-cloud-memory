@@ -55,3 +55,17 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Compare the first-match / first-strong / NEAR / APART / scene timestamps on both phones. Their wall clocks may not be perfectly synchronized, so treat the absolute clock comparison as approximate; local +ms values are anchored to each phone's own radio start and should not be compared directly as a shared clock.
 - After evidence is collected, decide whether the fix belongs in local RSSI sampling/hysteresis or a BLE peer-state synchronization protocol. Do not promise exact simultaneous behavior; BLE scanning and device clock/audio/UI scheduling vary.
 - Keep `main` untouched. Preserve the last working APK and do not change radio thresholds or introduce an internet/server dependency without evidence.
+
+
+## 2026-10-13 — Timing diagnostics APK built successfully
+- Workflow run #22 completed with conclusion `success`: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38364353379
+- The combined step `Run unit tests and assemble APK` succeeded; APK artifact upload also succeeded.
+- The workflow restored the existing cached LINK debug signing key; generation of a new key was skipped.
+- Diagnostic APK artifact: `link-debug-apk`, artifact ID `11796043306`.
+- Download: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38364353379/artifacts/11796043306
+- Artifact ZIP SHA-256: `d1e4c6c17c63022f347b918d8b8395ee88e3a0868692447d9c76122f4d677292`.
+- Artifact created 2026-10-13 07:44:31 UTC and expires 2026-10-20 07:44:30 UTC.
+- This APK adds diagnostics only; it does NOT fix or claim simultaneous response. It preserves the existing threshold/delay and BLE matching logic.
+- Next practical step: user installs this diagnostic APK on both phones (existing signing key restored, but update acceptance cannot be guaranteed without testing), activates the experience, long-presses the LINK header to reveal diagnostics, then performs one approach/separation cycle. Capture the diagnostic panels on both phones.
+- Compare first partner match, first strong RSSI, state transition to NEAR/APART and scene update timestamps. Use phone clock timestamps only approximately if device clocks may differ; local +ms values each start from that phone's own radio start.
+- Do not ask the user to redo pairing unless the updated APK actually requires it. Do not change thresholds before collecting both phones' timing evidence. Keep `main` untouched.
