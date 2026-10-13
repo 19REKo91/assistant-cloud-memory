@@ -85,7 +85,7 @@ Fix Android installation error “App not installed because package conflicts wi
 
 ## 2026-10-13 — Background operation limitation reported
 - User reports LINK only works while the app is visible on-screen on BOTH phones; it does not continue working in the background.
-- Treat background operation as a new engineering requirement, not a confirmed code diagnosis yet.
-- Next task: inspect the activity lifecycle and BLE radio ownership, then design reliable background BLE operation using an Android foreground service with a persistent notification where appropriate, correct foreground-service types/permissions for the target SDK, and lifecycle-safe start/stop behavior. Preserve the existing successful foreground proximity behavior.
+- Confirmed source-level cause: `MainActivity.onPause()` calls `stopRadio()` whenever `active` is true, so moving the app out of the foreground intentionally stops BLE scanning/advertising. The current BLE engine is owned by the Activity rather than a background service.
+- Next task: refactor BLE scanning/advertising and proximity timing into a lifecycle-independent component owned by an Android foreground service, with a persistent notification and the required foreground-service type/permissions for target SDK 34. Ensure Activity UI observes state and does not stop the radio in `onPause`; explicit user stop should still stop it. Preserve the existing successful foreground proximity behavior.
 - Validate both phones with screen off/backgrounded, app visible, and after returning to the app; ensure no duplicate advertising/scanning starts and that the approach/separation cycle remains repeatable.
 - Do not build or install a changed APK until the service/lifecycle changes are reviewed and the build succeeds. Keep `main` untouched.
