@@ -141,3 +141,10 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Next test: on both phones, start LINK and confirm the ongoing service notification is present; lock/turn off the screens and test approach/separation. Then use the notification's Stop action and reopen the app to confirm it does not restart BLE by itself.
 - Build reference remains LINK 0.6.0, code commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77`, Actions run #27: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38412370531
 - Keep `main` untouched.
+
+
+## 2026-10-13 — Screen-off test (one phone)
+- User reports that when the screen of one phone was turned off, the other phone continued running; when the screen was turned back on, the two phones synchronized again.
+- Record as a **partial/initial pass**, not proof that BLE scanning and proximity transitions continued on the screen-off phone throughout the interval; the observed resynchronization may have happened on wake.
+- Still needed: repeat with both screens off, bring the phones together/apart while locked, then wake both and check whether the state had tracked the changes. Note the ongoing service notification if visible.
+- No code changes made. Keep main untouched.
