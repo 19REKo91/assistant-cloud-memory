@@ -89,3 +89,12 @@ Fix Android installation error “App not installed because package conflicts wi
 - Next task: refactor BLE scanning/advertising and proximity timing into a lifecycle-independent component owned by an Android foreground service, with a persistent notification and the required foreground-service type/permissions for target SDK 34. Ensure Activity UI observes state and does not stop the radio in `onPause`; explicit user stop should still stop it. Preserve the existing successful foreground proximity behavior.
 - Validate both phones with screen off/backgrounded, app visible, and after returning to the app; ensure no duplicate advertising/scanning starts and that the approach/separation cycle remains repeatable.
 - Do not build or install a changed APK until the service/lifecycle changes are reviewed and the build succeeds. Keep `main` untouched.
+
+
+## 2026-10-13 — Asymmetric approach response timing
+- User reports that the first phone reacts to the two phones meeting sooner than the second phone.
+- Treat this as an observed timing asymmetry, not yet a confirmed bug cause. Do not assume it is solely hardware-related.
+- Source inspection: each Activity handles its own BLE scan callbacks and calls `proximity.onRssi(...)` when a matching scan result arrives; a separate `tickTask` evaluates proximity every 250 ms. The transition and beep are therefore driven by each phone's locally received scan timing and local proximity state, so perfectly simultaneous reactions are not guaranteed.
+- During the background-service refactor, preserve diagnostics on both devices and compare first matching RSSI/result time, scan-result cadence, transition time, and any filtering/hysteresis in `ProximityEngine`. Inspect `ProximityEngine` before changing thresholds or adding synchronization. Avoid making the app wait for a network/server handshake; proximity should remain local and responsive.
+- Validation goal: repeat approach/separation tests with both phones in foreground first, then background/screen-off, and distinguish detection-time asymmetry from UI/audio presentation delay. No threshold or matching changes are approved based only on this report.
+- Keep `main` untouched; no new APK until the background-service implementation and timing behavior are reviewed and the build succeeds.
