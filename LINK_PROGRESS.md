@@ -67,3 +67,10 @@ Fix Android installation error “App not installed because package conflicts wi
 - This is strong evidence of a successful end-to-end proximity interaction in the current two-phone test. It does not yet prove repeatability or establish that every Android device requires Location enabled.
 - Next test when convenient: move the phones apart until the interaction clears, then bring them together again and confirm the pink/beep interaction repeats. If available, capture the diagnostic panel after the successful interaction (raw scan count, partner matches, last RSSI) to corroborate the BLE path.
 - Do not change the matching logic or request another APK installation unless a repeatable issue is observed. Keep `main` untouched.
+
+## 2026-10-13 — Repeatable proximity / separation behavior confirmed by user
+- User reports the pink + beep interaction repeats, and the interaction clears when the phones are separated by approximately one metre.
+- Combined with the prior report that enabling Location on both phones allowed discovery, this confirms repeatable user-observed proximity behavior on the current test devices.
+- Treat “about one metre” as an approximate observed threshold, not a calibrated distance measurement; BLE RSSI depends on device orientation, obstructions, and surroundings.
+- No new APK or code changes requested at this point. Preserve the working build and keep `main` untouched.
+- Optional future validation: repeat in a few orientations/positions and, if easy, inspect raw scan/match/RSSI counters after a successful cycle. Do not disrupt the working installation for diagnostics.
