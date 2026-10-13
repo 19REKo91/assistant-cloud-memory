@@ -9,7 +9,7 @@ A small native Android prototype for two Android 12+ phones. Pair once by scanni
 - Three strong readings inside a rolling 2.5-second window establish the near state.
 - After a meeting, 10 seconds without another sufficiently strong reading switches to the apart state.
 - Later stable close readings return to the near state.
-- Emoji, a pulse animation, and short system tones are placeholders for the final images and music.
+- Emoji and a pulse animation are placeholders for the final images and effects; the experience is intentionally silent.
 - Long-press the LINK heading to reveal current RSSI for a controlled check.
 
 ## Limitations

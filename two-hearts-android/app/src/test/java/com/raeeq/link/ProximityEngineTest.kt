@@ -39,4 +39,16 @@ class ProximityEngineTest {
         engine.onRssi(-50, 0L); engine.onRssi(-80, 3_000L); engine.onRssi(-50, 3_500L)
         assertEquals(ProximityState.WAITING, engine.state)
     }
+
+    @Test fun aNewStrongReadingCancelsThePendingDepartureCountdown() {
+        val engine = ProximityEngine()
+        engine.onRssi(-50, 0L)
+        engine.onRssi(-51, 500L)
+        assertEquals(ProximityState.NEAR, engine.onRssi(-52, 1_000L))
+
+        assertNull(engine.tick(10_999L))
+        assertNull(engine.onRssi(-50, 11_000L))
+        assertNull(engine.tick(20_999L))
+        assertEquals(ProximityState.APART, engine.tick(21_000L))
+    }
 }

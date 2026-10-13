@@ -9,7 +9,7 @@ Persistent handoff notes for future ChatGPT sessions. Update this file after eac
 - User reports that the latest APK referred to as APK 4 was accepted by Android as an update to the older installed version.
 - Treat APK 4's package identity, signing/build configuration, and branch/build path as the preferred reference for the next build, after verifying the actual repo configuration.
 - User explicitly permits uninstalling the older app and installing a clean new APK if that is technically necessary. Avoid unnecessary uninstalling; warn about possible local data loss before any destructive step.
-- No new implementation has been started as part of this note. Wait for the user's explicit instruction to begin implementation.
+- The user has now explicitly authorized implementation. Work is proceeding on a separate experiment branch; no changes are being made to `main`.
 
 ## Agreed product behavior / design
 - Device A: original dark/smoky scene. On approach/proximity, transition away from the original scene into its effect. When devices move apart, smoothly return toward the original dark scene, increasing darkness and restoring smoke.
@@ -35,6 +35,14 @@ Persistent handoff notes for future ChatGPT sessions. Update this file after eac
 5. Implement robust proximity state handling and reversible smooth scene transitions; remove beep.
 6. Run available tests and APK build, then provide the artifact and honest test status.
 7. Update this work log with commit SHA, branch, workflow run, APK link/checksum, verified behavior, failures, and remaining work.
+
+## Work session — 2026-10-13: application-first iteration (pending build)
+- Branch: `link-ble-recovery-2026-10-13`, branched from the APK 4 experiment line. The known APK 4 reference branch is preserved; `main` is untouched.
+- Changes committed in this iteration: remove proximity transition tones entirely; add bounded BLE scan recovery (retry once with partner Service UUID filter after 8 seconds without a partner match, then retry once with unfiltered scanning after another 8 seconds); show recovery mode and attempt count in diagnostics.
+- Version: `versionCode=4`, `versionName=0.4.0`; `applicationId=com.raeeq.link` and existing `linkDebug` signing configuration/cache key are unchanged.
+- Added a ProximityEngine test for a strong reading cancelling an impending departure by resetting the 10-second no-strong-sample timer.
+- **Not yet verified:** GitHub Actions build, tests, APK artifact, update-install compatibility, and actual two-phone BLE/RSSI behavior. Final visual assets/scenes remain for the later image stage.
+- Update this pending entry with the actual run/artifact results after Actions finishes.
 
 ## Session rule
 At the end of every LINK session, update this file in GitHub. If GitHub access/write fails, clearly tell the user and provide the exact note content rather than claiming it was saved.

@@ -24,8 +24,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.media.AudioManager
-import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -65,6 +63,8 @@ class MainActivity : ComponentActivity() {
         private const val KEY_SIDE_A = "side_a"
         private const val KEY_SIDE_B = "side_b"
         private const val KEY_ROLE = "role"
+        private const val SCAN_RECOVERY_INTERVAL_MS = 8_000L
+        private const val MAX_SCAN_RECOVERY_ATTEMPTS = 2
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -118,13 +118,21 @@ class MainActivity : ComponentActivity() {
     private var advertiser: BluetoothLeAdvertiser? = null
     private var scanCallback: ScanCallback? = null
     private var advertiseCallback: AdvertiseCallback? = null
-    private var toneGenerator: ToneGenerator? = null
+    private var currentPartnerUuid: java.util.UUID? = null
+    private var scanRecoveryAttempts = 0
+    private var lastScanRecoveryAtMs = 0L
+    private var activeScanUsesPartnerFilter = false
     private var pulseAnimator: AnimatorSet? = null
 
     private val tickTask = object : Runnable {
         override fun run() {
             if (!active || !isRadioRunning) return
-            proximity.tick(SystemClock.elapsedRealtime())?.let(::onTransition)
+            val now = SystemClock.elapsedRealtime()
+            if (partnerMatches == 0 && scanRecoveryAttempts < MAX_SCAN_RECOVERY_ATTEMPTS &&
+                now - lastScanRecoveryAtMs >= SCAN_RECOVERY_INTERVAL_MS) {
+                recoverScan()
+            }
+            proximity.tick(now)?.let(::onTransition)
             updateDiagnostic()
             handler.postDelayed(this, 250L)
         }
@@ -168,7 +176,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         stopRadio()
-        releaseTone()
+        
         pulseAnimator?.cancel()
         super.onDestroy()
     }
@@ -279,7 +287,7 @@ class MainActivity : ComponentActivity() {
         stopButton = makeButton("إيقاف التجربة", false) {
             active = false; latestRadioError = null
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            stopRadio(); proximity.reset(); releaseTone(); renderScreen()
+            stopRadio(); proximity.reset();  renderScreen()
         }
         resetButton = makeButton("إعادة الاقتران", false) { confirmResetPair() }
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
@@ -379,26 +387,8 @@ class MainActivity : ComponentActivity() {
         if (::scene.isInitialized) { scene.scaleX = 1f; scene.scaleY = 1f }
     }
     private fun onTransition(next: ProximityState) {
-        if (next == ProximityState.NEAR) playTone(true)
-        if (next == ProximityState.APART) playTone(false)
+        // LINK is intentionally silent; visual state changes are the only proximity feedback.
         updateInteractionUi()
-    }
-    private fun playTone(happy: Boolean) {
-        releaseTone()
-        val tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 75) }.getOrNull() ?: return
-        toneGenerator = tone
-        if (happy) {
-            tone.startTone(ToneGenerator.TONE_PROP_ACK, 150)
-            handler.postDelayed({ if (toneGenerator === tone) tone.startTone(ToneGenerator.TONE_PROP_ACK, 150) }, 230L)
-            handler.postDelayed({ if (toneGenerator === tone) releaseTone() }, 650L)
-        } else {
-            tone.startTone(ToneGenerator.TONE_PROP_NACK, 420)
-            handler.postDelayed({ if (toneGenerator === tone) releaseTone() }, 500L)
-        }
-    }
-    private fun releaseTone() {
-        val tone = toneGenerator; toneGenerator = null
-        if (tone != null) { runCatching { tone.stopTone() }; runCatching { tone.release() } }
     }
 
     private fun createPair() {
@@ -497,7 +487,7 @@ class MainActivity : ComponentActivity() {
             .setMessage("سيُحذف رمز هذا الهاتف. لإعادة الربط، أنشئ رمزًا جديدًا وامسحه من الهاتف الآخر.")
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("حذف") { _, _ ->
-                active = false; stopRadio(); releaseTone(); pair = null; role = null
+                active = false; stopRadio();  pair = null; role = null
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 showingQr = false; latestRadioError = null; proximity.reset()
                 preferences.edit().clear().apply(); renderScreen()
@@ -609,26 +599,15 @@ class MainActivity : ComponentActivity() {
         return try {
             localAdvertiser.startAdvertising(advSettings, advData, advCb)
             // Scan without an OS-level UUID filter for diagnosis; validate the partner UUID ourselves.
+            currentPartnerUuid = partnerUuid
+            scanRecoveryAttempts = 0
+            activeScanUsesPartnerFilter = false
+            lastScanRecoveryAtMs = radioStartElapsed
             val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-            val scanCb = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) {
-                    inspectScanResult(result, partnerUuid)
-                }
-                override fun onBatchScanResults(results: MutableList<ScanResult>) {
-                    results.forEach { inspectScanResult(it, partnerUuid) }
-                }
-                override fun onScanFailed(errorCode: Int) {
-                    runOnUiThread {
-                        scanningStatus = "فشل: $errorCode"
-                        latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
-                        latestScanError = latestRadioError
-                        active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
-                    }
-                }
-            }
+            val scanCb = createScanCallback(partnerUuid)
             scanCallback = scanCb
             localScanner.startScan(null, scanSettings, scanCb)
-            scanningStatus = "بدأ الطلب؛ بانتظار النتائج"
+            scanningStatus = "بدأ المسح العام؛ بانتظار الهاتف المرتبط"
             isRadioRunning = true; latestRadioError = null
             handler.removeCallbacks(tickTask); handler.post(tickTask)
             true
@@ -640,6 +619,70 @@ class MainActivity : ComponentActivity() {
             stopRadio(); false
         }
     }
+    @SuppressLint("MissingPermission")
+    private fun recoverScan() {
+        val localScanner = scanner ?: return
+        val partnerUuid = currentPartnerUuid ?: return
+        val oldCallback = scanCallback
+        try {
+            if (oldCallback != null) localScanner.stopScan(oldCallback)
+        } catch (_: Exception) {
+            // A stale callback must not prevent the recovery attempt.
+        }
+
+        scanRecoveryAttempts++
+        val usePartnerFilter = scanRecoveryAttempts == 1
+        val scanFilters: List<ScanFilter>? = if (usePartnerFilter) {
+            listOf(ScanFilter.Builder().setServiceUuid(ParcelUuid(partnerUuid)).build())
+        } else {
+            null
+        }
+        val newCallback = createScanCallback(partnerUuid)
+        scanCallback = newCallback
+        activeScanUsesPartnerFilter = usePartnerFilter
+        lastScanRecoveryAtMs = SystemClock.elapsedRealtime()
+        scanningStatus = if (usePartnerFilter) {
+            "إعادة المسح 1/2 بمرشح UUID الشريك"
+        } else {
+            "إعادة المسح 2/2 دون مرشح"
+        }
+
+        try {
+            localScanner.startScan(
+                scanFilters,
+                ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(),
+                newCallback
+            )
+        } catch (error: Exception) {
+            latestScanError = "فشلت إعادة المسح: ${error.javaClass.simpleName}"
+            scanningStatus = "فشلت إعادة المسح"
+        }
+        updateDiagnostic()
+    }
+
+    private fun createScanCallback(partnerUuid: java.util.UUID): ScanCallback =
+        object : ScanCallback() {
+            override fun onScanResult(callbackType: Int, result: ScanResult) {
+                inspectScanResult(result, partnerUuid)
+            }
+
+            override fun onBatchScanResults(results: MutableList<ScanResult>) {
+                results.forEach { inspectScanResult(it, partnerUuid) }
+            }
+
+            override fun onScanFailed(errorCode: Int) {
+                runOnUiThread {
+                    scanningStatus = "فشل: $errorCode"
+                    latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
+                    latestScanError = latestRadioError
+                    active = false
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    stopRadio()
+                    renderScreen()
+                }
+            }
+        }
+
     private fun inspectScanResult(result: ScanResult, partnerUuid: java.util.UUID) {
         val record = result.scanRecord
         val uuids = record?.serviceUuids
@@ -713,7 +756,7 @@ class MainActivity : ComponentActivity() {
             "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\n" +
             "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\n" +
             "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\n" +
-            "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\n" +
+            "المسح: $scanningStatus | الوضع=${if (activeScanUsesPartnerFilter) "UUID الشريك" else "عام"} | محاولات الاستعادة=$scanRecoveryAttempts/$MAX_SCAN_RECOVERY_ATTEMPTS | خطأ المسح: ${latestScanError ?: "—"}\n" +
             "حالة الاستقبال: $receiveState\nآخر 3 أحداث (الأحدث أولًا):\n$eventBlock$errorLine"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
