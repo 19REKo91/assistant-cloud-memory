@@ -60,3 +60,10 @@ Fix Android installation error “App not installed because package conflicts wi
 - This supersedes the earlier note above saying no APK had been built: the diagnostic APK is now built and available. Build success does NOT prove that BLE partner discovery/RSSI works on the two phones.
 - User was given the verified artifact link. Next: once the user tests this build, diagnose using the new on-screen scan events, UUIDs, counters, RSSI and error fields. Do not ask them to repeat old pairing/install steps unnecessarily.
 - Keep `main` untouched. The APK artifact expires on 2026-10-20.
+
+## 2026-10-13 — First successful proximity interaction
+- User confirms the app changed to pink and played a beep automatically when the two phones approached; no manual button press was involved.
+- User identified the cause of the earlier “no scan results” state: Location was turned off on both phones. After enabling Location on both devices, the proximity interaction worked.
+- This is strong evidence of a successful end-to-end proximity interaction in the current two-phone test. It does not yet prove repeatability or establish that every Android device requires Location enabled.
+- Next test when convenient: move the phones apart until the interaction clears, then bring them together again and confirm the pink/beep interaction repeats. If available, capture the diagnostic panel after the successful interaction (raw scan count, partner matches, last RSSI) to corroborate the BLE path.
+- Do not change the matching logic or request another APK installation unless a repeatable issue is observed. Keep `main` untouched.
