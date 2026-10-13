@@ -227,3 +227,10 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Source review found the proximity service had no Bluetooth adapter state receiver; a radio stop/failure could leave scanning/advertising stopped, and the service uses `START_NOT_STICKY`, so recovery was not explicitly coordinated.
 - Commit `91b8b0ada5c48c1aa6edcd3959edd873aed6c896` on `anniversary-ble-proximity-prototype` adds a system Bluetooth-state receiver. When Bluetooth turns off, LINK pauses BLE radio resources without discarding the active session; when Bluetooth turns on, it restarts advertising/scanning using the saved local/partner UUIDs. Starting LINK while Bluetooth is temporarily off now waits for Bluetooth to return instead of immediately terminating the session.
 - Build and two-device retest are pending. Validate by toggling Bluetooth off/on on one phone and measuring time until the partner is rediscovered; do not mark verified until build and device test succeed. `main` remains untouched.
+
+
+## 2026-10-14 — One retry for transient GATT message-write error 133
+
+- User tested the short Arabic message “جي بي تي بطل”; LINK displayed “فشل إرسال الرسالة (رمز 133)”. The diagnostics showed the GATT client connected, then the write callback failed with status 133, followed by disconnection. This locates the observed failure in the GATT write stage; status 133 is a generic Android GATT error and does not identify the underlying radio/stack cause by itself.
+- Commit `41314942ad4c6076d244beae4451b67871293aa9` on `anniversary-ble-proximity-prototype` adds one bounded retry for a message write that returns status 133: close the failed GATT client, wait one second, then re-run the UUID-confirmed connection and resend the same message once. It does not retry indefinitely. Other error statuses still report failure.
+- Build and two-phone retest pending. Do not treat this as a proven root-cause fix until the APK builds and the same message is tested on both phones. `main` remains untouched.
