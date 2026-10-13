@@ -746,6 +746,7 @@ class LinkProximityService : android.app.Service() {
     private var clientGatt:android.bluetooth.BluetoothGatt?=null
     private var connectionTestPending=false
     private var pendingMessage:String?=null
+    private var messageWriteRetryCount=0
     private var bluetoothReceiverRegistered=false
 
     private val bluetoothStateReceiver=object:android.content.BroadcastReceiver() {
@@ -872,9 +873,27 @@ class LinkProximityService : android.app.Service() {
         ) {
             if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID || pendingMessage==null) return
             if(status==android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                messageWriteRetryCount=0
                 finishConnectionTest(true,"أُرسلت الرسالة إلى الهاتف المرتبط.",gatt)
             } else {
-                finishConnectionTest(false,"فشل إرسال الرسالة (رمز $status).",gatt)
+                val message=pendingMessage
+                if(status==133 && message!=null && messageWriteRetryCount<1) {
+                    messageWriteRetryCount++
+                    connectionTestPending=false
+                    pendingMessage=null
+                    if(clientGatt===gatt) clientGatt=null
+                    try { gatt.disconnect() } catch(_:Exception) { }
+                    try { gatt.close() } catch(_:Exception) { }
+                    sendConnectionResult("تعذّر الإرسال في المحاولة الأولى؛ يعيد LINK المحاولة مرة واحدة…")
+                    note("message write failed status=$status; retrying once",android.os.SystemClock.elapsedRealtime())
+                    publish()
+                    mainHandler.postDelayed({
+                        if(running && !connectionTestPending) requestConnectionTest(message,true)
+                        else messageWriteRetryCount=0
+                    },1000L)
+                } else {
+                    finishConnectionTest(false,"فشل إرسال الرسالة (رمز $status).",gatt)
+                }
             }
         }
         override fun onCharacteristicRead(
@@ -1060,12 +1079,14 @@ class LinkProximityService : android.app.Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun requestConnectionTest(message:String?=null) {
-        if(!running) { sendConnectionResult("فعّل LINK على هذا الهاتف أولًا."); return }
-        if(!hasBluetoothPermissions()) { sendConnectionResult("أذونات البلوتوث غير متاحة."); return }
-        if(connectionTestPending) { sendConnectionResult("اختبار الاتصال جارٍ بالفعل."); return }
+    private fun requestConnectionTest(message:String?=null,retry:Boolean=false) {
+        if(!retry) messageWriteRetryCount=0
+        if(!running) { messageWriteRetryCount=0; sendConnectionResult("فعّل LINK على هذا الهاتف أولًا."); return }
+        if(!hasBluetoothPermissions()) { messageWriteRetryCount=0; sendConnectionResult("أذونات البلوتوث غير متاحة."); return }
+        if(connectionTestPending) { messageWriteRetryCount=0; sendConnectionResult("اختبار الاتصال جارٍ بالفعل."); return }
         val device=latestPartnerDevice
         if(device==null) {
+            messageWriteRetryCount=0
             sendConnectionResult("لم يُكتشف الهاتف المرتبط بعد. قرّب الهاتفين وحاول مجددًا.")
             return
         }
@@ -1085,6 +1106,7 @@ class LinkProximityService : android.app.Service() {
         if(!connectionTestPending && gatt!=null) return
         connectionTestPending=false
         pendingMessage=null
+        messageWriteRetryCount=0
         sendConnectionResult(message)
         note(if(success) "connection test success" else "connection test failed",android.os.SystemClock.elapsedRealtime())
         if(gatt!=null) {
