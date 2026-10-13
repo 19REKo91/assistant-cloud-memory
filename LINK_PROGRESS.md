@@ -44,3 +44,19 @@ Fix Android installation error “App not installed because package conflicts wi
 - Added runtime diagnostic counters and recent ScanResult details to MainActivity.kt on the prototype branch only.
 - The diagnostic panel now wraps content; existing scan matching and radio stop/start behavior were not intentionally changed.
 - No APK was built. Next step is to build the diagnostic version, then test both phones for 30 seconds with radioStarts=1 on each and capture both diagnostic panels.
+
+## 2026-10-13 — Diagnostic APK build completed (latest status)
+- Built from branch: `anniversary-ble-proximity-prototype`.
+- Commit built: `4a7a385642cba8c16e6b8320928463292d2d95f6` (`Fix diagnostic line breaks in BLE panel`).
+- GitHub Actions workflow: `Build Two Hearts Android`, run #20.
+- Workflow run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38351650832
+- Build job: `115145177839`; conclusion: `success`.
+- Unit tests and `assembleDebug`: succeeded.
+- APK artifact upload: succeeded.
+- Artifact name: `link-debug-apk`; artifact ID: `11791620221`.
+- Artifact download: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38351650832/artifacts/11791620221
+- Artifact ZIP SHA-256: `d0d6523391d90a79e26155c2dff321aa73c4759981501fd7a750f48301ab5bdd`.
+- The workflow restored the existing cached LINK debug signing key; key generation and cache save were skipped.
+- This supersedes the earlier note above saying no APK had been built: the diagnostic APK is now built and available. Build success does NOT prove that BLE partner discovery/RSSI works on the two phones.
+- User was given the verified artifact link. Next: once the user tests this build, diagnose using the new on-screen scan events, UUIDs, counters, RSSI and error fields. Do not ask them to repeat old pairing/install steps unnecessarily.
+- Keep `main` untouched. The APK artifact expires on 2026-10-20.
