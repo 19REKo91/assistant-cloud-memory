@@ -110,3 +110,30 @@ Expected pipeline to evaluate and implement in stages:
 7. Test with a short sample video and verify transcript, Arabic translation, timestamp order, and output-file validity.
 This scenario is **planned, not implemented/tested end-to-end** as of this note.
 
+## Core architectural requirement: an expandable tool-capable environment
+The user's central requirement is not to reproduce only the assistant's current ChatGPT tools. CHRONO CROSS GPT should be designed as an environment in which an assistant can discover missing capabilities, evaluate ways to provide them, integrate supported tools/services, and invoke them through a consistent interface.
+
+### Required architecture
+- **Capability registry:** list each tool/reader/provider, its input/output types, permissions, configuration needs, costs/limits, status, and test coverage.
+- **Tool discovery:** search available integrations, libraries, and external services when a required capability is missing; compare feasibility, maintenance, privacy, licensing, and cost before choosing.
+- **Controlled integration path:** add dependencies or provider adapters only when the runtime supports them; validate configuration and secrets; never expose credentials in source, logs, URLs, or user-facing output.
+- **Common invocation interface:** tools expose structured input/output, timeouts, size limits, cancellation where possible, and clear typed errors so workflows can combine them.
+- **Orchestration:** route a request through the required chain of tools (e.g. video -> captions/audio extraction -> speech transcription -> Arabic translation -> timestamp-preserving SRT/VTT export).
+- **Runtime and execution:** provide code execution/testing and, if feasible in the hosting environment, a real browser runtime for JavaScript-rendered pages. Never claim browser automation, OS access, or local device access without a supported implementation.
+- **Permission and security boundary:** explicit credentials/authorization for private sources; least privilege, safe secret storage, domain/file restrictions, resource quotas, and untrusted-content handling. Do not bypass authentication, paywalls, CAPTCHAs, or access controls.
+- **Self-check and transparency:** expose what is actually implemented and tested, what is unverified, what is planned, and what is blocked by runtime, provider, permission, or budget.
+- **Fallback strategy:** when one provider or reader fails, try an approved alternative when safe, preserve source provenance, avoid duplicate work, and report any partial result.
+- **Tests and durable notes:** each integration needs tests, documented setup/configuration, and a recorded status. Use end-to-end scenarios to reveal missing capabilities before expanding the tool list.
+
+### Important limit
+“Tools complete” means a broad, extensible system that can discover and integrate available capabilities under explicit security, cost, permission, and runtime constraints—not an impossible promise of every tool or unrestricted access. ChatGPT's own tools do not automatically transfer into Floot; each capability must be implemented or connected in the target project. Do not publish or enable paid services without authorization.
+
+### Implementation priority
+1. Audit current project and hosting/runtime constraints.
+2. Build capability registry + status reporting and tool-adapter contract.
+3. Improve core web reading and safe fallback.
+4. Add document/PDF/OCR and image paths.
+5. Add audio/video captions, transcription, translation, timestamp-preserving SRT/VTT export.
+6. Evaluate a supported browser automation runtime and code execution.
+7. Add provider discovery/integration workflow with explicit approval gates for secrets, paid services, publishing, or broader permissions.
+
