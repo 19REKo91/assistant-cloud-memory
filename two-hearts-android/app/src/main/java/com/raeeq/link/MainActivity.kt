@@ -687,7 +687,7 @@ class LinkProximityService : android.app.Service() {
         if(running && localUuid==local && partnerUuid==partner) { publish(); return }
         if(!hasBluetoothPermissions()) {
             latestError="أذونات البلوتوث غير متاحة؛ افتح LINK وامنح أذونات الأجهزة القريبة."
-            running=false; publish(); stopSelf(); return
+            running=false; persistActive(false); publish(); stopSelf(); return
         }
         running=false
         stopRadio()
@@ -705,6 +705,7 @@ class LinkProximityService : android.app.Service() {
                 android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
         } catch(error:Exception) {
             running=false
+            persistActive(false)
             latestError="تعذّر تشغيل خدمة LINK في الخلفية: ${error.localizedMessage ?: error.javaClass.simpleName}"
             publish(); stopSelf(); return
         }
@@ -842,8 +843,8 @@ class LinkProximityService : android.app.Service() {
     }
 
     private fun note(label:String,elapsed:Long) {
-        if(timeline.size>=8) timeline.removeFirst()
-        timeline.addLast("$label | +${(elapsed-startElapsed).coerceAtLeast(0L)}ms")
+        if(events.size>=8) events.removeFirst()
+        events.addLast("$label | +${(elapsed-startElapsed).coerceAtLeast(0L)}ms")
     }
 
     private fun diagnosticText():String {
@@ -851,7 +852,7 @@ class LinkProximityService : android.app.Service() {
         val rssi=lastRssi?.let { "$it dBm" } ?: "—"
         val match=firstMatch?.let { "+${it}ms" } ?: "—"
         val strong=firstStrong?.let { "+${it}ms" } ?: "—"
-        val eventText=timeline.toList().asReversed().joinToString("\n").ifEmpty { "لم يُسجّل حدث بعد" }
+        val eventText=events.toList().asReversed().joinToString("\n").ifEmpty { "لم يُسجّل حدث بعد" }
         return "الخدمة الأمامية: ${if(running) "تعمل" else "متوقفة"} | الحالة=${engine.state.name} | المدة=${seconds}ث\n"+
             "localUuid=${localUuid ?: "—"}\npartnerUuid=${partnerUuid ?: "—"}\n"+
             "المسح الخام=$rawResults | مطابقات الشريك=$partnerMatches | RSSI الأخير=$rssi\n"+
@@ -870,7 +871,7 @@ class LinkProximityService : android.app.Service() {
 
     override fun onDestroy() {
         val wasRunning=running
-        running=false; stopRadio()
+        running=false; persistActive(false); stopRadio()
         if(wasRunning) { engine.reset(); publish() }
         super.onDestroy()
     }
