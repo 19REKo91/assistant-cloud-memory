@@ -48,8 +48,11 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import java.text.SimpleDateFormat
 import java.util.ArrayDeque
+import java.util.Date
 import java.util.EnumMap
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private data class ScanEvent(
@@ -99,6 +102,9 @@ class MainActivity : ComponentActivity() {
     private var radioStarts = 0
     private var radioStartElapsed: Long = 0L
     private val recentScanEvents = ArrayDeque<ScanEvent>(3)
+    private val timingEvents = ArrayDeque<String>(12)
+    private var firstPartnerMatchElapsedMs: Long? = null
+    private var firstStrongRssiElapsedMs: Long? = null
     private var diagnosticLocalUuid: String? = null
     private var diagnosticPartnerUuid: String? = null
     private var lastRssi: Int? = null
@@ -379,9 +385,31 @@ class MainActivity : ComponentActivity() {
         if (::scene.isInitialized) { scene.scaleX = 1f; scene.scaleY = 1f }
     }
     private fun onTransition(next: ProximityState) {
-        if (next == ProximityState.NEAR) playTone(true)
-        if (next == ProximityState.APART) playTone(false)
+        val detectedElapsed = SystemClock.elapsedRealtime()
+        val detectedWall = System.currentTimeMillis()
+        noteTimingEvent("تحول المحرك إلى $next", detectedElapsed, detectedWall)
+        if (next == ProximityState.NEAR) {
+            noteTimingEvent("طلب صوت الاقتراب", detectedElapsed, detectedWall)
+            playTone(true)
+        }
+        if (next == ProximityState.APART) {
+            noteTimingEvent("طلب صوت الابتعاد", detectedElapsed, detectedWall)
+            playTone(false)
+        }
         updateInteractionUi()
+        noteTimingEvent("تحديث المشهد إلى $next", SystemClock.elapsedRealtime(), System.currentTimeMillis())
+        updateDiagnostic()
+    }
+
+    private fun noteTimingEvent(
+        label: String,
+        elapsedAtMs: Long = SystemClock.elapsedRealtime(),
+        wallAtMs: Long = System.currentTimeMillis()
+    ) {
+        if (timingEvents.size >= 12) timingEvents.removeFirst()
+        val sinceRadioStart = (elapsedAtMs - radioStartElapsed).coerceAtLeast(0L)
+        val wallClock = SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(Date(wallAtMs))
+        timingEvents.addLast("$label | $wallClock | +${sinceRadioStart}ms")
     }
     private fun playTone(happy: Boolean) {
         releaseTone()
@@ -577,6 +605,9 @@ class MainActivity : ComponentActivity() {
         scanStartedAtMs = SystemClock.elapsedRealtime()
         radioStartElapsed = scanStartedAtMs ?: SystemClock.elapsedRealtime()
         recentScanEvents.clear()
+        timingEvents.clear()
+        firstPartnerMatchElapsedMs = null
+        firstStrongRssiElapsedMs = null
         lastRssi = null
         lastRssiElapsedMs = null
         lastMatchElapsedMs = null
@@ -643,12 +674,15 @@ class MainActivity : ComponentActivity() {
     private fun inspectScanResult(result: ScanResult, partnerUuid: java.util.UUID) {
         val record = result.scanRecord
         val uuids = record?.serviceUuids
+        // Capture receipt time before any UI-thread handoff so scan dispatch latency is visible.
+        val callbackElapsed = SystemClock.elapsedRealtime()
+        val callbackWall = System.currentTimeMillis()
         runOnUiThread {
             rawScanResultsReceived++
             if (recentScanEvents.size == 3) recentScanEvents.removeFirst()
             recentScanEvents.addLast(
                 ScanEvent(
-                    elapsedMs = SystemClock.elapsedRealtime() - radioStartElapsed,
+                    elapsedMs = callbackElapsed - radioStartElapsed,
                     rssi = result.rssi,
                     uuids = uuids?.map { it.uuid.toString() } ?: emptyList(),
                     active = active,
@@ -667,10 +701,18 @@ class MainActivity : ComponentActivity() {
             scanResultsSeen++
             if (uuids?.contains(ParcelUuid(partnerUuid)) == true) {
                 partnerMatches++
-                lastMatchElapsedMs = SystemClock.elapsedRealtime() - radioStartElapsed
+                lastMatchElapsedMs = callbackElapsed - radioStartElapsed
                 lastRssi = result.rssi
                 lastRssiElapsedMs = lastMatchElapsedMs
-                proximity.onRssi(result.rssi, SystemClock.elapsedRealtime())?.let(::onTransition)
+                if (firstPartnerMatchElapsedMs == null) {
+                    firstPartnerMatchElapsedMs = lastMatchElapsedMs
+                    noteTimingEvent("أول مطابقة BLE للشريك", callbackElapsed, callbackWall)
+                }
+                if (result.rssi >= -56 && firstStrongRssiElapsedMs == null) {
+                    firstStrongRssiElapsedMs = lastMatchElapsedMs
+                    noteTimingEvent("أول إشارة قوية (RSSI ≥ -56 dBm)", callbackElapsed, callbackWall)
+                }
+                proximity.onRssi(result.rssi, callbackElapsed)?.let(::onTransition)
             }
             updateDiagnostic()
         }
@@ -706,15 +748,22 @@ class MainActivity : ComponentActivity() {
         val errorLine = latestRadioError?.let { "\nالخطأ العام: $it" } ?: ""
         val lastRssiLine = lastRssi?.let { "$it dBm عند +${lastRssiElapsedMs ?: 0L}ms" } ?: "—"
         val lastMatchLine = lastMatchElapsedMs?.let { "+${it}ms" } ?: "—"
+        val firstMatchLine = firstPartnerMatchElapsedMs?.let { "+${it}ms" } ?: "—"
+        val firstStrongLine = firstStrongRssiElapsedMs?.let { "+${it}ms" } ?: "—"
+        val timingBlock = timingEvents.toList().asReversed().joinToString("\n")
+            .ifEmpty { "لم يُسجّل حدث توقيت بعد" }
         diagnostic.text =
             "الدور المحفوظ: ${role ?: "—"} | active=$active | isRadioRunning=$isRadioRunning | radioStarts=$radioStarts\n" +
             "localUuid=${diagnosticLocalUuid ?: "—"}\npartnerUuid=${diagnosticPartnerUuid ?: "—"}\n" +
             "RSSI الأخير: $lastRssiLine | آخر مطابقة: $lastMatchLine\n" +
+            "أول مطابقة: $firstMatchLine | أول RSSI قوي: $firstStrongLine\n" +
             "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\n" +
             "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\n" +
             "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\n" +
             "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\n" +
-            "حالة الاستقبال: $receiveState\nآخر 3 أحداث (الأحدث أولًا):\n$eventBlock$errorLine"
+            "حالة الاستقبال: $receiveState\n" +
+            "سجل التوقيت (وقت ساعة الهاتف | +ms منذ بدء الراديو؛ قد تختلف ساعة الهاتفين):\n$timingBlock\n" +
+            "آخر 3 أحداث مسح (الأحدث أولًا):\n$eventBlock$errorLine"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
