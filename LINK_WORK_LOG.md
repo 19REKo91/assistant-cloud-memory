@@ -219,3 +219,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Commit `d0fe4df9ccdedb8dd62deecbaa74c8034dd4c319` now saves the latest incoming message before acknowledging the BLE write and restores it when the Activity opens.
 - Workflow #30 is building this commit: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38486401241
 - Build and real-device retest are pending. Keep `main` untouched; do not treat the fix as verified until CI and phone tests pass.
+
+
+## 2026-10-14 — Automatic BLE recovery after Bluetooth toggle
+
+- User reported that turning Bluetooth off on the second phone and turning it back on later caused LINK pairing/re-discovery to take too long.
+- Source review found the proximity service had no Bluetooth adapter state receiver; a radio stop/failure could leave scanning/advertising stopped, and the service uses `START_NOT_STICKY`, so recovery was not explicitly coordinated.
+- Commit `91b8b0ada5c48c1aa6edcd3959edd873aed6c896` on `anniversary-ble-proximity-prototype` adds a system Bluetooth-state receiver. When Bluetooth turns off, LINK pauses BLE radio resources without discarding the active session; when Bluetooth turns on, it restarts advertising/scanning using the saved local/partner UUIDs. Starting LINK while Bluetooth is temporarily off now waits for Bluetooth to return instead of immediately terminating the session.
+- Build and two-device retest are pending. Validate by toggling Bluetooth off/on on one phone and measuring time until the partner is rediscovered; do not mark verified until build and device test succeed. `main` remains untouched.
