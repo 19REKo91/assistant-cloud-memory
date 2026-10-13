@@ -69,3 +69,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Next practical step: user installs this diagnostic APK on both phones (existing signing key restored, but update acceptance cannot be guaranteed without testing), activates the experience, long-presses the LINK header to reveal diagnostics, then performs one approach/separation cycle. Capture the diagnostic panels on both phones.
 - Compare first partner match, first strong RSSI, state transition to NEAR/APART and scene update timestamps. Use phone clock timestamps only approximately if device clocks may differ; local +ms values each start from that phone's own radio start.
 - Do not ask the user to redo pairing unless the updated APK actually requires it. Do not change thresholds before collecting both phones' timing evidence. Keep `main` untouched.
+
+
+## 2026-10-13 — APK rejected: version downgrade identified and corrected
+- User confirmed the installer was given `app-debug.apk`, not the ZIP archive.
+- Compared the failing diagnostic branch with the previously successful APK 4 branch. APK 4 used `versionCode = 4`, `versionName = "0.4.0"`; the new diagnostic APK incorrectly reverted to `versionCode = 3`, `versionName = "0.3.0"`.
+- This is a strong concrete explanation for Android rejecting the install as a downgrade. Package ID remains `com.raeeq.link`, and the workflow is configured to restore the same cached debug keystore; signing identity is not yet independently proven.
+- Corrected only the experiment branch `anniversary-ble-proximity-prototype` to `versionCode = 5`, `versionName = "0.5.0"` in commit `8143e4076b76bde7c0a7e4727f6d96da36a2161f`. This should permit updating APK 4 if signing identity matches.
+- A new GitHub Actions build should trigger from that commit. Do not call the APK ready until the run succeeds and the artifact is present.
+- Next: verify the new workflow run, send its artifact link, and ask the user to install it over the existing app without uninstalling.
