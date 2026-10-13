@@ -91,3 +91,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - **Build/test status at memo time:** pending; do not install or present this candidate as verified until the GitHub Actions run and artifact upload succeed.
 - Previously user-confirmed behavior to preserve: LINK 5 on the two test phones repeatedly reacted to approach, separation at approximately one metre, and approach again while both apps were foregrounded. The approximate distance is not calibrated.
 - Next steps: (1) verify GitHub Actions on this exact commit; (2) inspect test/build steps and artifact; (3) only if successful, install 0.6.0 over the existing app without uninstalling; (4) check foreground regression, then background and screen-off on both phones; (5) record all results and any failure here.
+
+
+## 2026-10-13 — CI failure diagnosed and follow-up candidate queued
+- GitHub Actions run #24 for intermediate commit `38c0edbee7e66ade56142b6ec53742d3704749d0` failed during Kotlin compilation, before APK creation: the service ticker incorrectly implemented `Handler.Callback` and the service's event-list name was inconsistent.
+- The ticker was simplified to a plain `Runnable` in commit `daa4d79971746cd55f8a8cc4de9f8990a0a9fa15`.
+- Fixed the service event-list references and made the persisted active flag reset on service startup/stop failures in commit `03489dfb18c5d7842fa1b7c1ddd23950d931c490`.
+- Run #25, which builds intermediate commit `daa4d79`, was still in progress at the last check and includes the event-list defect; do not use it even if it finishes.
+- Run #26 was queued for the latest code commit `03489dfb18c5d7842fa1b7c1ddd23950d931c490`; this is the run to inspect for the next decision.
+- Current build status remains **unverified**. Do not install an APK until the latest-run tests/build and artifact upload both succeed.
