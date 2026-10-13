@@ -148,3 +148,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Record as a **partial/initial pass**, not proof that BLE scanning and proximity transitions continued on the screen-off phone throughout the interval; the observed resynchronization may have happened on wake.
 - Still needed: repeat with both screens off, bring the phones together/apart while locked, then wake both and check whether the state had tracked the changes. Note the ongoing service notification if visible.
 - No code changes made. Keep main untouched.
+
+
+## 2026-10-13 — Screen-off pairing failure confirmed
+- User clarifies that the phone with its screen off does not pair/respond to the other phone; synchronization resumes when the screen is turned back on.
+- Treat screen-off behavior as a confirmed defect in the current LINK 0.6.0 device test, despite successful foreground and app-background tests.
+- Source inspection: BLE scanning and advertising run inside `LinkProximityService` as a connected-device foreground service; scan mode is `SCAN_MODE_LOW_LATENCY`, with local partner-UUID matching. Manifest declares `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_CONNECTED_DEVICE`. This structure alone does not guarantee OEM/OS screen-off scanning will continue.
+- Likely areas to diagnose before changing thresholds: Android/TECNO battery background restrictions, BLE scan delivery under screen-off, and whether the foreground service/ongoing notification remains active. Do not assume the exact cause without diagnostics.
+- Next: while screen is on, long-press LINK title to show diagnostics; note service active state, raw scan count, partner matches, and RSSI. Then lock that phone for a short interval while the other phone remains active and approaches; wake it and inspect whether raw results/matches increased and whether an error is shown. Repeat on the other phone. No code change/build has been made for this defect yet.
+- Preserve version 0.6.0 as the current tested baseline; do not alter RSSI thresholds or remove foreground service without evidence. Keep main untouched.
