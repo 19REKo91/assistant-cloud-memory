@@ -186,3 +186,9 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - User clarified that the successful «استلمنا» result occurred with the receiving phone's screen turned off.
 - Treat as a successful user-observed test of request/response while the receiving phone screen was off.
 - Still unverified: reverse-direction test, both phones screen-off simultaneously, long-duration background reliability, and behavior under Android battery restrictions.
+
+
+## 2026-10-14 — bidirectional connection tests passed
+- User confirms connection test succeeded in both directions between the two LINK phones.
+- User also confirms the receiving phone's screen was off during the relevant test; the app displayed a receipt confirmation.
+- Mark bidirectional request/response as passed in the user's tested conditions. Do not infer simultaneous both-screens-off reliability or long-duration background reliability; those remain untested.
