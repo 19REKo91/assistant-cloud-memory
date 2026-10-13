@@ -89,6 +89,11 @@ class MainActivity : ComponentActivity() {
     private var isRadioRunning = false
     private var scanResultsSeen = 0
     private var partnerMatches = 0
+    // Raw ScanResult deliveries are counted separately from results accepted by the UI state.
+    private var rawScanResultsReceived = 0
+    private var resultsWithoutScanRecord = 0
+    private var resultsWithoutServiceUuids = 0
+    private var scanStartedAtMs: Long? = null
     private var advertisingStatus = "لم يبدأ"
     private var scanningStatus = "لم يبدأ"
     private var scanner: BluetoothLeScanner? = null
@@ -540,6 +545,10 @@ class MainActivity : ComponentActivity() {
             .setIncludeTxPowerLevel(false).addServiceUuid(ParcelUuid(localUuid)).build()
         scanResultsSeen = 0
         partnerMatches = 0
+        rawScanResultsReceived = 0
+        resultsWithoutScanRecord = 0
+        resultsWithoutServiceUuids = 0
+        scanStartedAtMs = SystemClock.elapsedRealtime()
         advertisingStatus = "جارٍ البدء"
         scanningStatus = "جارٍ البدء"
         val advCb = object : AdvertiseCallback() {
@@ -599,9 +608,19 @@ class MainActivity : ComponentActivity() {
         }
     }
     private fun inspectScanResult(result: ScanResult, partnerUuid: java.util.UUID) {
-        val uuids = result.scanRecord?.serviceUuids
+        val record = result.scanRecord
+        val uuids = record?.serviceUuids
         runOnUiThread {
-            if (!active || !isRadioRunning) return@runOnUiThread
+            rawScanResultsReceived++
+            if (record == null) {
+                resultsWithoutScanRecord++
+            } else if (uuids.isNullOrEmpty()) {
+                resultsWithoutServiceUuids++
+            }
+            if (!active || !isRadioRunning) {
+                updateDiagnostic()
+                return@runOnUiThread
+            }
             scanResultsSeen++
             if (uuids?.contains(ParcelUuid(partnerUuid)) == true) {
                 partnerMatches++
@@ -620,7 +639,23 @@ class MainActivity : ComponentActivity() {
     private fun updateDiagnostic() {
         if (!::diagnostic.isInitialized) return
         diagnostic.visibility = if (showDiagnostics) View.VISIBLE else View.GONE
-        diagnostic.text = "RSSI الشريك: ${proximity.latestRssi ?: "—"} dBm | نتائج BLE: $scanResultsSeen | تطابق الشريك: $partnerMatches\nالإعلان: $advertisingStatus | المسح: $scanningStatus"
+
+        val elapsedSeconds = scanStartedAtMs?.let {
+            ((SystemClock.elapsedRealtime() - it) / 1000L).coerceAtLeast(0L)
+        }
+        val receiveState = when {
+            scanResultsSeen > 0 -> "وصلت نتائج للمسح"
+            rawScanResultsReceived > 0 -> "وصلت callbacks لكن النتائج لم تُعالج"
+            elapsedSeconds != null && elapsedSeconds >= 8L ->
+                "لا تصل أي نتيجة من ماسح BLE منذ ${elapsedSeconds}ث"
+            else -> "بانتظار أول نتيجة"
+        }
+        val errorLine = latestRadioError?.let { "\nالتفصيل: $it" } ?: ""
+        diagnostic.text =
+            "RSSI الشريك: ${proximity.latestRssi ?: "—"} dBm | نتائج معالجة: $scanResultsSeen | تطابق الشريك: $partnerMatches\n" +
+            "الإعلان: $advertisingStatus | المسح: $scanningStatus\n" +
+            "نتائج خام: $rawScanResultsReceived | سجل بلا بيانات: $resultsWithoutScanRecord | بلا UUID: $resultsWithoutServiceUuids\n" +
+            "حالة الاستقبال: $receiveState$errorLine"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
