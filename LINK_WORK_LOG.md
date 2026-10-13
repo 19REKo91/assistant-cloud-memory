@@ -115,3 +115,16 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Run #26 completed successfully for commit `03489dfb18c5d7842fa1b7c1ddd23950d931c490`: the unit-test/build step and artifact upload both succeeded.
 - Run #26 artifact `link-debug-apk`: artifact ID `11822396957`; ZIP size 2,287,937 bytes; created 2026-10-13 14:19:32 UTC; expires 2026-10-20 14:19:30 UTC. This artifact predates the Activity stop-action guard commit, so it is retained only as build evidence and is **not the preferred install candidate**.
 - Run #27 for the latest commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77` is still the preferred candidate to verify because it includes the final stop-action guard. Its unit-test/build step was in progress at this check.
+
+
+## 2026-10-13 — LINK 0.6.0 build and tests verified
+- **GitHub Actions run #27 succeeded** on code commit `8b2b08fe8d7e9cfd49d3ef68a21f766462fa8f77`: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38412370531
+- The `Run unit tests and assemble APK` step succeeded; artifact upload succeeded.
+- The existing cached LINK debug signing key was restored successfully; key generation was skipped. The new APK is configured as `applicationId=com.raeeq.link`, `versionCode=6`, `versionName=0.6.0`; real update acceptance still must be confirmed on the user's phone.
+- Artifact: `link-debug-apk`, ID `11823157025`, size 2,287,983 bytes.
+- Download: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38412370531/artifacts/11823157025
+- Artifact ZIP digest from GitHub API: `sha256:6558a07ca044d11eb2bfdc6732ae7b1f257f680e7143f8679f15aeeaea16392a`.
+- Created 2026-10-13 14:21:44 UTC; expires 2026-10-20 14:21:43 UTC.
+- **What CI verifies:** Kotlin compilation, unit tests and APK assembly/upload. It does not prove that background/screen-off BLE works on the two real phones.
+- **Required device validation:** update over the installed LINK 0.5.0 without uninstalling; test approach/separation/re-approach in foreground; then background the app and turn off both screens, check the ongoing LINK notification, and finally stop using the notification and confirm returning to LINK does not silently restart it.
+- The `main` branch remains untouched.
