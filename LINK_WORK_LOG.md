@@ -174,3 +174,9 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Build/test step succeeded and APK upload succeeded.
 - Artifact `link-debug-apk`, ID `11828955600`, not expired at verification time. Download: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38425625074/artifacts/11828955600
 - This confirms compilation/build and artifact upload only. GATT button behavior, cross-phone connection, and screen-off response are not yet device-verified. Keep existing installed LINK 0.6.0 as baseline until both phones are updated and tested.
+
+
+## 2026-10-14 — first user device test of connection button
+- User reports the connection test succeeded and displayed the confirmation text: «استلمنا».
+- Record this as a successful first observed receipt/confirmation, based on the user's report; do not yet generalize to screen-off reliability or both-direction operation.
+- Remaining validation: repeat the test with the receiving phone screen off, then initiate the test from the other phone. Preserve installed fallback until both checks are complete.
