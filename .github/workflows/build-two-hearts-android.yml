@@ -32,6 +32,12 @@ jobs:
           packages: "platform-tools"
       - name: Install Android 35 SDK components
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      # Keep the debug signing identity stable so later APKs can update an installed copy.
+      - name: Restore Android debug signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: two-hearts-debug-keystore-v1
       - name: Run unit tests and assemble APK
         working-directory: two-hearts-android
         run: gradle --no-daemon testDebugUnitTest assembleDebug
