@@ -19,6 +19,10 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Intent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import android.os.Build
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -68,6 +72,7 @@ class MainActivity : ComponentActivity() {
         private const val KEY_SIDE_A = "side_a"
         private const val KEY_SIDE_B = "side_b"
         private const val KEY_ROLE = "role"
+        private const val KEY_ACTIVE = "active"
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -96,6 +101,25 @@ class MainActivity : ComponentActivity() {
     private var showingQr = false
     private var showDiagnostics = false
     private var active = false
+    private var displayedProximityState = ProximityState.WAITING
+    private var serviceDiagnostic = ""
+    private var serviceReceiverRegistered = false
+    private val serviceUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action != LinkProximityService.ACTION_UPDATE) return
+            displayedProximityState = runCatching {
+                ProximityState.valueOf(intent.getStringExtra(LinkProximityService.EXTRA_STATE) ?: ProximityState.WAITING.name)
+            }.getOrDefault(ProximityState.WAITING)
+            active = intent.getBooleanExtra(LinkProximityService.EXTRA_ACTIVE, false)
+            isRadioRunning = active
+            latestRadioError = intent.getStringExtra(LinkProximityService.EXTRA_ERROR)
+            serviceDiagnostic = intent.getStringExtra(LinkProximityService.EXTRA_DIAGNOSTICS).orEmpty()
+            preferences.edit().putBoolean(KEY_ACTIVE, active).apply()
+            if (!active) window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            if (!::status.isInitialized) return
+            if (active) updateInteractionUi() else renderScreen()
+        }
+    }
     private var latestRadioError: String? = null
     private var latestAdvertiseError: String? = null
     private var latestScanError: String? = null
@@ -127,15 +151,6 @@ class MainActivity : ComponentActivity() {
     private var toneGenerator: ToneGenerator? = null
     private var pulseAnimator: AnimatorSet? = null
 
-    private val tickTask = object : Runnable {
-        override fun run() {
-            if (!active || !isRadioRunning) return
-            proximity.tick(SystemClock.elapsedRealtime())?.let(::onTransition)
-            updateDiagnostic()
-            handler.postDelayed(this, 250L)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Color.rgb(24, 29, 44)
@@ -143,6 +158,28 @@ class MainActivity : ComponentActivity() {
         loadPair()
         buildUi()
         renderScreen()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!serviceReceiverRegistered) {
+            val filter = IntentFilter(LinkProximityService.ACTION_UPDATE)
+            if (Build.VERSION.SDK_INT >= 33) {
+                registerReceiver(serviceUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                @Suppress("DEPRECATION")
+                registerReceiver(serviceUpdateReceiver, filter)
+            }
+            serviceReceiverRegistered = true
+        }
+    }
+
+    override fun onStop() {
+        if (serviceReceiverRegistered) {
+            unregisterReceiver(serviceUpdateReceiver)
+            serviceReceiverRegistered = false
+        }
+        super.onStop()
     }
 
     override fun onResume() {
@@ -165,16 +202,14 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onPause() {
-        if (active) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            stopRadio()
-        }
+        // BLE is owned by the foreground service; pausing the UI must not end the session.
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onPause()
     }
 
     override fun onDestroy() {
-        stopRadio()
-        releaseTone()
+        // Keep the active BLE session in its service until the user explicitly stops it.
+        if (!active) stopRadio()
         pulseAnimator?.cancel()
         super.onDestroy()
     }
@@ -183,10 +218,12 @@ class MainActivity : ComponentActivity() {
         val a = preferences.getString(KEY_SIDE_A, null)
         val b = preferences.getString(KEY_SIDE_B, null)
         val savedRole = preferences.getString(KEY_ROLE, null)
+        active = preferences.getBoolean(KEY_ACTIVE, false)
         if (a != null && b != null && (savedRole == "A" || savedRole == "B")) {
             pair = PairingPayload.parse("TWOHEARTS|1|$a|$b")
             role = if (pair != null) savedRole else null
         }
+        if (pair == null) active = false
     }
 
     private fun buildUi() {
@@ -283,9 +320,14 @@ class MainActivity : ComponentActivity() {
         hideQrButton = makeButton("إخفاء الرمز", false) { showingQr = false; renderScreen() }
         showQrButton = makeButton("إظهار رمز نقل الاقتران", false) { showPairingTransferQr() }
         stopButton = makeButton("إيقاف التجربة", false) {
-            active = false; latestRadioError = null
+            active = false
+            preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
+            latestRadioError = null
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            stopRadio(); proximity.reset(); releaseTone(); renderScreen()
+            stopRadio()
+            proximity.reset()
+            displayedProximityState = ProximityState.WAITING
+            renderScreen()
         }
         resetButton = makeButton("إعادة الاقتران", false) { confirmResetPair() }
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
@@ -347,7 +389,7 @@ class MainActivity : ComponentActivity() {
             status.text = "تعذر تشغيل الاتصال"; detail.text = latestRadioError
             stopPulse(); scene.text = "!"; scene.setTextColor(Color.rgb(245, 199, 117)); return
         }
-        when (proximity.state) {
+        when (displayedProximityState) {
             ProximityState.WAITING -> {
                 root.background = GradientDrawable(GradientDrawable.Orientation.TL_BR,
                     intArrayOf(Color.rgb(22, 27, 43), Color.rgb(45, 39, 65)))
@@ -385,48 +427,8 @@ class MainActivity : ComponentActivity() {
         if (::scene.isInitialized) { scene.scaleX = 1f; scene.scaleY = 1f }
     }
     private fun onTransition(next: ProximityState) {
-        val detectedElapsed = SystemClock.elapsedRealtime()
-        val detectedWall = System.currentTimeMillis()
-        noteTimingEvent("تحول المحرك إلى $next", detectedElapsed, detectedWall)
-        if (next == ProximityState.NEAR) {
-            noteTimingEvent("طلب صوت الاقتراب", detectedElapsed, detectedWall)
-            playTone(true)
-        }
-        if (next == ProximityState.APART) {
-            noteTimingEvent("طلب صوت الابتعاد", detectedElapsed, detectedWall)
-            playTone(false)
-        }
+        displayedProximityState = next
         updateInteractionUi()
-        noteTimingEvent("تحديث المشهد إلى $next", SystemClock.elapsedRealtime(), System.currentTimeMillis())
-        updateDiagnostic()
-    }
-
-    private fun noteTimingEvent(
-        label: String,
-        elapsedAtMs: Long = SystemClock.elapsedRealtime(),
-        wallAtMs: Long = System.currentTimeMillis()
-    ) {
-        if (timingEvents.size >= 12) timingEvents.removeFirst()
-        val sinceRadioStart = (elapsedAtMs - radioStartElapsed).coerceAtLeast(0L)
-        val wallClock = SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(Date(wallAtMs))
-        timingEvents.addLast("$label | $wallClock | +${sinceRadioStart}ms")
-    }
-    private fun playTone(happy: Boolean) {
-        releaseTone()
-        val tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 75) }.getOrNull() ?: return
-        toneGenerator = tone
-        if (happy) {
-            tone.startTone(ToneGenerator.TONE_PROP_ACK, 150)
-            handler.postDelayed({ if (toneGenerator === tone) tone.startTone(ToneGenerator.TONE_PROP_ACK, 150) }, 230L)
-            handler.postDelayed({ if (toneGenerator === tone) releaseTone() }, 650L)
-        } else {
-            tone.startTone(ToneGenerator.TONE_PROP_NACK, 420)
-            handler.postDelayed({ if (toneGenerator === tone) releaseTone() }, 500L)
-        }
-    }
-    private fun releaseTone() {
-        val tone = toneGenerator; toneGenerator = null
-        if (tone != null) { runCatching { tone.stopTone() }; runCatching { tone.release() } }
     }
 
     private fun createPair() {
@@ -505,6 +507,7 @@ class MainActivity : ComponentActivity() {
             role = assignedRole
             showingQr = false
             active = false
+            preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
             latestRadioError = null
             savePair(savedPayload, assignedRole)
             renderScreen()
@@ -518,14 +521,18 @@ class MainActivity : ComponentActivity() {
     }
     private fun savePair(payload: PairingPayload, savedRole: String) {
         preferences.edit().putString(KEY_SIDE_A, payload.sideA).putString(KEY_SIDE_B, payload.sideB)
-            .putString(KEY_ROLE, savedRole).apply()
+            .putString(KEY_ROLE, savedRole).putBoolean(KEY_ACTIVE, false).apply()
     }
     private fun confirmResetPair() {
         AlertDialog.Builder(this).setTitle("إعادة الاقتران")
             .setMessage("سيُحذف رمز هذا الهاتف. لإعادة الربط، أنشئ رمزًا جديدًا وامسحه من الهاتف الآخر.")
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("حذف") { _, _ ->
-                active = false; stopRadio(); releaseTone(); pair = null; role = null
+                active = false
+                preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
+                stopRadio()
+                pair = null; role = null
+                displayedProximityState = ProximityState.WAITING
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 showingQr = false; latestRadioError = null; proximity.reset()
                 preferences.edit().clear().apply(); renderScreen()
@@ -558,9 +565,12 @@ class MainActivity : ComponentActivity() {
     private fun activateExperience() {
         latestRadioError = null
         proximity.reset()
+        displayedProximityState = ProximityState.WAITING
         active = true
+        preferences.edit().putBoolean(KEY_ACTIVE, true).apply()
         if (!startRadio()) {
             active = false
+            preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -568,202 +578,297 @@ class MainActivity : ComponentActivity() {
         renderScreen()
     }
 
-    @SuppressLint("MissingPermission")
     private fun startRadio(): Boolean {
-        radioStarts++
-        latestAdvertiseError = null
-        latestScanError = null
         val payload = pair ?: return false
         val savedRole = role ?: return false
-        if (!hasBluetoothPermissions()) { latestRadioError = "امنح أذونات الأجهزة القريبة ثم فعّل التجربة."; return false }
-        val adapter: BluetoothAdapter? = (getSystemService(BLUETOOTH_SERVICE) as BluetoothManager).adapter
-        if (adapter == null) { latestRadioError = "لا يتوفر محول بلوتوث على هذا الجهاز."; return false }
-        if (!adapter.isEnabled) { latestRadioError = "يجب تفعيل البلوتوث أولًا."; return false }
-        val localAdvertiser = adapter.bluetoothLeAdvertiser
-        val localScanner = adapter.bluetoothLeScanner
-        if (localAdvertiser == null || localScanner == null) {
-            latestRadioError = "لا يتوفر الإعلان أو المسح عبر BLE على هذا الجهاز."; return false
+        if (!hasBluetoothPermissions()) {
+            latestRadioError = "امنح أذونات الأجهزة القريبة ثم فعّل التجربة."
+            return false
         }
-
-        stopRadio()
-        scanner = localScanner; advertiser = localAdvertiser
-        val localUuid = payload.ownUuid(savedRole)
-        val partnerUuid = payload.partnerUuid(savedRole)
-        diagnosticLocalUuid = localUuid.toString()
-        diagnosticPartnerUuid = partnerUuid.toString()
-        val advSettings = AdvertiseSettings.Builder()
-            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
-            .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
-            .setConnectable(false).setTimeout(0).build()
-        val advData = AdvertiseData.Builder().setIncludeDeviceName(false)
-            .setIncludeTxPowerLevel(false).addServiceUuid(ParcelUuid(localUuid)).build()
-        scanResultsSeen = 0
-        partnerMatches = 0
-        rawScanResultsReceived = 0
-        resultsWithoutScanRecord = 0
-        resultsWithoutServiceUuids = 0
-        scanStartedAtMs = SystemClock.elapsedRealtime()
-        radioStartElapsed = scanStartedAtMs ?: SystemClock.elapsedRealtime()
-        recentScanEvents.clear()
-        timingEvents.clear()
-        firstPartnerMatchElapsedMs = null
-        firstStrongRssiElapsedMs = null
-        lastRssi = null
-        lastRssiElapsedMs = null
-        lastMatchElapsedMs = null
-        advertisingStatus = "جارٍ البدء"
-        scanningStatus = "جارٍ البدء"
-        val advCb = object : AdvertiseCallback() {
-            override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-                runOnUiThread {
-                    advertisingStatus = "يعمل"
-                    if (active) updateDiagnostic()
-                }
-            }
-            override fun onStartFailure(errorCode: Int) {
-                runOnUiThread {
-                    advertisingStatus = "فشل: $errorCode"
-                    latestRadioError = when (errorCode) {
-                        AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
-                        AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
-                        AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
-                        AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
-                        AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
-                        else -> "فشل إعلان BLE، الرمز: $errorCode"
-                    }
-                    latestAdvertiseError = latestRadioError
-                    active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
-                }
-            }
+        val serviceIntent = Intent(this, LinkProximityService::class.java).apply {
+            action = LinkProximityService.ACTION_START
+            putExtra(LinkProximityService.EXTRA_LOCAL_UUID, payload.ownUuid(savedRole).toString())
+            putExtra(LinkProximityService.EXTRA_PARTNER_UUID, payload.partnerUuid(savedRole).toString())
         }
-        advertiseCallback = advCb
         return try {
-            localAdvertiser.startAdvertising(advSettings, advData, advCb)
-            // Scan without an OS-level UUID filter for diagnosis; validate the partner UUID ourselves.
-            val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-            val scanCb = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) {
-                    inspectScanResult(result, partnerUuid)
-                }
-                override fun onBatchScanResults(results: MutableList<ScanResult>) {
-                    results.forEach { inspectScanResult(it, partnerUuid) }
-                }
-                override fun onScanFailed(errorCode: Int) {
-                    runOnUiThread {
-                        scanningStatus = "فشل: $errorCode"
-                        latestRadioError = "تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode"
-                        latestScanError = latestRadioError
-                        active = false; window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); stopRadio(); renderScreen()
-                    }
-                }
-            }
-            scanCallback = scanCb
-            localScanner.startScan(null, scanSettings, scanCb)
-            scanningStatus = "بدأ الطلب؛ بانتظار النتائج"
-            isRadioRunning = true; latestRadioError = null
-            handler.removeCallbacks(tickTask); handler.post(tickTask)
+            startForegroundService(serviceIntent)
+            latestRadioError = null
+            isRadioRunning = true
             true
-        } catch (_: SecurityException) {
-            latestRadioError = "لم يسمح النظام باستخدام البلوتوث. راجع أذونات الأجهزة القريبة."
-            stopRadio(); false
-        } catch (_: IllegalStateException) {
-            latestRadioError = "تعذّر تشغيل BLE. أوقف البلوتوث وشغّله ثم حاول مرة واحدة."
-            stopRadio(); false
+        } catch (error: Exception) {
+            latestRadioError = "تعذّر بدء مراقبة LINK في الخلفية: ${error.localizedMessage ?: error.javaClass.simpleName}"
+            isRadioRunning = false
+            stopService(Intent(this, LinkProximityService::class.java))
+            false
         }
     }
-    private fun inspectScanResult(result: ScanResult, partnerUuid: java.util.UUID) {
-        val record = result.scanRecord
-        val uuids = record?.serviceUuids
-        // Capture receipt time before any UI-thread handoff so scan dispatch latency is visible.
-        val callbackElapsed = SystemClock.elapsedRealtime()
-        val callbackWall = System.currentTimeMillis()
-        runOnUiThread {
-            rawScanResultsReceived++
-            if (recentScanEvents.size == 3) recentScanEvents.removeFirst()
-            recentScanEvents.addLast(
-                ScanEvent(
-                    elapsedMs = callbackElapsed - radioStartElapsed,
-                    rssi = result.rssi,
-                    uuids = uuids?.map { it.uuid.toString() } ?: emptyList(),
-                    active = active,
-                    radio = isRadioRunning
-                )
-            )
-            if (record == null) {
-                resultsWithoutScanRecord++
-            } else if (uuids.isNullOrEmpty()) {
-                resultsWithoutServiceUuids++
-            }
-            if (!active || !isRadioRunning) {
-                updateDiagnostic()
-                return@runOnUiThread
-            }
-            scanResultsSeen++
-            if (uuids?.contains(ParcelUuid(partnerUuid)) == true) {
-                partnerMatches++
-                lastMatchElapsedMs = callbackElapsed - radioStartElapsed
-                lastRssi = result.rssi
-                lastRssiElapsedMs = lastMatchElapsedMs
-                if (firstPartnerMatchElapsedMs == null) {
-                    firstPartnerMatchElapsedMs = lastMatchElapsedMs
-                    noteTimingEvent("أول مطابقة BLE للشريك", callbackElapsed, callbackWall)
-                }
-                if (result.rssi >= -56 && firstStrongRssiElapsedMs == null) {
-                    firstStrongRssiElapsedMs = lastMatchElapsedMs
-                    noteTimingEvent("أول إشارة قوية (RSSI ≥ -56 dBm)", callbackElapsed, callbackWall)
-                }
-                proximity.onRssi(result.rssi, callbackElapsed)?.let(::onTransition)
-            }
-            updateDiagnostic()
-        }
-    }
-    @SuppressLint("MissingPermission")
+
     private fun stopRadio() {
-        handler.removeCallbacks(tickTask)
-        try { val cb = scanCallback; val s = scanner; if (cb != null && s != null) s.stopScan(cb) } catch (_: Exception) {}
-        try { val cb = advertiseCallback; val a = advertiser; if (cb != null && a != null) a.stopAdvertising(cb) } catch (_: Exception) {}
-        scanCallback = null; advertiseCallback = null; scanner = null; advertiser = null; isRadioRunning = false
+        stopService(Intent(this, LinkProximityService::class.java))
+        isRadioRunning = false
     }
+
     private fun updateDiagnostic() {
         if (!::diagnostic.isInitialized) return
         diagnostic.visibility = if (showDiagnostics) View.VISIBLE else View.GONE
-
-        val elapsedSeconds = scanStartedAtMs?.let {
-            ((SystemClock.elapsedRealtime() - it) / 1000L).coerceAtLeast(0L)
+        diagnostic.text = serviceDiagnostic.ifBlank {
+            "سيظهر تشخيص خدمة BLE هنا بعد تفعيل التجربة."
         }
-        val receiveState = when {
-            scanResultsSeen > 0 -> "وصلت نتائج للمسح"
-            rawScanResultsReceived > 0 -> "وصلت callbacks لكن النتائج لم تُعالج"
-            elapsedSeconds != null && elapsedSeconds >= 8L ->
-                "لا تصل أي نتيجة من ماسح BLE منذ ${elapsedSeconds}ث"
-            else -> "بانتظار أول نتيجة"
-        }
-        val rawDelta = rawScanResultsReceived
-        val seenDelta = scanResultsSeen
-        val matchDelta = partnerMatches
-        val eventLines = recentScanEvents.toList().asReversed().mapIndexed { index, event ->
-            "#${index + 1} +${event.elapsedMs}ms RSSI=${event.rssi} active=${event.active} radio=${event.radio} UUIDs=${event.uuids.ifEmpty { listOf("—") }.joinToString(",")}"
-        }.joinToString("\n")
-        val eventBlock = if (eventLines.isEmpty()) "لا توجد أحداث مسح بعد" else eventLines
-        val errorLine = latestRadioError?.let { "\nالخطأ العام: $it" } ?: ""
-        val lastRssiLine = lastRssi?.let { "$it dBm عند +${lastRssiElapsedMs ?: 0L}ms" } ?: "—"
-        val lastMatchLine = lastMatchElapsedMs?.let { "+${it}ms" } ?: "—"
-        val firstMatchLine = firstPartnerMatchElapsedMs?.let { "+${it}ms" } ?: "—"
-        val firstStrongLine = firstStrongRssiElapsedMs?.let { "+${it}ms" } ?: "—"
-        val timingBlock = timingEvents.toList().asReversed().joinToString("\n")
-            .ifEmpty { "لم يُسجّل حدث توقيت بعد" }
-        diagnostic.text =
-            "الدور المحفوظ: ${role ?: "—"} | active=$active | isRadioRunning=$isRadioRunning | radioStarts=$radioStarts\n" +
-            "localUuid=${diagnosticLocalUuid ?: "—"}\npartnerUuid=${diagnosticPartnerUuid ?: "—"}\n" +
-            "RSSI الأخير: $lastRssiLine | آخر مطابقة: $lastMatchLine\n" +
-            "أول مطابقة: $firstMatchLine | أول RSSI قوي: $firstStrongLine\n" +
-            "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\n" +
-            "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\n" +
-            "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\n" +
-            "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\n" +
-            "حالة الاستقبال: $receiveState\n" +
-            "سجل التوقيت (وقت ساعة الهاتف | +ms منذ بدء الراديو؛ قد تختلف ساعة الهاتفين):\n$timingBlock\n" +
-            "آخر 3 أحداث مسح (الأحدث أولًا):\n$eventBlock$errorLine"
     }
+
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
+ 
+
+/**
+ * Owns the BLE radio independently of MainActivity, so proximity keeps running while UI is paused.
+ */
+class LinkProximityService : android.app.Service() {
+    companion object {
+        const val ACTION_START="com.raeeq.link.action.START_PROXIMITY"
+        const val ACTION_STOP="com.raeeq.link.action.STOP_PROXIMITY"
+        const val ACTION_UPDATE="com.raeeq.link.action.PROXIMITY_UPDATE"
+        const val EXTRA_LOCAL_UUID="local_uuid"
+        const val EXTRA_PARTNER_UUID="partner_uuid"
+        const val EXTRA_STATE="state"
+        const val EXTRA_ACTIVE="active"
+        const val EXTRA_ERROR="error"
+        const val EXTRA_DIAGNOSTICS="diagnostics"
+        private const val CHANNEL="link_proximity_active"
+        private const val NOTIFICATION_ID=6105
+    }
+    private val mainHandler=android.os.Handler(android.os.Looper.getMainLooper())
+    private val engine=ProximityEngine()
+    private val events=java.util.ArrayDeque<String>(8)
+    private var running=false
+    private var localUuid:java.util.UUID?=null
+    private var partnerUuid:java.util.UUID?=null
+    private var advertiser:android.bluetooth.le.BluetoothLeAdvertiser?=null
+    private var scanner:android.bluetooth.le.BluetoothLeScanner?=null
+    private var advertiseCb:android.bluetooth.le.AdvertiseCallback?=null
+    private var scanCb:android.bluetooth.le.ScanCallback?=null
+    private var startElapsed=0L
+    private var lastPublished=0L
+    private var rawResults=0
+    private var partnerMatches=0
+    private var lastRssi:Int?=null
+    private var firstMatch:Long?=null
+    private var firstStrong:Long?=null
+    private var latestError:String?=null
+
+    private val ticker=object:android.os.Handler.Callback, Runnable {
+        override fun handleMessage(msg:android.os.Message?):Boolean=false
+        override fun run() {
+            if(!running) return
+            val now=android.os.SystemClock.elapsedRealtime()
+            val transition=engine.tick(now)
+            if(transition!=null) { note("state=$transition",now); publish() }
+            else if(now-lastPublished>=1_000L) publish()
+            if(running) mainHandler.postDelayed(this,250L)
+        }
+    }
+
+    override fun onBind(intent:android.content.Intent?):android.os.IBinder?=null
+
+    override fun onStartCommand(intent:android.content.Intent?,flags:Int,startId:Int):Int {
+        when(intent?.action) {
+            ACTION_STOP -> { stopSession(); stopSelf(startId) }
+            ACTION_START -> {
+                val local=intent.getStringExtra(EXTRA_LOCAL_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
+                val partner=intent.getStringExtra(EXTRA_PARTNER_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
+                if(local==null || partner==null) fail("بيانات الاقتران غير صالحة أو غير مكتملة.")
+                else startSession(local,partner)
+            }
+            else -> if(running) publish() else stopSelf(startId)
+        }
+        return START_NOT_STICKY
+    }
+
+    private fun startSession(local:java.util.UUID,partner:java.util.UUID) {
+        if(running && localUuid==local && partnerUuid==partner) { publish(); return }
+        if(!hasBluetoothPermissions()) {
+            latestError="أذونات البلوتوث غير متاحة؛ افتح LINK وامنح أذونات الأجهزة القريبة."
+            running=false; publish(); stopSelf(); return
+        }
+        running=false
+        stopRadio()
+        localUuid=local; partnerUuid=partner
+        engine.reset(); latestError=null
+        rawResults=0; partnerMatches=0; lastRssi=null; firstMatch=null; firstStrong=null
+        events.clear()
+        startElapsed=android.os.SystemClock.elapsedRealtime()
+        lastPublished=0L
+        createChannel()
+        running=true
+        try {
+            startForeground(NOTIFICATION_ID,makeNotification(),
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+        } catch(error:Exception) {
+            running=false
+            latestError="تعذّر تشغيل خدمة LINK في الخلفية: ${error.localizedMessage ?: error.javaClass.simpleName}"
+            publish(); stopSelf(); return
+        }
+        val manager=getSystemService(android.content.Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val adapter:android.bluetooth.BluetoothAdapter?=manager.adapter
+        if(adapter==null) { fail("لا يتوفر محول بلوتوث على هذا الجهاز."); return }
+        if(!adapter.isEnabled) { fail("يجب تفعيل البلوتوث أولًا."); return }
+        val localAdvertiser=adapter.bluetoothLeAdvertiser
+        val localScanner=adapter.bluetoothLeScanner
+        if(localAdvertiser==null || localScanner==null) { fail("لا يتوفر الإعلان أو المسح عبر BLE على هذا الجهاز."); return }
+        advertiser=localAdvertiser; scanner=localScanner
+        val advSettings=android.bluetooth.le.AdvertiseSettings.Builder()
+            .setAdvertiseMode(android.bluetooth.le.AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+            .setTxPowerLevel(android.bluetooth.le.AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
+            .setConnectable(false).setTimeout(0).build()
+        val advData=android.bluetooth.le.AdvertiseData.Builder()
+            .setIncludeDeviceName(false).setIncludeTxPowerLevel(false)
+            .addServiceUuid(android.os.ParcelUuid(local)).build()
+        val advertisingCallback=object:android.bluetooth.le.AdvertiseCallback() {
+            override fun onStartSuccess(settingsInEffect:android.bluetooth.le.AdvertiseSettings?) { if(running) publish() }
+            override fun onStartFailure(errorCode:Int) {
+                mainHandler.post {
+                    if(running) fail(when(errorCode) {
+                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
+                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
+                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
+                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
+                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
+                        else -> "فشل إعلان BLE، الرمز: $errorCode"
+                    })
+                }
+            }
+        }
+        advertiseCb=advertisingCallback
+        val scanSettings=android.bluetooth.le.ScanSettings.Builder()
+            .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY).build()
+        val scanningCallback=object:android.bluetooth.le.ScanCallback() {
+            override fun onScanResult(callbackType:Int,result:android.bluetooth.le.ScanResult) { inspect(result,partner) }
+            override fun onBatchScanResults(results:MutableList<android.bluetooth.le.ScanResult>) { results.forEach { inspect(it,partner) } }
+            override fun onScanFailed(errorCode:Int) { mainHandler.post { if(running) fail("تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode") } }
+        }
+        scanCb=scanningCallback
+        try {
+            localAdvertiser.startAdvertising(advSettings,advData,advertisingCallback)
+            // Preserve the old strategy: scan without an OS filter, then match the partner UUID locally.
+            localScanner.startScan(null,scanSettings,scanningCallback)
+            mainHandler.removeCallbacks(ticker)
+            mainHandler.post(ticker)
+            note("BLE session started",startElapsed)
+            publish()
+        } catch(_:SecurityException) {
+            fail("لم يسمح النظام باستخدام البلوتوث. راجع أذونات الأجهزة القريبة.")
+        } catch(_:IllegalStateException) {
+            fail("تعذّر تشغيل BLE. أوقف البلوتوث وشغّله ثم حاول مرة واحدة.")
+        } catch(error:Exception) {
+            fail("تعذّر تشغيل BLE: ${error.localizedMessage ?: error.javaClass.simpleName}")
+        }
+    }
+
+    private fun inspect(result:android.bluetooth.le.ScanResult,expected:java.util.UUID) {
+        if(!running) return
+        rawResults++
+        val uuids=result.scanRecord?.serviceUuids
+        val now=android.os.SystemClock.elapsedRealtime()
+        if(uuids?.contains(android.os.ParcelUuid(expected))==true) {
+            partnerMatches++; lastRssi=result.rssi
+            if(firstMatch==null) { firstMatch=now-startElapsed; note("first partner match",now) }
+            if(result.rssi>=-56 && firstStrong==null) { firstStrong=now-startElapsed; note("first strong RSSI",now) }
+            val transition=engine.onRssi(result.rssi,now)
+            if(transition!=null) note("state=$transition",now)
+            if(transition!=null || now-lastPublished>=400L) publish()
+        } else if(now-lastPublished>=1_000L) publish()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun stopRadio() {
+        mainHandler.removeCallbacks(ticker)
+        try { val cb=scanCb; val radio=scanner; if(cb!=null && radio!=null) radio.stopScan(cb) } catch(_:Exception) { }
+        try { val cb=advertiseCb; val radio=advertiser; if(cb!=null && radio!=null) radio.stopAdvertising(cb) } catch(_:Exception) { }
+        scanCb=null; advertiseCb=null; scanner=null; advertiser=null
+    }
+
+    private fun stopSession() {
+        running=false; stopRadio(); engine.reset(); latestError=null
+        note("session stopped",android.os.SystemClock.elapsedRealtime())
+        publish(); stopForeground(STOP_FOREGROUND_REMOVE)
+    }
+
+    private fun fail(message:String) {
+        latestError=message; running=false; stopRadio(); engine.reset()
+        note("error",android.os.SystemClock.elapsedRealtime())
+        publish(); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf()
+    }
+
+    private fun hasBluetoothPermissions():Boolean =
+        checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN)==android.content.pm.PackageManager.PERMISSION_GRANTED &&
+        checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE)==android.content.pm.PackageManager.PERMISSION_GRANTED &&
+        checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)==android.content.pm.PackageManager.PERMISSION_GRANTED
+
+    private fun createChannel() {
+        getSystemService(android.app.NotificationManager::class.java).createNotificationChannel(
+            android.app.NotificationChannel(CHANNEL,"LINK — مراقبة الاقتراب",
+                android.app.NotificationManager.IMPORTANCE_LOW).apply {
+                description="يبقي تجربة الاقتراب المحلية بين الهاتفين فعّالة."
+                setShowBadge(false)
+            })
+    }
+
+    private fun makeNotification():android.app.Notification {
+        val openIntent=android.content.Intent(this,MainActivity::class.java).apply {
+            flags=android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openPending=android.app.PendingIntent.getActivity(this,0,openIntent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)
+        val stopIntent=android.content.Intent(this,LinkProximityService::class.java).setAction(ACTION_STOP)
+        val stopPending=android.app.PendingIntent.getService(this,1,stopIntent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)
+        return android.app.Notification.Builder(this,CHANNEL)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("LINK — التجربة فعّالة")
+            .setContentText(notificationText()).setContentIntent(openPending)
+            .setOngoing(running).setOnlyAlertOnce(true).addAction(0,"إيقاف",stopPending).build()
+    }
+
+    private fun notificationText():String=when {
+        latestError!=null -> latestError ?: "تعذّر تشغيل LINK"
+        !running -> "التجربة متوقفة"
+        engine.state==ProximityState.NEAR -> "الهاتفان قريبان — التفاعل فعّال"
+        engine.state==ProximityState.APART -> "الهاتفان متباعدان — بانتظار العودة"
+        else -> "يبحث عن الهاتف المرتبط في الخلفية"
+    }
+
+    private fun note(label:String,elapsed:Long) {
+        if(timeline.size>=8) timeline.removeFirst()
+        timeline.addLast("$label | +${(elapsed-startElapsed).coerceAtLeast(0L)}ms")
+    }
+
+    private fun diagnosticText():String {
+        val seconds=if(startElapsed>0L) (android.os.SystemClock.elapsedRealtime()-startElapsed).coerceAtLeast(0L)/1000L else 0L
+        val rssi=lastRssi?.let { "$it dBm" } ?: "—"
+        val match=firstMatch?.let { "+${it}ms" } ?: "—"
+        val strong=firstStrong?.let { "+${it}ms" } ?: "—"
+        val eventText=timeline.toList().asReversed().joinToString("\n").ifEmpty { "لم يُسجّل حدث بعد" }
+        return "الخدمة الأمامية: ${if(running) "تعمل" else "متوقفة"} | الحالة=${engine.state.name} | المدة=${seconds}ث\n"+
+            "localUuid=${localUuid ?: "—"}\npartnerUuid=${partnerUuid ?: "—"}\n"+
+            "المسح الخام=$rawResults | مطابقات الشريك=$partnerMatches | RSSI الأخير=$rssi\n"+
+            "أول مطابقة=$match | أول RSSI قوي=$strong\nالأحداث (+ms):\n$eventText"+
+            (latestError?.let { "\nالخطأ: $it" } ?: "")
+    }
+
+    private fun publish() {
+        lastPublished=android.os.SystemClock.elapsedRealtime()
+        sendBroadcast(android.content.Intent(ACTION_UPDATE).setPackage(packageName)
+            .putExtra(EXTRA_STATE,engine.state.name).putExtra(EXTRA_ACTIVE,running)
+            .putExtra(EXTRA_ERROR,latestError).putExtra(EXTRA_DIAGNOSTICS,diagnosticText()))
+        if(running) getSystemService(android.app.NotificationManager::class.java)
+            .notify(NOTIFICATION_ID,makeNotification())
+    }
+
+    override fun onDestroy() {
+        val wasRunning=running
+        running=false; stopRadio()
+        if(wasRunning) { engine.reset(); publish() }
+        super.onDestroy()
+    }
+}
+
