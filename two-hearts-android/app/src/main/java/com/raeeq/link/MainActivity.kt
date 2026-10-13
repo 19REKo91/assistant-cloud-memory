@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var scanButton: Button
     private lateinit var activateButton: Button
     private lateinit var hideQrButton: Button
+    private lateinit var showQrButton: Button
     private lateinit var stopButton: Button
     private lateinit var resetButton: Button
     private lateinit var bluetoothSettingsButton: Button
@@ -248,6 +249,7 @@ class MainActivity : ComponentActivity() {
         scanButton = makeButton("مسح رمز الهاتف الآخر", false) { requestCameraAndScan() }
         activateButton = makeButton("تفعيل التجربة", true) { requestBluetoothAndActivate() }
         hideQrButton = makeButton("إخفاء الرمز", false) { showingQr = false; renderScreen() }
+        showQrButton = makeButton("إظهار رمز نقل الاقتران", false) { showPairingTransferQr() }
         stopButton = makeButton("إيقاف التجربة", false) {
             active = false; latestRadioError = null
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -257,7 +259,7 @@ class MainActivity : ComponentActivity() {
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
         }
-        listOf(createButton, scanButton, activateButton, hideQrButton, stopButton,
+        listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, stopButton,
             resetButton, bluetoothSettingsButton).forEach(::addButton)
     }
 
@@ -288,9 +290,10 @@ class MainActivity : ComponentActivity() {
         resetButton.visibility = if (pair != null && !active) View.VISIBLE else View.GONE
         bluetoothSettingsButton.visibility =
             if (!active && latestRadioError != null && latestRadioError!!.contains("البلوتوث")) View.VISIBLE else View.GONE
-        val qrVisible = pair != null && role == "A" && showingQr && !active
+        val qrVisible = pair != null && showingQr && !active
         qrImage.visibility = if (qrVisible) View.VISIBLE else View.GONE
         hideQrButton.visibility = if (qrVisible) View.VISIBLE else View.GONE
+        showQrButton.visibility = if (pair != null && !active && !showingQr) View.VISIBLE else View.GONE
 
         if (active) { updateInteractionUi(); return }
         stopPulse()
@@ -377,20 +380,41 @@ class MainActivity : ComponentActivity() {
         pair = payload; role = "A"; showingQr = true; active = false; latestRadioError = null
         savePair(payload, "A")
         try {
-            val hints = EnumMap<EncodeHintType, Any>(EncodeHintType::class.java)
-            hints[EncodeHintType.MARGIN] = 3
-            val matrix = QRCodeWriter().encode(payload.encode(), BarcodeFormat.QR_CODE, 520, 520, hints)
-            val bitmap = Bitmap.createBitmap(520, 520, Bitmap.Config.ARGB_8888)
-            for (x in 0 until 520) for (y in 0 until 520) {
-                bitmap.setPixel(x, y, if (matrix[x, y]) Color.BLACK else Color.WHITE)
-            }
-            qrImage.setImageBitmap(bitmap)
+            renderQrBitmap(payload.encode())
             renderScreen()
         } catch (_: Exception) {
             latestRadioError = "تعذّر إنشاء رمز الاقتران. أعد الاقتران وحاول مرة أخرى."
             renderScreen()
         }
     }
+
+    private fun showPairingTransferQr() {
+        val savedPair = pair ?: return
+        val senderRole = role ?: return
+        val receiverRole = if (senderRole == "A") "B" else "A"
+        showingQr = true
+        latestRadioError = null
+        try {
+            renderQrBitmap(savedPair.encodeForReceiverRole(receiverRole))
+            renderScreen()
+        } catch (_: Exception) {
+            showingQr = false
+            latestRadioError = "تعذّر إنشاء رمز نقل الاقتران."
+            renderScreen()
+        }
+    }
+
+    private fun renderQrBitmap(contents: String) {
+        val hints = EnumMap<EncodeHintType, Any>(EncodeHintType::class.java)
+        hints[EncodeHintType.MARGIN] = 3
+        val matrix = QRCodeWriter().encode(contents, BarcodeFormat.QR_CODE, 520, 520, hints)
+        val bitmap = Bitmap.createBitmap(520, 520, Bitmap.Config.ARGB_8888)
+        for (x in 0 until 520) for (y in 0 until 520) {
+            bitmap.setPixel(x, y, if (matrix[x, y]) Color.BLACK else Color.WHITE)
+        }
+        qrImage.setImageBitmap(bitmap)
+    }
+
     private fun requestCameraAndScan() {
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) startQrScan()
         else requestPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA)
@@ -421,14 +445,21 @@ class MainActivity : ComponentActivity() {
         if (payload == null) {
             Toast.makeText(this, "هذا الرمز ليس رمز اقتران صالحًا.", Toast.LENGTH_LONG).show()
         } else {
-            pair = payload
-            role = "B"
+            val assignedRole = payload.receiverRole ?: "B"
+            val savedPayload = PairingPayload(payload.sideA, payload.sideB)
+            pair = savedPayload
+            role = assignedRole
             showingQr = false
             active = false
             latestRadioError = null
-            savePair(payload, "B")
+            savePair(savedPayload, assignedRole)
             renderScreen()
-            Toast.makeText(this, "تم حفظ الاقتران على هذا الهاتف.", Toast.LENGTH_LONG).show()
+            val confirmation = if (payload.receiverRole == null) {
+                "تم حفظ الاقتران على هذا الهاتف."
+            } else {
+                "تم نقل الاقتران المحفوظ إلى هذا الهاتف."
+            }
+            Toast.makeText(this, confirmation, Toast.LENGTH_LONG).show()
         }
     }
     private fun savePair(payload: PairingPayload, savedRole: String) {
