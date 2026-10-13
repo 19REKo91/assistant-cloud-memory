@@ -201,3 +201,10 @@ Do not delete source files or dependencies, remove environment variables, rotate
 ### Current status on 2026-10-13
 No components have been disabled. An attempt to inventory the Floot project was blocked because the account's daily build-action limit has been reached; tools that read project files are currently paused until the stated reset. Do not infer which features are unused before inspection. Resume inventory after the limit resets, then apply the reversible-suspension procedure.
 
+### Follow-up inventory outside Floot — 2026-10-13
+- GitHub inventory found the single accessible repository `19REKo91/assistant-cloud-memory`. It contains the persistent notebook and shared project work; do not disable/archive it as an "unused" resource.
+- Vercel inventory found project `assistant-cloud-memory` (`prj_ozUnBdp9EwCPv1NPXznQtO1FyPwU`). A read-only deployment inspection was denied with HTTP 403 because the connected Vercel credential's active scope differs from the target scope. No Vercel changes were made; do not guess or switch scopes.
+- Floot remains deferred at the user's instruction.
+- Railway/Vision Bridge was not modified because prior instructions explicitly paused those operations until resumption is clear.
+- No component outside Floot has been disabled: current read-only inventory has not established any safe, independent, unused target. Next safe step is to reconcile the Vercel scope or get authorized read-only inventory for other services, then identify reversible candidates before changing them.
+
