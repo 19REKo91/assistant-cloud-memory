@@ -172,6 +172,12 @@ class MainActivity : ComponentActivity() {
             }
             serviceReceiverRegistered = true
         }
+        // Respect Stop from the ongoing notification even if this Activity missed its broadcast.
+        if (!preferences.getBoolean(KEY_ACTIVE, false)) {
+            active = false
+            isRadioRunning = false
+            displayedProximityState = ProximityState.WAITING
+        }
     }
 
     override fun onStop() {
