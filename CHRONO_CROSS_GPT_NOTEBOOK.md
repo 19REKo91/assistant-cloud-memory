@@ -84,3 +84,29 @@ King explicitly requested that CHRONO CROSS GPT include **all practical ways of 
 - Distinguish verified facts from assumptions; do not claim a test passed unless its result confirms it.
 - Never store credentials or secret values here.
 - Do not publish publicly without King’s explicit permission.
+
+## Design principle: use capability-revealing scenarios before implementation
+The user's video-translation example is a discovery test, not merely a request for one feature. Use concrete end-to-end scenarios to reveal missing capabilities before expanding the toolset. For each scenario, map:
+- input/source types and access constraints;
+- acquisition and extraction methods;
+- interpretation/transformation steps;
+- required outputs and formats;
+- timestamps, citations/provenance, language and structure preservation;
+- required providers/runtime/dependencies;
+- privacy, authentication, safety and resource limits;
+- failure modes and honest capability reporting;
+- an automated test or small validation fixture.
+
+Do not infer that a capability exists merely because its workflow is theoretically possible. Mark every capability as **implemented and tested**, **implemented but unverified**, **planned**, or **blocked/unavailable**. Build a unified routing/orchestration layer that selects suitable readers/processors by content type, rather than treating each reader as an isolated feature.
+
+### Scenario: translate a video into Arabic
+Expected pipeline to evaluate and implement in stages:
+1. Accept a video URL or an uploaded/accessible video file, subject to access and platform limits.
+2. Detect and extract existing captions/subtitles when available; otherwise extract audio and run speech-to-text.
+3. Preserve segment timestamps and, where supported, speaker labels.
+4. Translate segments into Arabic while retaining context and alignment.
+5. Export synchronized SRT/VTT; optional dubbed audio is a separate capability and must not be claimed until a real provider/path is integrated and tested.
+6. Report whether captions, audio transcription, or visual-frame analysis were used, and state partial extraction or failure clearly.
+7. Test with a short sample video and verify transcript, Arabic translation, timestamp order, and output-file validity.
+This scenario is **planned, not implemented/tested end-to-end** as of this note.
+
