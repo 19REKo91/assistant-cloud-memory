@@ -38,3 +38,9 @@ Fix Android installation error “App not installed because package conflicts wi
 - Do not ask the user to repeat installation/pairing steps. Do not claim the issue is fixed.
 - Next engineering task: inspect the source and workflow on `anniversary-ble-proximity-prototype`, trace BLE advertising/scanning callbacks and partner-ID filtering, and add visible diagnostics for scan results, advertised service/manufacturer data, permissions, and match rejection reasons. Build and test before asking for another install.
 - Keep `main` untouched. Preserve the existing installed app; never suggest uninstalling it as a first-line workaround.
+
+
+## 2026-10-13 — BLE diagnostics
+- Added runtime diagnostic counters and recent ScanResult details to MainActivity.kt on the prototype branch only.
+- The diagnostic panel now wraps content; existing scan matching and radio stop/start behavior were not intentionally changed.
+- No APK was built. Next step is to build the diagnostic version, then test both phones for 30 seconds with radioStarts=1 on each and capture both diagnostic panels.
