@@ -32,12 +32,26 @@ jobs:
           packages: "platform-tools"
       - name: Install Android 35 SDK components
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-      # Keep the debug signing identity stable so later APKs can update an installed copy.
-      - name: Restore Android debug signing key
-        uses: actions/cache@v4
+      - name: Restore LINK debug signing key
+        id: link-key-cache
+        uses: actions/cache/restore@v4
         with:
-          path: ~/.android/debug.keystore
-          key: two-hearts-debug-keystore-v1
+          path: two-hearts-android/link-debug.keystore
+          key: link-debug-signing-key-v1
+      - name: Create LINK debug signing key if cache misses
+        if: steps.link-key-cache.outputs.cache-hit != 'true'
+        run: |
+          keytool -genkeypair -noprompt -storetype JKS \
+            -keystore two-hearts-android/link-debug.keystore \
+            -storepass android -keypass android -alias linkdebug \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=LINK Prototype Debug, OU=Engineering, O=Raeeq, L=Baghdad, ST=Baghdad, C=IQ"
+      - name: Save LINK debug signing key
+        if: steps.link-key-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: two-hearts-android/link-debug.keystore
+          key: link-debug-signing-key-v1
       - name: Run unit tests and assemble APK
         working-directory: two-hearts-android
         run: gradle --no-daemon testDebugUnitTest assembleDebug
