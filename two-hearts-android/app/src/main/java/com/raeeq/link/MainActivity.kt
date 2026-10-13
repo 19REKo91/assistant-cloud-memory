@@ -746,6 +746,46 @@ class LinkProximityService : android.app.Service() {
     private var clientGatt:android.bluetooth.BluetoothGatt?=null
     private var connectionTestPending=false
     private var pendingMessage:String?=null
+    private var bluetoothReceiverRegistered=false
+
+    private val bluetoothStateReceiver=object:android.content.BroadcastReceiver() {
+        override fun onReceive(context:android.content.Context?,intent:android.content.Intent?) {
+            if(intent?.action!=android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED) return
+            when(intent.getIntExtra(android.bluetooth.BluetoothAdapter.EXTRA_STATE,android.bluetooth.BluetoothAdapter.ERROR)) {
+                android.bluetooth.BluetoothAdapter.STATE_OFF -> {
+                    if(running) {
+                        stopRadio()
+                        engine.reset()
+                        latestError="البلوتوث متوقف مؤقتًا؛ سيستأنف LINK تلقائيًا عند تشغيله."
+                        note("Bluetooth off; waiting for radio",android.os.SystemClock.elapsedRealtime())
+                        publish()
+                    }
+                }
+                android.bluetooth.BluetoothAdapter.STATE_ON -> {
+                    val local=localUuid
+                    val partner=partnerUuid
+                    if(local!=null && partner!=null && running) {
+                        running=false
+                        latestError=null
+                        note("Bluetooth on; restarting BLE",android.os.SystemClock.elapsedRealtime())
+                        startSession(local,partner)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        val filter=android.content.IntentFilter(android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED)
+        if(android.os.Build.VERSION.SDK_INT>=33) {
+            registerReceiver(bluetoothStateReceiver,filter,android.content.Context.RECEIVER_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(bluetoothStateReceiver,filter)
+        }
+        bluetoothReceiverRegistered=true
+    }
 
     private val serverCallback=object:android.bluetooth.BluetoothGattServerCallback() {
         override fun onConnectionStateChange(device:android.bluetooth.BluetoothDevice,status:Int,newState:Int) {
@@ -919,7 +959,12 @@ class LinkProximityService : android.app.Service() {
         val manager=getSystemService(android.content.Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
         val adapter:android.bluetooth.BluetoothAdapter?=manager.adapter
         if(adapter==null) { fail("لا يتوفر محول بلوتوث على هذا الجهاز."); return }
-        if(!adapter.isEnabled) { fail("يجب تفعيل البلوتوث أولًا."); return }
+        if(!adapter.isEnabled) {
+            latestError="البلوتوث متوقف مؤقتًا؛ سيستأنف LINK تلقائيًا عند تشغيله."
+            note("Bluetooth currently off; waiting for radio",android.os.SystemClock.elapsedRealtime())
+            publish()
+            return
+        }
         val localAdvertiser=adapter.bluetoothLeAdvertiser
         val localScanner=adapter.bluetoothLeScanner
         if(localAdvertiser==null || localScanner==null) { fail("لا يتوفر الإعلان أو المسح عبر BLE على هذا الجهاز."); return }
@@ -1153,6 +1198,10 @@ class LinkProximityService : android.app.Service() {
     override fun onDestroy() {
         val wasRunning=running
         running=false; persistActive(false); stopRadio()
+        if(bluetoothReceiverRegistered) {
+            try { unregisterReceiver(bluetoothStateReceiver) } catch(_:Exception) { }
+            bluetoothReceiverRegistered=false
+        }
         if(wasRunning) { engine.reset(); publish() }
         super.onDestroy()
     }
