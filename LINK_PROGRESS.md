@@ -98,3 +98,12 @@ Fix Android installation error “App not installed because package conflicts wi
 - During the background-service refactor, preserve diagnostics on both devices and compare first matching RSSI/result time, scan-result cadence, transition time, and any filtering/hysteresis in `ProximityEngine`. Inspect `ProximityEngine` before changing thresholds or adding synchronization. Avoid making the app wait for a network/server handshake; proximity should remain local and responsive.
 - Validation goal: repeat approach/separation tests with both phones in foreground first, then background/screen-off, and distinguish detection-time asymmetry from UI/audio presentation delay. No threshold or matching changes are approved based only on this report.
 - Keep `main` untouched; no new APK until the background-service implementation and timing behavior are reviewed and the build succeeds.
+
+
+## 2026-10-13 — First phone diagnostics
+- First phone snapshot while LINK displayed “معا الآن / اقتربنا”: role A, active=true, radio running, radioStarts=4, raw=24, seen=24, matches=14, last RSSI=-34 dBm and last match at about +2132 ms. No scan or advertising error is shown.
+- Recent scan events include matching UUID results at -34 and -30 dBm, and one result at -25 dBm without a visible UUID. The diagnostic panel reports 10 results without service UUIDs and 0 without ScanRecord.
+- This confirms that phone A is receiving scan results and matching its partner. The count of four radio starts warrants review for restarts/duplicate starts, particularly given the known Activity lifecycle issue.
+- ProximityEngine currently uses a -56 dBm close threshold, three strong readings within a 2500 ms window to enter NEAR, and a 10000 ms departure delay after the last strong reading. Each phone processes local scan callbacks, so asymmetric reaction timing is possible. Do not tune thresholds from phone A alone.
+- Next diagnostic needed: phone B snapshot from the same encounter, to compare role, radioStarts, raw/matches, last RSSI/time, latest events and errors. Use this to distinguish scan timing from matching, proximity transition, or UI/audio delay.
+- Keep main untouched; no APK built from this snapshot alone.
