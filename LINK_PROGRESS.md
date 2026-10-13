@@ -29,3 +29,12 @@ Fix Android installation error “App not installed because package conflicts wi
 3. If conflict persists, verify package ID/applicationId and signing certificate fingerprint against the currently installed LINK build before changing more code.
 4. Preserve `main`; continue on the LINK prototype branch unless a change is explicitly needed.
 5. Artifact expires 2026-10-20; if it expires, rerun the workflow and provide the new artifact link.
+
+
+## 2026-10-13 — BLE runtime test result
+- User confirms the new APK was installed/updated and the app reports “الاقتران محفوظ”.
+- User then tested the app again; the screen is unchanged from before. No live partner match or RSSI value appeared.
+- Therefore pairing persistence is confirmed only; successful discovery/matching between the two phones is NOT confirmed. The previous build did not resolve the actual BLE runtime problem.
+- Do not ask the user to repeat installation/pairing steps. Do not claim the issue is fixed.
+- Next engineering task: inspect the source and workflow on `anniversary-ble-proximity-prototype`, trace BLE advertising/scanning callbacks and partner-ID filtering, and add visible diagnostics for scan results, advertised service/manufacturer data, permissions, and match rejection reasons. Build and test before asking for another install.
+- Keep `main` untouched. Preserve the existing installed app; never suggest uninstalling it as a first-line workaround.
