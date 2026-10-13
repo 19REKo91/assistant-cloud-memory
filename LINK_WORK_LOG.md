@@ -167,3 +167,10 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - GitHub Actions build run #28 started and was still in progress at the time of this note: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38425625074
 - **Not yet verified:** compilation/build result, APK artifact, GATT compatibility across the two actual phones, and successful response while the receiving phone screen is off. Do not ask the user to install an APK until the build succeeds and the artifact is confirmed.
 - Next: verify Actions run #28; fix any compile errors, then provide the APK only after successful build. Device testing must be done on both phones with the new build, since the button requires the new GATT protocol on both ends. Keep the current installed 0.6.0 baseline intact until a tested update is available.
+
+
+## 2026-10-14 — LINK connection-button build result
+- GitHub Actions run #28 completed successfully: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38425625074
+- Build/test step succeeded and APK upload succeeded.
+- Artifact `link-debug-apk`, ID `11828955600`, not expired at verification time. Download: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38425625074/artifacts/11828955600
+- This confirms compilation/build and artifact upload only. GATT button behavior, cross-phone connection, and screen-off response are not yet device-verified. Keep existing installed LINK 0.6.0 as baseline until both phones are updated and tested.
