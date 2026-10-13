@@ -74,3 +74,11 @@ Fix Android installation error “App not installed because package conflicts wi
 - Treat “about one metre” as an approximate observed threshold, not a calibrated distance measurement; BLE RSSI depends on device orientation, obstructions, and surroundings.
 - No new APK or code changes requested at this point. Preserve the working build and keep `main` untouched.
 - Optional future validation: repeat in a few orientations/positions and, if easy, inspect raw scan/match/RSSI counters after a successful cycle. Do not disrupt the working installation for diagnostics.
+
+## 2026-10-13 — Repeatable proximity and separation confirmed
+- User reports the pink/beep proximity interaction repeats when the phones approach again.
+- User estimates the separation distance at which the interaction clears/ends is about 1 metre.
+- This confirms repeatability in the current two-phone setup and gives an approximate observed range; it is not a calibrated BLE distance measurement and may vary by phone, orientation, and surroundings.
+- Current status: functional prototype success for approach-triggered interaction and repeat cycle. Keep the APK/source unchanged for now; no reinstall or pairing reset needed.
+- Optional later validation: test a few cycles at the same positions and note whether separation consistently clears near 1 m. Capture diagnostic counters/RSSI if available, but do not interrupt the successful test just to obtain them.
+- Keep `main` untouched.
