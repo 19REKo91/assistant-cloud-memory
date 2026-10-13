@@ -44,3 +44,12 @@
 - **حد التبادل:** هذا ممر يدوي؛ لا يضيف إلى جلسة DeepSeek الحالية أداة HTTP ولا يجعل الجلستين تتبادلان تلقائيًا.
 - **اختبار منفصل:** نشر Cloudflare Worker اكتمل، لكن فحص الصورة الطرفي في سير العمل فشل برمز HTTP 415 عند جلب رابط عينة OneDrive؛ لم يكن هذا اختبارًا لمسار الرسائل.
 
+
+
+## 2026-10-13 — LINK: بناء التطبيق أولًا
+- نُفّذت تغييرات LINK على الفرع التجريبي `link-ble-recovery-2026-10-13`، دون تعديل `main`.
+- الالتزام: [`05d9d67c45c6de2d81a90e45049af8f64480ec3e`](https://github.com/19REKo91/assistant-cloud-memory/commit/05d9d67c45c6de2d81a90e45049af8f64480ec3e).
+- الإصدار `0.4.0` (`versionCode=4`): حذف نغمات الانتقال وإضافة استرداد محدود لمسح BLE وتشخيصه.
+- نجح البناء واختبار الوحدات ورفع الأثر في [Actions run #38362715497](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38362715497). أثر APK رقم `11796000576`; SHA-256: `5eeea40b3563fdb1992e76b73de7b44b66d1573aad03819399901291dd9d57b2`.
+- تحذير: مفتاح التوقيع المخزن لم يكن متاحًا على الفرع الجديد، فأنشأ Actions مفتاحًا جديدًا؛ قد يتطلب APK تثبيتًا نظيفًا وإعادة الاقتران. لم يُختبر BLE/RSSI على الهاتفين بعد.
+- مرجع الاستئناف التفصيلي: [`LINK_WORK_LOG.md`](https://github.com/19REKo91/assistant-cloud-memory/blob/link-ble-recovery-2026-10-13/LINK_WORK_LOG.md) و[`LINK_SESSION_MEMO.md`](https://github.com/19REKo91/assistant-cloud-memory/blob/link-ble-recovery-2026-10-13/LINK_SESSION_MEMO.md).

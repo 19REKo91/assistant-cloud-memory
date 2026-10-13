@@ -36,13 +36,23 @@ Persistent handoff notes for future ChatGPT sessions. Update this file after eac
 6. Run available tests and APK build, then provide the artifact and honest test status.
 7. Update this work log with commit SHA, branch, workflow run, APK link/checksum, verified behavior, failures, and remaining work.
 
-## Work session — 2026-10-13: application-first iteration (pending build)
-- Branch: `link-ble-recovery-2026-10-13`, branched from the APK 4 experiment line. The known APK 4 reference branch is preserved; `main` is untouched.
-- Changes committed in this iteration: remove proximity transition tones entirely; add bounded BLE scan recovery (retry once with partner Service UUID filter after 8 seconds without a partner match, then retry once with unfiltered scanning after another 8 seconds); show recovery mode and attempt count in diagnostics.
-- Version: `versionCode=4`, `versionName=0.4.0`; `applicationId=com.raeeq.link` and existing `linkDebug` signing configuration/cache key are unchanged.
-- Added a ProximityEngine test for a strong reading cancelling an impending departure by resetting the 10-second no-strong-sample timer.
-- **Not yet verified:** GitHub Actions build, tests, APK artifact, update-install compatibility, and actual two-phone BLE/RSSI behavior. Final visual assets/scenes remain for the later image stage.
-- Update this pending entry with the actual run/artifact results after Actions finishes.
+## Work session — 2026-10-13: application-first iteration (verified build)
+- Work branch: `link-ble-recovery-2026-10-13`; `main` and the earlier source commit for APK 4 were not rewritten.
+- Source commit: `05d9d67c45c6de2d81a90e45049af8f64480ec3e` — [view commit](https://github.com/19REKo91/assistant-cloud-memory/commit/05d9d67c45c6de2d81a90e45049af8f64480ec3e).
+- Implemented: removed all proximity transition tone generation; added a bounded scan retry after 8 seconds without a partner match (first filtered by the partner Service UUID, then one unfiltered retry after another 8 seconds); added mode/attempt counts to diagnostics.
+- Version set to `versionCode=4`, `versionName=0.4.0`; `applicationId=com.raeeq.link` remains unchanged.
+- Added a unit test covering a new strong RSSI sample resetting the 10-second separation timer.
+- GitHub Actions run [#38362715497](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38362715497) completed successfully. The `Run unit tests and assemble APK` step and `Upload debug APK` step succeeded.
+- Artifact: `link-debug-apk`, artifact ID `11796000576`, containing `app-debug.apk` (6,190,282 bytes). APK SHA-256: `5eeea40b3563fdb1992e76b73de7b44b66d1573aad03819399901291dd9d57b2`.
+- **Signing caveat:** the run log confirms `Cache not found for input keys: link-debug-signing-key-v1`; this branch generated and cached a new debug signing key. Do not assume this APK can update the existing installation signed by the APK 4 key. A clean install may be required; uninstalling clears local pairing preferences.
+- **Still not verified:** whether partner discovery/RSSI works on the actual two phones; whether scan recovery cures the zero-results symptom; install behavior on both devices; final photos/scenes and smooth visual transitions. The APK built, but real-device BLE success is not claimed.
 
+## Next steps
+1. If using this new-key APK, install it cleanly on both phones only when ready, then repeat QR pairing because uninstalling clears locally saved pairing data.
+2. Activate LINK on both phones, wait through the scan retry sequence, and inspect the diagnostics: advertising status, scan status/mode, recovery attempts, raw results, partner matches, and RSSI.
+3. If partner matches/RSSI remain at zero after both retries, record the diagnostics and investigate the Android BLE advertising/scanning path before adding visual assets.
+4. Once the connection/proximity layer is proven on-device, implement the agreed per-phone scenes and reversible smooth transitions, then update this log again.
+5. Keep this log updated at the end of every LINK work session; do not report device behavior as confirmed until the user tests it.
+ 
 ## Session rule
 At the end of every LINK session, update this file in GitHub. If GitHub access/write fails, clearly tell the user and provide the exact note content rather than claiming it was saved.
