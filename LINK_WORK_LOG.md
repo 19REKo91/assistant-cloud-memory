@@ -200,3 +200,14 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - GitHub Actions run #29 succeeded: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38483876774
 - Build/test/assemble and APK upload succeeded. Artifact `link-debug-apk`, ID `11857528818`, is available until 2026-10-20T23:25:03Z.
 - Device-level message delivery is NOT yet verified. Install this build on both phones only when ready to test; keep the current installed build until update installation is confirmed.
+
+
+
+## 2026-10-14 — short-message exchange verified on both phones
+- User confirms that sending and receiving short messages succeeded in both directions between the two LINK phones.
+- Mark bidirectional short-message delivery as **user-tested and passed** for the tested setup; this is beyond the earlier CI-only build verification.
+- Code commit for the feature: `3e46206599c3b9cd06143a70cac238e8d4161006`; workflow run #29 succeeded: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38483876774
+- APK artifact: `link-debug-apk`, ID `11857528818`; artifact link: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38483876774/artifacts/11857528818
+- Artifact SHA-256: `d38b63abaacf5066e5a8d00e3e65613a7e3296d1f8041a1ac5e534128d0f3bd4`; expires 2026-10-20T23:25:03Z.
+- Not yet verified: recovery after connection loss/reconnection, repeated/long messages, simultaneous both-screens-off behavior, and sustained reliability under battery restrictions.
+- Keep `main` untouched. Next engineering step should be to harden and test connection lifecycle/reconnection and message-delivery status without regressing the working two-way exchange.
