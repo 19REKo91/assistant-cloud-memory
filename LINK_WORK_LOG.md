@@ -38,3 +38,20 @@ Persistent handoff notes for future ChatGPT sessions. Update this file after eac
 
 ## Session rule
 At the end of every LINK session, update this file in GitHub. If GitHub access/write fails, clearly tell the user and provide the exact note content rather than claiming it was saved.
+
+## 2026-10-13 — BLE timing diagnosis (in progress)
+- User requirement clarified: on approach and separation, both phones should react together as immediately as practical, without manual actions.
+- Code inspection on `anniversary-ble-proximity-prototype` confirms each phone independently evaluates its own BLE scan RSSI in `MainActivity`/ `ProximityEngine`; this is why exact simultaneity is not guaranteed by the current architecture.
+- Existing policy observed in source: enter NEAR after three readings at or above -56 dBm within 2500 ms; switch to APART only 10000 ms after the last strong reading. The departure delay is therefore not immediate by design and may contribute to perceived timing.
+- Added diagnostic-only timestamps (no threshold, BLE advertising/scanning, or UI behavior changes) in commit `88964b8f20261eaf755a9d7b11032f25efe03ad4`:
+  - first matching BLE result from the partner;
+  - first strong partner RSSI (>= -56 dBm);
+  - proximity state transition;
+  - sound request and scene update;
+  - local elapsed time since radio start and phone clock timestamp (phone-clock differences can affect cross-device comparison).
+- Workflow run #22: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38364353379
+- At this memo update, build workflow status was still `in_progress`; do not share or describe a new APK as ready until unit tests/build/artifact upload are confirmed.
+- Next: verify run #22 completes successfully, confirm the workflow restored the existing cached LINK debug signing key, then provide the artifact link. User should install/test on both phones only if the build succeeds; long-press the LINK header to open diagnostics and capture both panels after one approach and one separation cycle.
+- Compare the first-match / first-strong / NEAR / APART / scene timestamps on both phones. Their wall clocks may not be perfectly synchronized, so treat the absolute clock comparison as approximate; local +ms values are anchored to each phone's own radio start and should not be compared directly as a shared clock.
+- After evidence is collected, decide whether the fix belongs in local RSSI sampling/hysteresis or a BLE peer-state synchronization protocol. Do not promise exact simultaneous behavior; BLE scanning and device clock/audio/UI scheduling vary.
+- Keep `main` untouched. Preserve the last working APK and do not change radio thresholds or introduce an internet/server dependency without evidence.
