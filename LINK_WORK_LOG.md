@@ -211,3 +211,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Artifact SHA-256: `d38b63abaacf5066e5a8d00e3e65613a7e3296d1f8041a1ac5e534128d0f3bd4`; expires 2026-10-20T23:25:03Z.
 - Not yet verified: recovery after connection loss/reconnection, repeated/long messages, simultaneous both-screens-off behavior, and sustained reliability under battery restrictions.
 - Keep `main` untouched. Next engineering step should be to harden and test connection lifecycle/reconnection and message-delivery status without regressing the working two-way exchange.
+
+
+## 2026-10-14 — Incoming message persistence fix
+- User test found that a message sent while the receiving phone screen was off was not shown after reopening LINK.
+- Source review found that the receiver only broadcast to the Activity, which unregisters its receiver when stopped; the display event could be missed.
+- Commit `d0fe4df9ccdedb8dd62deecbaa74c8034dd4c319` now saves the latest incoming message before acknowledging the BLE write and restores it when the Activity opens.
+- Workflow #30 is building this commit: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38486401241
+- Build and real-device retest are pending. Keep `main` untouched; do not treat the fix as verified until CI and phone tests pass.
