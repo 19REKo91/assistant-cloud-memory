@@ -701,20 +701,20 @@ class MainActivity : ComponentActivity() {
         val matchDelta = partnerMatches
         val eventLines = recentScanEvents.toList().asReversed().mapIndexed { index, event ->
             "#${index + 1} +${event.elapsedMs}ms RSSI=${event.rssi} active=${event.active} radio=${event.radio} UUIDs=${event.uuids.ifEmpty { listOf("—") }.joinToString(",")}"
-        }.joinToString("\\n")
+        }.joinToString("\n")
         val eventBlock = if (eventLines.isEmpty()) "لا توجد أحداث مسح بعد" else eventLines
-        val errorLine = latestRadioError?.let { "\\nالخطأ العام: $it" } ?: ""
+        val errorLine = latestRadioError?.let { "\nالخطأ العام: $it" } ?: ""
         val lastRssiLine = lastRssi?.let { "$it dBm عند +${lastRssiElapsedMs ?: 0L}ms" } ?: "—"
         val lastMatchLine = lastMatchElapsedMs?.let { "+${it}ms" } ?: "—"
         diagnostic.text =
-            "الدور المحفوظ: ${role ?: "—"} | active=$active | isRadioRunning=$isRadioRunning | radioStarts=$radioStarts\\n" +
-            "localUuid=${diagnosticLocalUuid ?: "—"}\\npartnerUuid=${diagnosticPartnerUuid ?: "—"}\\n" +
-            "RSSI الأخير: $lastRssiLine | آخر مطابقة: $lastMatchLine\\n" +
-            "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\\n" +
-            "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\\n" +
-            "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\\n" +
-            "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\\n" +
-            "حالة الاستقبال: $receiveState\\nآخر 3 أحداث (الأحدث أولًا):\\n$eventBlock$errorLine"
+            "الدور المحفوظ: ${role ?: "—"} | active=$active | isRadioRunning=$isRadioRunning | radioStarts=$radioStarts\n" +
+            "localUuid=${diagnosticLocalUuid ?: "—"}\npartnerUuid=${diagnosticPartnerUuid ?: "—"}\n" +
+            "RSSI الأخير: $lastRssiLine | آخر مطابقة: $lastMatchLine\n" +
+            "raw=$rawScanResultsReceived (Δ منذ بدء الراديو=$rawDelta) | seen=$scanResultsSeen (Δ=$seenDelta) | matches=$partnerMatches (Δ=$matchDelta)\n" +
+            "بلا ScanRecord=$resultsWithoutScanRecord | بلا UUID=$resultsWithoutServiceUuids\n" +
+            "الإعلان: $advertisingStatus | خطأ الإعلان: ${latestAdvertiseError ?: "—"}\n" +
+            "المسح: $scanningStatus | خطأ المسح: ${latestScanError ?: "—"}\n" +
+            "حالة الاستقبال: $receiveState\nآخر 3 أحداث (الأحدث أولًا):\n$eventBlock$errorLine"
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
