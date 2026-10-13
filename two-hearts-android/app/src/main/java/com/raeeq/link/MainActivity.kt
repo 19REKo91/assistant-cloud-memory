@@ -93,6 +93,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var hideQrButton: Button
     private lateinit var showQrButton: Button
     private lateinit var stopButton: Button
+    private lateinit var connectionButton: Button
     private lateinit var resetButton: Button
     private lateinit var bluetoothSettingsButton: Button
 
@@ -106,6 +107,11 @@ class MainActivity : ComponentActivity() {
     private var serviceReceiverRegistered = false
     private val serviceUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == LinkProximityService.ACTION_CONNECTION_RESULT) {
+                val result = intent.getStringExtra(LinkProximityService.EXTRA_CONNECTION_RESULT).orEmpty()
+                if (result.isNotBlank()) Toast.makeText(this@MainActivity, result, Toast.LENGTH_LONG).show()
+                return
+            }
             if (intent?.action != LinkProximityService.ACTION_UPDATE) return
             displayedProximityState = runCatching {
                 ProximityState.valueOf(intent.getStringExtra(LinkProximityService.EXTRA_STATE) ?: ProximityState.WAITING.name)
@@ -163,7 +169,10 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         if (!serviceReceiverRegistered) {
-            val filter = IntentFilter(LinkProximityService.ACTION_UPDATE)
+            val filter = IntentFilter().apply {
+                addAction(LinkProximityService.ACTION_UPDATE)
+                addAction(LinkProximityService.ACTION_CONNECTION_RESULT)
+            }
             if (Build.VERSION.SDK_INT >= 33) {
                 registerReceiver(serviceUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
             } else {
@@ -325,6 +334,14 @@ class MainActivity : ComponentActivity() {
         activateButton = makeButton("تفعيل التجربة", true) { requestBluetoothAndActivate() }
         hideQrButton = makeButton("إخفاء الرمز", false) { showingQr = false; renderScreen() }
         showQrButton = makeButton("إظهار رمز نقل الاقتران", false) { showPairingTransferQr() }
+        connectionButton = makeButton("اختبار الاتصال بالهاتف الآخر", true) {
+            if (!active) {
+                Toast.makeText(this, "فعّل التجربة على الهاتفين أولًا.", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "جارٍ اختبار الاتصال بالهاتف الآخر…", Toast.LENGTH_SHORT).show()
+                startService(Intent(this, LinkProximityService::class.java).setAction(LinkProximityService.ACTION_TEST_CONNECTION))
+            }
+        }
         stopButton = makeButton("إيقاف التجربة", false) {
             active = false
             preferences.edit().putBoolean(KEY_ACTIVE, false).apply()
@@ -339,7 +356,7 @@ class MainActivity : ComponentActivity() {
         bluetoothSettingsButton = makeButton("فتح إعدادات البلوتوث", false) {
             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
         }
-        listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, stopButton,
+        listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, connectionButton, stopButton,
             resetButton, bluetoothSettingsButton).forEach(::addButton)
     }
 
@@ -367,6 +384,7 @@ class MainActivity : ComponentActivity() {
         scanButton.visibility = if (pair == null) View.VISIBLE else View.GONE
         activateButton.visibility = if (pair != null && !active) View.VISIBLE else View.GONE
         stopButton.visibility = if (active) View.VISIBLE else View.GONE
+        connectionButton.visibility = if (active) View.VISIBLE else View.GONE
         resetButton.visibility = if (pair != null && !active) View.VISIBLE else View.GONE
         bluetoothSettingsButton.visibility =
             if (!active && latestRadioError != null && latestRadioError!!.contains("البلوتوث")) View.VISIBLE else View.GONE
@@ -633,7 +651,10 @@ class LinkProximityService : android.app.Service() {
     companion object {
         const val ACTION_START="com.raeeq.link.action.START_PROXIMITY"
         const val ACTION_STOP="com.raeeq.link.action.STOP_PROXIMITY"
+        const val ACTION_TEST_CONNECTION="com.raeeq.link.action.TEST_CONNECTION"
         const val ACTION_UPDATE="com.raeeq.link.action.PROXIMITY_UPDATE"
+        const val ACTION_CONNECTION_RESULT="com.raeeq.link.action.CONNECTION_RESULT"
+        const val EXTRA_CONNECTION_RESULT="connection_result"
         const val EXTRA_LOCAL_UUID="local_uuid"
         const val EXTRA_PARTNER_UUID="partner_uuid"
         const val EXTRA_STATE="state"
@@ -642,6 +663,8 @@ class LinkProximityService : android.app.Service() {
         const val EXTRA_DIAGNOSTICS="diagnostics"
         private const val CHANNEL="link_proximity_active"
         private const val NOTIFICATION_ID=6105
+        private val PROBE_SERVICE_UUID=java.util.UUID.fromString("6b4e1000-1d4a-4f20-9f30-11c0a2e0b001")
+        private val PROBE_CHARACTERISTIC_UUID=java.util.UUID.fromString("6b4e1001-1d4a-4f20-9f30-11c0a2e0b001")
     }
     private val mainHandler=android.os.Handler(android.os.Looper.getMainLooper())
     private val engine=ProximityEngine()
@@ -661,6 +684,73 @@ class LinkProximityService : android.app.Service() {
     private var firstMatch:Long?=null
     private var firstStrong:Long?=null
     private var latestError:String?=null
+    private var latestPartnerDevice:android.bluetooth.BluetoothDevice?=null
+    private var gattServer:android.bluetooth.BluetoothGattServer?=null
+    private var clientGatt:android.bluetooth.BluetoothGatt?=null
+    private var connectionTestPending=false
+
+    private val serverCallback=object:android.bluetooth.BluetoothGattServerCallback() {
+        override fun onConnectionStateChange(device:android.bluetooth.BluetoothDevice,status:Int,newState:Int) {
+            if(status==android.bluetooth.BluetoothGatt.GATT_SUCCESS &&
+                newState==android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
+                note("connection test client connected",android.os.SystemClock.elapsedRealtime())
+            } else if(newState==android.bluetooth.BluetoothProfile.STATE_DISCONNECTED) {
+                note("connection test client disconnected",android.os.SystemClock.elapsedRealtime())
+            }
+            publish()
+        }
+        override fun onCharacteristicReadRequest(
+            device:android.bluetooth.BluetoothDevice,requestId:Int,offset:Int,
+            characteristic:android.bluetooth.BluetoothGattCharacteristic
+        ) {
+            if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID) {
+                gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
+                return
+            }
+            val bytes=(localUuid?.toString() ?: "").toByteArray(Charsets.UTF_8)
+            if(offset>bytes.size) {
+                gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_INVALID_OFFSET,offset,null)
+            } else {
+                gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_SUCCESS,offset,bytes.copyOfRange(offset,bytes.size))
+                note("connection test response sent",android.os.SystemClock.elapsedRealtime())
+                publish()
+            }
+        }
+    }
+
+    private val clientCallback=object:android.bluetooth.BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt:android.bluetooth.BluetoothGatt,status:Int,newState:Int) {
+            if(status!=android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                finishConnectionTest(false,"فشل اتصال BLE (رمز $status).",gatt)
+            } else if(newState==android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
+                if(!gatt.discoverServices()) finishConnectionTest(false,"اتصل الهاتف، لكن تعذّر فحص خدمة التأكيد.",gatt)
+            } else if(newState==android.bluetooth.BluetoothProfile.STATE_DISCONNECTED && connectionTestPending) {
+                finishConnectionTest(false,"انقطع الاتصال قبل وصول التأكيد.",gatt)
+            }
+        }
+        override fun onServicesDiscovered(gatt:android.bluetooth.BluetoothGatt,status:Int) {
+            if(status!=android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                finishConnectionTest(false,"تعذّر اكتشاف خدمة تأكيد LINK.",gatt); return
+            }
+            val characteristic=gatt.getService(PROBE_SERVICE_UUID)?.getCharacteristic(PROBE_CHARACTERISTIC_UUID)
+            if(characteristic==null) {
+                finishConnectionTest(false,"الهاتف الآخر لا يوفّر خدمة تأكيد LINK.",gatt); return
+            }
+            if(!gatt.readCharacteristic(characteristic)) finishConnectionTest(false,"تعذّر طلب تأكيد من الهاتف الآخر.",gatt)
+        }
+        override fun onCharacteristicRead(
+            gatt:android.bluetooth.BluetoothGatt,characteristic:android.bluetooth.BluetoothGattCharacteristic,status:Int
+        ) {
+            if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID) return
+            if(status!=android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                finishConnectionTest(false,"لم يكتمل طلب التأكيد (رمز $status).",gatt); return
+            }
+            val remoteUuid=characteristic.value?.toString(Charsets.UTF_8)
+            val expected=partnerUuid?.toString()
+            if(remoteUuid==expected) finishConnectionTest(true,"نجح الاتصال: استلمنا تأكيد الهاتف المرتبط.",gatt)
+            else finishConnectionTest(false,"وصل رد، لكن هوية الهاتف لا تطابق الاقتران المحفوظ.",gatt)
+        }
+    }
 
     private val ticker=object:Runnable {
         override fun run() {
@@ -678,6 +768,7 @@ class LinkProximityService : android.app.Service() {
     override fun onStartCommand(intent:android.content.Intent?,flags:Int,startId:Int):Int {
         when(intent?.action) {
             ACTION_STOP -> { stopSession(); stopSelf(startId) }
+            ACTION_TEST_CONNECTION -> requestConnectionTest()
             ACTION_START -> {
                 val local=intent.getStringExtra(EXTRA_LOCAL_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
                 val partner=intent.getStringExtra(EXTRA_PARTNER_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
@@ -723,10 +814,11 @@ class LinkProximityService : android.app.Service() {
         val localScanner=adapter.bluetoothLeScanner
         if(localAdvertiser==null || localScanner==null) { fail("لا يتوفر الإعلان أو المسح عبر BLE على هذا الجهاز."); return }
         advertiser=localAdvertiser; scanner=localScanner
+        startGattProbe(adapter)
         val advSettings=android.bluetooth.le.AdvertiseSettings.Builder()
             .setAdvertiseMode(android.bluetooth.le.AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
             .setTxPowerLevel(android.bluetooth.le.AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
-            .setConnectable(false).setTimeout(0).build()
+            .setConnectable(true).setTimeout(0).build()
         val advData=android.bluetooth.le.AdvertiseData.Builder()
             .setIncludeDeviceName(false).setIncludeTxPowerLevel(false)
             .addServiceUuid(android.os.ParcelUuid(local)).build()
@@ -777,6 +869,7 @@ class LinkProximityService : android.app.Service() {
         val uuids=result.scanRecord?.serviceUuids
         val now=android.os.SystemClock.elapsedRealtime()
         if(uuids?.contains(android.os.ParcelUuid(expected))==true) {
+            latestPartnerDevice=result.device
             partnerMatches++; lastRssi=result.rssi
             if(firstMatch==null) { firstMatch=now-startElapsed; note("first partner match",now) }
             if(result.rssi>=-56 && firstStrong==null) { firstStrong=now-startElapsed; note("first strong RSSI",now) }
@@ -787,8 +880,77 @@ class LinkProximityService : android.app.Service() {
     }
 
     @SuppressLint("MissingPermission")
+    private fun startGattProbe(adapter:android.bluetooth.BluetoothAdapter) {
+        try {
+            val manager=getSystemService(android.content.Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+            val server=manager.openGattServer(this,serverCallback)
+            if(server==null) { note("GATT server unavailable",android.os.SystemClock.elapsedRealtime()); return }
+            val service=android.bluetooth.BluetoothGattService(
+                PROBE_SERVICE_UUID,android.bluetooth.BluetoothGattService.SERVICE_TYPE_PRIMARY
+            ).apply {
+                addCharacteristic(android.bluetooth.BluetoothGattCharacteristic(
+                    PROBE_CHARACTERISTIC_UUID,
+                    android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ,
+                    android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ
+                ))
+            }
+            gattServer=server
+            if(!server.addService(service)) {
+                note("GATT service registration failed",android.os.SystemClock.elapsedRealtime())
+                server.close(); gattServer=null
+            }
+        } catch(error:Exception) {
+            note("GATT server error: ${error.javaClass.simpleName}",android.os.SystemClock.elapsedRealtime())
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestConnectionTest() {
+        if(!running) { sendConnectionResult("فعّل LINK على هذا الهاتف أولًا."); return }
+        if(!hasBluetoothPermissions()) { sendConnectionResult("أذونات البلوتوث غير متاحة."); return }
+        if(connectionTestPending) { sendConnectionResult("اختبار الاتصال جارٍ بالفعل."); return }
+        val device=latestPartnerDevice
+        if(device==null) {
+            sendConnectionResult("لم يُكتشف الهاتف المرتبط بعد. قرّب الهاتفين وحاول مجددًا.")
+            return
+        }
+        connectionTestPending=true
+        sendConnectionResult("جارٍ طلب تأكيد من الهاتف المرتبط…")
+        try {
+            clientGatt=device.connectGatt(this,false,clientCallback,android.bluetooth.BluetoothDevice.TRANSPORT_LE)
+            if(clientGatt==null) finishConnectionTest(false,"تعذّر بدء اتصال BLE.",null)
+        } catch(error:Exception) {
+            finishConnectionTest(false,"تعذّر بدء الاختبار: ${error.localizedMessage ?: error.javaClass.simpleName}",null)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun finishConnectionTest(success:Boolean,message:String,gatt:android.bluetooth.BluetoothGatt?) {
+        if(!connectionTestPending && gatt!=null) return
+        connectionTestPending=false
+        sendConnectionResult(message)
+        note(if(success) "connection test success" else "connection test failed",android.os.SystemClock.elapsedRealtime())
+        if(gatt!=null) {
+            if(clientGatt===gatt) clientGatt=null
+            try { gatt.disconnect() } catch(_:Exception) { }
+            try { gatt.close() } catch(_:Exception) { }
+        }
+        publish()
+    }
+
+    private fun sendConnectionResult(message:String) {
+        sendBroadcast(android.content.Intent(ACTION_CONNECTION_RESULT).setPackage(packageName)
+            .putExtra(EXTRA_CONNECTION_RESULT,message))
+    }
+
+    @SuppressLint("MissingPermission")
     private fun stopRadio() {
         mainHandler.removeCallbacks(ticker)
+        try { clientGatt?.disconnect() } catch(_:Exception) { }
+        try { clientGatt?.close() } catch(_:Exception) { }
+        clientGatt=null; connectionTestPending=false; latestPartnerDevice=null
+        try { gattServer?.close() } catch(_:Exception) { }
+        gattServer=null
         try { val cb=scanCb; val radio=scanner; if(cb!=null && radio!=null) radio.stopScan(cb) } catch(_:Exception) { }
         try { val cb=advertiseCb; val radio=advertiser; if(cb!=null && radio!=null) radio.stopAdvertising(cb) } catch(_:Exception) { }
         scanCb=null; advertiseCb=null; scanner=null; advertiser=null
@@ -796,6 +958,7 @@ class LinkProximityService : android.app.Service() {
 
     private fun stopSession() {
         running=false; persistActive(false); stopRadio(); engine.reset(); latestError=null
+        sendConnectionResult("توقفت تجربة LINK.")
         note("session stopped",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE)
     }
