@@ -82,3 +82,10 @@ Fix Android installation error “App not installed because package conflicts wi
 - Current status: functional prototype success for approach-triggered interaction and repeat cycle. Keep the APK/source unchanged for now; no reinstall or pairing reset needed.
 - Optional later validation: test a few cycles at the same positions and note whether separation consistently clears near 1 m. Capture diagnostic counters/RSSI if available, but do not interrupt the successful test just to obtain them.
 - Keep `main` untouched.
+
+## 2026-10-13 — Background operation limitation reported
+- User reports LINK only works while the app is visible on-screen on BOTH phones; it does not continue working in the background.
+- Treat background operation as a new engineering requirement, not a confirmed code diagnosis yet.
+- Next task: inspect the activity lifecycle and BLE radio ownership, then design reliable background BLE operation using an Android foreground service with a persistent notification where appropriate, correct foreground-service types/permissions for the target SDK, and lifecycle-safe start/stop behavior. Preserve the existing successful foreground proximity behavior.
+- Validate both phones with screen off/backgrounded, app visible, and after returning to the app; ensure no duplicate advertising/scanning starts and that the approach/separation cycle remains repeatable.
+- Do not build or install a changed APK until the service/lifecycle changes are reviewed and the build succeeds. Keep `main` untouched.
