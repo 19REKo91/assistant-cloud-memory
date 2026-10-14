@@ -323,3 +323,15 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - No application source code was changed in this session and no new APK was built. The hysteresis build's behavior has **not** yet been independently confirmed on both phones.
 - Remaining device validation: install the artifact APK on both phones without uninstalling first; with LINK visible, confirm the phones stay NEAR around -61 dBm and only become APART after sustained weak/missing partner signal; then test app-background operation without sending messages. Treat screen-off behavior as a separate case; previous notes record that it did not reliably pair while one screen was off.
 - If Android reports a package/signing conflict, stop and report the exact error rather than uninstalling the working app automatically. Keep `main` untouched.
+
+
+## 2026-10-15 — تدقيق المساحة وملفات البناء
+
+- المستودع: قيمة GitHub API `size=22987 KB` (حوالي `22.45 MiB` بالتحويل الثنائي). لا تخلط ذلك مع حصة التخزين الكلية للحساب.
+- أحدث بناء: run #37 / ID `38635174855`، مصدره commit `aad9d1d00fa24577b2e866357f162ddd73fe4f15` على `anniversary-ble-proximity-prototype`؛ النتيجة نجاح. الرابط: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38635174855
+- أحدث 10 عمليات Actions التي فُحصت أظهرت 10 آثار `link-debug-apk` مجموعها `22,959,369 bytes` (حوالي `21.90 MiB`). جميع الآثار التي شملها الفحص كانت غير منتهية الصلاحية وقتها؛ مواعيد الانتهاء الظاهرة بين 2026-10-20 و2026-10-21 UTC.
+- ملفات كبيرة ظاهرة على جذر `main`: فيديو العام الجديد `6.75 MiB`؛ ملفات بحثية عن فرضية رائق نحو `2.89–3.18 MiB` للملف؛ وملفات توثيق بحثية أخرى. لم يُستنتج أنها زائدة.
+- لا تنظيف ولا حذف ولا تعديل للكود أو بناء APK في هذه الجلسة؛ العمل كان تدقيقًا وتوثيقًا فقط.
+- حدود التحقق: لم يُثبت إجمالي استخدام مساحة Actions/Artifacts لكل المستودع أو الحساب، ولم تُفحص كل عمليات البناء؛ الأرقام تخص أحدث 10 تشغيلات وآثارها فقط.
+- الحالة: تدقيق أحدث 10 آثار ومستودع مكتمل؛ فحص الحصة الشاملة والتنظيف الاختياري بانتظار التحقق/موافقة المستخدم.
+- التالي: عند الحاجة، افحص إجمالي مساحة Actions من صفحة الاستخدام المتاحة، ثم قدّم قائمة تنظيف محددة وآمنة مع الأحجام والتواريخ؛ لا تحذف شيئًا قبل الموافقة.
