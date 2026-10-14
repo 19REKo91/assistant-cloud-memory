@@ -19,8 +19,16 @@ This is the durable working notebook for the assistant to resume the CHRONO CROS
 - Tests include `helpers/mcpEndpoint.spec.tsx`, `helpers/readPageEndpoint.spec.tsx`, and `helpers/themeMode.spec.tsx`.
 - The last known successful validation before the credential step was a clean typecheck and 3 passing spec files.
 - Last known checkpoint: `eb59a02d-e20e-4614-9c96-a6f58aa39caf`, titled “MCP endpoint hardened and tested”.
+- Latest publication verification (2026-10-15): Floot reports `published: true`, public visibility, URL `https://chrono-cross-gpt.floot.app`; web-only publish, no native build started.
+- Before the latest publish, tests passed: 4 regular spec files, 2 hook spec files, and a clean TypeScript typecheck.
+- Production `GET /_api/mcp-status` returned HTTP 200 with `tokenConfigured: true` and `hostConnection: "not_verified"`; it did not expose the secret.
+- Production unauthenticated `POST /_api/mcp` returned HTTP 401 with `authentication_required`. The edge response included `x-floot-www-authenticate: Bearer realm="chrono-cross-gpt"` but omitted the standard `WWW-Authenticate` header, despite the handler setting it.
+- A production authenticated `initialize` + `tools/list` exchange and any real external-host handshake remain **unverified**. Never expose or ask King to paste the token.
+- MCP authorization research: the 2025-11-25 spec supports either `WWW-Authenticate` resource-metadata discovery or RFC 9728 well-known resource metadata discovery. Metadata by itself does not create an OAuth authorization server; the current endpoint uses a static bearer token, not an OAuth authorization-code/PKCE flow.
+- Floot’s daily build-action quota is still blocking project read/write/test tools. The latest refusal reports a reset at `2026-10-15 07:00 UTC` (10:00 Asia/Baghdad); no code changes were made after that refusal. Resume by re-reading current files once tools unblock.
+
 - Headless browser dependencies were rejected by Floot; do not claim the app has full automated Chromium/DOM browsing. The current reader is not equivalent to a full browser automation engine.
-- The app has **not been published publicly**. Do not publish without King’s explicit permission.
+- **Published publicly on 2026-10-15 with King’s explicit permission.** Live URL: https://chrono-cross-gpt.floot.app. Keep it live unless King explicitly asks to unpublish.
 
 ## User requirement: add every practical reading method
 King explicitly requested that CHRONO CROSS GPT include **all practical ways of reading and understanding content**, not just a single webpage text-reader. Treat this as a core product requirement and implement in phases. Clearly label every method as implemented, tested, blocked, or planned; never imply an unimplemented reader works.
@@ -65,8 +73,16 @@ King explicitly requested that CHRONO CROSS GPT include **all practical ways of 
 
 ## Current blocker
 - On 2026-10-13 at about 08:33 UTC, Floot refused further build actions because the Free plan’s daily build-action limit had been reached.
-- Floot reported the limit resets at **2026-10-14 07:00 UTC** (10:00 AM Asia/Baghdad).
+- A later refusal (2026-10-14 22:06 UTC) reported the next reset at **2026-10-15 07:00 UTC** (10:00 AM Asia/Baghdad); the connector tools remained blocked at that time.
 - This is a platform quota restriction, not a code failure. Status polling and preview/status checks may still be available.
+
+## Immediate next steps after the limit resets
+1. Re-read the live project files and resource list; confirm the published deployment and code version have not changed.
+2. Diagnose why Floot’s production edge replaces/removes `WWW-Authenticate` and exposes `x-floot-www-authenticate`. Keep HTTP 401 and credential checks; do not weaken auth to work around a missing header.
+3. Choose a real interoperability path: either implement protected-resource metadata plus a genuine OAuth 2.1 authorization-code/PKCE flow, or explicitly target MCP clients that can send a manually configured bearer token and use a narrowly scoped, tested proxy/header bridge if needed. Do not claim OAuth discovery works unless an authorization server exists.
+4. Run an authenticated protocol test without ever printing the token; validate `initialize`, `notifications/initialized`, and `tools/list`, plus invalid/missing token cases.
+5. Re-run regular + hook tests and typecheck; then publish to the existing subdomain only if the fixes are validated. The user has already authorized publishing fixes to this app; do not unpublish or change domains.
+6. Update the Floot handoff note and this notebook with actual changed files, test outcomes, external-host status, and remaining blockers.
 
 ## Next steps after the limit resets
 1. Re-open the Floot project and inspect the current contents of `endpoints/mcp_POST.ts`, `endpoints/mcp_POST.schema.ts`, and `helpers/mcpEndpoint.spec.tsx`.
