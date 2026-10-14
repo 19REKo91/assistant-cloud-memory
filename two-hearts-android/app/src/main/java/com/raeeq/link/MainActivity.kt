@@ -722,6 +722,7 @@ class LinkProximityService : android.app.Service() {
         private const val NOTIFICATION_ID=6105
         private val PROBE_SERVICE_UUID=java.util.UUID.fromString("6b4e1000-1d4a-4f20-9f30-11c0a2e0b001")
         private val PROBE_CHARACTERISTIC_UUID=java.util.UUID.fromString("6b4e1001-1d4a-4f20-9f30-11c0a2e0b001")
+        private val MESSAGE_ACK_CHARACTERISTIC_UUID=java.util.UUID.fromString("6b4e1002-1d4a-4f20-9f30-11c0a2e0b001")
     }
     private val mainHandler=android.os.Handler(android.os.Looper.getMainLooper())
     private val engine=ProximityEngine()
@@ -746,6 +747,7 @@ class LinkProximityService : android.app.Service() {
     private var clientGatt:android.bluetooth.BluetoothGatt?=null
     private var connectionTestPending=false
     private var pendingMessage:String?=null
+    private var pendingMessageId:String?=null
     private var messageWriteRetryCount=0
     private var bluetoothReceiverRegistered=false
 
@@ -802,6 +804,16 @@ class LinkProximityService : android.app.Service() {
             device:android.bluetooth.BluetoothDevice,requestId:Int,offset:Int,
             characteristic:android.bluetooth.BluetoothGattCharacteristic
         ) {
+            if(characteristic.uuid==MESSAGE_ACK_CHARACTERISTIC_UUID) {
+                val bytes=(getSharedPreferences("link_pair", MODE_PRIVATE)
+                    .getString("last_received_message_id","") ?: "").toByteArray(Charsets.UTF_8)
+                if(offset>bytes.size) {
+                    gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_INVALID_OFFSET,offset,null)
+                } else {
+                    gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_SUCCESS,offset,bytes.copyOfRange(offset,bytes.size))
+                }
+                return
+            }
             if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID) {
                 gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
                 return
@@ -824,14 +836,22 @@ class LinkProximityService : android.app.Service() {
                 if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
                 return
             }
-            val message=value.toString(Charsets.UTF_8).trim()
-            if(message.isBlank()) {
+            val envelope=value.toString(Charsets.UTF_8)
+            val separator=envelope.indexOf('\n')
+            if(separator<1) {
                 if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
                 return
             }
-            // Persist before acknowledging the GATT write, so a closed Activity cannot lose the inbox update.
+            val messageId=envelope.substring(0,separator).trim()
+            val message=envelope.substring(separator+1).trim()
+            if(messageId.isBlank() || message.isBlank() || message.toByteArray(Charsets.UTF_8).size>160) {
+                if(responseNeeded) gattServer?.sendResponse(device,requestId,android.bluetooth.BluetoothGatt.GATT_FAILURE,offset,null)
+                return
+            }
+            // Persist message and its delivery token before acknowledging the GATT write.
             val saved = getSharedPreferences("link_pair", MODE_PRIVATE).edit()
                 .putString("last_received_message", message)
+                .putString("last_received_message_id", messageId)
                 .putLong("last_received_message_at", System.currentTimeMillis())
                 .commit()
             if(!saved) {
@@ -873,8 +893,10 @@ class LinkProximityService : android.app.Service() {
         ) {
             if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID || pendingMessage==null) return
             if(status==android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
-                messageWriteRetryCount=0
-                finishConnectionTest(true,"أُرسلت الرسالة إلى الهاتف المرتبط.",gatt)
+                val ack=gatt.getService(PROBE_SERVICE_UUID)?.getCharacteristic(MESSAGE_ACK_CHARACTERISTIC_UUID)
+                if(ack==null || !gatt.readCharacteristic(ack)) {
+                    finishConnectionTest(false,"تمت كتابة الرسالة لكن تعذّر طلب تأكيد حفظها من الهاتف الآخر.",gatt)
+                }
             } else {
                 val message=pendingMessage
                 if(status==133 && message!=null && messageWriteRetryCount<1) {
@@ -899,6 +921,18 @@ class LinkProximityService : android.app.Service() {
         override fun onCharacteristicRead(
             gatt:android.bluetooth.BluetoothGatt,characteristic:android.bluetooth.BluetoothGattCharacteristic,status:Int
         ) {
+            if(characteristic.uuid==MESSAGE_ACK_CHARACTERISTIC_UUID) {
+                if(status!=android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+                    finishConnectionTest(false,"تعذّر قراءة تأكيد حفظ الرسالة من الهاتف الآخر.",gatt); return
+                }
+                val receivedId=characteristic.value?.toString(Charsets.UTF_8)?.trim()
+                if(receivedId!=null && receivedId.isNotBlank() && receivedId==pendingMessageId) {
+                    finishConnectionTest(true,"أكد الهاتف الآخر استلام الرسالة وحفظها.",gatt)
+                } else {
+                    finishConnectionTest(false,"لم يؤكد الهاتف الآخر حفظ الرسالة؛ لم يُثبت التسليم.",gatt)
+                }
+                return
+            }
             if(characteristic.uuid!=PROBE_CHARACTERISTIC_UUID) return
             if(status!=android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
                 finishConnectionTest(false,"لم يكتمل طلب التأكيد (رمز $status).",gatt); return
@@ -913,7 +947,9 @@ class LinkProximityService : android.app.Service() {
                     finishConnectionTest(true,"نجح الاتصال: استلمنا تأكيد الهاتف المرتبط.",gatt)
                 } else {
                     characteristic.writeType=android.bluetooth.BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                    characteristic.value=message.toByteArray(Charsets.UTF_8)
+                    val messageId=pendingMessageId ?: java.util.UUID.randomUUID().toString().replace("-","").take(16)
+                    pendingMessageId=messageId
+                    characteristic.value=("$messageId\n$message").toByteArray(Charsets.UTF_8)
                     if(!gatt.writeCharacteristic(characteristic)) finishConnectionTest(false,"تم التحقق من الهاتف لكن تعذّر إرسال الرسالة.",gatt)
                 }
             }
@@ -1067,6 +1103,11 @@ class LinkProximityService : android.app.Service() {
                     android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ or android.bluetooth.BluetoothGattCharacteristic.PROPERTY_WRITE,
                     android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ or android.bluetooth.BluetoothGattCharacteristic.PERMISSION_WRITE
                 ))
+                addCharacteristic(android.bluetooth.BluetoothGattCharacteristic(
+                    MESSAGE_ACK_CHARACTERISTIC_UUID,
+                    android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ,
+                    android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ
+                ))
             }
             gattServer=server
             if(!server.addService(service)) {
@@ -1092,6 +1133,7 @@ class LinkProximityService : android.app.Service() {
         }
         connectionTestPending=true
         pendingMessage=message?.takeIf { it.isNotBlank() }
+        if(!retry) pendingMessageId=if(pendingMessage==null) null else java.util.UUID.randomUUID().toString().replace("-","").take(16)
         sendConnectionResult(if(pendingMessage==null) "جارٍ طلب تأكيد من الهاتف المرتبط…" else "جارٍ الاتصال لإرسال الرسالة…")
         try {
             clientGatt=device.connectGatt(this,false,clientCallback,android.bluetooth.BluetoothDevice.TRANSPORT_LE)
@@ -1106,6 +1148,7 @@ class LinkProximityService : android.app.Service() {
         if(!connectionTestPending && gatt!=null) return
         connectionTestPending=false
         pendingMessage=null
+        pendingMessageId=null
         messageWriteRetryCount=0
         sendConnectionResult(message)
         note(if(success) "connection test success" else "connection test failed",android.os.SystemClock.elapsedRealtime())
