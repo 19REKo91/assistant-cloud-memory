@@ -234,3 +234,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - User tested the short Arabic message “جي بي تي بطل”; LINK displayed “فشل إرسال الرسالة (رمز 133)”. The diagnostics showed the GATT client connected, then the write callback failed with status 133, followed by disconnection. This locates the observed failure in the GATT write stage; status 133 is a generic Android GATT error and does not identify the underlying radio/stack cause by itself.
 - Commit `41314942ad4c6076d244beae4451b67871293aa9` on `anniversary-ble-proximity-prototype` adds one bounded retry for a message write that returns status 133: close the failed GATT client, wait one second, then re-run the UUID-confirmed connection and resend the same message once. It does not retry indefinitely. Other error statuses still report failure.
 - Build and two-phone retest pending. Do not treat this as a proven root-cause fix until the APK builds and the same message is tested on both phones. `main` remains untouched.
+
+
+## 2026-10-14 — Message not delivered while receiving app was closed
+
+- User-tested scenario: phone A kept LINK running and showed `NEAR`; LINK was closed on phone B. Phone A then attempted to send a new message and displayed «أرسلت الرسالة إلى الهاتف المرتبط». After the user reopened LINK on phone B, the new message was not present.
+- This proves the sender-side success UI is not sufficient evidence of user-visible delivery when the receiver app UI is closed. Earlier receiver-side logs did show a different message «مساء» saved (8 bytes) while the receiver was active; that does not prove the later message arrived while its app was closed.
+- Root cause is not yet confirmed. Investigate GATT server/service lifecycle and ensure the sender only reports delivery after a trustworthy receiver acknowledgement; queued/offline delivery needs explicit persistence/queue semantics if desired.
+- Status: unresolved; do not mark screen-off/app-closed delivery as passed. The bounded retry for status 133 does not address this result by itself. `main` remains untouched.
