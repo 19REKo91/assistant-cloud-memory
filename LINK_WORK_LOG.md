@@ -242,3 +242,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - This proves the sender-side success UI is not sufficient evidence of user-visible delivery when the receiver app UI is closed. Earlier receiver-side logs did show a different message «مساء» saved (8 bytes) while the receiver was active; that does not prove the later message arrived while its app was closed.
 - Root cause is not yet confirmed. Investigate GATT server/service lifecycle and ensure the sender only reports delivery after a trustworthy receiver acknowledgement; queued/offline delivery needs explicit persistence/queue semantics if desired.
 - Status: unresolved; do not mark screen-off/app-closed delivery as passed. The bounded retry for status 133 does not address this result by itself. `main` remains untouched.
+
+
+## 2026-10-14 — Explicit receiver acknowledgement for message delivery
+
+- Follow-up to the confirmed user test where the sender displayed success while the receiver app was closed, but the new message was absent after reopening.
+- Commit f4f67be86c64402ef22554fcd5a7ca7dfef9916d adds a read-only GATT acknowledgement characteristic. Each outgoing message carries a short message ID; the receiver persists both the message and ID before returning GATT write success. The sender then reads the acknowledgement characteristic and reports delivery success only when the returned ID matches the pending message.
+- Commit 255071c8cf0d0789e3dae91c9455d727b22dde32 limits message content to 160 UTF-8 bytes so the message ID and delimiter remain within the 180-byte GATT payload cap.
+- This change is intended to prevent a plain GATT write callback from being presented as confirmed message delivery. It is not yet validated: build and two-phone tests are pending, including active receiver, receiver app closed, and receiver screen off. If the receiver service is stopped, sender should report that delivery was not confirmed rather than claim success.
+- main remains untouched. Do not install or treat this protocol change as complete until the CI build succeeds.
