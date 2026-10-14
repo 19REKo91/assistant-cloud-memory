@@ -300,3 +300,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - GitHub Actions run #37 is queued for the latest commit: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38635174855. Build/tests and APK artifact are not yet verified. Do not ask the user to install until the run succeeds and the artifact is confirmed.
 - The -70 dBm far threshold is a deliberate hysteresis starting point, not a claim that RSSI precisely measures physical distance. Validate on both phones after a successful build; adjust only from observed diagnostics if needed.
 - `main` remains untouched. Next: verify run #37, then test both phones side by side and at separation; confirm that around -61 dBm no longer forces `APART`, while sustained very weak/no partner signal still produces `APART` after the delay.
+
+
+### Build verification update — 2026-10-14
+
+- GitHub Actions run #37 completed successfully for source/test commit `aad9d1d00fa24577b2e866357f162ddd73fe4f15`: unit tests and APK assembly passed.
+- Run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38635174855
+- APK artifact `link-debug-apk`, artifact ID `11928550103`, verified present and not expired at the time of this check; expires `2026-10-21T20:51:05Z`.
+- Artifact download page: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38635174855/artifacts/11928550103
+- This confirms CI tests/build only; device behavior still needs testing on both phones. Install on both phones, keep them side by side, and confirm RSSI values around `-61 dBm` no longer cause a false `APART`. Then separate them enough for sustained weak/no signal and confirm `APART` still occurs.
