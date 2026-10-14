@@ -723,6 +723,8 @@ class LinkProximityService : android.app.Service() {
         private val PROBE_SERVICE_UUID=java.util.UUID.fromString("6b4e1000-1d4a-4f20-9f30-11c0a2e0b001")
         private val PROBE_CHARACTERISTIC_UUID=java.util.UUID.fromString("6b4e1001-1d4a-4f20-9f30-11c0a2e0b001")
         private val MESSAGE_ACK_CHARACTERISTIC_UUID=java.util.UUID.fromString("6b4e1002-1d4a-4f20-9f30-11c0a2e0b001")
+        private const val KEY_SERVICE_LOCAL_UUID="service_local_uuid"
+        private const val KEY_SERVICE_PARTNER_UUID="service_partner_uuid"
     }
     private val mainHandler=android.os.Handler(android.os.Looper.getMainLooper())
     private val engine=ProximityEngine()
@@ -750,6 +752,8 @@ class LinkProximityService : android.app.Service() {
     private var pendingMessageId:String?=null
     private var messageWriteRetryCount=0
     private var bluetoothReceiverRegistered=false
+    private var recoveryAttempt=0
+    private var recoveryRunnable:Runnable?=null
 
     private val bluetoothStateReceiver=object:android.content.BroadcastReceiver() {
         override fun onReceive(context:android.content.Context?,intent:android.content.Intent?) {
@@ -757,6 +761,7 @@ class LinkProximityService : android.app.Service() {
             when(intent.getIntExtra(android.bluetooth.BluetoothAdapter.EXTRA_STATE,android.bluetooth.BluetoothAdapter.ERROR)) {
                 android.bluetooth.BluetoothAdapter.STATE_OFF -> {
                     if(running) {
+                        cancelRadioRecovery()
                         stopRadio()
                         engine.reset()
                         latestError="البلوتوث متوقف مؤقتًا؛ سيستأنف LINK تلقائيًا عند تشغيله."
@@ -768,10 +773,11 @@ class LinkProximityService : android.app.Service() {
                     val local=localUuid
                     val partner=partnerUuid
                     if(local!=null && partner!=null && running) {
+                        cancelRadioRecovery()
                         running=false
                         latestError=null
                         note("Bluetooth on; restarting BLE",android.os.SystemClock.elapsedRealtime())
-                        startSession(local,partner)
+                        startSession(local,partner,forceRestart=true)
                     }
                 }
             }
@@ -980,13 +986,23 @@ class LinkProximityService : android.app.Service() {
                 if(local==null || partner==null) fail("بيانات الاقتران غير صالحة أو غير مكتملة.")
                 else startSession(local,partner)
             }
-            else -> if(running) publish() else stopSelf(startId)
+            else -> {
+                if(intent==null) {
+                    val saved=if(getSharedPreferences("link_pair", MODE_PRIVATE).getBoolean("active",false)) savedSessionUuids() else null
+                    if(saved!=null) {
+                        startSession(saved.first,saved.second,forceRestart=true)
+                    } else {
+                        if(getSharedPreferences("link_pair", MODE_PRIVATE).getBoolean("active",false)) clearStoredSession()
+                        if(!running) stopSelf(startId) else publish()
+                    }
+                } else if(running) publish() else stopSelf(startId)
+            }
         }
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
-    private fun startSession(local:java.util.UUID,partner:java.util.UUID) {
-        if(running && localUuid==local && partnerUuid==partner) { publish(); return }
+    private fun startSession(local:java.util.UUID,partner:java.util.UUID,forceRestart:Boolean=false) {
+        if(!forceRestart && running && localUuid==local && partnerUuid==partner) { publish(); return }
         if(!hasBluetoothPermissions()) {
             latestError="أذونات البلوتوث غير متاحة؛ افتح LINK وامنح أذونات الأجهزة القريبة."
             running=false; persistActive(false); publish(); stopSelf(); return
@@ -994,6 +1010,10 @@ class LinkProximityService : android.app.Service() {
         running=false
         stopRadio()
         localUuid=local; partnerUuid=partner
+        getSharedPreferences("link_pair", MODE_PRIVATE).edit()
+            .putString(KEY_SERVICE_LOCAL_UUID,local.toString())
+            .putString(KEY_SERVICE_PARTNER_UUID,partner.toString())
+            .putBoolean("active",true).apply()
         engine.reset(); latestError=null
         rawResults=0; partnerMatches=0; lastRssi=null; firstMatch=null; firstStrong=null
         events.clear()
@@ -1036,14 +1056,19 @@ class LinkProximityService : android.app.Service() {
             override fun onStartSuccess(settingsInEffect:android.bluetooth.le.AdvertiseSettings?) { if(running) publish() }
             override fun onStartFailure(errorCode:Int) {
                 mainHandler.post {
-                    if(running) fail(when(errorCode) {
-                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
-                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
-                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
-                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
-                        android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
-                        else -> "فشل إعلان BLE، الرمز: $errorCode"
-                    })
+                    if(running) {
+                        val reason=when(errorCode) {
+                            android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "بيانات إعلان BLE أكبر من المسموح."
+                            android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "إعلان BLE غير مدعوم على هذا الجهاز."
+                            android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "لا تتوفر خانة إعلان BLE حاليًا."
+                            android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED -> "إعلان BLE بدأ مسبقًا."
+                            android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR -> "تعذّر بدء إعلان BLE."
+                            else -> "فشل إعلان BLE، الرمز: $errorCode"
+                        }
+                        if(errorCode==android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED ||
+                            errorCode==android.bluetooth.le.AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE) fail(reason)
+                        else scheduleRadioRecovery(reason)
+                    }
                 }
             }
         }
@@ -1053,7 +1078,17 @@ class LinkProximityService : android.app.Service() {
         val scanningCallback=object:android.bluetooth.le.ScanCallback() {
             override fun onScanResult(callbackType:Int,result:android.bluetooth.le.ScanResult) { inspect(result,partner) }
             override fun onBatchScanResults(results:MutableList<android.bluetooth.le.ScanResult>) { results.forEach { inspect(it,partner) } }
-            override fun onScanFailed(errorCode:Int) { mainHandler.post { if(running) fail("تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode") } }
+            override fun onScanFailed(errorCode:Int) {
+                mainHandler.post {
+                    if(running) {
+                        if(errorCode==android.bluetooth.le.ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED) {
+                            fail("البحث عبر BLE غير مدعوم على هذا الجهاز.")
+                        } else {
+                            scheduleRadioRecovery("تعذّر البحث عن الهاتف المرتبط، الرمز: $errorCode")
+                        }
+                    }
+                }
+            }
         }
         scanCb=scanningCallback
         try {
@@ -1067,10 +1102,50 @@ class LinkProximityService : android.app.Service() {
         } catch(_:SecurityException) {
             fail("لم يسمح النظام باستخدام البلوتوث. راجع أذونات الأجهزة القريبة.")
         } catch(_:IllegalStateException) {
-            fail("تعذّر تشغيل BLE. أوقف البلوتوث وشغّله ثم حاول مرة واحدة.")
+            scheduleRadioRecovery("تعذّر تشغيل BLE مؤقتًا.")
         } catch(error:Exception) {
             fail("تعذّر تشغيل BLE: ${error.localizedMessage ?: error.javaClass.simpleName}")
         }
+    }
+
+    private fun scheduleRadioRecovery(reason:String) {
+        if(!running || recoveryRunnable!=null) return
+        val local=localUuid
+        val partner=partnerUuid
+        if(local==null || partner==null) {
+            fail("$reason ولا تتوفر بيانات كافية لاستعادة الجلسة.")
+            return
+        }
+        stopRadio()
+        engine.reset()
+        latestError="$reason سيحاول LINK الاستعادة تلقائيًا."
+        val step=recoveryAttempt.coerceAtMost(5)
+        val delayMs=(1_000L shl step).coerceAtMost(30_000L)
+        recoveryAttempt=(recoveryAttempt+1).coerceAtMost(5)
+        note("BLE recovery scheduled after ${delayMs}ms",android.os.SystemClock.elapsedRealtime())
+        publish()
+        val task=object:Runnable {
+            override fun run() {
+                if(recoveryRunnable!==this) return
+                recoveryRunnable=null
+                if(!running || !getSharedPreferences("link_pair", MODE_PRIVATE).getBoolean("active",false)) return
+                val saved=savedSessionUuids()
+                val restoreLocal=localUuid ?: saved?.first
+                val restorePartner=partnerUuid ?: saved?.second
+                if(restoreLocal==null || restorePartner==null) {
+                    fail("تعذّرت استعادة جلسة LINK لأن بيانات الاقتران غير متاحة.")
+                    return
+                }
+                startSession(restoreLocal,restorePartner,forceRestart=true)
+            }
+        }
+        recoveryRunnable=task
+        mainHandler.postDelayed(task,delayMs)
+    }
+
+    private fun cancelRadioRecovery() {
+        recoveryRunnable?.let { mainHandler.removeCallbacks(it) }
+        recoveryRunnable=null
     }
 
     private fun inspect(result:android.bluetooth.le.ScanResult,expected:java.util.UUID) {
@@ -1079,6 +1154,7 @@ class LinkProximityService : android.app.Service() {
         val uuids=result.scanRecord?.serviceUuids
         val now=android.os.SystemClock.elapsedRealtime()
         if(uuids?.contains(android.os.ParcelUuid(expected))==true) {
+            recoveryAttempt=0
             latestPartnerDevice=result.device
             partnerMatches++; lastRssi=result.rssi
             if(firstMatch==null) { firstMatch=now-startElapsed; note("first partner match",now) }
@@ -1179,16 +1255,48 @@ class LinkProximityService : android.app.Service() {
     }
 
     private fun stopSession() {
-        running=false; persistActive(false); stopRadio(); engine.reset(); latestError=null
+        running=false
+        cancelRadioRecovery()
+        clearStoredSession()
+        stopRadio(); engine.reset(); latestError=null
         sendConnectionResult("توقفت تجربة LINK.")
         note("session stopped",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun fail(message:String) {
-        latestError=message; running=false; persistActive(false); stopRadio(); engine.reset()
+        latestError=message
+        running=false
+        cancelRadioRecovery()
+        clearStoredSession()
+        stopRadio(); engine.reset()
         note("error",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf()
+    }
+
+    private fun savedSessionUuids():Pair<java.util.UUID,java.util.UUID>? {
+        val prefs=getSharedPreferences("link_pair", MODE_PRIVATE)
+        val savedLocal=prefs.getString(KEY_SERVICE_LOCAL_UUID,null)
+        val savedPartner=prefs.getString(KEY_SERVICE_PARTNER_UUID,null)
+        val direct=runCatching {
+            val local=java.util.UUID.fromString(savedLocal)
+            val partner=java.util.UUID.fromString(savedPartner)
+            if(local==partner) null else local to partner
+        }.getOrNull()
+        if(direct!=null) return direct
+        val sideA=prefs.getString("side_a",null) ?: return null
+        val sideB=prefs.getString("side_b",null) ?: return null
+        val role=prefs.getString("role",null)?.takeIf { it=="A" || it=="B" } ?: return null
+        val payload=PairingPayload.parse("TWOHEARTS|1|$sideA|$sideB") ?: return null
+        return runCatching { payload.ownUuid(role) to payload.partnerUuid(role) }.getOrNull()
+    }
+
+    private fun clearStoredSession() {
+        getSharedPreferences("link_pair", MODE_PRIVATE).edit()
+            .putBoolean("active",false)
+            .remove(KEY_SERVICE_LOCAL_UUID)
+            .remove(KEY_SERVICE_PARTNER_UUID)
+            .apply()
     }
 
     private fun persistActive(value:Boolean) {
@@ -1261,13 +1369,15 @@ class LinkProximityService : android.app.Service() {
     }
 
     override fun onDestroy() {
-        val wasRunning=running
-        running=false; persistActive(false); stopRadio()
+        // Preserve the saved session so Android can recreate this sticky foreground service.
+        // Explicit stops and fatal errors clear the active flag before reaching onDestroy().
+        running=false
+        cancelRadioRecovery()
+        stopRadio()
         if(bluetoothReceiverRegistered) {
             try { unregisterReceiver(bluetoothStateReceiver) } catch(_:Exception) { }
             bluetoothReceiverRegistered=false
         }
-        if(wasRunning) { engine.reset(); publish() }
         super.onDestroy()
     }
 }
