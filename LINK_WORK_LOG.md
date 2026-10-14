@@ -251,3 +251,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Commit 255071c8cf0d0789e3dae91c9455d727b22dde32 limits message content to 160 UTF-8 bytes so the message ID and delimiter remain within the 180-byte GATT payload cap.
 - This change is intended to prevent a plain GATT write callback from being presented as confirmed message delivery. It is not yet validated: build and two-phone tests are pending, including active receiver, receiver app closed, and receiver screen off. If the receiver service is stopped, sender should report that delivery was not confirmed rather than claim success.
 - main remains untouched. Do not install or treat this protocol change as complete until the CI build succeeds.
+
+
+## 2026-10-14 — Priority update: BLE stability plus media space
+
+- User explicitly prioritizes stabilizing LINK's proximity/peer rediscovery and BLE connection behavior over message-delivery enhancements.
+- Keep the planned song and image in the LINK product scope: reserve a dedicated, intentional UI area for them rather than letting diagnostics and connection controls consume the entire screen. Do not guess/commit media assets or spend any third-party generation credits without the user's established approval.
+- Order of work: (1) review/build the current branch and validate proximity transitions/rediscovery and GATT reliability; (2) shape the screen layout to accommodate song + image without obscuring the proximity state or core controls; (3) implement media playback/display after stability and layout are verified.
+- Current acknowledgement-protocol commits are experimental and CI validation is pending; do not ask user to install them until build status and code behavior are checked. main remains untouched.
