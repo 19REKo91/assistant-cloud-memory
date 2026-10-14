@@ -6,6 +6,7 @@ enum class ProximityState { WAITING, NEAR, APART }
 
 class ProximityEngine(
     private val closeThresholdDbm: Int = -56,
+    private val farThresholdDbm: Int = -70,
     private val departureDelayMs: Long = 10_000L,
     private val stableWindowMs: Long = 2_500L,
     private val requiredStrongSamples: Int = 3
@@ -16,13 +17,16 @@ class ProximityEngine(
         private set
     var latestRssi: Int? = null
         private set
-    private var lastStrongAt: Long? = null
+    private var lastInRangeAt: Long? = null
 
     fun onRssi(rssi: Int, nowMs: Long): ProximityState? {
         latestRssi = rssi
         readings.addLast(Reading(nowMs, rssi))
         prune(nowMs)
-        if (rssi >= closeThresholdDbm) lastStrongAt = nowMs
+        // Use hysteresis: strong samples establish NEAR, while moderately weaker
+        // samples keep an established NEAR state alive. This avoids false APART
+        // transitions when RSSI fluctuates around the close threshold.
+        if (rssi >= farThresholdDbm) lastInRangeAt = nowMs
         if (state != ProximityState.NEAR && readings.count { it.rssi >= closeThresholdDbm } >= requiredStrongSamples) {
             state = ProximityState.NEAR
             return state
@@ -32,8 +36,8 @@ class ProximityEngine(
 
     fun tick(nowMs: Long): ProximityState? {
         prune(nowMs)
-        val lastStrong = lastStrongAt
-        if (state == ProximityState.NEAR && lastStrong != null && nowMs - lastStrong >= departureDelayMs) {
+        val lastInRange = lastInRangeAt
+        if (state == ProximityState.NEAR && lastInRange != null && nowMs - lastInRange >= departureDelayMs) {
             state = ProximityState.APART
             return state
         }
@@ -44,7 +48,7 @@ class ProximityEngine(
         readings.clear()
         state = ProximityState.WAITING
         latestRssi = null
-        lastStrongAt = null
+        lastInRangeAt = null
     }
 
     private fun prune(nowMs: Long) {
