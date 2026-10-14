@@ -280,3 +280,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - CI build and unit tests are pending. No device behavior is claimed verified. After CI succeeds, next device test should leave LINK in the background for 10–11 minutes without sending a message, then check whether NEAR/APART and the image/state update by themselves. Also test explicit Stop to ensure it does not restart.
 - `main` remains untouched.
 
+### Build verification result for BLE background-service recovery
+
+- GitHub Actions run #34 completed successfully: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38599259240
+- Verified commit: `035571bffe0242dfbe51e2e82fdcef0e58c13752`
+- `testDebugUnitTest` and `assembleDebug` both succeeded; debug APK artifact uploaded.
+- APK artifact: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38599259240/artifacts/11911064407
+- Artifact SHA-256: `dcf0ca6069df0de78e7a9b33df47919c5b44b5ff4b9493ea640b87dff91b2023`; expires 2026-10-21T16:36:50Z.
+- This is build verification only, not proof the 650-second background behavior is fixed. Next device test: install this APK on both phones (the workflow restored the existing LINK debug signing key), start LINK on both, switch phone 1 to another app while keeping LINK active, wait 10–11 minutes without sending a message or reopening LINK, then check whether the expected proximity/image transition happened. Afterward test turning Bluetooth off/on. Stop/clear-session behavior also needs a quick check.
+
