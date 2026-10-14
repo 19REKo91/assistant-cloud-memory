@@ -387,8 +387,8 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, "فعّل LINK على الهاتفين أولًا.", Toast.LENGTH_LONG).show()
             } else if (message.isBlank()) {
                 Toast.makeText(this, "اكتب رسالة أولًا.", Toast.LENGTH_SHORT).show()
-            } else if (message.toByteArray(Charsets.UTF_8).size > 180) {
-                Toast.makeText(this, "اجعل الرسالة أقصر من 180 بايت.", Toast.LENGTH_LONG).show()
+            } else if (message.toByteArray(Charsets.UTF_8).size > 160) {
+                Toast.makeText(this, "اجعل الرسالة أقصر من 160 بايت.", Toast.LENGTH_LONG).show()
             } else {
                 startService(Intent(this, LinkProximityService::class.java)
                     .setAction(LinkProximityService.ACTION_SEND_MESSAGE)
