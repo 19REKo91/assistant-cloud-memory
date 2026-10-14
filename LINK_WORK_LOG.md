@@ -259,3 +259,11 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Keep the planned song and image in the LINK product scope: reserve a dedicated, intentional UI area for them rather than letting diagnostics and connection controls consume the entire screen. Do not guess/commit media assets or spend any third-party generation credits without the user's established approval.
 - Order of work: (1) review/build the current branch and validate proximity transitions/rediscovery and GATT reliability; (2) shape the screen layout to accommodate song + image without obscuring the proximity state or core controls; (3) implement media playback/display after stability and layout are verified.
 - Current acknowledgement-protocol commits are experimental and CI validation is pending; do not ask user to install them until build status and code behavior are checked. main remains untouched.
+
+## 2026-10-14 — User retest: delayed background pairing, message triggers visible pairing
+
+- User reports the second phone was left paired; the first phone was paired but LINK was in the background. After approximately 650 seconds, pairing had not occurred/updated as expected, and the image changed (the exact UI element/state associated with the image change needs clarification during a later test).
+- The user then opened/used LINK on phone 1 and sent a message. Phone 2 received the message, and the pairing state appeared/updated at the same time.
+- Working interpretation, not yet a confirmed root cause: the background proximity/session path did not visibly complete or refresh pairing during the ~650-second interval, while initiating a message caused a GATT interaction that coincided with the pairing UI update. Do not infer that the message itself repaired proximity discovery; collect logs and repeat the scenario before deciding.
+- Priority remains BLE stability and background/foreground recovery, not new features or message-delivery enhancements. Next test should capture both phones' LINK state/logs before sending any message, after the long background interval, and immediately after foregrounding LINK; compare whether NEAR/APART, peer UUID, GATT connection, and displayed image change independently.
+- main remains untouched.
