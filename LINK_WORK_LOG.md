@@ -267,3 +267,16 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Working interpretation, not yet a confirmed root cause: the background proximity/session path did not visibly complete or refresh pairing during the ~650-second interval, while initiating a message caused a GATT interaction that coincided with the pairing UI update. Do not infer that the message itself repaired proximity discovery; collect logs and repeat the scenario before deciding.
 - Priority remains BLE stability and background/foreground recovery, not new features or message-delivery enhancements. Next test should capture both phones' LINK state/logs before sending any message, after the long background interval, and immediately after foregrounding LINK; compare whether NEAR/APART, peer UUID, GATT connection, and displayed image change independently.
 - main remains untouched.
+
+## 2026-10-14 — BLE background-service recovery hardening
+
+- User's long-background test: after roughly 650 seconds, the expected proximity/pairing update had not happened; opening LINK/initiating a message coincided with the peer receiving it and the state updating. Root cause remains unconfirmed, so this is treated as a recovery-lifecycle issue to validate, not proof that messages cause pairing.
+- Source inspection found that transient BLE scan failures called the fatal `fail()` path, stopping the foreground service; the service also returned `START_NOT_STICKY`, and `onDestroy()` cleared the saved active flag, preventing reliable recreation after service destruction.
+- Commit `035571bffe0242dfbe51e2e82fdcef0e58c13752` changes the experiment branch to:
+  - persist both service UUIDs with the active session and recover them from the previously saved pairing fields when necessary;
+  - return `START_STICKY` and restore an active saved session when Android recreates the service with a null intent;
+  - retry recoverable scan/advertise/start failures with a backoff from 1 second to at most 30 seconds, while keeping unsupported BLE hardware/data configuration errors fatal;
+  - preserve saved session state in `onDestroy()`; explicit stop and fatal failure clear it.
+- CI build and unit tests are pending. No device behavior is claimed verified. After CI succeeds, next device test should leave LINK in the background for 10–11 minutes without sending a message, then check whether NEAR/APART and the image/state update by themselves. Also test explicit Stop to ensure it does not restart.
+- `main` remains untouched.
+
