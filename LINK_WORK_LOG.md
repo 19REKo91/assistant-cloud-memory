@@ -289,3 +289,14 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Artifact SHA-256: `dcf0ca6069df0de78e7a9b33df47919c5b44b5ff4b9493ea640b87dff91b2023`; expires 2026-10-21T16:36:50Z.
 - This is build verification only, not proof the 650-second background behavior is fixed. Next device test: install this APK on both phones (the workflow restored the existing LINK debug signing key), start LINK on both, switch phone 1 to another app while keeping LINK active, wait 10–11 minutes without sending a message or reopening LINK, then check whether the expected proximity/image transition happened. Afterward test turning Bluetooth off/on. Stop/clear-session behavior also needs a quick check.
 
+
+
+## 2026-10-14 — False APART transition identified and hysteresis fix building
+
+- User confirmed both phones were physically close when LINK displayed `APART`; diagnostics showed 811 partner matches, raw scan count 2297, and last RSSI `-61 dBm`.
+- Source inspection confirmed a concrete proximity-engine flaw: `NEAR` required RSSI >= -56 dBm, and the same -56 dBm threshold refreshed the departure timer. Any continuous partner signal weaker than -56 dBm (for example -61 dBm) was treated like no usable in-range signal, so the engine could switch to `APART` after 10 seconds even while scans kept matching the partner.
+- Fix on `anniversary-ble-proximity-prototype`: commit `7ea2077e837132ddd7271e4db23c4d610dd08557` adds RSSI hysteresis. Strong samples (>= -56 dBm) still establish `NEAR` after three samples; an established `NEAR` state is maintained by samples >= -70 dBm; `APART` requires 10 seconds without any sample meeting that more tolerant -70 dBm threshold. Very weak samples such as -80 dBm still do not reset the departure timer.
+- Added unit tests for the reported -61 dBm case and for very weak readings in commit `aad9d1d00fa24577b2e866357f162ddd73fe4f15`.
+- GitHub Actions run #37 is queued for the latest commit: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38635174855. Build/tests and APK artifact are not yet verified. Do not ask the user to install until the run succeeds and the artifact is confirmed.
+- The -70 dBm far threshold is a deliberate hysteresis starting point, not a claim that RSSI precisely measures physical distance. Validate on both phones after a successful build; adjust only from observed diagnostics if needed.
+- `main` remains untouched. Next: verify run #37, then test both phones side by side and at separation; confirm that around -61 dBm no longer forces `APART`, while sustained very weak/no partner signal still produces `APART` after the delay.
