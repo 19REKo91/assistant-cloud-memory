@@ -150,3 +150,11 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 ### Status and next steps
 - The major internal overlap issue has been addressed and verified by a successful remote workflow.
 - Project remains **INCOMPLETE**, not final-approved. Next steps: (1) verify the current branch head and README/work-log writes, (2) rerun the workflow after documentation updates if required by the workflow trigger, (3) settle the exact reference definition for continent areas, and (4) review ODbL attribution/redistribution obligations before merging PR #10. Main remains unchanged; PR #10 remains unmerged.
+
+
+### Closeout verification after documentation update — 2026-10-15
+- Re-ran the full remote workflow after updating README. Run [38684984867](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38684984867) completed with **success**.
+- Downloaded and inspected the latest artifact ID 11949688470. It again contains all eight expected files, including `antarctica_area_scenarios.csv`; continent totals, Antarctic scenarios, audit reconciliation, and PNG dimensions (2740×1461; 396,377 bytes) match the reviewed values.
+- The final audit totals reconcile: sum of continent union areas = 146,841,657.997 km²; total source land union = 146,841,797.814 km²; unassigned land = 139.817 km²; overlap excess rounds to -0.000 km². Per-feature source area before deduplication exceeds the unioned source area by 15,379.752 km², which is now explicitly reported rather than silently counted twice.
+- Confirmed README and this work log were written and re-read from the project branch. The latest full workflow run's source commit was `bd02c3ce20b261db44e4611e86139dd10aa64897`; the branch head after the work-log update is tracked separately by GitHub.
+- PR #10 remains open and unmerged; `main` remains unchanged. The project is still **INCOMPLETE** pending final confirmation of the comparison reference's continent/island/Antarctic ice-shelf definitions and an ODbL redistribution review.
