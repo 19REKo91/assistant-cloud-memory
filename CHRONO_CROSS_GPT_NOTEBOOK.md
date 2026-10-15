@@ -473,3 +473,11 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Removed the redundant extra smoke-test workflow; the existing `.github/workflows/chrono-cross-gpt-mcp-smoke-test.yml` already validates the same test scripts and MCP configuration.
 - These checks use mocked fetch and dummy credentials only. No real token was used and no production handshake was performed.
 - Project remains **INCOMPLETE** until the real production MCP handshake and Floot-side typecheck/tests succeed.
+
+
+## Reading implementation handoff — 2026-10-15
+
+- Added `docs/chrono-cross-gpt-reading-result-contract.md` at commit `9bd251998492b5f09096567644546dc892e6ba8e`.
+- The document defines a common honest result envelope, stable error categories, source citation requirements, and minimum tests for public pages, PDF/OCR, Office files, images, audio/video, and long-form content.
+- It is explicitly a design contract, not a claim that the live Floot app already implements those readers. The integration gate requires inspecting current Floot code and adapting the contract before implementing.
+- Recommended next implementation once Floot tools are available: inspect endpoint/type/test conventions, then implement selectable-text PDF extraction and scanned-PDF detection first, with page-level references and honest OCR-unavailable reporting.
