@@ -292,3 +292,13 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - The current known area values remain the last independently checked outputs: Asia 43,664,181.383 km²; Africa 29,848,300.864; North America 24,251,174.243; South America 17,707,506.916; Antarctica land-only 12,370,031.919; Europe 10,054,659.682; Oceania 8,945,802.991. They must be confirmed again by the new run before release.
 - PR #10 remains draft and unmerged; `main` remains unchanged.
 - Remaining exact steps: (1) confirm the new workflow run passes both jobs, (2) inspect artifact file list and audit reconciliation, (3) verify the published PNG is regenerated with the new SOURCE-DEFINED label, (4) check PR #10 review/status and the final branch diff, and (5) keep final status scoped to the declared definition while documenting that legal compliance for any actual redistribution is use-case-dependent.
+
+
+## Follow-up verification — 2026-10-15: final checklist and branch diff
+
+- Added the final release verification checklist to README in commit `fbbee0c3f097caeaa2123a541f8ec34ea35e07a1`.
+- Re-fetched WORK_LOG and confirmed the previous scope/workflow notes persisted. Re-fetched the current README and workflow after edits.
+- Compared `main...geography-continent-area-audit`: GitHub reports the branch is ahead by 64 commits and behind by 0. The geography files listed in the comparison are added on this branch; this operation did not change `main`.
+- Queried commit checks for the latest checklist commit: the only returned combined status is Vercel (pending at query time). The GitHub Actions connector available in this session exposes workflow runs by commit only for pull-request-triggered runs, and no fresh run was returned for the latest changes. Therefore the updated workflow's full execution and the new map-publication job remain **unverified**; the previous successful run 38686082890 predates these changes and is not a substitute.
+- No merge was performed. Keep PR #10 draft/open and keep the project status incomplete until the current workflow execution and new PNG are verified. Do not claim the renderer label or map publication is live until the artifact and branch PNG prove it.
+- Current concrete blocker: the available GitHub integration does not expose a workflow-dispatch action or a list-all-workflow-runs action, so this session could not directly start/inspect a fresh run through the connector. The workflow has a `workflow_dispatch` trigger and should be run from the Actions page; after it completes, verify both `calculate` and `publish-map` for a branch push, inspect the artifact files and reconciliation, and confirm the committed PNG footer/label. No change to `main`.
