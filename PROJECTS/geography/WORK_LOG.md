@@ -322,3 +322,11 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Numerical output is accepted only under the documented source-defined convention (Natural Earth land + minor islands partitioned by the pinned GBIF seven-continent polygons), not as a universal definition. The 139.817 km² unassigned remainder is documented; decide whether it is acceptable under the project's stated tolerance or requires a documented assignment rule.
 - Before marking the project complete, visually review the published PNG, re-open the README and attribution notice on the branch, and confirm whether the intended use is internal-only or redistribution requiring ODbL review.
 - PR #10 remains open/draft/unmerged and `main` remains unchanged.
+
+
+## Follow-up — 2026-10-15: release records synchronized
+
+- Updated the README's top-level status and final checklist to reflect the now-verified push workflow and PNG publication, while leaving the project explicitly incomplete pending visual review and use-case-specific ODbL review. Commit: `6ad39f81b67c2d17f68d0924c4de6a055d6686c3`.
+- Updated PR #10's description to replace its outdated country-classification-only framing with the current physical-land method, successful run/artifact links, reconciliation totals, and remaining approval gates. Re-fetched PR metadata confirms it remains open, draft, and unmerged; head commit is `6ad39f81b67c2d17f68d0924c4de6a055d6686c3`.
+- Re-fetched the live README and attribution notice; both contain the operational definition and ODbL distribution checklist. No changes to `main`.
+- Current status remains **INCOMPLETE pending final visual review and intended-use/license review**. The PNG was verified automatically and is present on GitHub, but I could not obtain the current PNG bytes in this session for a fresh pixel-level visual inspection. Do not describe that as visually approved.
