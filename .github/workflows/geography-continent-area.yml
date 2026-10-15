@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -69,5 +71,7 @@ jobs:
             echo "Verified map is unchanged; no commit needed."
           else
             git commit -m "Publish verified Equal Earth continent map"
-            git push
+            git fetch origin geography-continent-area-audit
+            git rebase origin/geography-continent-area-audit
+            git push origin HEAD:geography-continent-area-audit
           fi
