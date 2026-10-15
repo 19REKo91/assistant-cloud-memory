@@ -96,6 +96,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var showQrButton: Button
     private lateinit var stopButton: Button
     private lateinit var connectionButton: Button
+    private lateinit var copyDiagnosticsButton: Button
     private lateinit var messageInput: EditText
     private lateinit var sendMessageButton: Button
     private lateinit var messageInbox: TextView
@@ -381,6 +382,7 @@ class MainActivity : ComponentActivity() {
         }
         root.addView(messageInbox, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        copyDiagnosticsButton = makeButton("نسخ سجل التشخيص", false) { copyDiagnosticLog() }
         sendMessageButton = makeButton("إرسال رسالة للهاتف الآخر", true) {
             val message = messageInput.text?.toString()?.trim().orEmpty()
             if (!active) {
@@ -411,7 +413,7 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
         }
         listOf(createButton, scanButton, activateButton, hideQrButton, showQrButton, connectionButton,
-            sendMessageButton, stopButton, resetButton, bluetoothSettingsButton).forEach(::addButton)
+            copyDiagnosticsButton, sendMessageButton, stopButton, resetButton, bluetoothSettingsButton).forEach(::addButton)
     }
 
     private fun addFixed(view: View, heightDp: Int) {
@@ -439,6 +441,7 @@ class MainActivity : ComponentActivity() {
         activateButton.visibility = if (pair != null && !active) View.VISIBLE else View.GONE
         stopButton.visibility = if (active) View.VISIBLE else View.GONE
         connectionButton.visibility = if (active) View.VISIBLE else View.GONE
+        copyDiagnosticsButton.visibility = if (active) View.VISIBLE else View.GONE
         resetButton.visibility = if (pair != null && !active) View.VISIBLE else View.GONE
         bluetoothSettingsButton.visibility =
             if (!active && latestRadioError != null && latestRadioError!!.contains("البلوتوث")) View.VISIBLE else View.GONE
@@ -694,6 +697,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun copyDiagnosticLog() {
+        val file=java.io.File(filesDir,"link_ble_diagnostics.txt")
+        val contents=runCatching { if(file.exists()) file.readText(Charsets.UTF_8) else serviceDiagnostic }.getOrDefault("")
+        if(contents.isBlank()) {
+            Toast.makeText(this,"لا يوجد سجل تشخيص بعد.",Toast.LENGTH_SHORT).show()
+            return
+        }
+        val clipboard=getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("LINK BLE diagnostics",contents))
+        Toast.makeText(this,"نُسخ سجل تشخيص BLE. يمكنك لصقه هنا.",Toast.LENGTH_LONG).show()
+    }
+
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
  
@@ -754,6 +769,10 @@ class LinkProximityService : android.app.Service() {
     private var bluetoothReceiverRegistered=false
     private var recoveryAttempt=0
     private var recoveryRunnable:Runnable?=null
+    private var diagnosticSessionInitialized=false
+    private var lastSampleLoggedAt=0L
+    private var screenReceiverRegistered=false
+    private val diagnosticLogFileName="link_ble_diagnostics.txt"
 
     private val bluetoothStateReceiver=object:android.content.BroadcastReceiver() {
         override fun onReceive(context:android.content.Context?,intent:android.content.Intent?) {
@@ -794,6 +813,37 @@ class LinkProximityService : android.app.Service() {
             registerReceiver(bluetoothStateReceiver,filter)
         }
         bluetoothReceiverRegistered=true
+        val diagnosticFile=java.io.File(filesDir,diagnosticLogFileName)
+        if(getSharedPreferences("link_pair", MODE_PRIVATE).getBoolean("active",false) && diagnosticFile.exists()) {
+            val savedStart=runCatching { diagnosticFile.useLines { lines -> lines.take(8).firstOrNull { it.startsWith("session_start_elapsed_ms=") }?.substringAfter("=")?.toLongOrNull() } }.getOrNull()
+            if(savedStart!=null && android.os.SystemClock.elapsedRealtime()>=savedStart) {
+                startElapsed=savedStart
+                diagnosticSessionInitialized=true
+            }
+        }
+        val screenFilter=android.content.IntentFilter().apply {
+            addAction(android.content.Intent.ACTION_SCREEN_OFF)
+            addAction(android.content.Intent.ACTION_SCREEN_ON)
+            addAction(android.content.Intent.ACTION_USER_PRESENT)
+        }
+        if(android.os.Build.VERSION.SDK_INT>=33) {
+            registerReceiver(screenStateReceiver,screenFilter,android.content.Context.RECEIVER_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(screenStateReceiver,screenFilter)
+        }
+        screenReceiverRegistered=true
+    }
+
+    private val screenStateReceiver=object:android.content.BroadcastReceiver() {
+        override fun onReceive(context:android.content.Context?,intent:android.content.Intent?) {
+            val now=android.os.SystemClock.elapsedRealtime()
+            when(intent?.action) {
+                android.content.Intent.ACTION_SCREEN_OFF -> note("SCREEN_OFF",now)
+                android.content.Intent.ACTION_SCREEN_ON -> note("SCREEN_ON",now)
+                android.content.Intent.ACTION_USER_PRESENT -> note("USER_PRESENT",now)
+            }
+        }
     }
 
     private val serverCallback=object:android.bluetooth.BluetoothGattServerCallback() {
@@ -984,7 +1034,7 @@ class LinkProximityService : android.app.Service() {
                 val local=intent.getStringExtra(EXTRA_LOCAL_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
                 val partner=intent.getStringExtra(EXTRA_PARTNER_UUID)?.let { runCatching { java.util.UUID.fromString(it) }.getOrNull() }
                 if(local==null || partner==null) fail("بيانات الاقتران غير صالحة أو غير مكتملة.")
-                else startSession(local,partner)
+                else startSession(local,partner,newDiagnosticSession=true)
             }
             else -> {
                 if(intent==null) {
@@ -1001,7 +1051,7 @@ class LinkProximityService : android.app.Service() {
         return START_STICKY
     }
 
-    private fun startSession(local:java.util.UUID,partner:java.util.UUID,forceRestart:Boolean=false) {
+    private fun startSession(local:java.util.UUID,partner:java.util.UUID,forceRestart:Boolean=false,newDiagnosticSession:Boolean=false) {
         if(!forceRestart && running && localUuid==local && partnerUuid==partner) { publish(); return }
         if(!hasBluetoothPermissions()) {
             latestError="أذونات البلوتوث غير متاحة؛ افتح LINK وامنح أذونات الأجهزة القريبة."
@@ -1017,7 +1067,15 @@ class LinkProximityService : android.app.Service() {
         engine.reset(); latestError=null
         rawResults=0; partnerMatches=0; lastRssi=null; firstMatch=null; firstStrong=null
         events.clear()
-        startElapsed=android.os.SystemClock.elapsedRealtime()
+        val nowElapsed=android.os.SystemClock.elapsedRealtime()
+        if(newDiagnosticSession || !diagnosticSessionInitialized) {
+            startElapsed=nowElapsed
+            diagnosticSessionInitialized=true
+            lastSampleLoggedAt=0L
+            resetDiagnosticLog()
+        } else {
+            note("BLE radio session restarted",nowElapsed)
+        }
         lastPublished=0L
         createChannel()
         running=true
@@ -1097,7 +1155,7 @@ class LinkProximityService : android.app.Service() {
             localScanner.startScan(null,scanSettings,scanningCallback)
             mainHandler.removeCallbacks(ticker)
             mainHandler.post(ticker)
-            note("BLE session started",startElapsed)
+            note("BLE session started",android.os.SystemClock.elapsedRealtime())
             publish()
         } catch(_:SecurityException) {
             fail("لم يسمح النظام باستخدام البلوتوث. راجع أذونات الأجهزة القريبة.")
@@ -1161,6 +1219,10 @@ class LinkProximityService : android.app.Service() {
             if(result.rssi>=-56 && firstStrong==null) { firstStrong=now-startElapsed; note("first strong RSSI",now) }
             val transition=engine.onRssi(result.rssi,now)
             if(transition!=null) note("state=$transition",now)
+            if(lastSampleLoggedAt==0L || now-lastSampleLoggedAt>=2_000L) {
+                lastSampleLoggedAt=now
+                appendDiagnosticLine("+${(now-startElapsed).coerceAtLeast(0L)}ms | SAMPLE | state=${engine.state.name} | RSSI=${result.rssi} dBm | raw=$rawResults | matches=$partnerMatches")
+            }
             if(transition!=null || now-lastPublished>=400L) publish()
         } else if(now-lastPublished>=1_000L) publish()
     }
@@ -1341,9 +1403,28 @@ class LinkProximityService : android.app.Service() {
         else -> "يبحث عن الهاتف المرتبط في الخلفية"
     }
 
+    private fun resetDiagnosticLog() {
+        val file=java.io.File(filesDir,diagnosticLogFileName)
+        val header="LINK BLE diagnostic log\nsession_start_wall_ms=${System.currentTimeMillis()}\nsession_start_elapsed_ms=$startElapsed\nlocalUuid=${localUuid ?: "—"}\npartnerUuid=${partnerUuid ?: "—"}\nformat=elapsed_ms | event\n"
+        runCatching { file.writeText(header,Charsets.UTF_8) }
+        appendDiagnosticLine("+0ms | SESSION_START | state=${engine.state.name}")
+    }
+
+    private fun appendDiagnosticLine(line:String) {
+        val file=java.io.File(filesDir,diagnosticLogFileName)
+        runCatching {
+            if(file.exists() && file.length()>512*1024) {
+                file.writeText("LINK BLE diagnostic log (older entries trimmed)\nsession_start_wall_ms=${System.currentTimeMillis()}\nsession_start_elapsed_ms=$startElapsed\n",Charsets.UTF_8)
+            }
+            file.appendText("$line\n",Charsets.UTF_8)
+        }
+    }
+
     private fun note(label:String,elapsed:Long) {
         if(events.size>=8) events.removeFirst()
-        events.addLast("$label | +${(elapsed-startElapsed).coerceAtLeast(0L)}ms")
+        val relative=(elapsed-startElapsed).coerceAtLeast(0L)
+        events.addLast("$label | +${relative}ms")
+        appendDiagnosticLine("+${relative}ms | EVENT | $label | state=${engine.state.name} | RSSI=${lastRssi ?: "—"} | raw=$rawResults | matches=$partnerMatches")
     }
 
     private fun diagnosticText():String {
@@ -1377,6 +1458,10 @@ class LinkProximityService : android.app.Service() {
         if(bluetoothReceiverRegistered) {
             try { unregisterReceiver(bluetoothStateReceiver) } catch(_:Exception) { }
             bluetoothReceiverRegistered=false
+        }
+        if(screenReceiverRegistered) {
+            try { unregisterReceiver(screenStateReceiver) } catch(_:Exception) { }
+            screenReceiverRegistered=false
         }
         super.onDestroy()
     }
