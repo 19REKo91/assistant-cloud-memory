@@ -345,3 +345,19 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Added an offline-only GitHub Actions workflow and test harness. The latest Vercel commit status for commit `07528b396c1e5b14ae268fd9b254741dbf6fbe04` is SUCCESS. GitHub Actions' own run result for the new workflow was not accessible through the available read endpoints, so do not claim that workflow itself passed yet.
 - An attempt to create an additional standalone client-setup Markdown file was blocked by the connected tool's safety checks; no claim is made that that file exists. Existing `CHRONO_CROSS_GPT_NOTEBOOK.md`, the smoke-test script, offline tests, and VS Code profile remain available in GitHub.
 - **Completion state unchanged:** server deployment and negative-auth behavior are verified; successful production authentication and a real external-host handshake are still not verified. Do not mark complete until one of those valid-token tests has actually succeeded.
+
+
+## Additional local verification — 2026-10-15
+
+- Reconstructed the committed `tools/chrono-cross-gpt-mcp-smoke-test.mjs` and `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs` in an isolated local test directory and ran Node syntax checks on both.
+- Offline test harness result: **4/4 passed**:
+  1. happy-path initialize → initialized notification → tools/list, including both expected tool names;
+  2. unauthorized response echoes the dummy token but the smoke-test output redacts it;
+  3. missing tool is detected;
+  4. missing token exits before any request.
+- All test credentials were local dummy strings. The mock intercepts all fetch calls and refuses unexpected destinations; no production token was used and the production endpoint was not called during these tests.
+- Confirmed that `.vscode/mcp.json` has valid JSON structure and references the password-prompt variable `${input:chronoMcpToken}`, not a hardcoded credential.
+- Official route verified from current OpenAI documentation: custom MCP server setup is web-only and full MCP is limited to eligible Business/Enterprise/Edu workspaces; personal Free ChatGPT on Android cannot directly create the custom MCP connection. See https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt. A compatible external MCP host is the no-API-billing way to use/test this server; VS Code can configure remote HTTP MCP with headers and password prompts (https://code.visualstudio.com/docs/agents/reference/mcp-configuration).
+- The repo's new GitHub Actions workflow is present, but its own run has not been verified via available GitHub run/status tools. The Vercel commit check for `07528b396c1e5b14ae268fd9b254741dbf6fbe04` reported SUCCESS.
+- Floot explicitly refused further build actions due its daily cap during extra route validation (reset `2026-10-16T07:00:00Z`). No attempt was made to evade the cap, purchase a boost, or incur charges.
+- **Status remains incomplete**: live missing/invalid-token rejection is verified, but the valid production credential handshake and an external host connection have not been confirmed. Keep `hostConnection` as `not_verified` until a real successful handshake is observed.
