@@ -17,3 +17,9 @@ The generated `continent_land_polygons.geojson`, `continent_land_area.csv`, and 
 - GBIF source and license statement: https://github.com/gbif/continents#license
 
 The PNG map is a rendered work, not the raw polygon database; it carries the source attribution in its footer. Natural Earth source data remains public domain. This notice documents the project's intended attribution and licensing treatment; it is not legal advice.
+
+
+## Distribution checklist
+- Preserve the attribution above in the README, rendered map, and any accompanying dataset documentation.
+- For derived database files distributed from the GBIF/OpenStreetMap-derived continent partition, identify the ODbL 1.0 terms and provide access to the license text and required notices as applicable.
+- Before external/commercial redistribution, verify the exact obligations for the intended package and use case. This note records project intent, not legal advice.
