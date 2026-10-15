@@ -158,3 +158,13 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - The final audit totals reconcile: sum of continent union areas = 146,841,657.997 km²; total source land union = 146,841,797.814 km²; unassigned land = 139.817 km²; overlap excess rounds to -0.000 km². Per-feature source area before deduplication exceeds the unioned source area by 15,379.752 km², which is now explicitly reported rather than silently counted twice.
 - Confirmed README and this work log were written and re-read from the project branch. The latest full workflow run's source commit was `bd02c3ce20b261db44e4611e86139dd10aa64897`; the branch head after the work-log update is tracked separately by GitHub.
 - PR #10 remains open and unmerged; `main` remains unchanged. The project is still **INCOMPLETE** pending final confirmation of the comparison reference's continent/island/Antarctic ice-shelf definitions and an ODbL redistribution review.
+
+
+### Final closeout — attribution artifact verified, 2026-10-15
+- Added `PROJECTS/geography/ATTRIBUTION.md` to document Natural Earth public-domain source data, GBIF/OpenStreetMap-derived continent partition attribution, and intended ODbL 1.0 treatment for `continent_land_polygons.geojson`, `continent_land_area.csv`, and `antarctica_area_scenarios.csv`.
+- Updated the workflow to copy this notice into each audit artifact and verify it is non-empty. The map itself includes source attribution in its footer.
+- Updated README links to the verified run/artifact that contain the attribution notice.
+- Final full workflow after the README link update: [run 38685364521](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685364521) — **success**.
+- Downloaded and inspected artifact **11949589195**. It contains nine files including `ATTRIBUTION.md`; notice scope was verified, all area checks remained consistent, the Antarctic land-only and land-plus-shelves scenarios remained 12.370032 and 13.943856 million km², and the PNG remained 2740×1461 px / 396,377 bytes.
+- Reconciliation remains: continent union sum 146,841,657.997 km²; source land union 146,841,797.814 km²; unassigned 139.817 km²; overlap excess rounds to -0.000 km².
+- README and work log writes have been verified by re-reading them from the branch. Current status remains **INCOMPLETE / not final-approved** because the external continent-area reference definition has not been proven identical to this dataset, and the ODbL note documents intended handling rather than replacing a jurisdiction-specific legal review. PR #10 remains open/draft and unmerged; `main` was not changed.
