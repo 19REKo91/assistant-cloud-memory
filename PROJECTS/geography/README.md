@@ -65,11 +65,11 @@ https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700
 - مساحة القارة القطبية الجنوبية هنا من مضلعات اليابسة Natural Earth، ولا تشمل تلقائيًا كل الرفوف الجليدية البحرية؛ لذلك قد تختلف عن مراجع تنشر مساحة تشمل الرفوف الجليدية.
 - مصدر حدود القارات GBIF مشتق من OpenStreetMap ويخضع لـ ODbL؛ يجب مراجعة شروط الترخيص قبل إعادة توزيع قواعد بيانات مشتقة.
 - يوجد ملف قديم `continent_area_baseline.csv` يجمع مساحات الدول وفق تصنيف Natural Earth. لا يُستخدم هذا الملف بوصفه القياس النهائي للقارات، لأنه قد يصنف دولة عابرة للقارات بكاملها في مجموعة واحدة.
-- أُنتجت الخريطة عن بُعد داخل GitHub Actions فقط، ثم تحقّق البرنامج من أن PNG قابل للفتح وأبعاده 2769×1461 وحجمه 388,764 بايت قبل النشر. نُسخت النسخة المعتمدة إلى المستودع وحُفظت في المسار التالي:
+- أُنتجت الخريطة عن بُعد داخل GitHub Actions فقط، ثم تحقّق البرنامج من أن PNG قابل للفتح وأبعاده 2769×1461 وحجمه 391,513 بايت قبل النشر. نُسخت النسخة المعتمدة إلى المستودع وحُفظت في المسار التالي:
 
 ### المخرجات
 حزمة النتائج المؤقتة (14 يومًا):
-https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700/artifacts/11948154828
+https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683310415/artifacts/11949540485
 
 ### الخريطة التي أُنتجت عن بُعد
 - [فتح خريطة Equal Earth على GitHub](https://github.com/19REKo91/assistant-cloud-memory/blob/geography-continent-area-audit/PROJECTS/geography/generated/continent_map_equal_earth.png)
