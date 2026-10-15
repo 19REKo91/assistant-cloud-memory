@@ -1,0 +1,19 @@
+{
+  "inputs": [
+    {
+      "id": "chronoMcpToken",
+      "type": "promptString",
+      "description": "CHRONO CROSS GPT bearer token. Enter it only into this password prompt; never paste it into chat or source files.",
+      "password": true
+    }
+  ],
+  "servers": {
+    "chrono-cross-gpt": {
+      "type": "http",
+      "url": "https://chrono-cross-gpt.floot.app/_api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${input:chronoMcpToken}"
+      }
+    }
+  }
+}
