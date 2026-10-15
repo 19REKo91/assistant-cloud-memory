@@ -19,6 +19,9 @@ from urllib.request import urlopen
 import geopandas as gpd
 import pandas as pd
 import pyproj
+from shapely.geometry import Polygon, MultiPolygon
+from shapely import make_valid
+from shapely.ops import unary_union
 
 SOURCE_URL = (
     "https://naturalearth.s3.amazonaws.com/10m_cultural/"
@@ -48,12 +51,36 @@ def main() -> int:
 
         geod = pyproj.Geod(ellps="WGS84")
         rows = []
+        repaired_features = []
         for _, feature in frame.iterrows():
             geometry = feature.geometry
-            if geometry is None or geometry.is_empty or not geometry.is_valid:
+            if geometry is None or geometry.is_empty:
                 raise RuntimeError(
-                    f"Invalid geometry for Natural Earth feature: {feature['NAME']}"
+                    f"Missing or empty geometry for Natural Earth feature: {feature['NAME']}"
                 )
+            if not geometry.is_valid:
+                # Repair source-topology defects, retaining polygonal land only.
+                repaired = make_valid(geometry)
+                stack = [repaired]
+                polygon_parts = []
+                while stack:
+                    part = stack.pop()
+                    if isinstance(part, Polygon):
+                        polygon_parts.append(part)
+                    elif isinstance(part, MultiPolygon):
+                        polygon_parts.extend(list(part.geoms))
+                    elif hasattr(part, 'geoms'):
+                        stack.extend(list(part.geoms))
+                if not polygon_parts:
+                    raise RuntimeError(
+                        f"Geometry repair produced no polygon for {feature['NAME']}"
+                    )
+                geometry = unary_union(polygon_parts)
+                if geometry.is_empty or not geometry.is_valid:
+                    raise RuntimeError(
+                        f"Geometry remains invalid after repair: {feature['NAME']}"
+                    )
+                repaired_features.append(str(feature['NAME']))
             area_m2, _ = geod.geometry_area_perimeter(geometry)
             # The signed result depends on ring orientation; use magnitude.
             area_km2 = abs(float(area_m2)) / 1_000_000.0
@@ -103,7 +130,9 @@ def main() -> int:
             "continent_groups": int(totals["continent"].nunique()),
             "sum_country_area_km2": round(float(detail["area_km2"].sum()), 3),
             "null_geometry_count": int(frame.geometry.isna().sum()),
-            "invalid_geometry_count": int((~frame.geometry.is_valid).sum()),
+            "invalid_geometry_count_in_source": int((~frame.geometry.is_valid).sum()),
+            "repaired_geometry_count": len(repaired_features),
+            "repaired_geometry_features": repaired_features,
             "created_utc": datetime.now(timezone.utc).isoformat(),
             "python": sys.version.split()[0],
             "geopandas": gpd.__version__,
