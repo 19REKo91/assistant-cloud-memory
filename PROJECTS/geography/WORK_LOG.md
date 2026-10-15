@@ -92,3 +92,8 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - The comparison shows material differences: Asia about -2.11%, Africa -1.70%, North America +0.09%, South America -0.59%, Antarctica -12.89%, Europe +0.58%, Oceania +5.14%.
 - These are not treated as proof of a coding error because the references may differ in island assignment, coastline data, and whether Antarctic ice shelves are counted. They are a reason to keep the result preliminary and resolve the definitions before approval.
 - The current PNG remains published but its area labels are preliminary. Next review must explain the differences before final approval.
+
+### Latest rerun after reference comparison — 2026-10-15
+- Full workflow run 41 succeeded after the reference-comparison documentation update: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683636121
+- Artifact for this run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683636121/artifacts/11949481092
+- The remote calculation, GeoJSON export, Equal Earth rendering, PNG verification, artifact upload, and publish step all passed again.
