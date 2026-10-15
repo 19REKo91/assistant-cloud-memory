@@ -239,3 +239,12 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 1. If continuing, inspect the PR diff and workflow configuration to ensure the safeguards and attribution are represented correctly; keep PR #10 draft.
 2. Decide whether the deliverable is an internal preliminary dataset or a redistributed dataset; if redistributed, complete a relevant ODbL compliance review.
 3. Only after a compatible polygon reference/definition is selected, add an apples-to-apples numerical comparison. Do not use rounded textbook figures as a strict pass/fail oracle.
+
+
+## Session update — 2026-10-15: reference arithmetic and current-map location
+
+- Inspected the actual ZIP for run 38685754180, not just artifact metadata. Confirmed it contains the seven-continent CSV, audit JSON, Antarctica scenarios CSV, GeoJSON, map PNG, country/continent baselines, and attribution notice. The current map PNG is 396,377 bytes and visually readable at the generated resolution; its Antarctica label correctly says land-only and the side note explains the separate ice-shelf scenario.
+- Cross-checked the reference-difference table in `PROJECTS/geography/README.md`. Its detailed difference/percentage rows used values inconsistent with the reference totals printed in the preceding table. Corrected those rows against the displayed comparison references (Asia 44.614, Africa 30.365, North America 24.230, South America 17.814, Antarctica 14.200, Europe 10.000, Oceania 8.510926 million km²). The values remain a cross-source sanity check, not a pass/fail test against identical polygons.
+- Updated the README to link run 74 and its artifact explicitly and to warn that the latest generated map is in the artifact; the branch PNG was not updated by the pull_request-triggered run because the workflow's publish step is push-only.
+- Verified the README update was committed as `62a73288624da7a88feec1a3e2c642a71ee7f94e` and refetched the file to confirm the corrected table and run 74 note persisted. No change to `main`, no merge of PR #10.
+- Status remains **INCOMPLETE / preliminary**: successful calculations and internal reconciliation are confirmed, but exact cross-source definition equivalence and any intended ODbL redistribution obligations remain open.
