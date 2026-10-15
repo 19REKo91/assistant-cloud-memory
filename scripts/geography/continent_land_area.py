@@ -101,7 +101,7 @@ def main() -> int:
             None,
         )
         if name_field is None:
-            raise RuntimeError(f"Could not identify continent-name field. Available fields: {list(cutters.columns)}; values: { {field: cutters[field].dropna().astype(str).unique()[:30].tolist() for field in cutters.columns if field != \"geometry\"} }")
+            raise RuntimeError("Could not identify continent-name field. Available fields: " + repr(list(cutters.columns)) + "; values: " + repr({field: cutters[field].dropna().astype(str).unique()[:30].tolist() for field in cutters.columns if field != "geometry"}))
 
         cutters["continent_name"] = cutters[name_field].map(lambda value: aliases.get(str(value).strip().casefold(), str(value).strip()))
         available = set(cutters["continent_name"].dropna())
