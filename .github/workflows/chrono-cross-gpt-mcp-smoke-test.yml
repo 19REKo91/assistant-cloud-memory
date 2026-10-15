@@ -7,6 +7,7 @@ on:
       - ".mcp.json"
       - ".vscode/mcp.json"
       - ".github/agents/chrono-cross-gpt-reader.agent.md"
+      - ".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml"
       - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
       - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
@@ -24,11 +25,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Check Node.js version
         run: node --version
-      - name: Validate MCP configuration JSON
-        run: node -e "for (const f of ['.mcp.json','.vscode/mcp.json']) { JSON.parse(require('node:fs').readFileSync(f,'utf8')); console.log('PASS '+f); }"
+      - name: Validate MCP configuration JSON and safe allowlists
+        run: node -e 'const fs=require("node:fs");const a=require("node:assert/strict");const p=JSON.parse(fs.readFileSync(".mcp.json","utf8")).mcpServers["chrono-cross-gpt"];const v=JSON.parse(fs.readFileSync(".vscode/mcp.json","utf8"));a.equal(p.type,"http");a.equal(p.url,"https://chrono-cross-gpt.floot.app/_api/mcp");a.equal(p.headers.Authorization,"Bearer ${COPILOT_MCP_CHRONO_TOKEN}");a.deepEqual(p.tools,["read_public_page","get_browser_capabilities"]);const input=v.inputs.find(x=>x.id==="chronoMcpToken");a.equal(input.password,true);a.equal(v.servers["chrono-cross-gpt"].headers.Authorization,"Bearer ${input:chronoMcpToken}");console.log("PASS MCP JSON configs and read-only allowlists");'
       - name: Validate Copilot custom-agent YAML frontmatter
         run: |
-          ruby -e 'require "yaml"; s=File.read(".github/agents/chrono-cross-gpt-reader.agent.md"); parts=s.split(/^---\s*$/, 3); abort "missing YAML frontmatter" if parts.length < 3; data=YAML.safe_load(parts[1], aliases: false); abort "wrong custom agent target" unless data["target"] == "github-copilot"; abort "missing MCP server" unless data.dig("mcp-servers", "chrono-cross-gpt", "url") == "https://chrono-cross-gpt.floot.app/_api/mcp"; puts "PASS Copilot custom-agent frontmatter"'
+          ruby -e 'require "yaml"; s=File.read(".github/agents/chrono-cross-gpt-reader.agent.md"); parts=s.split(/^---\s*$/, 3); abort "missing YAML frontmatter" if parts.length < 3; data=YAML.safe_load(parts[1], aliases: false); abort "wrong custom agent target" unless data["target"] == "github-copilot"; abort "missing MCP server" unless data.dig("mcp-servers", "chrono-cross-gpt", "url") == "https://chrono-cross-gpt.floot.app/_api/mcp"; abort "unexpected tool allowlist" unless data["tools"] == ["chrono-cross-gpt/read_public_page", "chrono-cross-gpt/get_browser_capabilities"]; abort "authorization must reference the Agents secret" unless data.dig("mcp-servers", "chrono-cross-gpt", "headers", "Authorization") == "Bearer ${{ secrets.COPILOT_MCP_CHRONO_TOKEN }}"; puts "PASS Copilot custom-agent frontmatter and allowlist"'
+      - name: Validate manual production workflow YAML
+        run: |
+          ruby -e 'require "yaml"; d=YAML.safe_load_file(".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml", aliases: false); triggers=d["on"] || d[true]; abort "production handshake must be manual-only" unless triggers == {"workflow_dispatch" => nil}; abort "missing handshake job" unless d.dig("jobs", "handshake", "steps").any? { |s| s["name"] == "Run real production MCP handshake" }; puts "PASS manual-only production workflow YAML"'
       - name: Validate smoke-test syntax
         run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
