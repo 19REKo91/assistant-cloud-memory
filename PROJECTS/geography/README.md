@@ -176,3 +176,5 @@ https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317/arti
 
 ### إسناد البيانات والترخيص
 أُضيف [ملف الإسناد والترخيص](ATTRIBUTION.md)، وأُضيفت خطوة في GitHub Actions تنسخه إلى حزمة النتائج باسم `ATTRIBUTION.md` وتتحقق من أنه غير فارغ. ينص الملف على أن طبقات اليابسة والجزر الصغيرة من Natural Earth ضمن الملكية العامة، وأن قاعدة مضلعات القارات المشتقة من تقسيم GBIF/OpenStreetMap تُعامل وفق ODbL 1.0 مع الإسناد. يبقى هذا توثيقًا مقصودًا للتعامل مع الترخيص وليس رأيًا قانونيًا.
+
+يشمل نطاق الإسناد/ODbL في `ATTRIBUTION.md` ملفات البيانات المشتقة من تقسيم القارات، وهي `continent_land_polygons.geojson` و`continent_land_area.csv` و`antarctica_area_scenarios.csv`؛ أما جدول التصنيف الإداري من Natural Earth فموسوم بأنه خط أساس منفصل وأولي.
