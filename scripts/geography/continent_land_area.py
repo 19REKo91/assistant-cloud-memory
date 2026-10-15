@@ -24,6 +24,7 @@ from shapely.ops import unary_union
 
 LAND_URL = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_land.zip"
 MINOR_ISLANDS_URL = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_minor_islands.zip"
+ICE_SHELVES_URL = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_antarctic_ice_shelves_polys.zip"
 GBIF_COMMIT = "5f2aaf608f2f828bb1d03ae0d2ef3f41feacd5be"
 COOKIE_CUTTER_URL = (
     "https://raw.githubusercontent.com/gbif/continents/"
@@ -74,16 +75,19 @@ def main() -> int:
         tmp = Path(temporary)
         land_zip = tmp / "land.zip"
         islands_zip = tmp / "minor-islands.zip"
+        ice_shelves_zip = tmp / "antarctic-ice-shelves.zip"
         cutter_file = tmp / "continent_cookie_cutter.geojson"
         download(LAND_URL, land_zip)
         download(MINOR_ISLANDS_URL, islands_zip)
+        download(ICE_SHELVES_URL, ice_shelves_zip)
         download(COOKIE_CUTTER_URL, cutter_file)
-        for archive in (land_zip, islands_zip):
+        for archive in (land_zip, islands_zip, ice_shelves_zip):
             if not zipfile.is_zipfile(archive):
                 raise RuntimeError(f"Downloaded Natural Earth archive is invalid: {archive.name}")
 
         land = gpd.read_file(f"zip://{land_zip}")
         islands = gpd.read_file(f"zip://{islands_zip}")
+        ice_shelves = gpd.read_file(f"zip://{ice_shelves_zip}")
         cutters = gpd.read_file(cutter_file)
         if land.empty or cutters.empty:
             raise RuntimeError("Land or continent cookie-cutter dataset is empty")
@@ -174,11 +178,50 @@ def main() -> int:
         )
         polygon_frame.to_file(polygons_path, driver="GeoJSON")
         totals.to_csv(totals_path, index=False, float_format="%.6f")
+
+        # Separate scenario for references that count floating Antarctic ice shelves.
+        shelf_parts = []
+        shelf_repaired_count = 0
+        antarctica_cutter = continent_geometries["Antarctica"]
+        for _, row in ice_shelves.iterrows():
+            raw = row.geometry
+            if raw is None or raw.is_empty:
+                continue
+            if not raw.is_valid:
+                shelf_repaired_count += 1
+            geometry = polygonal(raw)
+            if geometry is None or geometry.is_empty:
+                continue
+            clipped_shelf = polygonal(geometry.intersection(antarctica_cutter))
+            if clipped_shelf is not None and not clipped_shelf.is_empty:
+                shelf_parts.append(clipped_shelf)
+        if not shelf_parts:
+            raise RuntimeError("No Antarctic ice-shelf polygons remain after validation")
+        shelves_union = unary_union(shelf_parts)
+        antarctica_land = polygon_geometries["Antarctica"]
+        antarctica_land_area = area_km2(antarctica_land, geod)
+        shelf_union_area = area_km2(shelves_union, geod)
+        antarctica_land_plus_shelves = area_km2(unary_union([antarctica_land, shelves_union]), geod)
+        shelf_increment = antarctica_land_plus_shelves - antarctica_land_area
+        scenarios_path = OUTPUT_DIR / "antarctica_area_scenarios.csv"
+        scenarios = pd.DataFrame([
+            {"scenario": "land_only", "definition": "Natural Earth land + minor islands, clipped to GBIF Antarctica", "area_km2": antarctica_land_area, "area_million_km2": antarctica_land_area / 1_000_000.0},
+            {"scenario": "land_plus_ice_shelves", "definition": "Union of land-only Antarctica and Natural Earth Antarctic ice-shelf polygons, clipped to GBIF Antarctica; overlaps counted once", "area_km2": antarctica_land_plus_shelves, "area_million_km2": antarctica_land_plus_shelves / 1_000_000.0},
+        ])
+        scenarios.to_csv(scenarios_path, index=False, float_format="%.6f")
         audit = {
             "status": "PRELIMINARY_PHYSICAL_LAND_AREAS_REQUIRES_REVIEW",
             "measurement": "Geodesic polygon area on WGS84 ellipsoid using pyproj.Geod",
             "land_source": "Natural Earth 1:10m land plus minor islands",
             "land_source_urls": [LAND_URL, MINOR_ISLANDS_URL],
+            "antarctic_ice_shelf_source": "Natural Earth 1:10m Antarctic Ice Shelves polygons",
+            "antarctic_ice_shelf_source_url": ICE_SHELVES_URL,
+            "antarctic_ice_shelf_invalid_geometry_count_repaired": shelf_repaired_count,
+            "antarctica_land_only_area_km2": round(antarctica_land_area, 3),
+            "antarctic_ice_shelf_union_area_km2": round(shelf_union_area, 3),
+            "antarctica_land_plus_ice_shelves_area_km2": round(antarctica_land_plus_shelves, 3),
+            "antarctic_ice_shelf_increment_beyond_land_km2": round(shelf_increment, 3),
+            "antarctic_ice_shelves_note": "Alternative scenario only; primary continent_land_area.csv remains land-only. Land/shelf overlap is unioned and counted once; this is a source-defined polygon scenario, not a time-specific ice-sheet estimate.",
             "continent_partition_source": "GBIF continents continent_cookie_cutter.geojson",
             "continent_partition_url": COOKIE_CUTTER_URL,
             "continent_partition_commit": GBIF_COMMIT,
@@ -193,12 +236,12 @@ def main() -> int:
             "overlap_excess_km2": round(overlap_excess, 3),
             "created_utc": datetime.now(timezone.utc).isoformat(),
             "python_libraries": {"geopandas": gpd.__version__, "pandas": pd.__version__, "pyproj": pyproj.__version__},
-            "files": [totals_path.name, polygons_path.name, audit_path.name],
+            "files": [totals_path.name, polygons_path.name, scenarios_path.name, audit_path.name],
         }
         audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         if len(totals) != 7 or not totals["area_km2"].gt(0).all():
             raise RuntimeError("Continent area output validation failed")
-        if not all(p.exists() and p.stat().st_size > 0 for p in (totals_path, polygons_path, audit_path)):
+        if not all(p.exists() and p.stat().st_size > 0 for p in (totals_path, polygons_path, scenarios_path, audit_path)):
             raise RuntimeError("One or more continent land-area outputs are missing or empty")
         print(json.dumps(audit, ensure_ascii=False, indent=2))
         print("\nPhysical land area by continent (million km²):")
