@@ -137,14 +137,16 @@ def main() -> int:
         if not land_features:
             raise RuntimeError("No polygonal land geometries remain after validation")
 
-        # Union source polygons first so overlaps between land/minor-island features
-        # are not double-counted in the reported areas or reconciliation.
-        source_land_union = unary_union([feature[2] for feature in land_features])
-        total_land_km2 = area_km2(source_land_union, geod)
-        outside_union = polygonal(source_land_union.difference(cutter_union))
-        unassigned_km2 = area_km2(outside_union, geod) if outside_union is not None else 0.0
+        # Union clipped geometries by continent, rather than unioning all 2,800+
+        # source features at once. This removes overlap double-counting while keeping
+        # the remote workflow tractable on standard GitHub-hosted runners.
         clipped_parts = {name: [] for name in sorted(EXPECTED)}
+        outside_parts = []
+        source_feature_area_sum_km2 = sum(area_km2(feature[2], geod) for feature in land_features)
         for source_name, feature_id, geometry in land_features:
+            outside = polygonal(geometry.difference(cutter_union))
+            if outside is not None and not outside.is_empty:
+                outside_parts.append(outside)
             for name, continent_geometry in continent_geometries.items():
                 clipped = polygonal(geometry.intersection(continent_geometry))
                 if clipped is not None and not clipped.is_empty:
@@ -157,6 +159,12 @@ def main() -> int:
             name: area_km2(polygon_geometries[name], geod) for name in sorted(EXPECTED)
         }
         assigned_sum = sum(assigned_by_continent.values())
+        outside_union = unary_union(outside_parts) if outside_parts else None
+        unassigned_km2 = area_km2(outside_union, geod) if outside_union is not None else 0.0
+        source_land_union = unary_union(
+            list(polygon_geometries.values()) + ([outside_union] if outside_union is not None else [])
+        )
+        total_land_km2 = area_km2(source_land_union, geod)
         covered_expected = max(0.0, total_land_km2 - unassigned_km2)
         overlap_excess = assigned_sum - covered_expected
         if unassigned_km2 > 10000:
@@ -233,6 +241,8 @@ def main() -> int:
             "land_feature_count": len(land_features),
             "source_invalid_geometry_count_repaired": repaired_count,
             "total_source_land_area_km2": round(total_land_km2, 3),
+            "sum_of_individual_source_feature_areas_km2_before_deduplication": round(source_feature_area_sum_km2, 3),
+            "overlap_removed_by_union_km2": round(source_feature_area_sum_km2 - total_land_km2, 3),
             "assigned_land_area_km2": round(assigned_sum, 3),
             "unassigned_land_area_km2": round(unassigned_km2, 3),
             "overlap_excess_km2": round(overlap_excess, 3),
