@@ -24,14 +24,14 @@ function parseResponseBody(body, contentType = "") {
   if (contentType.toLowerCase().includes("text/event-stream")) {
     // Streamable HTTP may return the JSON-RPC response inside an SSE data field.
     // Ignore comments, event names, and non-JSON keep-alive events.
-    const events = body.split(/\\r?\\n\\r?\\n/);
+    const events = body.split(/\r?\n\r?\n/);
     for (const event of events) {
-      const data = event.split(/\\r?\\n/)
+      const data = event.split(/\r?\n/)
         .filter((line) => line.startsWith("data:"))
         .map((line) => line.slice(5).replace(/^ /, ""));
       if (!data.length) continue;
       try {
-        const value = JSON.parse(data.join("\\n"));
+        const value = JSON.parse(data.join("\n"));
         if (value && typeof value === "object" && ("result" in value || "error" in value)) return value;
       } catch { /* Ignore non-JSON SSE events and continue looking for the JSON-RPC response. */ }
     }
