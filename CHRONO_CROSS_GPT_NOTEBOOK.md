@@ -335,3 +335,13 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The newly added GitHub Actions workflow has not yet been confirmed as passing; check the run result before describing CI as green.
 - No production token was retrieved, copied, or disclosed. No new secret was added to GitHub.
 - Project remains **incomplete for ChatGPT-host integration**. The user's current Free Android session cannot add a custom MCP server directly under OpenAI's current published availability rules. The server itself remains live, and post-publish negative-auth checks are verified; a real production valid-token handshake is still not confirmed.
+
+
+## Client-side connection option added — 2026-10-15
+
+- Added `.vscode/mcp.json` with a remote HTTP MCP server entry for the published CHRONO CROSS GPT endpoint. Authentication uses a VS Code `promptString` input with `password: true`; the bearer token is not hard-coded in the file or repository.
+- Official VS Code documentation confirms the supported configuration shape: remote HTTP servers use `type: "http"`, `url`, and `headers`; `.vscode/mcp.json` can prompt for sensitive values through input variables and password prompts. Reference: https://code.visualstudio.com/docs/agents/reference/mcp-configuration
+- This gives a no-API-billing alternative for testing/using the server from a compatible VS Code + Copilot/MCP environment, assuming the owner has access to that environment and the token. It does NOT connect the current ChatGPT Android session.
+- Added an offline-only GitHub Actions workflow and test harness. The latest Vercel commit status for commit `07528b396c1e5b14ae268fd9b254741dbf6fbe04` is SUCCESS. GitHub Actions' own run result for the new workflow was not accessible through the available read endpoints, so do not claim that workflow itself passed yet.
+- An attempt to create an additional standalone client-setup Markdown file was blocked by the connected tool's safety checks; no claim is made that that file exists. Existing `CHRONO_CROSS_GPT_NOTEBOOK.md`, the smoke-test script, offline tests, and VS Code profile remain available in GitHub.
+- **Completion state unchanged:** server deployment and negative-auth behavior are verified; successful production authentication and a real external-host handshake are still not verified. Do not mark complete until one of those valid-token tests has actually succeeded.
