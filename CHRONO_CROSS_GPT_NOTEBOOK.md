@@ -249,8 +249,8 @@ No components have been disabled. An attempt to inventory the Floot project was 
 - Read Floot's `auth-and-payment-challenges` guide. The published edge only restores `WWW-Authenticate` when the endpoint returns a 2xx response with `x-floot-status` and `x-floot-www-authenticate`; directly returning 401 from the Lambda caused AWS/Floot to strip the standard header.
 - Updated `endpoints/mcp_POST.ts` to return internal HTTP 200 plus `x-floot-status: 401` and `x-floot-www-authenticate: Bearer realm="chrono-cross-gpt"` for missing/invalid credentials. The live edge now converts this to a real HTTP 401 and standard `WWW-Authenticate` header. Bearer validation remains required; no auth bypass was added.
 - Updated `notifications/initialized` to return HTTP 202 with an empty body.
-- Updated `helpers/mcpEndpoint.spec.tsx` to cover Floot's challenge bridge, wrong-token non-disclosure, initialize/tools-list, and the initialized notification.
-- Created Floot checkpoint `1dee13f6-c617-4b6c-b135-31a406167506`, “Fix Floot MCP auth challenge handling”.
+- Updated `helpers/mcpEndpoint.spec.tsx` to cover Floot's challenge bridge, wrong-token non-disclosure, and rejection of missing/incorrect credentials across `initialize`, `notifications/initialized`, and `tools/list`; it also tests the valid-token initialize/tools-list flow and empty 202 initialized notification.
+- Created Floot checkpoints `1dee13f6-c617-4b6c-b135-31a406167506` (“Fix Floot MCP auth challenge handling”) and `54055397-e493-4628-9216-4065a5dc743b` (“Complete MCP auth rejection coverage”).
 - Final regular tests: 4 spec files passed, 0 failed (`themeMode`, `readPageEndpoint`, `mcpEndpoint`, `mcpStatusEndpoint`).
 - Hook tests: 2 passed, 0 failed (`useMediaQuery`, `useDebounce`).
 - TypeScript typecheck: clean.
