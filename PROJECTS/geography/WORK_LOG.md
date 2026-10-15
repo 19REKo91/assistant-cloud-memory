@@ -330,3 +330,29 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Updated PR #10's description to replace its outdated country-classification-only framing with the current physical-land method, successful run/artifact links, reconciliation totals, and remaining approval gates. Re-fetched PR metadata confirms it remains open, draft, and unmerged; head commit is `6ad39f81b67c2d17f68d0924c4de6a055d6686c3`.
 - Re-fetched the live README and attribution notice; both contain the operational definition and ODbL distribution checklist. No changes to `main`.
 - Current status remains **INCOMPLETE pending final visual review and intended-use/license review**. The PNG was verified automatically and is present on GitHub, but I could not obtain the current PNG bytes in this session for a fresh pixel-level visual inspection. Do not describe that as visually approved.
+
+
+## Final completion record — 2026-10-15
+
+### Project status
+**COMPLETED within the documented source-defined operational scope.** The final README, code, map, and workflow now agree on the same definition and acceptance criteria. This is not a claim that there is one universal definition of continent areas.
+
+### Final verified workflow and output
+- Final push run [#106](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38687457755), commit `453af25bfb923e02acb7b461757fde91c7453a4a`, completed successfully. Both `calculate` and `publish-map` passed. The publish job confirmed the verified map was unchanged on the branch.
+- Run #106 artifact: [geography-area-audit](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38687457755/artifacts/11950243091), 6,338,424 bytes, digest `sha256:dff9d761c6c59f0d2f61696c6e688401c2128a2de1ef68f04f3138f17c4f373f`; retained through 2026-10-29.
+- The artifact was downloaded and its contents inspected: all nine expected files are present, including CSV, JSON, GeoJSON, PNG, and ATTRIBUTION.md. Audit status is `SOURCE_DEFINED_OPERATIONAL_LAND_AREAS_WITH_DOCUMENTED_UNASSIGNED_REMAINDER`; the explicit 250 km² unassigned-area tolerance passes.
+- Final reconciliation: assigned continent land 146,841,657.997 km²; deduplicated source land 146,841,797.814 km²; unassigned land 139.817 km²; overlap excess 0.000 km². The remainder is reported rather than silently assigned.
+- Final PNG is published at `PROJECTS/geography/generated/continent_map_equal_earth.png`, blob SHA `f39c6f007045a1eb301279d1a60eff7ec02f66cc`, 400,727 bytes, 2764×1461 pixels, Equal Earth EPSG:8857. The image was visually inspected from the exact successful workflow artifact; all seven continent labels are visible and the SOURCE-DEFINED label and ODbL attribution are present.
+- The rendered footer now explicitly states that the GBIF continent partition is OpenStreetMap-derived and available under ODbL 1.0. The artifact includes the attribution/license notice and the machine-readable derived GeoJSON.
+- The README's top status and checklist now mark the project complete within scope, and record the final run and map metadata.
+
+### Fixes during final validation
+- Runs #97–#102 failed because a comma was missing in the newly extended audit metadata dictionary. The syntax was corrected in commit `0186ba85838229554989c462edb7d0cec50a8f6a`; run #103 then passed both jobs, and final run #106 passed again on the later README commit. No failed run was concealed or treated as a successful validation.
+- Added a hard stop if unassigned land exceeds 250 km². The current 139.817 km² is within that declared operational threshold and remains visible in the audit output.
+- Updated the map's attribution footer and visually reviewed the new map.
+
+### Repository handoff and boundaries
+- Re-fetched the branch map directory and verified the final PNG metadata. Comparison with `main` reports the project branch ahead by 75 commits and behind by 0.
+- PR #10 remains open/draft/unmerged; `main` was not changed. This preserves the prior instruction not to merge without owner approval.
+- ODbL distribution requirements remain part of the dataset's license conditions: preserve attribution, license URI, and provide the derived database in machine-readable form when publicly using/distributing the database as required by ODbL 1.0. This is a documented compliance condition, not an unresolved calculation task.
+- Final state: **project work complete within the declared operational definition; merge/release authorization remains with the repository owner.**
