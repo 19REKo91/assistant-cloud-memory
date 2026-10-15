@@ -247,7 +247,7 @@ def main() -> int:
             "assessment_scope": "Reproducible land-area calculation under the pinned GBIF seven-continent partition and Natural Earth 1:10m land/minor-island source; not a universal definition of continent areas.",
             "unassigned_area_tolerance_km2": unassigned_tolerance_km2,
             "unassigned_area_within_tolerance": unassigned_km2 <= unassigned_tolerance_km2,
-            "release_note": "The 139.817 km² source-land remainder is reported, not silently assigned. External redistribution of derived databases must retain the ODbL attribution and comply with ODbL 1.0."
+            "release_note": "The source-land remainder is reported, not silently assigned. External redistribution of derived databases must retain the ODbL attribution and comply with ODbL 1.0.",
             "measurement": "Geodesic polygon area on WGS84 ellipsoid using pyproj.Geod",
             "land_source": "Natural Earth 1:10m land plus minor islands",
             "land_source_urls": [LAND_URL, MINOR_ISLANDS_URL],
