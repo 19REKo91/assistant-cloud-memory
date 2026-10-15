@@ -97,3 +97,26 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Full workflow run 41 succeeded after the reference-comparison documentation update: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683636121
 - Artifact for this run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683636121/artifacts/11949481092
 - The remote calculation, GeoJSON export, Equal Earth rendering, PNG verification, artifact upload, and publish step all passed again.
+
+
+## Session update — 2026-10-15: independent numeric audit of latest artifact
+
+### Verified run and artifact
+- Latest checked run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683738886 — completed successfully.
+- Run commit: 33a4449e15848b86f179cabed13620cb34c23e03; branch: `geography-continent-area-audit`.
+- Artifact ID 11949351364 (6,328,091 bytes) downloaded and inspected. It contains seven files, including both CSV baselines, both JSON audit reports, GeoJSON continent polygons, and the PNG map.
+- Job steps for calculate, physical land area by continent, remote Equal Earth rendering, PNG verification, and artifact upload all succeeded. The PNG publish step was skipped in this run; the already-published image is a separate branch file.
+
+### Numeric checks completed
+- `country_area_baseline.csv`: 258 country/area rows; rounded row sum 146,826,414.841 km².
+- `continent_area_baseline.csv`: sum of grouped totals 146,826,414.844 km². Difference about 0.003 km², explained by detail rows rounded to 3 decimals and grouped totals to 6 decimals. No material internal summation error found.
+- `area_audit.json`: one invalid source geometry, Egypt; one geometry repaired; zero null geometries. The code applies Shapely `make_valid`, retains polygonal parts, unions them, and rejects the geometry if it remains invalid.
+- `continent_land_area_audit.json`: source land 146,857,177.566 km²; assigned to seven continents 146,857,037.717 km²; unassigned 139.817 km²; reported overlap excess -0.032 km².
+- Country polygon total vs assigned physical land total differs by 30,622.873 km². This is not a simple arithmetic discrepancy because the inputs differ: administrative country/area polygons grouped by Natural Earth CONTINENT versus Natural Earth land/minor-island polygons partitioned with GBIF continent cookie-cutters.
+- Recomputed reference percentages using (project − reference) / reference × 100. Published rounded percentages are arithmetically correct: Asia -2.1124%, Africa -1.7008%, North America +0.0940%, South America -0.5949%, Antarctica -12.8867%, Europe +0.5764%, Oceania +5.1391%.
+
+### Interpretation / status
+- The major issue is methodological/source comparability, not a meaningful summation bug. The country-classification table is not suitable as the final natural-continent area table because whole transcontinental countries inherit a single dataset classification.
+- The physical-land method is more appropriate for the intended seven-continent comparison, but remains preliminary: GBIF boundary/cutter conventions, islands, 139.817 km² unassigned land, and Antarctic floating ice shelves need explicit treatment. The external reference values may use different conventions, so percentage differences alone do not prove a code error.
+- Updated `PROJECTS/geography/README.md` with the audit, computed differences, and a clear incomplete status. README update commit: `0fa0ee17c043e3641b576da1029c22b44b59aeca`.
+- **Project status remains INCOMPLETE.** Next exact steps: (1) visually review the published PNG, (2) decide land-only vs land plus Antarctic ice shelves, (3) document island and transcontinental-boundary rules and investigate unassigned land, (4) compare against a source with matching definitions, (5) rerun and update the map only after the area labels are justified.
