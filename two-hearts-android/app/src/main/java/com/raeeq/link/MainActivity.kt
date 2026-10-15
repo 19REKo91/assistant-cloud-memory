@@ -1180,7 +1180,7 @@ class LinkProximityService : android.app.Service() {
         val step=recoveryAttempt.coerceAtMost(5)
         val delayMs=(1_000L shl step).coerceAtMost(30_000L)
         recoveryAttempt=(recoveryAttempt+1).coerceAtMost(5)
-        note("BLE recovery scheduled after ${delayMs}ms",android.os.SystemClock.elapsedRealtime())
+        note("BLE recovery scheduled after ${delayMs}ms: $reason",android.os.SystemClock.elapsedRealtime())
         publish()
         val task=object:Runnable {
             override fun run() {
@@ -1332,7 +1332,7 @@ class LinkProximityService : android.app.Service() {
         cancelRadioRecovery()
         clearStoredSession()
         stopRadio(); engine.reset()
-        note("error",android.os.SystemClock.elapsedRealtime())
+        note("error: $message",android.os.SystemClock.elapsedRealtime())
         publish(); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf()
     }
 
