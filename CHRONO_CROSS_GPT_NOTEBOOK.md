@@ -464,3 +464,12 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - This work is in the GitHub support repository and improves the production handshake test harness; it does not change Floot app source or its live deployment.
 - Project remains **INCOMPLETE**: the real production MCP handshake using the protected token and Floot-side app tests are still unverified.
 - Next independent action: inspect the newly triggered workflow result and fix any failure. Then continue improving the reading capability contract/tests in the support repo without inventing unverified Floot implementation. When Floot tools return, inspect the actual app files before porting changes and run app typecheck/tests before any publish.
+
+
+## Latest independent checkpoint — 2026-10-15
+
+- The smoke-test client now validates JSON-RPC 2.0 envelopes and matching response IDs for `initialize` and `tools/list`, plus the exact supported negotiated protocol version `2025-11-25`.
+- Added a regression case for mismatched response IDs. GitHub Actions run `38730003724` passed on commit `d6c6005b396eadb4864d58ba3951c48d3d0fc2e5`: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38730003724.
+- Removed the redundant extra smoke-test workflow; the existing `.github/workflows/chrono-cross-gpt-mcp-smoke-test.yml` already validates the same test scripts and MCP configuration.
+- These checks use mocked fetch and dummy credentials only. No real token was used and no production handshake was performed.
+- Project remains **INCOMPLETE** until the real production MCP handshake and Floot-side typecheck/tests succeed.
