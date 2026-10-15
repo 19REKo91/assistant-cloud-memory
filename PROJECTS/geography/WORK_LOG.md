@@ -86,3 +86,9 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Latest artifact: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317/artifacts/11949360828
 - Re-checked GitHub metadata for the published PNG: file exists at PROJECTS/geography/generated/continent_map_equal_earth.png, size 391,513 bytes, blob SHA c9953d3f13cfc17ff0059edf5d9dd9c7f83e21c0.
 - The output PNG was unchanged in the rerun. Current project state remains incomplete until visual review and an independent methodology comparison are done.
+
+### Independent comparison added — 2026-10-15
+- Added a clearly qualified comparison in PROJECTS/geography/README.md against the seven-continent area table attributed to Encyclopaedia Britannica on https://en.wikipedia.org/wiki/Continent.
+- The comparison shows material differences: Asia about -2.11%, Africa -1.70%, North America +0.09%, South America -0.59%, Antarctica -12.89%, Europe +0.58%, Oceania +5.14%.
+- These are not treated as proof of a coding error because the references may differ in island assignment, coastline data, and whether Antarctic ice shelves are counted. They are a reason to keep the result preliminary and resolve the definitions before approval.
+- The current PNG remains published but its area labels are preliminary. Next review must explain the differences before final approval.
