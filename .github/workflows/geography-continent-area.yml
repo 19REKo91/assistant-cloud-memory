@@ -16,6 +16,8 @@ on:
       - geography-continent-area-audit
     paths:
       - "scripts/geography/continent_area.py"
+      - "scripts/geography/continent_land_area.py"
+      - "scripts/geography/render_continent_map.py"
       - ".github/workflows/geography-continent-area.yml"
       - "PROJECTS/geography/README.md"
 
