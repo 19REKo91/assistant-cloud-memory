@@ -428,3 +428,11 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Reviewed `tools/chrono-cross-gpt-mcp-smoke-test.mjs`: it reads the token only from the environment, sends the bearer token only to the fixed HTTPS production MCP endpoint, redacts the token from response bodies, and checks `initialize`, `notifications/initialized`, `tools/list`, and both expected tools. Its existence does not mean the production handshake has passed.
 - Current verified project status remains **INCOMPLETE / NOT VERIFIED**: published app is live; the real authenticated production handshake, invalid/missing token production checks, and a fresh Floot typecheck/test run remain outstanding because Floot's action quota blocks the necessary tools.
 - Next actions when Floot tools unblock: re-read current endpoint/schema/tests and connected resources; run typecheck and tests; confirm the secret is connected without exposing its value; run the GitHub production-handshake workflow if dispatch is available, otherwise use the workflow's supported UI; verify HTTP/protocol results and only then update status. Do not publish a new version unless code changes are made and validated.
+
+
+## Additional offline hardening — 2026-10-15
+
+- Added a mock-only assertion that a 401 response's `WWW-Authenticate` challenge is surfaced by the production smoke-test diagnostic, while echoed dummy credentials remain redacted.
+- Added a malformed-token test proving the client rejects a too-short token before making any request. Tests use only a dummy token and a mocked `fetch`; they do not contact production.
+- GitHub Actions verified the updated suite successfully: run `38728619108`, commit `39fd7cb04c4b5189a8d55697c96f50cdbb8dd241`. Result: success. This is still an offline/mock CI result, not a real production handshake.
+- Credential scope reminder confirmed from `.github/agents/chrono-cross-gpt-reader.agent.md`: `CHRONO_MCP_TOKEN` is the GitHub Actions secret for the manual production handshake; `COPILOT_MCP_CHRONO_TOKEN` is a separate GitHub Copilot **Agents** secret for the custom agent. The Actions secret does not automatically populate the Agents secret. Configure both only through their appropriate secure settings, with matching valid bearer-token values; never print or commit them.
