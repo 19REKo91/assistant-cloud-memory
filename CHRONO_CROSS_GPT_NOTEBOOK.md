@@ -325,3 +325,13 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 1. From an environment that already has the credential in its secure secret store, run `tools/chrono-cross-gpt-mcp-smoke-test.mjs`. It reports protocol stages and tool names only; never paste the token into chat or commit it.
 2. Recheck the public setup-document route when Floot tools are available; a 200 response alone is not proof that the Markdown document was served.
 3. Only after the real authenticated production sequence succeeds, record its sanitized result and update `hostConnection` to a verified state. Until then leave it `not_verified`.
+
+
+## Session addendum — 2026-10-15: repeatable offline MCP verification
+
+- Added `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs`, a dependency-free Node test that uses a dummy token and mocked fetch only. Scenarios cover a complete protocol flow, an unauthorized response that echoes the dummy value (must be redacted), missing advertised tools, and a missing token that must fail before networking.
+- Added `.github/workflows/chrono-cross-gpt-mcp-smoke-test.yml` to run syntax validation and the offline tests on relevant pushes or manual dispatch. It does not use the production token and does not contact the production endpoint.
+- The production smoke-test utility was also run locally with a fetch mock: the sequence returned expected initialize 200, initialized notification 202 with empty body, and tools/list 200 with both expected tool names; it reported `credentialPrinted: false`. A no-token run exited with code 2 before making a network request. These runs used only a local dummy credential.
+- The newly added GitHub Actions workflow has not yet been confirmed as passing; check the run result before describing CI as green.
+- No production token was retrieved, copied, or disclosed. No new secret was added to GitHub.
+- Project remains **incomplete for ChatGPT-host integration**. The user's current Free Android session cannot add a custom MCP server directly under OpenAI's current published availability rules. The server itself remains live, and post-publish negative-auth checks are verified; a real production valid-token handshake is still not confirmed.
