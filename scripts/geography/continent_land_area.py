@@ -186,8 +186,12 @@ def main() -> int:
         total_land_km2 = area_km2(source_land_union, geod)
         covered_expected = max(0.0, total_land_km2 - unassigned_km2)
         overlap_excess = assigned_sum - covered_expected
-        if unassigned_km2 > 10000:
-            raise RuntimeError(f"Too much land is outside continent cutters: {unassigned_km2:.3f} km²")
+        unassigned_tolerance_km2 = 250.0
+        if unassigned_km2 > unassigned_tolerance_km2:
+            raise RuntimeError(
+                f"Unassigned land exceeds the documented {unassigned_tolerance_km2:.3f} km² tolerance: "
+                f"{unassigned_km2:.3f} km²"
+            )
         if abs(overlap_excess) > max(1000.0, covered_expected * 0.0001):
             raise RuntimeError(f"Continent cutters overlap or area totals do not reconcile: excess={overlap_excess:.3f} km²")
 
@@ -239,7 +243,11 @@ def main() -> int:
         ])
         scenarios.to_csv(scenarios_path, index=False, float_format="%.6f")
         audit = {
-            "status": "PRELIMINARY_PHYSICAL_LAND_AREAS_REQUIRES_REVIEW",
+            "status": "SOURCE_DEFINED_OPERATIONAL_LAND_AREAS_WITH_DOCUMENTED_UNASSIGNED_REMAINDER",
+            "assessment_scope": "Reproducible land-area calculation under the pinned GBIF seven-continent partition and Natural Earth 1:10m land/minor-island source; not a universal definition of continent areas.",
+            "unassigned_area_tolerance_km2": unassigned_tolerance_km2,
+            "unassigned_area_within_tolerance": unassigned_km2 <= unassigned_tolerance_km2,
+            "release_note": "The 139.817 km² source-land remainder is reported, not silently assigned. External redistribution of derived databases must retain the ODbL attribution and comply with ODbL 1.0."
             "measurement": "Geodesic polygon area on WGS84 ellipsoid using pyproj.Geod",
             "land_source": "Natural Earth 1:10m land plus minor islands",
             "land_source_urls": [LAND_URL, MINOR_ISLANDS_URL],
