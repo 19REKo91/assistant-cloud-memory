@@ -355,3 +355,13 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - This observation is consistent with the foreground BLE service continuing to operate with the peer screen off, but it does **not** validate separation detection, nor does it explain the earlier mismatch where phone 2 reported `APART` while phone 1 reported `NEAR`.
 - Technical decision: do not tune RSSI thresholds or change code based on this single screen-off snapshot. Preserve the existing hysteresis policy. Next controlled test: keep the phones physically stationary at the same distance; with both screens on, note both states and RSSI; lock only phone 2's screen for 15–20 seconds; wake it without moving either phone; compare both states and whether scan/match counters actually increased during the locked interval. Then test physical separation as a separate scenario. Do not confuse screen-off with powering off the phone.
 - No source code changed and no APK was built for this observation. Keep `main` untouched.
+
+
+## 2026-10-15 — BLE diagnostic copy log implementation
+
+- Commit: `66023d4d81de08c866eadf1c2528a1b35be8f780` on `anniversary-ble-proximity-prototype`; `main` untouched.
+- Added a visible active-session button, “نسخ سجل التشخيص”, that copies the internal BLE diagnostic log to the clipboard. The log excludes message contents.
+- The foreground service writes session start metadata, relative elapsed time, state/error/service events, screen OFF/ON/unlock events, and a rate-limited RSSI sample (at most once every 2 seconds) with state and raw scan/partner match counters. Log file is capped at about 512 KiB by trimming older entries.
+- Log is stored in app-private internal storage and can be copied after waking the screen while LINK remains active. Screen events are observed by a dynamic receiver registered by the foreground service. This needs real-device validation on Android 14/TECNO; do not assume OS broadcasts or BLE callbacks are guaranteed under every battery policy.
+- CI run #38: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38693237515. At time of this note, the build/test step is still running; do not mark the implementation build-verified until the workflow reports success.
+- No device-side test has yet confirmed the copied log across a screen-off interval. Next: verify CI, install only if build succeeds and package/signature permits, test screen off/on, then use “نسخ سجل التشخيص” on both phones and compare timelines. Do not uninstall the existing app on a package/signing conflict.
