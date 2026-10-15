@@ -71,7 +71,7 @@ def main() -> int:
 
     side.set_facecolor("#f7f8fa")
     side.set_axis_off()
-    side.text(0.02, 0.97, "PRELIMINARY", transform=side.transAxes, fontsize=12, fontweight="bold", color="#9b3d2f", va="top")
+    side.text(0.02, 0.97, "SOURCE-DEFINED", transform=side.transAxes, fontsize=12, fontweight="bold", color="#9b3d2f", va="top")
     side.text(0.02, 0.91, "Area (million km²)", transform=side.transAxes, fontsize=10, color="#4b5563", va="top")
     y = 0.83
     for name in order:
@@ -85,7 +85,7 @@ def main() -> int:
 
         transform=side.transAxes, fontsize=8.1, color="#4b5563", va="top", wrap=True
     )
-    fig.suptitle("Seven-continent model · verified remote data pipeline", x=0.05, y=0.99, ha="left", fontsize=10, color="#52606d")
+    fig.suptitle("Seven-continent model · source-defined operational areas", x=0.05, y=0.99, ha="left", fontsize=10, color="#52606d")
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUTPUT, dpi=180, facecolor=fig.get_facecolor(), bbox_inches="tight")
     plt.close(fig)
