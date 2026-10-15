@@ -63,10 +63,29 @@ def polygonal(geometry):
 
 
 def area_km2(geometry, geod) -> float:
+    """Return geodesic area while normalizing ring orientation per polygon.
+
+    Geod's polygon area is signed; taking abs() only after measuring a whole
+    MultiPolygon can let differently oriented components cancel each other.
+    Orient each exterior counter-clockwise and each hole clockwise, then sum
+    the absolute net area of each polygon independently.
+    """
     if geometry is None or geometry.is_empty:
         return 0.0
-    area_m2, _ = geod.geometry_area_perimeter(geometry)
-    return abs(float(area_m2)) / 1_000_000.0
+
+    def polygon_area_m2(polygon) -> float:
+        from shapely.geometry.polygon import orient
+        normalized = orient(polygon, sign=1.0)
+        area_m2, _ = geod.geometry_area_perimeter(normalized)
+        return abs(float(area_m2))
+
+    if isinstance(geometry, Polygon):
+        return polygon_area_m2(geometry) / 1_000_000.0
+    if isinstance(geometry, MultiPolygon):
+        return sum(polygon_area_m2(part) for part in geometry.geoms) / 1_000_000.0
+    if hasattr(geometry, "geoms"):
+        return sum(area_km2(part, geod) for part in geometry.geoms)
+    return 0.0
 
 
 def main() -> int:
