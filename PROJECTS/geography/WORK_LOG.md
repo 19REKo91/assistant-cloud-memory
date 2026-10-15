@@ -80,3 +80,9 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 2. Decide whether Antarctic floating ice shelves should be included in the definition.
 3. Compare preliminary values against an independent source and document methodological differences.
 4. Re-run and update the map only if the review warrants a change.
+
+### Final rerun after publishing the image — 2026-10-15
+- Re-ran the complete workflow after adding attribution and robust branch publication; run succeeded: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317
+- Latest artifact: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317/artifacts/11949360828
+- Re-checked GitHub metadata for the published PNG: file exists at PROJECTS/geography/generated/continent_map_equal_earth.png, size 391,513 bytes, blob SHA c9953d3f13cfc17ff0059edf5d9dd9c7f83e21c0.
+- The output PNG was unchanged in the rerun. Current project state remains incomplete until visual review and an independent methodology comparison are done.
