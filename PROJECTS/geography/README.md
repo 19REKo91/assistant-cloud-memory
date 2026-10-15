@@ -167,8 +167,8 @@ https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317/arti
 مصدر طبقة الرفوف الجليدية: [Natural Earth — Antarctic Ice Shelves](https://www.naturalearthdata.com/downloads/10m-physical-vectors/). توثيق Natural Earth يذكر أن هذه الطبقة مشتقة من بيانات MOA لعامي 2003–2004 وتعكس انهيارات رفوف جليدية معروفة؛ لذلك فهي **سيناريو مقارن من مصدر محدد وليست قياسًا آنيًا لمساحة الجليد**. أما حدود القارات والجزر فتتبع مضلعات GBIF المثبتة، والتي توضح أن حدودها البحرية تقريبية ومصممة لتوزيع اليابسة والجزر، لا لتمثيل حدود بحرية دقيقة: [GBIF continents](https://github.com/gbif/continents).
 
 ### التشغيل الذي تحقق منه التصحيح
-- [GitHub Actions run 38684837027](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38684837027) — نجح.
-- [حزمة النتائج 11949203489](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38684837027/artifacts/11949203489).
+- [GitHub Actions run 38685229416](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685229416) — نجح بعد إضافة ملف الإسناد والترخيص إلى حزمة النتائج.
+- [حزمة النتائج 11950265235](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685229416/artifacts/11950265235)، وتحتوي `ATTRIBUTION.md` مع ملفات الحساب والتدقيق والخريطة.
 - الخريطة المنشورة على الفرع أعيد توليدها والتحقق من ملفها ضمن هذا التشغيل.
 
 **الحالة:** الحسابات أصبحت متسقة بعد إزالة تداخل المضلعات، وفُحصت الخريطة بصريًا. يبقى المشروع **غير مكتمل** حتى توثيق تعريف المقارنة المرجعية النهائي ومراجعة الترخيص قبل إعادة توزيع البيانات المشتقة من GBIF/ODbL.
