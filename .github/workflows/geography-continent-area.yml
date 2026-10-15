@@ -7,6 +7,8 @@ on:
       - main
     paths:
       - "scripts/geography/continent_area.py"
+      - "scripts/geography/continent_land_area.py"
+      - "scripts/geography/render_continent_map.py"
       - ".github/workflows/geography-continent-area.yml"
       - "PROJECTS/geography/README.md"
   push:
@@ -18,7 +20,7 @@ on:
       - "PROJECTS/geography/README.md"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   calculate:
@@ -52,3 +54,18 @@ jobs:
           path: output/geography/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish verified map PNG to project branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/geography-continent-area-audit'
+        run: |
+          mkdir -p PROJECTS/geography/generated
+          cp output/geography/continent_map_equal_earth.png PROJECTS/geography/generated/continent_map_equal_earth.png
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/geography/generated/continent_map_equal_earth.png
+          if git diff --cached --quiet; then
+            echo "Verified map is unchanged; no commit needed."
+          else
+            git commit -m "Publish verified Equal Earth continent map"
+            git push
+          fi
