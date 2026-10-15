@@ -267,3 +267,28 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Project remains **INCOMPLETE / preliminary**. The latest successful workflow validates execution and internal reconciliation, not agreement with a reference built from identical polygons and identical island/Antarctica rules.
 - No change to `main`; PR #10 remains open, draft, and unmerged.
 - Next: (1) decide whether to fix the push-path omission and reduce workflow write permissions, (2) specify internal-only versus redistribution use, (3) choose a polygon-level comparison source whose island and Antarctica rules can be inspected, and (4) only then make any justified numerical/map changes. Keep land-only Antarctica as the primary metric and the historical ice-shelf layer as a separate scenario.
+
+
+## Session update — 2026-10-15: completion scope and workflow hardening
+
+### Decisions made
+- To finish the deliverable without falsely claiming a universal natural-continent measurement, the project's accepted output is now explicitly defined as: geodesic WGS84 area of Natural Earth 1:10m land + minor-island polygons, clipped and assigned using the GBIF seven-continent partition pinned to commit `5f2aaf608f2f828bb1d03ae0d2ef3f41feacd5be`, with overlaps unioned before measuring.
+- Antarctica land-only remains the primary metric; the separate Natural Earth ice-shelf scenario (source data derived from MOA 2003–2004) is historical/source-defined and must not be described as current ice area.
+- General textbook/reference totals are sanity checks only unless their underlying polygon boundaries, island allocation, and Antarctic definition can be matched. No attempt will be made to force the results to rounded reference values.
+- README now contains the operational definition, accepted output values, reconciliation totals, explicit limitations, and a completion criterion scoped to that definition. The attribution notice now includes a distribution checklist and retains the warning that it is not legal advice.
+- The map renderer's side-panel status was changed from "PRELIMINARY" to "SOURCE-DEFINED" to communicate that the output follows a defined dataset convention, not a universal boundary truth.
+
+### Workflow hardening committed
+- Workflow commit: `cad17be2c509491b53c7156d2766496af99f4531`.
+- README scope commit: `24ea84552be06026a8758a5dd95053def2c30f93`.
+- Attribution checklist commit: `ed417934c9bdc0345577d8f27924a15dca7d2f66`.
+- Renderer label commit: `b7c591ecf59ab03804512e6716791adc7df0ec30`.
+- Reduced default/workflow calculation permissions to `contents: read`; moved map publication into a separate `publish-map` job with `contents: write` and `actions: read` only. Added the attribution notice to the push path filter. The calculation job uploads the verified map as an artifact; the publication job downloads that artifact and publishes only the PNG.
+- Re-read the README and workflow from the project branch and confirmed these changes persisted.
+
+### Verification state — do not overclaim
+- Previous verified full run remains [38686082890](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38686082890); its calculation, render/PNG validation, attribution copy, and artifact upload steps passed.
+- The workflow/README/attribution/renderer changes above have been committed, but a fresh full run of the newly hardened workflow and the separate map-publication job has **not yet been verified** in this entry. Do not call the whole project complete until that run succeeds and its artifact contents/map are checked.
+- The current known area values remain the last independently checked outputs: Asia 43,664,181.383 km²; Africa 29,848,300.864; North America 24,251,174.243; South America 17,707,506.916; Antarctica land-only 12,370,031.919; Europe 10,054,659.682; Oceania 8,945,802.991. They must be confirmed again by the new run before release.
+- PR #10 remains draft and unmerged; `main` remains unchanged.
+- Remaining exact steps: (1) confirm the new workflow run passes both jobs, (2) inspect artifact file list and audit reconciliation, (3) verify the published PNG is regenerated with the new SOURCE-DEFINED label, (4) check PR #10 review/status and the final branch diff, and (5) keep final status scoped to the declared definition while documenting that legal compliance for any actual redistribution is use-case-dependent.
