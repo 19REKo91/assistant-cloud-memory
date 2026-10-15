@@ -1,0 +1,42 @@
+name: Geography continent area audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - geography-continent-area-audit
+    paths:
+      - "scripts/geography/continent_area.py"
+      - ".github/workflows/geography-continent-area.yml"
+      - "PROJECTS/geography/README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install calculation dependencies
+        run: python -m pip install --upgrade pip geopandas pyproj pandas
+
+      - name: Calculate and validate areas
+        run: python scripts/geography/continent_area.py
+
+      - name: Upload audit outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: geography-area-audit
+          path: output/geography/
+          if-no-files-found: error
+          retention-days: 14
