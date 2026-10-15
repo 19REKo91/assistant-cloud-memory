@@ -294,3 +294,34 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The connected credential remains server-side as `CHRONO_MCP_TOKEN`; its value was never read, printed, logged, or stored in this notebook.
 - **Project status: incomplete.** The production valid-token `initialize` → `notifications/initialized` → `tools/list` exchange and external MCP-host handshake remain unverified.
 - Next step: use a compatible MCP client and its secure credential store to perform the authenticated handshake. Record only protocol/status outcomes; never paste or log the token.
+
+
+## Session log — 2026-10-15 (UTC): safer MCP smoke test and post-publish validation
+
+### Work completed
+- Reordered the valid-token handler test to match the actual MCP initialization sequence: `initialize` → `notifications/initialized` → `tools/list`.
+- Added a capability-report test asserting that remote browser control and arbitrary DOM automation are explicitly reported as not implemented, and that connecting ChatGPT still requires a separately configured host.
+- Full regular test suite: 4 spec files passed, 0 failed. Both hook spec files: 2 passed, 0 failed. TypeScript typecheck: clean.
+- Added a standalone production smoke-test utility in `tools/chrono-cross-gpt-mcp-smoke-test.mjs` (commit `20bf43dc04ab500cd0b5c63392326a955ae6fe19`). It is pinned to the HTTPS `chrono-cross-gpt.floot.app/_api/mcp` origin; reads `CHRONO_MCP_TOKEN` only from the process environment; refuses URL/query-based credentials; and checks the protocol sequence while printing no token or request headers.
+- Validated the smoke-test logic against a local TLS mock using a dummy test token: the three protocol stages passed and the output indicated `credentialPrinted: false`. The script's syntax check passed, and the missing-token path exits before making network requests. This local mock test is **not** evidence of a production valid-token handshake.
+- Updated Floot's `static/chrono-mcp-setup.md` with the current connection limitation, the safe test utility link, and credential-handling guidance.
+- Created Floot checkpoint `c0a21334-4dbf-46cf-840a-06262d26176e`: “Harden MCP handshake tests and add safe smoke-test guidance”.
+- Re-published the existing web app at `https://chrono-cross-gpt.floot.app`; publish job `5b2541ac-c8ef-416a-a11c-b75097a3188a` succeeded. Existing domain/subdomain was retained; no native build was started.
+
+### Post-publish production evidence
+- `GET /_api/mcp-status`: HTTP 200, `tokenConfigured=true`, `hostConnection="not_verified"`; no credential value returned.
+- `POST /_api/mcp` with no Authorization token: HTTP 401, `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`, JSON `authentication_required`.
+- `POST /_api/mcp` with a deliberately incorrect dummy token: HTTP 401 and the same standard challenge; response did not echo the dummy token.
+- Both rejected responses exposed no `x-floot-*` headers.
+- The public root-path probe for `/chrono-mcp-setup.md` returned HTTP 200 but did not contain the expected document markers; this may be SPA fallback, so do not claim that file is directly published at that URL. The source document was updated in the Floot project; its public route still needs verification.
+
+### Current blocker and truthful status
+- A production handshake using the real configured credential — `initialize`, then `notifications/initialized`, then `tools/list` — remains **unverified**. The secret was never retrieved, printed, logged, or copied into GitHub, and no temporary public endpoint was added to reuse it.
+- OpenAI's current official help article says custom MCP server setup is web-only and availability depends on plan/workspace permissions. The current ChatGPT Free Android session cannot attach this custom endpoint directly. Source: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+- Floot's daily build-action quota was reached during extra post-publish route checks; tool response reported reset at `2026-10-16T07:00:00Z`. No plan upgrade or purchase was made.
+- Project status remains **incomplete** because the valid-token production/external-host handshake has not been evidenced. Auth rejection and unit tests pass; they are not substitutes for a valid-token handshake.
+
+### Exact next steps
+1. From an environment that already has the credential in its secure secret store, run `tools/chrono-cross-gpt-mcp-smoke-test.mjs`. It reports protocol stages and tool names only; never paste the token into chat or commit it.
+2. Recheck the public setup-document route when Floot tools are available; a 200 response alone is not proof that the Markdown document was served.
+3. Only after the real authenticated production sequence succeeds, record its sanitized result and update `hostConnection` to a verified state. Until then leave it `not_verified`.
