@@ -2,9 +2,8 @@
 // Safe MCP protocol smoke test. Reads the token only from the process environment.
 // It never prints request headers or the token, including when a server echoes it.
 
-const DEFAULT_ENDPOINT = "https://chrono-cross-gpt.floot.app/_api/mcp";
+const ENDPOINT_TEXT = "https://chrono-cross-gpt.floot.app/_api/mcp";
 const token = process.env.CHRONO_MCP_TOKEN;
-const endpointText = process.env.CHRONO_MCP_URL || DEFAULT_ENDPOINT;
 
 function stop(message, exitCode = 2) {
   console.error(message);
@@ -15,14 +14,9 @@ if (typeof token !== "string" || token.length < 32 || /\s/.test(token)) {
   stop("CHRONO_MCP_TOKEN is missing or malformed. Set it in a secure environment; do not put it in chat, a URL, source control, or a command that is saved in shell history.");
 }
 
-let endpoint;
-try {
-  endpoint = new URL(endpointText);
-} catch {
-  stop("CHRONO_MCP_URL must be a valid absolute HTTPS URL.");
-}
-if (endpoint.protocol !== "https:" || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || !endpoint.pathname.endsWith("/_api/mcp")) {
-  stop("CHRONO_MCP_URL must be an HTTPS MCP endpoint ending in /_api/mcp, without URL credentials, query parameters, or a fragment.");
+const endpoint = new URL(ENDPOINT_TEXT);
+if (endpoint.protocol !== "https:" || endpoint.hostname !== "chrono-cross-gpt.floot.app" || endpoint.pathname !== "/_api/mcp") {
+  stop("Refusing to send credentials to an endpoint outside the verified CHRONO CROSS GPT production origin.");
 }
 
 async function request(method, id, params) {
