@@ -6,6 +6,7 @@ on:
     paths:
       - ".mcp.json"
       - ".vscode/mcp.json"
+      - ".github/agents/chrono-cross-gpt-reader.agent.md"
       - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
       - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
@@ -25,6 +26,9 @@ jobs:
         run: node --version
       - name: Validate MCP configuration JSON
         run: node -e "for (const f of ['.mcp.json','.vscode/mcp.json']) { JSON.parse(require('node:fs').readFileSync(f,'utf8')); console.log('PASS '+f); }"
+      - name: Validate Copilot custom-agent YAML frontmatter
+        run: |
+          ruby -e 'require "yaml"; s=File.read(".github/agents/chrono-cross-gpt-reader.agent.md"); parts=s.split(/^---\s*$/, 3); abort "missing YAML frontmatter" if parts.length < 3; data=YAML.safe_load(parts[1], aliases: false); abort "wrong custom agent target" unless data["target"] == "github-copilot"; abort "missing MCP server" unless data.dig("mcp-servers", "chrono-cross-gpt", "url") == "https://chrono-cross-gpt.floot.app/_api/mcp"; puts "PASS Copilot custom-agent frontmatter"'
       - name: Validate smoke-test syntax
         run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
