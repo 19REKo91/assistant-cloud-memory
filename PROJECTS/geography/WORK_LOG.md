@@ -168,3 +168,25 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Downloaded and inspected artifact **11949589195**. It contains nine files including `ATTRIBUTION.md`; notice scope was verified, all area checks remained consistent, the Antarctic land-only and land-plus-shelves scenarios remained 12.370032 and 13.943856 million km², and the PNG remained 2740×1461 px / 396,377 bytes.
 - Reconciliation remains: continent union sum 146,841,657.997 km²; source land union 146,841,797.814 km²; unassigned 139.817 km²; overlap excess rounds to -0.000 km².
 - README and work log writes have been verified by re-reading them from the branch. Current status remains **INCOMPLETE / not final-approved** because the external continent-area reference definition has not been proven identical to this dataset, and the ODbL note documents intended handling rather than replacing a jurisdiction-specific legal review. PR #10 remains open/draft and unmerged; `main` was not changed.
+
+
+## Session update — 2026-10-15: source-definition and code review
+
+### Verified in the repository
+- Re-read the physical-land calculation, map renderer, workflow, README, attribution notice, and latest successful artifact metadata on `geography-continent-area-audit`.
+- The calculation explicitly unions clipped land polygons within each continent before measuring geodesic WGS84 area; it keeps Antarctic land-only as the primary table and emits a separate land-plus-ice-shelves scenario. The map labels itself PRELIMINARY and states that Antarctica is land-only.
+- Latest confirmed workflow/artifact remains run [38685364521](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685364521), artifact [11949589195](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685364521/artifacts/11949589195). Artifact metadata confirms it has not expired as of this review.
+- Confirmed the comparison table commonly attributed to Encyclopaedia Britannica is a seven-continent convention, but it is not a full machine-readable polygon reference with the exact same coastline, island allocation, and cutter geometry. It is useful as a sanity check, not a matching validation dataset.
+- Official Natural Earth documentation says its Antarctic ice-shelf layer is derived from the 2003–2004 Mosaic of Antarctica, reflects certain later digitized shelf collapses, and excludes seasonal winter ice. This supports treating 13.944 million km² as a historical source-defined scenario, not a current measurement. Reference: https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-antarctic-ice-shelves/
+- GBIF's continent cookie-cutter defines one operational seven-continent partition and notes approximate marine boundaries; therefore the island/continental assignment is a declared convention, not a unique natural fact. Source: https://github.com/gbif/continents
+
+### Review decision
+- No further numerical edit is justified by this source review alone. The arithmetic and deduplication audit already reconcile internally; the remaining gaps are definition/source comparability and legal review, not evidence of a newly found summation error.
+- Do not relabel the output as final, do not merge PR #10, and do not change `main`.
+- The attribution file documents intended ODbL treatment, but it is not a legal determination that every generated file or redistribution scenario satisfies the license. This remains a release gate if derived data will be redistributed.
+
+### Next exact steps
+1. If a defensible numerical validation is required, select a reference whose underlying polygons and island/Antarctica rules can be inspected and aligned; do not compare only rounded textbook totals.
+2. Keep both Antarctic scenarios, explicitly naming land-only as the primary physical-land metric and the old ice-shelf layer as a historical alternative.
+3. Record the intended distribution/use case for derived GeoJSON/CSV and complete an ODbL compliance review before redistribution.
+4. Only after those decisions, update the README/map labels if warranted and rerun the remote workflow. Keep PR #10 open as draft until then.
