@@ -372,3 +372,38 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - For GitHub Copilot cloud agent's MCP configuration separately, the expected secret name is `COPILOT_MCP_CHRONO_TOKEN` under repository Agents secrets/variables, not Actions secrets; the `.mcp.json` file refers to it. These settings require the repo owner/admin and cannot be modified through the connected read-only GitHub API path.
 - Official documentation sources: OpenAI custom MCP availability/setup: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt ; GitHub Copilot MCP secrets: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/configure-mcp-servers ; Copilot cloud-agent Agents secrets: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/configure-secrets-and-variables ; VS Code remote HTTP MCP configuration: https://code.visualstudio.com/docs/agents/reference/mcp-configuration
 - **Completion status remains incomplete** until the manual production-handshake workflow succeeds or a compatible external host returns successful production `initialize`, `notifications/initialized`, and `tools/list`.
+
+
+## Session update — 2026-10-15: MCP client options and protocol-conformant smoke tests
+
+### Changes delivered
+- Improved `tools/chrono-cross-gpt-mcp-smoke-test.mjs` to send the required Streamable HTTP `Accept: application/json, text/event-stream` values and to send the negotiated `MCP-Protocol-Version` header on `notifications/initialized` and `tools/list` requests. The initial `initialize` request intentionally has no negotiated-version header.
+- Improved `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs` to assert those headers in every mocked request and verify the initial request doesn't assume a negotiated version.
+- The first CI run after those new header assertions failed because the test mock referenced its parsed request before declaring it. Fixed the mock order. The follow-up run `38722833468` passed. The more complete run `38722927346` also passed:
+  - JSON validation: `.mcp.json`, `.vscode/mcp.json`
+  - Custom-agent YAML frontmatter validation
+  - smoke-test script syntax
+  - all four offline mock scenarios.
+- Added `.github/agents/chrono-cross-gpt-reader.agent.md` for GitHub Copilot cloud agent. It only enables `read_public_page` and `get_browser_capabilities`, and requires a GitHub **Agents secret** named `COPILOT_MCP_CHRONO_TOKEN`.
+- `.mcp.json` is allowlisted to the same two read-only tools and uses `${COPILOT_MCP_CHRONO_TOKEN}` without embedding a token. `.vscode/mcp.json` uses VS Code's hidden password-prompt input for an interactive VS Code MCP connection.
+- Added `.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml`. This is manual-only and runs the protocol smoke test against the pinned production endpoint only if an Actions secret `CHRONO_MCP_TOKEN` exists. It never prints the secret. The workflow is prepared but its manual production run has not been executed because the needed Actions secret has not been configured through the GitHub UI/API.
+- Offline protocol logic was also run locally with dummy credentials: all four scenarios passed. No production credential was used during local mock tests.
+
+### External documentation and compatibility
+- Current official OpenAI docs say custom MCP server connections are configured on ChatGPT web and are available to Business / Enterprise / Edu; Pro permits read/fetch access, while the current Free Android session cannot attach a custom MCP server directly. Source: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+- GitHub Copilot cloud agent supports repository MCP configs and MCP-prefixed Agents secrets; the repository-level settings are configured through GitHub Settings → Copilot → MCP servers, and Agents secrets are at Settings → Secrets and variables → Agents. Sources:
+  - https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/configure-mcp-servers
+  - https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/configure-secrets-and-variables
+  - https://docs.github.com/en/copilot/reference/custom-agents-configuration
+- VS Code supports remote HTTP MCP server configurations and a masked interactive input in `.vscode/mcp.json`. Source: https://code.visualstudio.com/docs/agents/reference/mcp-configuration
+
+### Required owner-side secure action
+- To obtain a conclusive valid-token production result, add the same app token through GitHub Settings → Secrets and variables → Actions as secret `CHRONO_MCP_TOKEN`, then run Actions → “CHRONO CROSS GPT production MCP handshake” → Run workflow. If the current token cannot be retrieved safely from Floot, generate a new high-entropy token privately and update both the Floot credential and the GitHub Actions secret using their secure interfaces. Never paste it into chat, commit it, or add it to a URL.
+- For using the reader through Copilot cloud agent, add the same value separately as an Agents secret `COPILOT_MCP_CHRONO_TOKEN`. Actions secrets and Agents secrets live in different settings scopes, so both entries must be created if both paths are desired.
+- Connected GitHub API tools do not permit writing repository secret settings. Floot's daily build-action cap is still active; no further Floot files were edited or published during this session.
+
+### Status
+- App server remains published at `https://chrono-cross-gpt.floot.app`.
+- Live missing/invalid-token HTTP 401 behavior and Bearer challenge remain verified from the prior post-publish checks.
+- Latest offline CI is green; it confirms local protocol-client behavior and configuration syntax, not production credentials.
+- **Project status: incomplete** until the valid-token production workflow or an external host confirms `initialize` → `notifications/initialized` → `tools/list`.
