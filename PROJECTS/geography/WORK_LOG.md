@@ -302,3 +302,23 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Queried commit checks for the latest checklist commit: the only returned combined status is Vercel (pending at query time). The GitHub Actions connector available in this session exposes workflow runs by commit only for pull-request-triggered runs, and no fresh run was returned for the latest changes. Therefore the updated workflow's full execution and the new map-publication job remain **unverified**; the previous successful run 38686082890 predates these changes and is not a substitute.
 - No merge was performed. Keep PR #10 draft/open and keep the project status incomplete until the current workflow execution and new PNG are verified. Do not claim the renderer label or map publication is live until the artifact and branch PNG prove it.
 - Current concrete blocker: the available GitHub integration does not expose a workflow-dispatch action or a list-all-workflow-runs action, so this session could not directly start/inspect a fresh run through the connector. The workflow has a `workflow_dispatch` trigger and should be run from the Actions page; after it completes, verify both `calculate` and `publish-map` for a branch push, inspect the artifact files and reconciliation, and confirm the committed PNG footer/label. No change to `main`.
+
+
+## Follow-up verification — 2026-10-15: hardened workflow and map publication confirmed
+
+### Newly verified on the live branch
+- Found the full workflow run list directly through the GitHub Actions REST endpoint; the earlier wrapper had hidden push-triggered runs.
+- Push run [#89](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38686458624), commit `fbbee0c3f097caeaa2123a541f8ec34ea35e07a1`, completed successfully. Both jobs passed:
+  - `calculate`: area calculations, audit output, Equal Earth rendering/PNG file validation, attribution bundle, and artifact upload.
+  - `publish-map`: downloaded the exact artifact by run ID, verified the PNG was non-empty, and checked the branch copy. It reported that the verified map was already unchanged at that point.
+- The preceding push run [#86](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38686421398) also passed both jobs and published the renderer's updated PNG. The resulting branch commit is `fae30155fa8cb1f71e5ef0a2677578943f4344f2` (message: `Publish verified Equal Earth continent map`).
+- Re-fetched the branch directory through GitHub's Contents API: `PROJECTS/geography/generated/continent_map_equal_earth.png` exists, blob SHA `0eb69950c205e32bd5780abc36a8bfabec1be912`, size 399,742 bytes. The workflow renderer log independently reports a valid PNG at 2740×1461 pixels, Equal Earth projection EPSG:8857, and seven continents.
+- The successful calculation log reports the defined physical-land totals (km²): Asia 43,664,181.383; Africa 29,848,300.864; North America 24,251,174.243; South America 17,707,506.916; Antarctica land-only 12,370,031.919; Europe 10,054,659.682; Oceania 8,945,802.991. Assigned total 146,841,657.997 km²; deduplicated source land 146,841,797.814 km²; unassigned 139.817 km²; overlap excess 0.000 km².
+- Audit artifact for run #89: [geography-area-audit](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38686458624/artifacts/11950486366), 6,338,040 bytes, SHA-256 digest `d2bc0b8dfccf45b4a0741fbef6c4d16b1493f8bf95469a243382ee0c9703a681`, retained until 2026-10-29.
+- The newer PR-triggered run #92 is marked `action_required` and has no jobs; this is separate from the successful push run #89 and does not invalidate the verified push pipeline.
+
+### Remaining release gate
+- The live PNG's existence, size, dimensions, and automated validation are verified, but this session has not yet visually inspected the image pixels/layout. Do not claim human visual approval.
+- Numerical output is accepted only under the documented source-defined convention (Natural Earth land + minor islands partitioned by the pinned GBIF seven-continent polygons), not as a universal definition. The 139.817 km² unassigned remainder is documented; decide whether it is acceptable under the project's stated tolerance or requires a documented assignment rule.
+- Before marking the project complete, visually review the published PNG, re-open the README and attribution notice on the branch, and confirm whether the intended use is internal-only or redistribution requiring ODbL review.
+- PR #10 remains open/draft/unmerged and `main` remains unchanged.
