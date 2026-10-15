@@ -136,13 +136,16 @@ def main() -> int:
         total_land_km2 = 0.0
         unassigned_km2 = 0.0
         assigned_by_continent = {name: 0.0 for name in sorted(EXPECTED)}
+        clipped_parts = {name: [] for name in sorted(EXPECTED)}
         for source_name, feature_id, geometry in land_features:
             total_land_km2 += area_km2(geometry, geod)
             outside = geometry.difference(cutter_union)
             unassigned_km2 += area_km2(outside, geod)
             for name, continent_geometry in continent_geometries.items():
-                clipped = geometry.intersection(continent_geometry)
-                assigned_by_continent[name] += area_km2(polygonal(clipped), geod)
+                clipped = polygonal(geometry.intersection(continent_geometry))
+                if clipped is not None and not clipped.is_empty:
+                    clipped_parts[name].append(clipped)
+                    assigned_by_continent[name] += area_km2(clipped, geod)
 
         assigned_sum = sum(assigned_by_continent.values())
         covered_expected = max(0.0, total_land_km2 - unassigned_km2)
@@ -159,7 +162,17 @@ def main() -> int:
         } for name in sorted(EXPECTED)]
         totals = pd.DataFrame(rows).sort_values("area_km2", ascending=False)
         totals_path = OUTPUT_DIR / "continent_land_area.csv"
+        polygons_path = OUTPUT_DIR / "continent_land_polygons.geojson"
         audit_path = OUTPUT_DIR / "continent_land_area_audit.json"
+        polygon_geometries = {name: unary_union(parts) for name, parts in clipped_parts.items() if parts}
+        if set(polygon_geometries) != EXPECTED:
+            raise RuntimeError("One or more continents have no clipped land geometry")
+        polygon_frame = gpd.GeoDataFrame(
+            {"continent": list(polygon_geometries.keys())},
+            geometry=list(polygon_geometries.values()),
+            crs="EPSG:4326",
+        )
+        polygon_frame.to_file(polygons_path, driver="GeoJSON")
         totals.to_csv(totals_path, index=False, float_format="%.6f")
         audit = {
             "status": "PRELIMINARY_PHYSICAL_LAND_AREAS_REQUIRES_REVIEW",
@@ -180,12 +193,12 @@ def main() -> int:
             "overlap_excess_km2": round(overlap_excess, 3),
             "created_utc": datetime.now(timezone.utc).isoformat(),
             "python_libraries": {"geopandas": gpd.__version__, "pandas": pd.__version__, "pyproj": pyproj.__version__},
-            "files": [totals_path.name, audit_path.name],
+            "files": [totals_path.name, polygons_path.name, audit_path.name],
         }
         audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         if len(totals) != 7 or not totals["area_km2"].gt(0).all():
             raise RuntimeError("Continent area output validation failed")
-        if not all(p.exists() and p.stat().st_size > 0 for p in (totals_path, audit_path)):
+        if not all(p.exists() and p.stat().st_size > 0 for p in (totals_path, polygons_path, audit_path)):
             raise RuntimeError("One or more continent land-area outputs are missing or empty")
         print(json.dumps(audit, ensure_ascii=False, indent=2))
         print("\nPhysical land area by continent (million km²):")
