@@ -137,20 +137,25 @@ def main() -> int:
         if not land_features:
             raise RuntimeError("No polygonal land geometries remain after validation")
 
-        total_land_km2 = 0.0
-        unassigned_km2 = 0.0
-        assigned_by_continent = {name: 0.0 for name in sorted(EXPECTED)}
+        # Union source polygons first so overlaps between land/minor-island features
+        # are not double-counted in the reported areas or reconciliation.
+        source_land_union = unary_union([feature[2] for feature in land_features])
+        total_land_km2 = area_km2(source_land_union, geod)
+        outside_union = polygonal(source_land_union.difference(cutter_union))
+        unassigned_km2 = area_km2(outside_union, geod) if outside_union is not None else 0.0
         clipped_parts = {name: [] for name in sorted(EXPECTED)}
         for source_name, feature_id, geometry in land_features:
-            total_land_km2 += area_km2(geometry, geod)
-            outside = geometry.difference(cutter_union)
-            unassigned_km2 += area_km2(outside, geod)
             for name, continent_geometry in continent_geometries.items():
                 clipped = polygonal(geometry.intersection(continent_geometry))
                 if clipped is not None and not clipped.is_empty:
                     clipped_parts[name].append(clipped)
-                    assigned_by_continent[name] += area_km2(clipped, geod)
 
+        polygon_geometries = {name: unary_union(parts) for name, parts in clipped_parts.items() if parts}
+        if set(polygon_geometries) != EXPECTED:
+            raise RuntimeError("One or more continents have no clipped land geometry")
+        assigned_by_continent = {
+            name: area_km2(polygon_geometries[name], geod) for name in sorted(EXPECTED)
+        }
         assigned_sum = sum(assigned_by_continent.values())
         covered_expected = max(0.0, total_land_km2 - unassigned_km2)
         overlap_excess = assigned_sum - covered_expected
@@ -168,9 +173,6 @@ def main() -> int:
         totals_path = OUTPUT_DIR / "continent_land_area.csv"
         polygons_path = OUTPUT_DIR / "continent_land_polygons.geojson"
         audit_path = OUTPUT_DIR / "continent_land_area_audit.json"
-        polygon_geometries = {name: unary_union(parts) for name, parts in clipped_parts.items() if parts}
-        if set(polygon_geometries) != EXPECTED:
-            raise RuntimeError("One or more continents have no clipped land geometry")
         polygon_frame = gpd.GeoDataFrame(
             {"continent": list(polygon_geometries.keys())},
             geometry=list(polygon_geometries.values()),
