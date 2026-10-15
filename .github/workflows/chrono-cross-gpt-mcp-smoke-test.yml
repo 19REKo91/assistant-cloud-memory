@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - ".mcp.json"
+      - ".vscode/mcp.json"
       - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
       - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
@@ -21,6 +23,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Check Node.js version
         run: node --version
+      - name: Validate MCP configuration JSON
+        run: node -e "for (const f of ['.mcp.json','.vscode/mcp.json']) { JSON.parse(require('node:fs').readFileSync(f,'utf8')); console.log('PASS '+f); }"
       - name: Validate smoke-test syntax
         run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
