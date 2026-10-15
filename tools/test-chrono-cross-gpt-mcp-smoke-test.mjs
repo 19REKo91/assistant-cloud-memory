@@ -2,6 +2,7 @@
 // Dependency-free local tests for chrono-cross-gpt-mcp-smoke-test.mjs.
 // All credentials in this test are dummy values. The preloaded fetch mock
 // intercepts every network request; these tests never contact production.
+// Run with: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
