@@ -281,3 +281,16 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The endpoint's unit tests cover both missing and deliberately incorrect tokens for all three methods; they verify that credentials are not echoed. These are handler-level tests, not proof of a valid-token production connection.
 - Current project status remains **incomplete pending authenticated production handshake**. No OAuth 2.1/PKCE authorization server is implemented; the endpoint uses a static configured Bearer token.
 - Exact next step: configure the MCP URL in a compatible MCP client using the existing token in that client's secure credential store, then verify all three protocol methods. Never paste the token into chat or write it to logs or GitHub. Only mark `hostConnection` verified after an actual authenticated handshake.
+
+
+## Session log — 2026-10-15 (UTC): restored MCP status endpoint and re-verified
+
+- A temporary server-side handshake diagnostic had been added to the Floot working copy of `endpoints/mcp-status_GET.ts`, but it was not published. Before proceeding, inspected the current file and its immediately preceding version.
+- Restored `endpoints/mcp-status_GET.ts` to the prior 24-line implementation: it reports only whether the server-side token is configured and keeps `hostConnection: "not_verified"`. The temporary query-triggered diagnostic and its outbound MCP calls are removed from the working copy.
+- Typecheck for `endpoints/mcp-status_GET.ts`: clean.
+- Full regular test suite: 4 spec files passed, 0 failed (`themeMode`, `readPageEndpoint`, `mcpEndpoint`, `mcpStatusEndpoint`).
+- Read-only production check of `GET https://chrono-cross-gpt.floot.app/_api/mcp-status`: HTTP 200, response `{"tokenConfigured":true,"hostConnection":"not_verified"}`. No credential value was returned. This confirms the live endpoint's ordinary status response; it does not verify authenticated MCP initialization.
+- Floot publish status still reports the app as published and public at the existing URL. The diagnostic change was not published, so no new production publish was needed for this restoration.
+- The connected credential remains server-side as `CHRONO_MCP_TOKEN`; its value was never read, printed, logged, or stored in this notebook.
+- **Project status: incomplete.** The production valid-token `initialize` → `notifications/initialized` → `tools/list` exchange and external MCP-host handshake remain unverified.
+- Next step: use a compatible MCP client and its secure credential store to perform the authenticated handshake. Record only protocol/status outcomes; never paste or log the token.
