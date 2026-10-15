@@ -209,3 +209,33 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 1. Confirm a new workflow run was triggered by the calculation-script commit and inspect every job step.
 2. Compare the fresh `continent_land_area.csv`, audit JSON, Antarctic scenarios, and map against the previous artifact; explain any numerical changes.
 3. Keep the map preliminary and PR #10 draft until numerical outputs, geography definitions, and intended redistribution/license handling are reviewed.
+
+
+## Session update — 2026-10-15: run 74 completed and outputs compared
+
+### Verified results
+- GitHub Actions run [38685754180](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685754180) completed successfully. The `calculate` job succeeded, including area calculation/validation, physical-land area calculation, Equal Earth map rendering/validation, attribution/license inclusion, and artifact upload.
+- Downloaded and inspected artifact [11949809520](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38685754180/artifacts/11949809520). It contains `continent_land_area.csv`, `continent_land_area_audit.json`, `antarctica_area_scenarios.csv`, `continent_land_polygons.geojson`, `continent_map_equal_earth.png`, country/continent baseline CSVs, `area_audit.json`, and `ATTRIBUTION.md`.
+- Compared the new physical-land CSV and audit JSON against the previously verified values. All seven continent values are unchanged after the polygon-orientation safeguard:
+  - Asia: 43,664,181.383 km²
+  - Africa: 29,848,300.864 km²
+  - North America: 24,251,174.243 km²
+  - South America: 17,707,506.916 km²
+  - Antarctica (land only): 12,370,031.919 km²
+  - Europe: 10,054,659.682 km²
+  - Oceania: 8,945,802.991 km²
+- Internal reconciliation remains consistent: assigned continent area sum 146,841,657.997 km²; unassigned area 139.817 km²; overlap excess 0.000 km²; individual-source-feature sum before deduplication 146,857,177.566 km²; overlap removed by union 15,379.752 km².
+- Antarctic alternative scenario remains 13,943,856.011 km² for land plus source-defined ice shelves, with land-only still primary. The audit keeps the preliminary/requires-review status.
+- The map render/validation step succeeded and the PNG is in the artifact. The optional step to publish the map PNG back to the branch was skipped; do not describe the PNG as committed to the branch.
+- The run was triggered by calculation commit `458e6d59d95d82785b1d0aed2a443fada76d0191`. No changes were made to `main`.
+
+### Decision and remaining release gates
+- The polygon-orientation safeguard is verified by a successful full workflow; observed outputs are unchanged, so there is no evidence that the previous values were affected by this issue for these inputs.
+- Project remains **INCOMPLETE / preliminary**. This successful run verifies pipeline execution and internal reconciliation, but does not establish that GBIF/Natural Earth boundaries and island assignments match any external textbook/reference convention exactly.
+- PR #10 remains open, draft, and unmerged. Do not merge or call the figures final.
+- Before any release/redistribution, resolve the exact target definition/reference and review ODbL implications for derived data.
+
+### Next exact steps
+1. If continuing, inspect the PR diff and workflow configuration to ensure the safeguards and attribution are represented correctly; keep PR #10 draft.
+2. Decide whether the deliverable is an internal preliminary dataset or a redistributed dataset; if redistributed, complete a relevant ODbL compliance review.
+3. Only after a compatible polygon reference/definition is selected, add an apples-to-apples numerical comparison. Do not use rounded textbook figures as a strict pass/fail oracle.
