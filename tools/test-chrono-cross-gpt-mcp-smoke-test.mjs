@@ -25,7 +25,7 @@ const mockSource = [
   "  const authorization = new Headers(init.headers).get('authorization');",
   "  if (authorization !== 'Bearer ' + expectedToken) throw new Error('Dummy token was not sent in the expected header');",
   "  const request = JSON.parse(String(init.body));",
-  "  if (scenario === 'unauthorized' && request.method === 'initialize') return new Response(JSON.stringify({error:'authentication_required', echoed:expectedToken}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=\\\\\"chrono-cross-gpt\\\\\"'}});",
+  "  if (scenario === 'unauthorized' && request.method === 'initialize') return new Response(JSON.stringify({error:'authentication_required', echoed:expectedToken}), {status:401,headers:{'content-type':'application/json'}});",
   "  if (request.method === 'initialize') return new Response(JSON.stringify({jsonrpc:'2.0',id:request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}), {status:200,headers:{'content-type':'application/json'}});",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
   "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'}]; return new Response(JSON.stringify({jsonrpc:'2.0',id:request.id,result:{tools}}),{status:200,headers:{'content-type':'application/json'}}); }",
