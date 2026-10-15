@@ -19,18 +19,20 @@ if (endpoint.protocol !== "https:" || endpoint.hostname !== "chrono-cross-gpt.fl
   stop("Refusing to send credentials to an endpoint outside the verified CHRONO CROSS GPT production origin.");
 }
 
-async function request(method, id, params) {
+async function request(method, id, params, protocolVersion) {
   const message = { jsonrpc: "2.0", method };
   if (id !== undefined) message.id = id;
   if (params !== undefined) message.params = params;
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json, text/event-stream",
+    "Authorization": `Bearer ${token}`,
+  };
+  if (protocolVersion) headers["MCP-Protocol-Version"] = protocolVersion;
   const response = await fetch(endpoint, {
     method: "POST",
     redirect: "error",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify(message),
   });
   const body = await response.text();
@@ -62,12 +64,12 @@ try {
     fail("initialize", init.response.status, init.body, init.response.headers.get("www-authenticate"));
   }
 
-  const initialized = await request("notifications/initialized");
+  const initialized = await request("notifications/initialized", undefined, undefined, init.parsed.result.protocolVersion);
   if (initialized.response.status !== 202 || initialized.body.length !== 0) {
     fail("notifications/initialized", initialized.response.status, initialized.body, initialized.response.headers.get("www-authenticate"));
   }
 
-  const listed = await request("tools/list", 2);
+  const listed = await request("tools/list", 2, undefined, init.parsed.result.protocolVersion);
   const tools = listed.parsed?.result?.tools;
   if (listed.response.status !== 200 || !Array.isArray(tools)) {
     fail("tools/list", listed.response.status, listed.body, listed.response.headers.get("www-authenticate"));
