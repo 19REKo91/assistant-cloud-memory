@@ -190,3 +190,22 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 2. Keep both Antarctic scenarios, explicitly naming land-only as the primary physical-land metric and the old ice-shelf layer as a historical alternative.
 3. Record the intended distribution/use case for derived GeoJSON/CSV and complete an ODbL compliance review before redistribution.
 4. Only after those decisions, update the README/map labels if warranted and rerun the remote workflow. Keep PR #10 open as draft until then.
+
+
+## Session update — 2026-10-15: geodesic polygon-orientation safeguard
+
+### Code review finding and change
+- Identified a numerical robustness risk in `area_km2`: `pyproj.Geod.geometry_area_perimeter` returns signed polygon areas, so applying `abs()` only to the final MultiPolygon total can theoretically allow differently oriented polygon components to cancel before the absolute value is taken.
+- Updated `scripts/geography/continent_land_area.py` in commit `458e6d59d95d82785b1d0aed2a443fada76d0191`. The area routine now normalizes each Polygon exterior/hole orientation, measures each Polygon separately, and sums absolute net polygon areas; geometry collections are traversed recursively.
+- This is a defensive correctness fix. Do not claim the previously reported continent values changed until a fresh remote workflow run and output comparison confirm the result.
+
+### Verification status
+- Code change was committed to `geography-continent-area-audit`; a new GitHub Actions run has not yet been independently confirmed in this note.
+- Keep PR #10 open as draft and keep `main` unchanged.
+- Official Natural Earth documentation flags coastline accuracy concerns for northern Russia and southern Chile, and its Antarctic ice-shelf layer is historical/source-defined rather than a current ice measurement: https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/ and https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-antarctic-ice-shelves/
+- GBIF documents its island assignments and ODbL-derived source status: https://github.com/gbif/continents
+
+### Next exact steps
+1. Confirm a new workflow run was triggered by the calculation-script commit and inspect every job step.
+2. Compare the fresh `continent_land_area.csv`, audit JSON, Antarctic scenarios, and map against the previous artifact; explain any numerical changes.
+3. Keep the map preliminary and PR #10 draft until numerical outputs, geography definitions, and intended redistribution/license handling are reviewed.
