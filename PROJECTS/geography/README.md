@@ -69,12 +69,12 @@ https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700
 
 ### المخرجات
 حزمة النتائج المؤقتة (14 يومًا):
-https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683310415/artifacts/11949540485
+https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317/artifacts/11949360828
 
 ### الخريطة التي أُنتجت عن بُعد
 - [فتح خريطة Equal Earth على GitHub](https://github.com/19REKo91/assistant-cloud-memory/blob/geography-continent-area-audit/PROJECTS/geography/generated/continent_map_equal_earth.png)
 - [تنزيل ملف PNG الخام](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/geography-continent-area-audit/PROJECTS/geography/generated/continent_map_equal_earth.png)
-- [سجل تشغيل التوليد والتحقق](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683310415)
+- [سجل تشغيل التوليد والتحقق](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683447317)
 
 ### الخطوة التالية
 1. مراجعة الخريطة بصريًا من الرابط أعلاه، خصوصًا تسميات أوروبا وأوقيانوسيا والقارة القطبية الجنوبية.
