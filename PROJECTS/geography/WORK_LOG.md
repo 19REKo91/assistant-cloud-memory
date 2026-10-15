@@ -52,3 +52,31 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - GBIF notes that ocean boundaries are approximate and the cutter reflects one seven-continent convention. Its ODbL-derived source license must be respected.
 - Antarctic total represents Natural Earth land polygons; floating ice shelves are not automatically included.
 - No map image has been generated. The user explicitly prohibited creating images inside ChatGPT's environment; any future map must be rendered remotely and checked as an actual file.
+
+## Session update — 2026-10-15: remote map generated and published
+
+### Completed and verified
+- Added scripts/geography/render_continent_map.py; it reads the calculated physical-continent polygons and area CSV, renders Equal Earth (EPSG:8857), and checks the PNG can be opened, is at least 1600×800, and exceeds 50 KB.
+- Added a remote rendering step to GitHub Actions. The map is generated only on the GitHub Actions runner; no image was created in ChatGPT's local environment.
+- Successful full workflow run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683310415
+- Verified runner output: MAP_RENDERED_AND_IMAGE_FILE_VERIFIED; PNG dimensions 2769×1461; size 391,513 bytes. The workflow uploaded the audit bundle and published the PNG into the project branch.
+- Verified the PNG exists in GitHub at PROJECTS/geography/generated/continent_map_equal_earth.png; GitHub's directory API reported 391,513 bytes.
+- Added explicit GBIF/OpenStreetMap ODbL attribution to the map footer.
+- Hardened the publishing step to fetch and rebase on the latest branch before pushing, after a first push was rejected due to concurrent branch updates.
+
+### Direct map links
+- View: https://github.com/19REKo91/assistant-cloud-memory/blob/geography-continent-area-audit/PROJECTS/geography/generated/continent_map_equal_earth.png
+- Raw PNG: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/geography-continent-area-audit/PROJECTS/geography/generated/continent_map_equal_earth.png
+- Latest audit artifact (14-day retention): https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38683310415/artifacts/11949540485
+
+### Current verified state
+- Branch: geography-continent-area-audit.
+- Latest README correction commit: 327cfa54b147ff6aa33da3d9f0c91737028de5c6.
+- Main remains unchanged. Draft PR #10 remains open and unmerged.
+- The map is programmatically verified, but still needs visual review and independent comparison of area values before the project can be called complete.
+
+### Remaining work
+1. User visually reviews the map labels and layout.
+2. Decide whether Antarctic floating ice shelves should be included in the definition.
+3. Compare preliminary values against an independent source and document methodological differences.
+4. Re-run and update the map only if the review warrants a change.
