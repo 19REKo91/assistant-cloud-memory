@@ -2,6 +2,13 @@ name: Geography continent area audit
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/geography/continent_area.py"
+      - ".github/workflows/geography-continent-area.yml"
+      - "PROJECTS/geography/README.md"
   push:
     branches:
       - geography-continent-area-audit
