@@ -352,7 +352,7 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - Updated the map's attribution footer and visually reviewed the new map.
 
 ### Repository handoff and boundaries
-- Re-fetched the branch map directory and verified the final PNG metadata. Comparison with `main` reports the project branch ahead by 75 commits and behind by 0.
+- Re-fetched the branch map directory and verified the final PNG metadata. Comparison with `main` reports the project branch ahead of `main` and behind by 0; the base branch SHA remains `5a71f8ef781035c1436f267f4870874082580da4`.
 - PR #10 remains open/draft/unmerged; `main` was not changed. This preserves the prior instruction not to merge without owner approval.
 - ODbL distribution requirements remain part of the dataset's license conditions: preserve attribution, license URI, and provide the derived database in machine-readable form when publicly using/distributing the database as required by ODbL 1.0. This is a documented compliance condition, not an unresolved calculation task.
 - Final state: **project work complete within the declared operational definition; merge/release authorization remains with the repository owner.**
