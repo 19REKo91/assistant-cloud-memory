@@ -407,3 +407,13 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Live missing/invalid-token HTTP 401 behavior and Bearer challenge remain verified from the prior post-publish checks.
 - Latest offline CI is green; it confirms local protocol-client behavior and configuration syntax, not production credentials.
 - **Project status: incomplete** until the valid-token production workflow or an external host confirms `initialize` → `notifications/initialized` → `tools/list`.
+
+## Final checkpoint — 2026-10-15: latest CI verified, production handoff ready
+
+- Final offline CI run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38723172547 — **success**. It validated .mcp.json and .vscode/mcp.json JSON, read-only tool allowlists, GitHub Copilot custom-agent YAML and secret reference, the manual production-handshake workflow YAML, smoke script syntax, and all four dummy-token/mock scenarios.
+- The previous failing CI attempt (38723113211) was caused by GitHub Actions expanding a literal secrets expression inside the validation shell command. Validation was changed to assemble the expected placeholder from string pieces; the next run succeeded.
+- The source repo's Vercel integration currently reports build-rate-limit failure for commits that only adjust MCP configuration/docs; this does not change the separate Floot app. The last verified Vercel production deployment for this repo was READY at commit c15aea35077d80a1b571555a445f525f52b5a7a5. Do not purchase an upgrade or repeatedly trigger builds just to publish documentation.
+- No Floot source or production app changes were made during this GitHub-only stage, because Floot's daily build-action limit is active. The hosted app remains https://chrono-cross-gpt.floot.app with prior verified authentication rejection behavior.
+- The remaining completion gate is a successful real-token handshake. An owner-authorized secret entry is unavoidable with the current connectors because GitHub secret settings cannot be written through the available GitHub API tool and the Floot token value is intentionally not readable.
+- Preferred no-API-billing host: GitHub Copilot cloud agent using .github/agents/chrono-cross-gpt-reader.agent.md and an Agents secret COPILOT_MCP_CHRONO_TOKEN. To verify production independently, use the manual Actions workflow and an Actions secret CHRONO_MCP_TOKEN. These are different secret scopes. Do not put the token in source, the notebook, URLs, terminal history, or ChatGPT.
+- Exact status: **incomplete** — deployed service plus tested client tooling/CI are ready, but valid-token production initialize → notifications/initialized → tools/list has not yet been observed.
