@@ -447,3 +447,20 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - No Floot code, production deployment, or credentials were changed.
 - Recommended next work: after Floot's daily quota resets, first verify the authenticated production MCP handshake and run Floot typecheck/tests. Only after that baseline is green should implementation resume on the user's core reading-capability requirement, prioritizing a clearly tested PDF text extraction path and scanned-PDF/OCR routing, then common office formats. Keep dynamic browser rendering, audio, and video explicitly marked unavailable until an actual supported runtime/provider is integrated and tested.
 - **Project status remains INCOMPLETE** until the real-token production sequence `initialize` → `notifications/initialized` → `tools/list` succeeds.
+
+
+## Independent work completed on 2026-10-15 — MCP smoke-test interoperability
+
+- Updated `tools/chrono-cross-gpt-mcp-smoke-test.mjs` to parse JSON-RPC replies returned either as `application/json` or as Server-Sent Events (`text/event-stream`), which is a valid Streamable HTTP response form. The parser ignores SSE comments/non-JSON events and looks for a JSON-RPC result/error. It also checks that `initialize` and `tools/list` replies carry the expected request IDs.
+- Updated `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs` with a fully mocked SSE scenario for both `initialize` and `tools/list`; this scenario uses only a dummy token and intercepted fetch, never production credentials.
+- Added `.github/workflows/chrono-cross-gpt-smoke-tests.yml` to run syntax checks and the credential-safe offline test suite on relevant pushes, pull requests, or manual dispatch.
+- Commits made on `main`:
+  - `c64eebe51d36ea31e088e365912e3e7776e3803c` — SSE response support (subsequently refined for escape correctness).
+  - `992ba966767dd87a045755763472251a956f2057` — initial SSE mock test (subsequently refined for escape correctness).
+  - `b1a6475ae1eaa7822938847f7f0658f111cc5fa1` — corrected SSE line parsing escapes.
+  - `baf9597ac622c8d3a8697a8189183f888212a236` — corrected SSE test fixture delimiters.
+  - `a6e0a87e60e61ca74703ff84aec2275c95462676` — added dedicated CI workflow.
+- Verification boundary: these files were saved to GitHub, but the new CI run has not yet been confirmed in this session. Do not describe the new SSE scenario as passing until the workflow result is checked. The previous successful CI run only proves the earlier test version.
+- This work is in the GitHub support repository and improves the production handshake test harness; it does not change Floot app source or its live deployment.
+- Project remains **INCOMPLETE**: the real production MCP handshake using the protected token and Floot-side app tests are still unverified.
+- Next independent action: inspect the newly triggered workflow result and fix any failure. Then continue improving the reading capability contract/tests in the support repo without inventing unverified Floot implementation. When Floot tools return, inspect the actual app files before porting changes and run app typecheck/tests before any publish.
