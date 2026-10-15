@@ -1,6 +1,6 @@
 # CHRONO CROSS GPT — Assistant Notebook
 
-Last updated: 2026-10-13 (UTC)
+Last updated: 2026-10-15 (UTC)
 
 ## Purpose
 This is the durable working notebook for the assistant to resume the CHRONO CROSS GPT project without asking King to repeat earlier context. Update this file after meaningful work sessions.
@@ -240,3 +240,31 @@ No components have been disabled. An attempt to inventory the Floot project was 
 - GitHub Actions workflow-run history could not be read through the available approved fetch endpoint (HTTP 400 endpoint restriction); no run history was inferred.
 - Result: no workflow or service was disabled. The comparison rules out the two Android workflows as obvious redundant candidates. Next: inventory repository automation and optional service resources for demonstrably inactive, independent items; preserve all current projects and do not resume paused Vision Bridge/Railway operations without explicit resumption.
 
+
+
+## Session log — 2026-10-15 (UTC): Floot MCP header compatibility fix
+
+### Verified work
+- Floot build-action tools are available again; re-read the live project tree and current MCP files. Connected secret resource still exposes `CHRONO_MCP_TOKEN` server-side; its value was never read, printed, logged, or added to GitHub.
+- Read Floot's `auth-and-payment-challenges` guide. The published edge only restores `WWW-Authenticate` when the endpoint returns a 2xx response with `x-floot-status` and `x-floot-www-authenticate`; directly returning 401 from the Lambda caused AWS/Floot to strip the standard header.
+- Updated `endpoints/mcp_POST.ts` to return internal HTTP 200 plus `x-floot-status: 401` and `x-floot-www-authenticate: Bearer realm="chrono-cross-gpt"` for missing/invalid credentials. The live edge now converts this to a real HTTP 401 and standard `WWW-Authenticate` header. Bearer validation remains required; no auth bypass was added.
+- Updated `notifications/initialized` to return HTTP 202 with an empty body.
+- Updated `helpers/mcpEndpoint.spec.tsx` to cover Floot's challenge bridge, wrong-token non-disclosure, initialize/tools-list, and the initialized notification.
+- Created Floot checkpoint `1dee13f6-c617-4b6c-b135-31a406167506`, “Fix Floot MCP auth challenge handling”.
+- Final regular tests: 4 spec files passed, 0 failed (`themeMode`, `readPageEndpoint`, `mcpEndpoint`, `mcpStatusEndpoint`).
+- Hook tests: 2 passed, 0 failed (`useMediaQuery`, `useDebounce`).
+- TypeScript typecheck: clean.
+- Published successfully to the existing URL, no domain change and no native build: https://chrono-cross-gpt.floot.app.
+- Production verification after publish:
+  - POST `/_api/mcp` without Authorization: HTTP 401; standard `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`; body reports `authentication_required`.
+  - POST with deliberately incorrect Bearer token: HTTP 401 and standard challenge; response does not echo the supplied test token.
+  - GET `/_api/mcp-status`: HTTP 200; `tokenConfigured=true`; `hostConnection="not_verified"`; no secret returned.
+
+### Still not verified
+- A production request with the valid token performing `initialize`, `notifications/initialized`, and `tools/list`, and a real external MCP-host handshake, remain unverified. Do not expose the token to perform this test; use a compatible host's secure credential store and ensure logs never include it.
+- The endpoint uses a configured static Bearer token, not a full OAuth 2.1 authorization-code/PKCE authorization server. Do not claim OAuth discovery support.
+- The earlier daily-quota blocker is no longer preventing the Floot tools in this session; it should not be treated as the current blocker. Current remaining blocker is lack of a verified valid-token external handshake.
+- Project status: **incomplete** until the authenticated production handshake is verified. Keep the public app live at the same URL as previously authorized.
+
+### Exact next step
+Run a valid-token protocol handshake from a compatible MCP client configured through its secure credential UI. Verify the server's initialize result, send notifications/initialized and confirm its empty 202 response, then request tools/list. Record only status/protocol outcomes, never the token. Update `hostConnection` only after the external handshake is actually confirmed.
