@@ -1,0 +1,39 @@
+name: CHRONO CROSS GPT production MCP handshake
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  handshake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check whether the secure test secret exists
+        id: secret
+        shell: bash
+        env:
+          CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
+        run: |
+          if [ -n "$CHRONO_MCP_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "Production handshake can run; secret value is not printed."
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipped: add repository Actions secret CHRONO_MCP_TOKEN before running this workflow."
+          fi
+
+      - name: Validate smoke-test script
+        if: steps.secret.outputs.configured == 'true'
+        run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
+
+      - name: Run real production MCP handshake
+        if: steps.secret.outputs.configured == 'true'
+        env:
+          CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
+        run: node tools/chrono-cross-gpt-mcp-smoke-test.mjs
