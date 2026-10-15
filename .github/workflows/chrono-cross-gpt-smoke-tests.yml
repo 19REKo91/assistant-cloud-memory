@@ -1,0 +1,36 @@
+name: CHRONO CROSS GPT smoke-test safety suite
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
+      - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
+      - ".github/workflows/chrono-cross-gpt-smoke-tests.yml"
+  pull_request:
+    paths:
+      - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
+      - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
+      - ".github/workflows/chrono-cross-gpt-smoke-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check JavaScript syntax
+        run: |
+          node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
+          node --check tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
+      - name: Run credential-safe offline protocol tests
+        run: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
