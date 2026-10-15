@@ -11,7 +11,7 @@
 
 ## License treatment for generated data
 
-The generated `continent_land_polygons.geojson` is a database derived by intersecting Natural Earth land polygons with the GBIF/ OpenStreetMap-derived continent partition. To respect the stated share-alike basis of the partition source, this derived GeoJSON database in the audit artifact is made available under the **Open Data Commons Open Database License (ODbL) 1.0**, subject to the license terms.
+The generated `continent_land_polygons.geojson`, `continent_land_area.csv`, and `antarctica_area_scenarios.csv` are derived from intersections with the GBIF/OpenStreetMap-derived continent partition. To respect the stated share-alike basis of the partition source, these derived geographic database outputs in the audit artifact are made available under the **Open Data Commons Open Database License (ODbL) 1.0**, subject to the license terms. The country-classification baseline sourced only from Natural Earth remains separately documented as preliminary and public-domain-source-derived.
 
 - ODbL 1.0 text: https://opendatacommons.org/licenses/odbl/1-0/
 - GBIF source and license statement: https://github.com/gbif/continents#license
