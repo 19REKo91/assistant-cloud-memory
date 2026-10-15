@@ -87,16 +87,23 @@ def main() -> int:
         cutters = gpd.read_file(cutter_file)
         if land.empty or cutters.empty:
             raise RuntimeError("Land or continent cookie-cutter dataset is empty")
+        aliases = {name.casefold(): name for name in EXPECTED}
+        aliases.update({
+            "af": "Africa", "an": "Antarctica", "as": "Asia", "eu": "Europe",
+            "na": "North America", "oc": "Oceania", "sa": "South America",
+            "north_america": "North America", "north-america": "North America",
+            "south_america": "South America", "south-america": "South America",
+        })
         name_candidates = ("continent", "CONTINENT", "name", "NAME", "continent_name", "CONTINENT_N", "slug")
         name_field = next(
             (field for field in name_candidates if field in cutters.columns and
-             set(cutters[field].dropna().astype(str).str.strip()).intersection(EXPECTED)),
+             any(str(value).strip().casefold() in aliases for value in cutters[field].dropna())),
             None,
         )
         if name_field is None:
-            raise RuntimeError(f"Could not identify continent-name field. Available fields: {list(cutters.columns)}")
+            raise RuntimeError(f"Could not identify continent-name field. Available fields: {list(cutters.columns)}; values: { {field: cutters[field].dropna().astype(str).unique()[:30].tolist() for field in cutters.columns if field != \"geometry\"} }")
 
-        cutters["continent_name"] = cutters[name_field].astype(str).str.strip()
+        cutters["continent_name"] = cutters[name_field].map(lambda value: aliases.get(str(value).strip().casefold(), str(value).strip()))
         available = set(cutters["continent_name"].dropna())
         missing = sorted(EXPECTED - available)
         if missing:
