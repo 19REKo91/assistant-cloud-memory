@@ -460,7 +460,7 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
   - `b1a6475ae1eaa7822938847f7f0658f111cc5fa1` — corrected SSE line parsing escapes.
   - `baf9597ac622c8d3a8697a8189183f888212a236` — corrected SSE test fixture delimiters.
   - `a6e0a87e60e61ca74703ff84aec2275c95462676` — added dedicated CI workflow.
-- Verification boundary: these files were saved to GitHub, but the new CI run has not yet been confirmed in this session. Do not describe the new SSE scenario as passing until the workflow result is checked. The previous successful CI run only proves the earlier test version.
+- Verification boundary: these files were saved to GitHub, but the new CI run has not yet been confirmed in this session. The commit combined-status query currently shows a Vercel status failure due to a build-rate-limit URL; that is not evidence that the new GitHub Actions smoke-test workflow passed or failed. Do not describe the new SSE scenario as passing until its workflow result is checked. The previous successful CI run only proves the earlier test version.
 - This work is in the GitHub support repository and improves the production handshake test harness; it does not change Floot app source or its live deployment.
 - Project remains **INCOMPLETE**: the real production MCP handshake using the protected token and Floot-side app tests are still unverified.
 - Next independent action: inspect the newly triggered workflow result and fix any failure. Then continue improving the reading capability contract/tests in the support repo without inventing unverified Floot implementation. When Floot tools return, inspect the actual app files before porting changes and run app typecheck/tests before any publish.
