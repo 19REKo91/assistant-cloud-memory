@@ -22,8 +22,33 @@
 The calculation groups country polygons by Natural Earth's `CONTINENT` field. This is a reproducible baseline, not a final natural-continent partition: transcontinental countries inherit the dataset's classification. Do not present its totals as definitive natural continent areas without a separately documented rule for cross-continent countries and islands.
 
 ### Next exact steps
-1. Run `.github/workflows/geography-continent-area.yml` on branch `geography-continent-area-audit` using GitHub Actions → Run workflow.
-2. Inspect the run logs and download artifact `geography-area-audit`.
-3. Verify CSV/JSON contents, totals, feature counts, and audit metadata; record the actual run URL and result here.
-4. Only after the baseline is verified, define explicit geographic rules for transcontinental countries and island groups.
-5. Build the coastlines/map from real geographic polygons remotely via GitHub Actions; do not generate images inside ChatGPT's local environment.
+1. Review the meaning of Antarctic area: land polygons only versus land plus floating ice shelves.
+2. Compare preliminary values with an independent reference and explain differences, especially island grouping and source scale.
+3. Once the definition is approved, generate a map remotely from the real polygon data using Equal Earth for display only; keep area calculations geodesic and independent of the display projection.
+4. Inspect the resulting map file for non-empty content, expected dimensions, and readable labels before calling it complete.
+
+## Session update — 2026-10-15: remote calculation verified
+
+### Completed and verified
+- GitHub Actions run [#11](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700) completed successfully, including both calculation scripts and artifact upload.
+- Downloaded and inspected artifact ID `11948154828`; it contains five non-empty files: country details, country-classification totals, country audit JSON, physical-continent totals, and physical-continent audit JSON.
+- The first country-based grouping is unsuitable as a final continent calculation because Natural Earth's `CONTINENT` field assigns whole countries to one group. It remains explicitly preliminary.
+- Added `scripts/geography/continent_land_area.py`, using Natural Earth 1:10m land and minor-island polygons intersected with the GBIF seven-continent cookie-cutter polygons pinned to commit `5f2aaf608f2f828bb1d03ae0d2ef3f41feacd5be`.
+- The script repaired no Natural Earth land geometries in this run. It processed 2,806 land/island features.
+- Physical land totals (million km²): Asia 43.671567; Africa 29.848559; North America 24.252768; South America 17.708031; Antarctica 12.370083; Europe 10.057641; Oceania 8.948389.
+- Audit reconciliation: source land 146,857,177.566 km²; assigned 146,857,037.717 km²; unassigned 139.817 km²; overlap excess -0.032 km².
+- Added results, sources, methodology, caveats, and the artifact URL to `PROJECTS/geography/README.md`.
+
+### Current verified Git state
+- Branch: `geography-continent-area-audit`.
+- Calculation code commit: `8d7b14629ec5d6ee728e9fe73107219eca8eb45a`.
+- README results update commit: `d8450d8cb15a751047252aa5ae1d81360cb4e8ab`.
+- Main remains unchanged; draft PR #10 is open and unmerged.
+- Successful run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700
+- Artifact (14-day retention): https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38682861700/artifacts/11948154828
+
+### Still incomplete
+- Values are preliminary, not final certified continent areas.
+- GBIF notes that ocean boundaries are approximate and the cutter reflects one seven-continent convention. Its ODbL-derived source license must be respected.
+- Antarctic total represents Natural Earth land polygons; floating ice shelves are not automatically included.
+- No map image has been generated. The user explicitly prohibited creating images inside ChatGPT's environment; any future map must be rendered remotely and checked as an actual file.
