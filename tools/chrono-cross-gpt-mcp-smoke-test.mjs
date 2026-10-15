@@ -80,8 +80,12 @@ try {
     capabilities: {},
     clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
   });
-  if (init.response.status !== 200 || init.parsed?.id !== 1 || !init.parsed?.result?.serverInfo || init.parsed.result.serverInfo.name !== "chrono-cross-gpt") {
+  if (init.response.status !== 200 || init.parsed?.jsonrpc !== "2.0" || init.parsed?.id !== 1 || init.parsed?.error || !init.parsed?.result?.serverInfo || init.parsed.result.serverInfo.name !== "chrono-cross-gpt") {
     fail("initialize", init.response.status, init.body, init.response.headers.get("www-authenticate"));
+  }
+
+  if (init.parsed.result.protocolVersion !== "2025-11-25") {
+    fail("initialize", init.response.status, "Server negotiated an unsupported MCP protocol version.", init.response.headers.get("www-authenticate"));
   }
 
   const initialized = await request("notifications/initialized", undefined, undefined, init.parsed.result.protocolVersion);
@@ -91,7 +95,7 @@ try {
 
   const listed = await request("tools/list", 2, undefined, init.parsed.result.protocolVersion);
   const tools = listed.parsed?.result?.tools;
-  if (listed.response.status !== 200 || listed.parsed?.id !== 2 || !Array.isArray(tools)) {
+  if (listed.response.status !== 200 || listed.parsed?.jsonrpc !== "2.0" || listed.parsed?.id !== 2 || listed.parsed?.error || !Array.isArray(tools)) {
     fail("tools/list", listed.response.status, listed.body, listed.response.headers.get("www-authenticate"));
   }
   const toolNames = tools.map((tool) => tool?.name).filter((name) => typeof name === "string");
