@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "chrono-cross-gpt": {
+      "type": "http",
+      "url": "https://chrono-cross-gpt.floot.app/_api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${COPILOT_MCP_CHRONO_TOKEN}"
+      }
+    }
+  }
+}
