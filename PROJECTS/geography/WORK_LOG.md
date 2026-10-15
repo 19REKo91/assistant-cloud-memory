@@ -120,3 +120,33 @@ The calculation groups country polygons by Natural Earth's `CONTINENT` field. Th
 - The physical-land method is more appropriate for the intended seven-continent comparison, but remains preliminary: GBIF boundary/cutter conventions, islands, 139.817 km² unassigned land, and Antarctic floating ice shelves need explicit treatment. The external reference values may use different conventions, so percentage differences alone do not prove a code error.
 - Updated `PROJECTS/geography/README.md` with the audit, computed differences, and a clear incomplete status. README update commit: `0fa0ee17c043e3641b576da1029c22b44b59aeca`.
 - **Project status remains INCOMPLETE.** Next exact steps: (1) visually review the published PNG, (2) decide land-only vs land plus Antarctic ice shelves, (3) document island and transcontinental-boundary rules and investigate unassigned land, (4) compare against a source with matching definitions, (5) rerun and update the map only after the area labels are justified.
+
+
+## Session update — 2026-10-15: map visual review, deduplication, and Antarctic shelf scenario
+
+### Visual review
+- Opened and inspected the actual PNG in the successful remote artifact, not just the file metadata.
+- Latest verified artifact map: 2740×1461 px, 396,377 bytes. Seven continent labels and values are readable overall; no major label overlap blocks interpretation.
+- The map's Antarctica value is land-only and must be labeled/compared as such.
+
+### Correction to the area method
+- A comparison between the sum of per-feature geodesic areas and the unioned geometry exposed source-polygon overlaps: the raw feature sum was 146,857,177.566 km², while the unioned source land area is 146,841,797.814 km². Difference removed by union: 15,379.752 km².
+- Updated `scripts/geography/continent_land_area.py` to union clipped polygons within each continent before computing reported areas, and to compute the unassigned land separately. The final run's assigned total is 146,841,657.997 km²; unassigned land is 139.817 km²; reconciliation excess rounds to -0.000 km².
+- Final deduplicated continent land areas (km²): Asia 43,664,181.383; Africa 29,848,300.864; North America 24,251,174.243; South America 17,707,506.916; Antarctica 12,370,031.919; Europe 10,054,659.682; Oceania 8,945,802.991.
+
+### Antarctic ice-shelf alternative
+- Added Natural Earth 1:10m Antarctic ice-shelf polygons as a separately reported scenario, leaving the primary seven-continent CSV land-only.
+- Added `antarctica_area_scenarios.csv` to the artifact. Land-only Antarctica: 12,370,031.919 km². Land unioned with ice shelves: 13,943,856.011 km². Net addition after overlap removal: 1,573,824.093 km².
+- The shelf dataset is source-defined and based on older MOA 2003–2004 data; it is not a current time-specific ice-sheet measurement. This alternate result is much closer to the 14.2 million km² reference (about -1.80%) than land-only (-12.89%), but reference definitions still need confirmation.
+- Updated README comparison values and added method, visual-review, and source caveats.
+
+### Verified run and artifacts
+- Successful full run: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38684837027
+- Artifact ID 11949203489: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38684837027/artifacts/11949203489
+- Artifact includes both CSV baselines, both audit JSON files, continent polygon GeoJSON, map PNG, and the new Antarctic scenario CSV.
+- The renderer completed PNG verification and the publish step succeeded. Latest verified image blob on the project branch at that point: `9282875c8546a308c3f2f3a76a0a641307fd8261` (396,377 bytes).
+- Final code commit for the successful optimized workflow: `7447a3666c9290a0e52fab30f8ed171b543cf250`. The image publishing action subsequently advanced the branch to `a6c62da66119bd343f889b1711cc63d566278f16`; README audit update commit: `bd02c3ce20b261db44e4611e86139dd10aa64897`.
+
+### Status and next steps
+- The major internal overlap issue has been addressed and verified by a successful remote workflow.
+- Project remains **INCOMPLETE**, not final-approved. Next steps: (1) verify the current branch head and README/work-log writes, (2) rerun the workflow after documentation updates if required by the workflow trigger, (3) settle the exact reference definition for continent areas, and (4) review ODbL attribution/redistribution obligations before merging PR #10. Main remains unchanged; PR #10 remains unmerged.
