@@ -5,7 +5,11 @@
       "url": "https://chrono-cross-gpt.floot.app/_api/mcp",
       "headers": {
         "Authorization": "Bearer ${COPILOT_MCP_CHRONO_TOKEN}"
-      }
+      },
+      "tools": [
+        "read_public_page",
+        "get_browser_capabilities"
+      ]
     }
   }
 }
