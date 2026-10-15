@@ -367,3 +367,5 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - No device-side test has yet confirmed the copied log across a screen-off interval. Next: verify CI, install only if build succeeds and package/signature permits, test screen off/on, then use “نسخ سجل التشخيص” on both phones and compare timelines. Do not uninstall the existing app on a package/signing conflict.
 
 - Follow-up commit `b4b371cf7704da34c08a9ca730c4a84f333e18e8` also records the actual BLE recovery reason and failure message in the diagnostic file, not only a generic error marker. CI run #39: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38693453130 (queued at note time).
+
+- CI run #38 for the diagnostic button commit completed successfully: unit tests, APK assembly, and artifact upload passed. Artifact ID `11953406126`, expires `2026-10-22T06:37:02Z`. This artifact predates the small follow-up that adds detailed error text; prefer run #39's artifact after it succeeds.
