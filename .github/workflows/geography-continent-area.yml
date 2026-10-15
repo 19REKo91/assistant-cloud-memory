@@ -39,6 +39,9 @@ jobs:
       - name: Calculate and validate areas
         run: python scripts/geography/continent_area.py
 
+      - name: Calculate physical land area by continent
+        run: python scripts/geography/continent_land_area.py
+
       - name: Upload audit outputs
         uses: actions/upload-artifact@v4
         with:
