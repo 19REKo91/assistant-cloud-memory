@@ -81,11 +81,8 @@ def main() -> int:
         y -= 0.095
     side.text(
         0.02, 0.12,
-        "\\n\\n".join([
-            "Method: Natural Earth 1:10m land + minor islands; GBIF seven-continent partition; geodesic WGS84 area.",
-            "Boundaries and island assignments follow the cited source. Antarctica excludes floating ice shelves unless represented in the land layer.",
-            "Map projection: Equal Earth (EPSG:8857). Projection affects display, not area calculation.",
-        ]),
+        "Method: Natural Earth 1:10m land + minor islands; GBIF seven-continent partition; geodesic WGS84 area. Boundaries and island assignments follow the cited source. Antarctica excludes floating ice shelves unless represented in the land layer. Display projection: Equal Earth (EPSG:8857); projection does not affect area calculations.",
+
         transform=side.transAxes, fontsize=8.1, color="#4b5563", va="top", wrap=True
     )
     fig.suptitle("Seven-continent model · verified remote data pipeline", x=0.05, y=0.99, ha="left", fontsize=10, color="#52606d")
