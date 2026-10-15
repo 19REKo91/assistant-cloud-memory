@@ -268,3 +268,16 @@ No components have been disabled. An attempt to inventory the Floot project was 
 
 ### Exact next step
 Run a valid-token protocol handshake from a compatible MCP client configured through its secure credential UI. Verify the server's initialize result, send notifications/initialized and confirm its empty 202 response, then request tools/list. Record only status/protocol outcomes, never the token. Update `hostConnection` only after the external handshake is actually confirmed.
+
+
+## Final verification — 2026-10-15 after latest publish
+
+- Re-ran all 4 regular spec files after the latest code changes: 4 passed, 0 failed.
+- Re-ran both hook spec files: 2 passed, 0 failed.
+- Re-ran TypeScript typecheck: clean.
+- Re-published the latest code and tests to the same existing URL. Floot publish job `860d1ed4-f286-47b9-a85a-746e2b8ec18a` succeeded; production remains public at https://chrono-cross-gpt.floot.app.
+- Rechecked the production edge after this publish using an unauthenticated `POST /_api/mcp`: HTTP 401, standard `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`, no exposed `x-floot-*` headers, and safe `authentication_required` body.
+- Attempted to perform a valid-token protocol handshake inside Floot's project VM without printing the secret. The isolated VM reported that `CHRONO_MCP_TOKEN` is unavailable there; no secret was read, printed, or copied. Therefore a production authenticated `initialize` → `notifications/initialized` → `tools/list` exchange and real external-host connection remain **unverified**.
+- The endpoint's unit tests cover both missing and deliberately incorrect tokens for all three methods; they verify that credentials are not echoed. These are handler-level tests, not proof of a valid-token production connection.
+- Current project status remains **incomplete pending authenticated production handshake**. No OAuth 2.1/PKCE authorization server is implemented; the endpoint uses a static configured Bearer token.
+- Exact next step: configure the MCP URL in a compatible MCP client using the existing token in that client's secure credential store, then verify all three protocol methods. Never paste the token into chat or write it to logs or GitHub. Only mark `hostConnection` verified after an actual authenticated handshake.
