@@ -335,3 +335,14 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - حدود التحقق: لم يُثبت إجمالي استخدام مساحة Actions/Artifacts لكل المستودع أو الحساب، ولم تُفحص كل عمليات البناء؛ الأرقام تخص أحدث 10 تشغيلات وآثارها فقط.
 - الحالة: تدقيق أحدث 10 آثار ومستودع مكتمل؛ فحص الحصة الشاملة والتنظيف الاختياري بانتظار التحقق/موافقة المستخدم.
 - التالي: عند الحاجة، افحص إجمالي مساحة Actions من صفحة الاستخدام المتاحة، ثم قدّم قائمة تنظيف محددة وآمنة مع الأحجام والتواريخ؛ لا تحذف شيئًا قبل الموافقة.
+
+
+## 2026-10-15 — Device observations: asymmetric NEAR/APART
+
+- User provided three device log snapshots after the previous APK discussion. Treat RSSI signs as likely negative values (the Arabic/RTL transcription may omit the minus sign), and confirm directly from the app if needed.
+- Phone 2 after moving away: state `APART`, apparent last RSSI `-84 dBm`, raw scan count 433, partner matches 226, service reports running; event `state=APART | +40169ms`. This is consistent with the local engine confirming separation on phone 2.
+- Phone 1 after opening another app on phone 2: phone 1 still reports `NEAR`, apparent RSSI `-44 dBm`, raw scans 1523, partner matches 899, service reports running. Event history shown: `NEAR +59159ms`, `APART +40158ms`, `NEAR +938ms`.
+- Phone 1 after user-described “closing the second phone”: phone 1 still reports `NEAR`, apparent RSSI `-62 dBm`, raw scans 1217, partner matches 662, service reports running. Clarify whether “closing the second phone” means closing LINK UI, locking the screen, or powering off the device; those are materially different tests.
+- Interpretation: evidence supports that phone 1's scan/service continues while LINK is not foregrounded on phone 2. Phone 2 can enter APART while phone 1 remains NEAR, showing that each phone independently computes state from its own RSSI observations; synchronized UI state is not guaranteed by current architecture. Different RSSI readings across phones are expected due to antenna/orientation and device radio differences, but the magnitude/time asymmetry warrants a controlled test.
+- Next diagnostic test (no code change yet): place both phones together with LINK visible on both and capture timestamps/state/RSSI on both; move them apart and keep distance/orientation fixed for at least 15 seconds; then separately test (a) switch to another app, (b) lock screen, (c) close/swipe away LINK, and only if intended (d) power off phone 2. Record which action occurred. Do not combine these scenarios. Do not change thresholds until this isolates the cause.
+- No source code or APK changed in response to these observations. Keep `main` untouched.
