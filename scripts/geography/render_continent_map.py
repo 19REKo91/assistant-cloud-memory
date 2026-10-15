@@ -81,7 +81,7 @@ def main() -> int:
         y -= 0.095
     side.text(
         0.02, 0.12,
-        "Method: Natural Earth 1:10m land + minor islands; GBIF seven-continent partition; geodesic WGS84 area. Boundaries and island assignments follow the cited source. Antarctica excludes floating ice shelves unless represented in the land layer. Display projection: Equal Earth (EPSG:8857); projection does not affect area calculations.",
+        "Method: Natural Earth 1:10m land + minor islands; GBIF seven-continent partition; geodesic WGS84 area. Continent boundary attribution: GBIF / OpenStreetMap contributors (ODbL). Antarctica excludes floating ice shelves unless represented in the land layer. Display projection: Equal Earth (EPSG:8857); projection does not affect area calculations.",
 
         transform=side.transAxes, fontsize=8.1, color="#4b5563", va="top", wrap=True
     )
