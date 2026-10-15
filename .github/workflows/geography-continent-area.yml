@@ -11,6 +11,7 @@ on:
       - "scripts/geography/render_continent_map.py"
       - ".github/workflows/geography-continent-area.yml"
       - "PROJECTS/geography/README.md"
+      - "PROJECTS/geography/ATTRIBUTION.md"
   push:
     branches:
       - geography-continent-area-audit
@@ -50,6 +51,11 @@ jobs:
 
       - name: Render and validate Equal Earth map remotely
         run: python scripts/geography/render_continent_map.py
+
+      - name: Include data attribution and license notice in audit bundle
+        run: |
+          cp PROJECTS/geography/ATTRIBUTION.md output/geography/ATTRIBUTION.md
+          test -s output/geography/ATTRIBUTION.md
 
       - name: Upload audit outputs
         uses: actions/upload-artifact@v4
