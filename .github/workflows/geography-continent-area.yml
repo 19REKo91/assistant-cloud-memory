@@ -34,7 +34,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install calculation dependencies
-        run: python -m pip install --upgrade pip geopandas pyproj pandas
+        run: python -m pip install --upgrade pip geopandas pyproj pandas matplotlib pillow
 
       - name: Calculate and validate areas
         run: python scripts/geography/continent_area.py
