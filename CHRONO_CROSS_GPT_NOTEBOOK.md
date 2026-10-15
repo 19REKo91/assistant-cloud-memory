@@ -436,3 +436,14 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Added a malformed-token test proving the client rejects a too-short token before making any request. Tests use only a dummy token and a mocked `fetch`; they do not contact production.
 - GitHub Actions verified the updated suite successfully: run `38728619108`, commit `39fd7cb04c4b5189a8d55697c96f50cdbb8dd241`. Result: success. This is still an offline/mock CI result, not a real production handshake.
 - Credential scope reminder confirmed from `.github/agents/chrono-cross-gpt-reader.agent.md`: `CHRONO_MCP_TOKEN` is the GitHub Actions secret for the manual production handshake; `COPILOT_MCP_CHRONO_TOKEN` is a separate GitHub Copilot **Agents** secret for the custom agent. The Actions secret does not automatically populate the Agents secret. Configure both only through their appropriate secure settings, with matching valid bearer-token values; never print or commit them.
+
+
+## Session update — 2026-10-15: additional MCP client safety regression checks
+
+- Added a mock-only assertion to `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs` requiring the client to set `redirect: "error"` before sending a bearer credential. This guards against silently following redirects with credentials.
+- Added a mock scenario where the endpoint responds with an unexpected MCP server identity; the smoke test must reject it and must not print the dummy token.
+- Commit: `7dba7d6003d64834a8117b5cdce297723151a7db`.
+- CI run `38728956082` completed successfully: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38728956082. This verifies offline mocked regression checks only; no production credential was used and no live MCP handshake was performed.
+- No Floot code, production deployment, or credentials were changed.
+- Recommended next work: after Floot's daily quota resets, first verify the authenticated production MCP handshake and run Floot typecheck/tests. Only after that baseline is green should implementation resume on the user's core reading-capability requirement, prioritizing a clearly tested PDF text extraction path and scanned-PDF/OCR routing, then common office formats. Keep dynamic browser rendering, audio, and video explicitly marked unavailable until an actual supported runtime/provider is integrated and tested.
+- **Project status remains INCOMPLETE** until the real-token production sequence `initialize` → `notifications/initialized` → `tools/list` succeeds.
