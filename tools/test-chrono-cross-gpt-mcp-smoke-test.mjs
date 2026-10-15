@@ -23,6 +23,7 @@ const mockSource = [
   "globalThis.fetch = async (input, init = {}) => {",
   "  const url = new URL(String(input));",
   "  if (url.origin !== 'https://chrono-cross-gpt.floot.app' || url.pathname !== '/_api/mcp') throw new Error('Unexpected destination in test mock');",
+  "  if (init.redirect !== 'error') throw new Error('Client must refuse redirects when sending credentials');",
   "  const request = JSON.parse(String(init.body));",
   "  const requestHeaders = new Headers(init.headers);",
   "  const authorization = requestHeaders.get('authorization');",
@@ -32,7 +33,7 @@ const mockSource = [
   "  if (request.method === 'initialize' && requestHeaders.has('mcp-protocol-version')) throw new Error('Initial request must not assume a negotiated version');",
   "  if (authorization !== 'Bearer ' + expectedToken) throw new Error('Dummy token was not sent in the expected header');",
   "  if (scenario === 'unauthorized' && request.method === 'initialize') return new Response(JSON.stringify({error:'authentication_required', echoed:expectedToken}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}});",
-  "  if (request.method === 'initialize') return new Response(JSON.stringify({jsonrpc:'2.0',id:request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}), {status:200,headers:{'content-type':'application/json'}});",
+  "  if (request.method === 'initialize') return new Response(JSON.stringify({jsonrpc:'2.0',id:request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:scenario === 'wrong_server' ? 'unexpected-server' : 'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}), {status:200,headers:{'content-type':'application/json'}});",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
   "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'}]; return new Response(JSON.stringify({jsonrpc:'2.0',id:request.id,result:{tools}}),{status:200,headers:{'content-type':'application/json'}}); }",
   "  return new Response('unexpected method',{status:400});",
@@ -73,6 +74,14 @@ try {
     assert.ok(combined.includes('"wwwAuthenticate": "Bearer realm=chrono-cross-gpt"'));
     assert.ok(!combined.includes(dummyToken));
     console.log("PASS unauthorized: reports 401 challenge without echoing the dummy credential");
+  }
+  {
+    const result = run("wrong_server");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    const combined = result.stdout + result.stderr;
+    assert.ok(combined.includes('"stage": "initialize"'));
+    assert.ok(!combined.includes(dummyToken));
+    console.log("PASS server identity: rejects an unexpected MCP server identity");
   }
   {
     const result = run("missing_tool");
