@@ -88,6 +88,12 @@ try {
     console.log("PASS unauthorized: reports 401 challenge without echoing the dummy credential");
   }
   {
+    const result = run("wrong_id");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.ok((result.stdout + result.stderr).includes("initialize"));
+    console.log("PASS response ID validation");
+  }
+  {
     const result = run("wrong_server");
     assert.equal(result.status, 1, result.stdout + result.stderr);
     const combined = result.stdout + result.stderr;
