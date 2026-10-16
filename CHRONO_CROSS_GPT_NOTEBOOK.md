@@ -481,3 +481,31 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The document defines a common honest result envelope, stable error categories, source citation requirements, and minimum tests for public pages, PDF/OCR, Office files, images, audio/video, and long-form content.
 - It is explicitly a design contract, not a claim that the live Floot app already implements those readers. The integration gate requires inspecting current Floot code and adapting the contract before implementing.
 - Recommended next implementation once Floot tools are available: inspect endpoint/type/test conventions, then implement selectable-text PDF extraction and scanned-PDF detection first, with page-level references and honest OCR-unavailable reporting.
+
+
+
+## Session update — 2026-10-16: Floot quota recovered; live auth behavior rechecked
+
+### Verified directly in this session
+- Floot project ID: `d5d93380-474a-4949-b0f8-5d2b05cce845`; project version reported by `list_files`: `1792060122153`.
+- The connected Floot resource list confirms `CHRONO_MCP_TOKEN` is connected to this project. Secret contents were not read or printed. No other owner-level credentials were listed by Floot.
+- Production remains published and public at `https://chrono-cross-gpt.floot.app`, Free plan, no custom domain. No production publish or source change was performed during this audit.
+- Fresh live `GET /_api/mcp-status`: HTTP 200, `tokenConfigured: true`, `hostConnection: "not_verified"`; no secret value returned.
+- Fresh live `POST /_api/mcp` with no Authorization header: HTTP 401; standard `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`; body reports `authentication_required` and does not disclose credentials.
+- Fresh live `POST /_api/mcp` with a deliberately fake bearer token: HTTP 401; same standard Bearer challenge; response does not echo the supplied credential.
+- This supersedes the earlier edge-header observation in the notebook for the live deployment checked on 2026-10-16: the standard `WWW-Authenticate` header is now present in these two live rejection cases.
+- Floot typecheck: clean.
+- All four regular Floot spec files passed: `mcpEndpoint`, `mcpStatusEndpoint`, `readPageEndpoint`, `themeMode`.
+- Both hook spec files passed when run explicitly: `useMediaQuery`, `useDebounce`. Total: six spec files passed, zero failed.
+- Production/background log inspection showed no recent backend requests in the last-hour development log view, no active or scheduled background tasks, and no currently running published background job. This is not evidence of a successful MCP client handshake.
+- Endpoint source re-read: token is read only in backend code; the MCP server advertises `initialize`, `notifications/initialized`, and `tools/list`, and only two read-only tools. The endpoint explicitly says remote browser control, arbitrary DOM automation, persistent tabs/bookmarks, browser-session sharing, and direct ChatGPT conversation integration are not implemented.
+
+### Still unverified / blocked
+- A valid-token production exchange `initialize` → `notifications/initialized` → `tools/list` was not performed: the connected Floot secret is intentionally not readable, and the available GitHub connector does not expose an operation to create/update repository Actions or Copilot Agents secrets or dispatch a manual workflow. No secret was rotated and no token was requested in chat.
+- The GitHub production handshake workflow remains prepared for manual dispatch after an owner-managed Actions secret `CHRONO_MCP_TOKEN` exists. The separate Copilot Agents secret name is `COPILOT_MCP_CHRONO_TOKEN`; Actions and Agents secret scopes are independent.
+- No Floot code changes were needed for this verification-only session, so no new Floot checkpoint or publication was created.
+- The app remains **INCOMPLETE / NOT VERIFIED** for authenticated external-host MCP interoperability, despite clean app tests and confirmed production rejection behavior.
+
+### Exact next action
+- Use GitHub's secure Settings UI to add the same bearer token as repository Actions secret `CHRONO_MCP_TOKEN` (and, separately, Copilot Agents secret `COPILOT_MCP_CHRONO_TOKEN` only if Copilot cloud-agent access is desired), then manually run the `CHRONO CROSS GPT production MCP handshake` workflow. If the current Floot token is unavailable, rotate it only through Floot's secure credential update flow and store the matching value in GitHub's secret UI; never paste it into chat or commit it.
+- Completion requires the real production workflow to prove the valid-token sequence and expected HTTP/protocol responses. Keep the status **INCOMPLETE** until that evidence exists.
