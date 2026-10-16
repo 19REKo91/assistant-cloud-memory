@@ -534,3 +534,9 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 ### Secure handshake execution attempt — 2026-10-16
 - Triggering the existing production handshake workflow through its repository Actions runner using a temporary push trigger limited to this notebook file. The workflow consumes `CHRONO_MCP_TOKEN` only from GitHub Actions secrets and is designed not to print the value.
 - Outcome must be checked from the actual workflow run before marking the MCP host connection verified.
+
+### MCP handshake run — 2026-10-16
+- GitHub Actions run `38871178171` completed but skipped the actual protocol test because the repository Actions secret was empty. No authenticated production handshake occurred; keep `hostConnection` as `not_verified`.
+- Floot confirms the app's own `CHRONO_MCP_TOKEN` resource remains connected. The GitHub Actions secret store is separate.
+- Removed the temporary workflow push trigger; the workflow is restored to manual `workflow_dispatch` only. A temporary diagnostic endpoint was deleted before publish; no live app changes were made.
+- Next step: configure the credential through an authorized secure host/secret-management path, then run `tools/chrono-cross-gpt-mcp-smoke-test.mjs` and verify all three protocol stages before updating connection status.
