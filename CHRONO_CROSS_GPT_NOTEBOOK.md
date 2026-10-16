@@ -530,3 +530,7 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 ### Next exact step
 - If the repository already has the matching Actions secret `CHRONO_MCP_TOKEN`, run the existing GitHub Actions workflow **CHRONO CROSS GPT production MCP handshake** (`.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml`) through `workflow_dispatch`. It runs `tools/chrono-cross-gpt-mcp-smoke-test.mjs` and should report only protocol outcomes/tool names, never the secret. First verify from the workflow result that the secret was configured and the handshake actually ran; a skipped run is not success.
 - If that secret is absent or does not match the Floot token, do not extract the Floot token to chat or logs. Arrange a secure host-side credential configuration before rerunning the handshake.
+
+### Secure handshake execution attempt — 2026-10-16
+- Triggering the existing production handshake workflow through its repository Actions runner using a temporary push trigger limited to this notebook file. The workflow consumes `CHRONO_MCP_TOKEN` only from GitHub Actions secrets and is designed not to print the value.
+- Outcome must be checked from the actual workflow run before marking the MCP host connection verified.
