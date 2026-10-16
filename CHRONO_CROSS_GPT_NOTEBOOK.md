@@ -683,3 +683,14 @@ Remaining work / exact next steps:
 6. Keep browser DOM automation, OCR, audio/video processing, and other unverified capabilities reported as planned/blocked until end-to-end tests pass.
 
 The overall project remains **INCOMPLETE**: these documents improve execution readiness but do not add runtime capabilities or validate the live deployment.
+
+
+### External bridge shortlist research — 2026-10-16
+
+- Added `docs/CHRONO_CROSS_EXTERNAL_BRIDGE_CANDIDATES.md` on branch `chronocross-offline-prep-2026-10-16`.
+- Commit returned by GitHub: `ade6ab33ef760cde49e6cbb05c37f27defe18540`.
+- Reviewed official current documentation for Cloudflare Workers limits, Vercel Hobby/Functions limits, and GitHub Actions billing.
+- Initial recommendation: evaluate Cloudflare Workers only for a lightweight authenticated routing/validation bridge; evaluate Vercel Hobby only for a personal-use Node.js proof of concept with strict request limits; use GitHub Actions for CI rather than an always-on API.
+- Cloudflare's documented Free CPU allowance (10 ms per invocation) makes it a poor default for heavy PDF/OCR/media processing. Vercel Hobby has personal/non-commercial constraints and request/runtime limits. No host was selected or deployed.
+- No service was created, no credentials were added, no billing enabled, and no user content uploaded. Research only; current terms must be rechecked before deployment.
+- Project status remains **INCOMPLETE**. Next: verify the new assessment file and notebook commit on this branch; when Floot actions return, inspect the current PDF implementation and execute Phase A tests before choosing a runtime.
