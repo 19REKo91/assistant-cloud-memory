@@ -595,3 +595,14 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 1. Rerun the manual GitHub Actions workflow `CHRONO CROSS GPT production MCP handshake` after the latest publish; inspect logs for `initialize`, `notifications/initialized`, `tools/list`, and both tool names.
 2. Open the Floot preview to enable mobile/desktop screenshot QA.
 3. Continue Phase B with scanned-PDF detection/OCR routing and user-uploaded PDF support only after confirming supported runtime/provider/upload constraints; do not claim OCR or local uploads are available yet.
+
+
+## Follow-up — 2026-10-16: empty/scanned-PDF detection guard
+
+- Found and fixed a correctness issue: Jina Reader can return PDF metadata (including page count) while the extracted `Markdown Content:` body is empty. The previous status check could mislabel that response as `returned`.
+- Both `POST /_api/read-page` and MCP `read_public_page` now classify the extraction body rather than metadata: `resultStatus=empty` when no readable body was returned; for a PDF, `contentHint=possible_scanned_pdf_or_no_extractable_text` is included. This is only a hint, not a verified scan classification and not an OCR claim.
+- Added regression coverage for metadata-only PDF responses in both reader paths. Latest validation after this fix: 4 regular spec files passed, 2 hook specs passed, TypeScript typecheck clean.
+- Floot checkpoint: `dedc11f5-7641-48b7-b582-b938c0c9649f`.
+- Published to `https://chrono-cross-gpt.floot.app`; latest publish job `f538948e-e5f3-4211-a2a1-f8f90f80729e` succeeded. Live production W3C PDF test returned HTTP 200, `sourceType=pdf`, `resultStatus=returned`, `pageCount=1`, and expected extracted text.
+- **Still incomplete:** actual OCR, local PDF upload, DOCX/PPTX/XLSX reading, rendered DOM inspection, remote browser actions, persistent storage, and direct ChatGPT connection remain unimplemented/unverified.
+- Next: rerun the manual production MCP handshake workflow after the latest publish, then continue with a supported OCR/upload design only after confirming Floot/runtime/provider constraints. Never expose `CHRONO_MCP_TOKEN`.
