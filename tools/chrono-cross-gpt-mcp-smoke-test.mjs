@@ -89,7 +89,7 @@ try {
   }
 
   const initialized = await request("notifications/initialized", undefined, undefined, init.parsed.result.protocolVersion);
-  if (initialized.response.status !== 202 || initialized.body.length !== 0) {
+  if (initialized.response.status !== 202 || initialized.body.trim().length !== 0) {
     fail("notifications/initialized", initialized.response.status, initialized.body, initialized.response.headers.get("www-authenticate"));
   }
 
