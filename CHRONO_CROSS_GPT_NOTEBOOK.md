@@ -622,3 +622,23 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The temporary edit caused offline smoke-test run `38878206776` (#25) to fail its intended guard (“production workflow must be manual-only”). After restoring the manual-only workflow, offline run `38878285414` (#26) passed all checks including the workflow YAML guard, smoke-test syntax, and offline mocked protocol tests. The transient failure is resolved; it was caused by the temporary verification trigger, not the production MCP endpoint.
 - Latest Floot deployment remains live at `https://chrono-cross-gpt.floot.app`; public PDF endpoint test passes with PDF metadata; app tests (4 regular + 2 hook specs) and typecheck passed after the reader changes.
 - Current status: **production MCP protocol handshake VERIFIED**; **whole CHRONO CROSS GPT project INCOMPLETE**. No claim that ChatGPT itself is connected. Active host sessions are not tracked; OCR, local file upload, other document formats, and full DOM/browser automation remain unimplemented/unverified.
+
+
+## Local PDF upload implementation checkpoint — 2026-10-16 (blocked by Floot quota)
+
+### Work attempted in Floot, not yet ready to publish
+- Added dependency `pdfjs-dist@6.4.299`.
+- Created `endpoints/read-pdf_POST.ts` and `endpoints/read-pdf_POST.schema.ts` for local PDF upload to the app server, with a 15 MiB limit, PDF header validation, a 50-page processing cap, 45,000-character output cap, per-page separators, and explicit `ocrAttempted: false`. The file is intended to be processed by PDF.js on the app server, not sent to Jina Reader.
+- Added `helpers/readPdfEndpoint.spec.tsx` with missing-file, invalid-header, and positive text-extraction tests using a generated minimal PDF fixture.
+- Added a PDF file picker and local-PDF result pane to `pages/_index.tsx`; the UI states that OCR is not attempted.
+- Automated tests after this implementation: **5 regular spec files passed, 0 failed**, and **2 hook specs passed, 0 failed**.
+- Typecheck currently has one error: `endpoints/read-pdf_POST.ts:49` — `isEvalSupported` is not a recognized property of `pdfjs-dist@6.4.299` `DocumentInitParameters`. An attempted edit to remove this option was rejected because Floot's daily build-action quota was exhausted. Do not treat this work as complete.
+- Floot quota refusal says the limit resets at **2026-10-17 07:00 UTC (10:00 Asia/Baghdad)**. No further Floot code actions or publication should be attempted until the limit resets.
+- The new local-upload implementation has **not been typechecked cleanly, live-tested, checkpointed, or published**. The current production deployment remains the earlier verified version with public PDF URL reading and the diagnostic-status clarification. Do not imply local PDF upload is live.
+
+### Exact next steps after the quota resets
+1. Remove the unsupported `isEvalSupported: false` option from `endpoints/read-pdf_POST.ts` (then review PDF.js v6 security/API defaults before any further changes).
+2. Run typecheck and all regular + hook specs. Fix only verified errors.
+3. Run a real endpoint integration test using the public W3C sample PDF uploaded as multipart to `/_api/read-pdf`; verify text, page count, limits, and that the file is not forwarded to any third-party service.
+4. If validation is clean, create a Floot checkpoint, update `static/__dev/notes/chrono-mcp-handoff.md`, and publish to the existing URL; then test the deployed upload endpoint.
+5. Keep OCR explicitly unavailable. If scanned PDFs return no text, report a possible scan; do not promise OCR until a supported OCR path is integrated and tested.
