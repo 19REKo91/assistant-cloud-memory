@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">التقاط نصوص ردود DeepSeek فقط عند فتح تطبيق DeepSeek، ثم إرسال الرد إلى ملف GitHub المحدد. لا تفعّل الخدمة إلا إذا أردت هذه الوظيفة.</string>
+</resources>

@@ -5,6 +5,10 @@ on:
     paths:
       - "vision-bridge/android/**"
       - ".github/workflows/vision-bridge-android-build.yml"
+  pull_request:
+    paths:
+      - "vision-bridge/android/**"
+      - ".github/workflows/vision-bridge-android-build.yml"
   workflow_dispatch:
 
 jobs:
