@@ -642,3 +642,21 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 3. Run a real endpoint integration test using the public W3C sample PDF uploaded as multipart to `/_api/read-pdf`; verify text, page count, limits, and that the file is not forwarded to any third-party service.
 4. If validation is clean, create a Floot checkpoint, update `static/__dev/notes/chrono-mcp-handoff.md`, and publish to the existing URL; then test the deployed upload endpoint.
 5. Keep OCR explicitly unavailable. If scanned PDFs return no text, report a possible scan; do not promise OCR until a supported OCR path is integrated and tested.
+
+
+### Offline review while Floot quota is exhausted — 2026-10-16
+
+Reviewed the durable project memo, current manual-only production handshake workflow, and smoke-test script in GitHub. This was a read-only review; no Floot code, deployment, secrets, or live app state was changed.
+
+- Confirmed the production workflow still uses `workflow_dispatch` only, keeps `CHRONO_MCP_TOKEN` in the Actions secret environment, and runs the production protocol smoke test without printing the credential.
+- Confirmed the memo accurately distinguishes the verified production MCP handshake from the incomplete overall project and from the unpublished local-PDF upload work.
+- Security/validation checklist to execute when Floot actions resume:
+  1. Remove the unsupported PDF.js v6 option and check the installed version's supported document-loading options rather than assuming an older API.
+  2. Verify upload-size enforcement even when `Content-Length` is absent or misleading; ensure the request body is not fully buffered without a hard cap where the runtime permits streaming limits.
+  3. Treat file name and MIME type as untrusted; require PDF signature validation but do not treat the signature alone as proof of a safe/valid PDF.
+  4. Check encrypted/corrupt files, zero-page files, page-count limits, per-page extraction errors, output truncation, and documents with no extractable text.
+  5. Check parser resource limits/timeouts and safe cleanup for PDF.js loading tasks; ensure exceptions do not leak server details or uploaded content.
+  6. Confirm extracted text is rendered as text (not injected HTML), and verify the local upload handler makes no third-party network call.
+  7. Add endpoint integration tests for missing file, malformed PDF, valid text PDF, page and byte limits, empty/scanned-like PDF, and unexpected parser failure.
+- These are review requirements, not assertions that each has already been tested or that a vulnerability has been found. No additional tests can be honestly marked passed from this read-only review.
+- Status remains **INCOMPLETE**. The deployed public-URL PDF reader and MCP handshake remain the verified baseline; local PDF upload remains unpublished until typecheck, tests, integration validation, checkpoint, and post-publish testing all pass.
