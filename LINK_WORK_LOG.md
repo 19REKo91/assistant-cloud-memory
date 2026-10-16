@@ -369,3 +369,12 @@ At the end of every LINK session, update this file in GitHub. If GitHub access/w
 - Follow-up commit `b4b371cf7704da34c08a9ca730c4a84f333e18e8` also records the actual BLE recovery reason and failure message in the diagnostic file, not only a generic error marker. CI run #39: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/38693453130 (queued at note time).
 
 - CI run #38 for the diagnostic button commit completed successfully: unit tests, APK assembly, and artifact upload passed. Artifact ID `11953406126`, expires `2026-10-22T06:37:02Z`. This artifact predates the small follow-up that adds detailed error text; prefer run #39's artifact after it succeeds.
+
+
+## 2026-10-16 — Diagnostic heartbeat for screen-off gaps
+
+- Commit `191ab140af10cc4edf9f4e51b47c05123594c8ad` on `anniversary-ble-proximity-prototype` adds a diagnostic heartbeat every 5 seconds while the foreground service's ticker runs.
+- Each heartbeat records elapsed time, service-running marker, current proximity state, last RSSI, elapsed time since the last matched partner advertisement, raw scan count, partner match count, and latest BLE error. This distinguishes a running service with no recent partner observations from ongoing successful matching, rather than relying only on RSSI-triggered sample rows.
+- Existing RSSI samples remain rate-limited to at most one per 2 seconds. Screen OFF/ON/unlock events and detailed BLE error/recovery reasons are also logged. The app-private log remains capped around 512 KiB.
+- CI run #39 verified the prior diagnostic-copy and detailed-error version successfully. The heartbeat commit requires its own fresh build/test verification before treating the latest APK as ready.
+- Next: confirm CI for commit `191ab140af10cc4edf9f4e51b47c05123594c8ad`; install the newest successful artifact only if signing/package compatibility allows; then test screen off/on on both phones and copy both logs. No threshold changes; `main` untouched.
