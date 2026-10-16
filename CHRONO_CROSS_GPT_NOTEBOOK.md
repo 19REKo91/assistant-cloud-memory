@@ -509,3 +509,24 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 ### Exact next action
 - Use GitHub's secure Settings UI to add the same bearer token as repository Actions secret `CHRONO_MCP_TOKEN` (and, separately, Copilot Agents secret `COPILOT_MCP_CHRONO_TOKEN` only if Copilot cloud-agent access is desired), then manually run the `CHRONO CROSS GPT production MCP handshake` workflow. If the current Floot token is unavailable, rotate it only through Floot's secure credential update flow and store the matching value in GitHub's secret UI; never paste it into chat or commit it.
 - Completion requires the real production workflow to prove the valid-token sequence and expected HTTP/protocol responses. Keep the status **INCOMPLETE** until that evidence exists.
+
+## Session update — 2026-10-16 (Asia/Baghdad)
+
+### Verified this session
+- Floot project `d5d93380-474a-4949-b0f8-5d2b05cce845` remains published and public at https://chrono-cross-gpt.floot.app. No republish, domain change, or native build was performed.
+- Reran the complete regular test suite: **4 spec files passed, 0 failed** (`themeMode`, `readPageEndpoint`, `mcpEndpoint`, `mcpStatusEndpoint`).
+- Reran both hook specs explicitly: **2 passed, 0 failed** (`useDebounce`, `useMediaQuery`).
+- TypeScript typecheck: **clean**.
+- Production `GET /_api/mcp-status`: HTTP 200; `tokenConfigured=true`; `hostConnection="not_verified"`; response keys are limited to those two fields.
+- Production `POST /_api/mcp` with no Authorization header: HTTP 401, `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`.
+- Production `POST /_api/mcp` with a deliberately invalid test credential: HTTP 401 with the same challenge; supplied test credential was not echoed.
+- Updated Floot `static/__dev/notes/chrono-mcp-handoff.md` to record this verification and the remaining blocker. Only the handoff note changed in Floot; application logic was not changed.
+
+### Still not verified
+- A **valid-token production handshake** and connection from an actual external MCP host remain unverified. Negative-auth tests and unit tests are not proof of an authenticated production handshake.
+- The available ChatGPT session is Free on Android. OpenAI's current custom MCP guidance says custom connections are web-only and subject to plan/workspace eligibility; this session cannot complete that host-side connection from the Android app. Official guidance: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+- Never retrieve, print, request in chat, or commit `CHRONO_MCP_TOKEN`. Do not change `hostConnection` to connected without successful authenticated protocol responses.
+
+### Next exact step
+- If the repository already has the matching Actions secret `CHRONO_MCP_TOKEN`, run the existing GitHub Actions workflow **CHRONO CROSS GPT production MCP handshake** (`.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml`) through `workflow_dispatch`. It runs `tools/chrono-cross-gpt-mcp-smoke-test.mjs` and should report only protocol outcomes/tool names, never the secret. First verify from the workflow result that the secret was configured and the handshake actually ran; a skipped run is not success.
+- If that secret is absent or does not match the Floot token, do not extract the Floot token to chat or logs. Arrange a secure host-side credential configuration before rerunning the handshake.
