@@ -771,6 +771,8 @@ class LinkProximityService : android.app.Service() {
     private var recoveryRunnable:Runnable?=null
     private var diagnosticSessionInitialized=false
     private var lastSampleLoggedAt=0L
+    private var lastDiagnosticHeartbeatAt=0L
+    private var lastPartnerSeenElapsed=0L
     private var screenReceiverRegistered=false
     private val diagnosticLogFileName="link_ble_diagnostics.txt"
 
@@ -1018,7 +1020,12 @@ class LinkProximityService : android.app.Service() {
             val now=android.os.SystemClock.elapsedRealtime()
             val transition=engine.tick(now)
             if(transition!=null) { note("state=$transition",now); publish() }
-            else if(now-lastPublished>=1_000L) publish()
+            if(lastDiagnosticHeartbeatAt==0L || now-lastDiagnosticHeartbeatAt>=5_000L) {
+                lastDiagnosticHeartbeatAt=now
+                val age=if(lastPartnerSeenElapsed==0L) "never" else "${(now-lastPartnerSeenElapsed).coerceAtLeast(0L)}ms"
+                appendDiagnosticLine("+${(now-startElapsed).coerceAtLeast(0L)}ms | HEARTBEAT | service=running | state=${engine.state.name} | lastRSSI=${lastRssi ?: "—"} dBm | sincePartnerMatch=$age | raw=$rawResults | matches=$partnerMatches | error=${latestError ?: "none"}")
+            }
+            if(now-lastPublished>=1_000L && transition==null) publish()
             if(running) mainHandler.postDelayed(this,250L)
         }
     }
@@ -1072,6 +1079,8 @@ class LinkProximityService : android.app.Service() {
             startElapsed=nowElapsed
             diagnosticSessionInitialized=true
             lastSampleLoggedAt=0L
+            lastDiagnosticHeartbeatAt=0L
+            lastPartnerSeenElapsed=0L
             resetDiagnosticLog()
         } else {
             note("BLE radio session restarted",nowElapsed)
@@ -1214,7 +1223,7 @@ class LinkProximityService : android.app.Service() {
         if(uuids?.contains(android.os.ParcelUuid(expected))==true) {
             recoveryAttempt=0
             latestPartnerDevice=result.device
-            partnerMatches++; lastRssi=result.rssi
+            partnerMatches++; lastRssi=result.rssi; lastPartnerSeenElapsed=now
             if(firstMatch==null) { firstMatch=now-startElapsed; note("first partner match",now) }
             if(result.rssi>=-56 && firstStrong==null) { firstStrong=now-startElapsed; note("first strong RSSI",now) }
             val transition=engine.onRssi(result.rssi,now)
