@@ -2,9 +2,6 @@ name: CHRONO CROSS GPT production MCP handshake
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "CHRONO_CROSS_GPT_NOTEBOOK.md"
 
 permissions:
   contents: read
