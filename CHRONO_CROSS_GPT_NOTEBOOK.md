@@ -540,3 +540,13 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Floot confirms the app's own `CHRONO_MCP_TOKEN` resource remains connected. The GitHub Actions secret store is separate.
 - Removed the temporary workflow push trigger; the workflow is restored to manual `workflow_dispatch` only. A temporary diagnostic endpoint was deleted before publish; no live app changes were made.
 - Next step: configure the credential through an authorized secure host/secret-management path, then run `tools/chrono-cross-gpt-mcp-smoke-test.mjs` and verify all three protocol stages before updating connection status.
+
+
+## Session update — 2026-10-16: production handshake diagnostic and assertion fix
+
+- Manually triggered GitHub Actions run `38877217503` (#4), commit `689dc789b3121e7a6b9e0f424f47cec1fe72fce0`, confirmed the Actions secret was configured and the real production handshake script executed.
+- Log evidence: `initialize` passed (otherwise the script would have failed at that stage), proving the bearer credential was accepted and the production server identity/protocol version matched. The run then failed at `notifications/initialized`: HTTP 202 was returned, but the edge response body was a single newline (`"\\n"`), while the test incorrectly required a zero-length body. This is a client assertion mismatch, not an authentication failure.
+- Updated `tools/chrono-cross-gpt-mcp-smoke-test.mjs` at commit `23e6cbba7e8556f450db65652c4f3a39aa24d69e` to accept whitespace-only notification bodies by checking `initialized.body.trim().length !== 0`. Secret handling remains unchanged; the token is never printed.
+- Floot app was republished to the existing public URL `https://chrono-cross-gpt.floot.app` after the credential setup; Floot publish job `fc76856c-2595-467c-bf5a-d9b3754136fd` reported succeeded. No domain or mobile build change.
+- Current status: **INCOMPLETE / NOT VERIFIED**. The latest production run still failed before `tools/list`, so the complete three-stage authenticated MCP sequence has not yet passed.
+- Next exact step: rerun the manual workflow on `main` after commit `23e6cbb`; inspect the log to verify `notifications/initialized` passes and `tools/list` returns both `read_public_page` and `get_browser_capabilities`. Do not mark complete unless the full workflow succeeds.
