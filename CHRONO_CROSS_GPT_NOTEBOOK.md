@@ -612,3 +612,13 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - The app was republished after the reader metadata and diagnostic-label changes. Triggering the existing production handshake script once more against the current live endpoint.
 - A temporary GitHub Actions push trigger is limited to changes to this notebook file only; it will be removed immediately after the run is observed. The secret is used only by the workflow and will not be printed.
 - This is a verification attempt, not a success claim. Record the actual result after inspecting the run logs.
+
+
+## Post-publish production verification — 2026-10-16 (final outcome)
+
+- After the latest Floot publish, reran the real production MCP handshake through GitHub Actions run `38878216200` (#6): **success**.
+- Log evidence: `initialize` HTTP 200, protocol `2025-11-25`, server `chrono-cross-gpt`; `notifications/initialized` HTTP 202 with an empty/whitespace-only body; `tools/list` HTTP 200 returning `read_public_page` and `get_browser_capabilities`; `ok=true`; `credentialPrinted=false`.
+- Restored `.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml` to manual `workflow_dispatch` only at commit `5011a5dce8a2d63a3dd46d35cd09e20569681d82`. The temporary push trigger was scoped to this notebook path only and has been removed.
+- The temporary edit caused offline smoke-test run `38878206776` (#25) to fail its intended guard (“production workflow must be manual-only”). After restoring the manual-only workflow, offline run `38878285414` (#26) passed all checks including the workflow YAML guard, smoke-test syntax, and offline mocked protocol tests. The transient failure is resolved; it was caused by the temporary verification trigger, not the production MCP endpoint.
+- Latest Floot deployment remains live at `https://chrono-cross-gpt.floot.app`; public PDF endpoint test passes with PDF metadata; app tests (4 regular + 2 hook specs) and typecheck passed after the reader changes.
+- Current status: **production MCP protocol handshake VERIFIED**; **whole CHRONO CROSS GPT project INCOMPLETE**. No claim that ChatGPT itself is connected. Active host sessions are not tracked; OCR, local file upload, other document formats, and full DOM/browser automation remain unimplemented/unverified.
