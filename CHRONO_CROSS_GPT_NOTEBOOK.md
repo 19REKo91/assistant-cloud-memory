@@ -606,3 +606,9 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Published to `https://chrono-cross-gpt.floot.app`; latest publish job `f538948e-e5f3-4211-a2a1-f8f90f80729e` succeeded. Live production W3C PDF test returned HTTP 200, `sourceType=pdf`, `resultStatus=returned`, `pageCount=1`, and expected extracted text.
 - **Still incomplete:** actual OCR, local PDF upload, DOCX/PPTX/XLSX reading, rendered DOM inspection, remote browser actions, persistent storage, and direct ChatGPT connection remain unimplemented/unverified.
 - Next: rerun the manual production MCP handshake workflow after the latest publish, then continue with a supported OCR/upload design only after confirming Floot/runtime/provider constraints. Never expose `CHRONO_MCP_TOKEN`.
+
+
+## Post-publish MCP verification queued — 2026-10-16
+- The app was republished after the reader metadata and diagnostic-label changes. Triggering the existing production handshake script once more against the current live endpoint.
+- A temporary GitHub Actions push trigger is limited to changes to this notebook file only; it will be removed immediately after the run is observed. The secret is used only by the workflow and will not be printed.
+- This is a verification attempt, not a success claim. Record the actual result after inspecting the run logs.
