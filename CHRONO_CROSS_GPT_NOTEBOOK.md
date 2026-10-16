@@ -660,3 +660,26 @@ Reviewed the durable project memo, current manual-only production handshake work
   7. Add endpoint integration tests for missing file, malformed PDF, valid text PDF, page and byte limits, empty/scanned-like PDF, and unexpected parser failure.
 - These are review requirements, not assertions that each has already been tested or that a vulnerability has been found. No additional tests can be honestly marked passed from this read-only review.
 - Status remains **INCOMPLETE**. The deployed public-URL PDF reader and MCP handshake remain the verified baseline; local PDF upload remains unpublished until typecheck, tests, integration validation, checkpoint, and post-publish testing all pass.
+
+
+### Offline preparation — 2026-10-16 (Floot quota not used)
+
+Status: **Preparation documents committed; not yet executed against the app. Overall project remains INCOMPLETE.**
+
+Work performed in GitHub branch `chronocross-offline-prep-2026-10-16` (branched from `main`):
+- Added `docs/CHRONO_CROSS_READER_ACCEPTANCE_TEST_PLAN.md` — test matrix for web pages, URL safety, PDF, Office documents, OCR/images, audio/video, books, code, multilingual/RTL, private sources, capability reporting, and failure cases.
+- Added `docs/CHRONO_CROSS_CAPABILITY_ARCHITECTURE.md` — capability registry/adapter contract, result provenance, typed errors, security and privacy gates, free-first external-bridge evaluation criteria, and phased implementation sequence.
+- The two document-creation commits returned by GitHub:
+  - `83c86e429c0b06d0b755fb6a188c4d2902bce970` — reader acceptance test plan.
+  - `0bcfe074a1951adff01fa198c8cfeb6f3c1e681e` — capability architecture.
+- This was documentation-only work. No Floot build action, source edit, live test, deployment, external service creation, or paid provider activation occurred. No test is marked PASS based on this planning work.
+
+Remaining work / exact next steps:
+1. Verify both new files and their commit ancestry on branch `chronocross-offline-prep-2026-10-16`; then update this notebook on that same branch.
+2. When Floot actions are available, re-read live source and deployment before changing anything.
+3. Execute the acceptance matrix's Phase A public-web and URL-security tests first; record actual evidence and failures.
+4. Resume the existing PDF-upload blocker review: remove/resolve the unsupported PDF.js v6 option only after checking the installed API, run typecheck and specs, then integration-test size limits and parsing failures.
+5. Evaluate external bridge candidates against the architecture checklist using current official pricing/limits, maintenance, license, privacy, and deployment support. Do not deploy or activate billing without approval.
+6. Keep browser DOM automation, OCR, audio/video processing, and other unverified capabilities reported as planned/blocked until end-to-end tests pass.
+
+The overall project remains **INCOMPLETE**: these documents improve execution readiness but do not add runtime capabilities or validate the live deployment.
