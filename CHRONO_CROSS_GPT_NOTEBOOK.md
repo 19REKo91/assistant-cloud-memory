@@ -569,3 +569,29 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - **Production authenticated MCP handshake: VERIFIED / PASS.**
 - **Whole CHRONO CROSS GPT product: INCOMPLETE.** The wider reading-capability checklist and real browser/DOM automation remain separate requirements; do not describe them as implemented merely because MCP handshake passed.
 - Next: record the verified handshake as a baseline, then continue with the actual app capability audit/implementation when Floot project tools are available. Never expose or request `CHRONO_MCP_TOKEN`.
+
+
+## Session update — 2026-10-16: production MCP verified; PDF URL reading improved
+
+### Verified work
+- Production MCP handshake run `38877514185` (#5) succeeded against `https://chrono-cross-gpt.floot.app/_api/mcp`: `initialize` HTTP 200 (protocol `2025-11-25`, server `chrono-cross-gpt`), `notifications/initialized` HTTP 202, and `tools/list` HTTP 200 with `read_public_page` and `get_browser_capabilities`. Log confirms `ok: true` and `credentialPrinted: false`; no secret value was exposed.
+- Audited current Floot files and verified the existing endpoint uses Jina Reader for public URL extraction; full browser DOM automation and persistent tab/session state are not implemented.
+- Extended `POST /_api/read-page` and MCP `read_public_page` results with structured `sourceType`, `extractionMethod`, `resultStatus`, and optional `pageCount` when Jina Reader returns page count metadata.
+- Added tests for PDF metadata and empty extraction; updated the UI to identify PDF extraction and disclose that scanned-PDF OCR is not separately verified.
+- Live production verification after publishing: `POST /_api/read-page` for the public W3C PDF `https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf` returned HTTP 200, `sourceType=pdf`, `resultStatus=returned`, `extractionMethod=Jina Reader`, `pageCount=1`, and text containing `Dummy PDF file`.
+- Corrected diagnostics so they distinguish a verified production protocol test from an active host session. The service does not track persistent active-host sessions and this does not prove ChatGPT itself is connected/configured.
+- Verification after changes: 4 regular spec files passed, 2 hook specs passed, TypeScript typecheck clean.
+- Floot checkpoints: `803eca50-05f9-44ca-956b-0e6385c4c53f` (PDF extraction metadata), `80db90f2-613b-43ec-85ad-5f1eb9db02f2` (MCP status clarification).
+- Floot published successfully to the existing URL `https://chrono-cross-gpt.floot.app`; jobs `c228eecb-a7ed-4400-8cd6-880f7d4f2603` and `1e7bdb80-ca53-4799-91c4-460fd6351a4e` both succeeded. Web-only, no native build or domain change.
+- Updated Floot handoff note `static/__dev/notes/chrono-mcp-handoff.md` with evidence, limitations, and next steps.
+
+### Remaining work / status
+- **MCP production protocol handshake: VERIFIED** on run #5. For strict freshness after the latest publish, rerun the manual GitHub Actions handshake workflow and verify all three stages again.
+- **Whole project: INCOMPLETE.** Public PDF URL text extraction is verified, but local PDF upload, scanned-PDF OCR, OCR confidence, DOCX/PPTX/XLSX reading, robust table/layout preservation, audio/video processing, rendered DOM inspection, remote click/type automation, persistent tabs/bookmarks, and direct ChatGPT conversation integration remain unimplemented or unverified.
+- Floot screenshot QA remains blocked until a Floot preview/editor window is opened; screenshot tool returned `awaiting_window`.
+- Never expose or request `CHRONO_MCP_TOKEN`.
+
+### Next exact steps
+1. Rerun the manual GitHub Actions workflow `CHRONO CROSS GPT production MCP handshake` after the latest publish; inspect logs for `initialize`, `notifications/initialized`, `tools/list`, and both tool names.
+2. Open the Floot preview to enable mobile/desktop screenshot QA.
+3. Continue Phase B with scanned-PDF detection/OCR routing and user-uploaded PDF support only after confirming supported runtime/provider/upload constraints; do not claim OCR or local uploads are available yet.
