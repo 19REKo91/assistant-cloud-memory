@@ -550,3 +550,22 @@ Run a valid-token protocol handshake from a compatible MCP client configured thr
 - Floot app was republished to the existing public URL `https://chrono-cross-gpt.floot.app` after the credential setup; Floot publish job `fc76856c-2595-467c-bf5a-d9b3754136fd` reported succeeded. No domain or mobile build change.
 - Current status: **INCOMPLETE / NOT VERIFIED**. The latest production run still failed before `tools/list`, so the complete three-stage authenticated MCP sequence has not yet passed.
 - Next exact step: rerun the manual workflow on `main` after commit `23e6cbb`; inspect the log to verify `notifications/initialized` passes and `tools/list` returns both `read_public_page` and `get_browser_capabilities`. Do not mark complete unless the full workflow succeeds.
+
+
+## Session update — 2026-10-16: authenticated production MCP handshake PASSED
+
+### Verified from GitHub Actions run #5
+- Workflow: `CHRONO CROSS GPT production MCP handshake`.
+- Run: `38877514185`; job: `116896031269`; branch: `main`; checked-out commit: `2a0220eaf24d84a6a48aa51324069b1b917df3a5`.
+- GitHub Actions completed with conclusion **success**. The secret was present and the production test actually ran; its value was not printed.
+- Live endpoint: `https://chrono-cross-gpt.floot.app/_api/mcp`.
+- `initialize`: HTTP 200; protocol version `2025-11-25`; server identity `chrono-cross-gpt`.
+- `notifications/initialized`: HTTP 202; whitespace-only/empty response accepted as expected.
+- `tools/list`: HTTP 200; both expected tools were returned: `read_public_page` and `get_browser_capabilities`.
+- The test output explicitly reports `ok: true` and `credentialPrinted: false`. This verifies the authenticated production MCP protocol sequence against the deployed endpoint. It does **not** prove that ChatGPT itself has been configured as an external MCP client or that every advertised tool works end-to-end.
+- Only workflow warnings were about the Node.js 20 deprecation for `actions/checkout@v4` and the upcoming `ubuntu-latest` image migration; neither caused the test to fail.
+
+### Status and next work
+- **Production authenticated MCP handshake: VERIFIED / PASS.**
+- **Whole CHRONO CROSS GPT product: INCOMPLETE.** The wider reading-capability checklist and real browser/DOM automation remain separate requirements; do not describe them as implemented merely because MCP handshake passed.
+- Next: record the verified handshake as a baseline, then continue with the actual app capability audit/implementation when Floot project tools are available. Never expose or request `CHRONO_MCP_TOKEN`.
