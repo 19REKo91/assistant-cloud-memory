@@ -40,15 +40,15 @@ function parseResponseBody(body, contentType = "") {
   try { return JSON.parse(body); } catch { return null; }
 }
 
-async function request(method, id, params, protocolVersion) {
+async function request(method, id, params, protocolVersion, authorizationToken = token) {
   const message = { jsonrpc: "2.0", method };
   if (id !== undefined) message.id = id;
   if (params !== undefined) message.params = params;
   const headers = {
     "Content-Type": "application/json",
     "Accept": "application/json, text/event-stream",
-    "Authorization": `Bearer ${token}`,
   };
+  if (authorizationToken !== null) headers.Authorization = `Bearer ${authorizationToken}`;
   if (protocolVersion) headers["MCP-Protocol-Version"] = protocolVersion;
   const response = await fetch(endpoint, {
     method: "POST",
@@ -125,11 +125,22 @@ async function callExpectedToolError(name, id, args, protocolVersion) {
 }
 
 try {
-  const init = await request("initialize", 1, {
+  const initParams = {
     protocolVersion: "2025-11-25",
     capabilities: {},
     clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
-  });
+  };
+  const missingAuth = await request("initialize", 90, initParams, undefined, null);
+  if (missingAuth.response.status !== 401 || missingAuth.body.includes(token)) {
+    fail("missing_auth", missingAuth.response.status, "Missing-token request was not safely rejected.", missingAuth.response.headers.get("www-authenticate"));
+  }
+  const invalidToken = "CHRONO_CROSS_INVALID_TEST_TOKEN_000000000000";
+  const wrongAuth = await request("initialize", 91, initParams, undefined, invalidToken);
+  if (wrongAuth.response.status !== 401 || wrongAuth.body.includes(invalidToken) || wrongAuth.body.includes(token)) {
+    fail("wrong_auth", wrongAuth.response.status, "Invalid-token request was not safely rejected without echoing credentials.", wrongAuth.response.headers.get("www-authenticate"));
+  }
+
+  const init = await request("initialize", 1, initParams);
   if (init.response.status !== 200 || init.parsed?.jsonrpc !== "2.0" || init.parsed?.id !== 1 || init.parsed?.error || !init.parsed?.result?.serverInfo || init.parsed.result.serverInfo.name !== "chrono-cross-gpt") {
     fail("initialize", init.response.status, init.body, init.response.headers.get("www-authenticate"));
   }
@@ -166,6 +177,10 @@ try {
     endpoint: endpoint.origin + endpoint.pathname,
     initialize: { httpStatus: init.response.status, protocolVersion: init.parsed.result.protocolVersion, serverName: init.parsed.result.serverInfo.name },
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
+    authChecks: {
+      missingToken: { httpStatus: missingAuth.response.status, rejected: true },
+      wrongToken: { httpStatus: wrongAuth.response.status, rejected: true, tokenEchoed: false },
+    },
     toolsList: { httpStatus: listed.response.status, toolNames },
     toolCalls: [capabilitiesCall, publicPageCall],
     unsafeUrl: unsafeUrlCall,
