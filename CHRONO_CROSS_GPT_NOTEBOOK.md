@@ -918,3 +918,10 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Production result: [run 39019598377](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019598377) completed **success**. The live server reported the expected schema; the script also verified missing-token 401, wrong-token 401 without echo, valid initialize/list, both real tool calls, expected public page text, and safe rejection of a `file:` URL.
 - Offline regression: [run 39019614492](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019614492) completed **success**, including a negative test that fails if the reader schema omits the required string URL input.
 - The first offline run on the script-only commit failed because the mock tool list had not yet been updated with input schemas; after updating the mock and adding a malformed-schema regression, the next run passed.
+
+
+### Capability registry accuracy refinement (2026-10-17)
+
+- Refined `web.ssrf_redirect_dns` from `implemented_unverified` to `partial`. The reader has basic URL restrictions, request limits/timeouts, and a verified `file:` rejection, but full private-DNS/redirect/DNS-rebinding protections are not yet proven against the live implementation.
+- Registry validation CI: [run 39019657487](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019657487) completed **success** after the status refinement.
+- This is a reporting correction, not a runtime code change. Keep the overall project **INCOMPLETE**.
