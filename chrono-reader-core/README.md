@@ -67,6 +67,10 @@ The Office adapter has a 4 MiB compressed input cap; defaults include 24 MiB max
 
 The OfficeParser `AbortSignal` is cooperative: it cannot interrupt every synchronous parser step. The size/structure limits reduce risk but are not a substitute for a bounded worker/process. Before using this with public untrusted uploads, deploy it behind authentication, request concurrency/rate limits, process memory/CPU limits, and no filesystem/network access. Do not log raw document content, parser stacks, tokens or private headers.
 
+## Container validation
+
+The CI workflow builds `chrono-reader-core/Dockerfile`, starts the container with a CI-only dummy token, verifies `/health`, verifies a read without authorization is rejected (HTTP 401), and verifies a valid authenticated text-file read returns HTTP 200. See [passing container CI run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021252566). The container has not been deployed to an external host; the CI token is a dummy and must never be reused as a production secret.
+
 ## Current integration boundary
 
 Nothing in this package has been deployed as a new endpoint. The live app's existing PDF and public-page tools remain as they were; the local document router cannot yet be invoked from the live app/MCP host. Keep the capability registry entries `implemented_unverified` until that connection is deployed and tested.
