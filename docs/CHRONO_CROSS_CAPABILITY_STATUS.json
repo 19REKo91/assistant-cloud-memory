@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-17",
+  "project": "CHRONO CROSS GPT",
+  "purpose": "Machine-readable, evidence-based capability status. A declared capability is not considered implemented unless its status and evidence say so.",
+  "statusVocabulary": [
+    "implemented_and_tested",
+    "implemented_unverified",
+    "partial",
+    "planned",
+    "blocked_unavailable"
+  ],
+  "capabilities": [
+    {
+      "id": "mcp.protocol",
+      "name": "Authenticated MCP protocol handshake",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "MCP JSON-RPC over HTTPS",
+        "Bearer token"
+      ],
+      "outputs": [
+        "initialize",
+        "notifications/initialized",
+        "tools/list"
+      ],
+      "evidence": [
+        {
+          "label": "Production handshake and tool-call smoke test",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019453556",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Uses a static bearer token; no OAuth authorization-code/PKCE server is implemented."
+      ]
+    },
+    {
+      "id": "mcp.tool_calls",
+      "name": "MCP tools/list and tools/call",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "get_browser_capabilities",
+        "read_public_page"
+      ],
+      "outputs": [
+        "Capability summary",
+        "Public-page text"
+      ],
+      "evidence": [
+        {
+          "label": "Production smoke test with expected public fixture text",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019343189",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Only the two listed tools are exposed."
+      ]
+    },
+    {
+      "id": "web.public_page_text",
+      "name": "Public HTML/page text extraction",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "Public HTTP/HTTPS URL"
+      ],
+      "outputs": [
+        "Non-empty extracted text"
+      ],
+      "evidence": [
+        {
+          "label": "Production MCP reader smoke test; expected Example Domain text found",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019343189",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "One stable public fixture was verified; extraction quality across arbitrary sites is not established."
+      ]
+    },
+    {
+      "id": "web.file_scheme_rejection",
+      "name": "Reject non-web file: URL scheme",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "file:///etc/passwd as a non-networked rejection fixture"
+      ],
+      "outputs": [
+        "MCP tool error"
+      ],
+      "evidence": [
+        {
+          "label": "Production file-scheme rejection test",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019224577",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "This does not prove protection against private DNS answers, redirects to private addresses, DNS rebinding, or every URL canonicalization trick."
+      ]
+    },
+    {
+      "id": "web.ssrf_redirect_dns",
+      "name": "Full SSRF, redirect and DNS-rebinding protection",
+      "status": "implemented_unverified",
+      "inputs": [
+        "Public URLs",
+        "Deterministic DNS/redirect test fixtures"
+      ],
+      "outputs": [
+        "Safe rejection or public-only retrieval"
+      ],
+      "evidence": [],
+      "limitations": [
+        "Security vectors exist and their repository integrity test passes, but they have not been executed against the live reader implementation."
+      ]
+    },
+    {
+      "id": "pdf.selectable_text",
+      "name": "Selectable-text PDF extraction",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "Multipart PDF upload"
+      ],
+      "outputs": [
+        "Extracted selectable text"
+      ],
+      "evidence": [
+        {
+          "label": "Production synthetic one-page PDF test",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "One synthetic page was verified; this does not prove full layout, table, encrypted-file, or large-document support."
+      ]
+    },
+    {
+      "id": "pdf.malformed_rejection",
+      "name": "Reject malformed PDF uploads",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "Synthetic malformed PDF"
+      ],
+      "outputs": [
+        "HTTP 422 rejection"
+      ],
+      "evidence": [
+        {
+          "label": "Production PDF input validation test",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Only the tested malformed fixture is covered."
+      ]
+    },
+    {
+      "id": "pdf.unsupported_type",
+      "name": "Reject non-PDF uploads on PDF endpoint",
+      "status": "implemented_and_tested",
+      "inputs": [
+        "Synthetic text upload"
+      ],
+      "outputs": [
+        "HTTP 415 rejection"
+      ],
+      "evidence": [
+        {
+          "label": "Production PDF input validation test",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Other MIME/extension mismatch cases still need a broader matrix."
+      ]
+    },
+    {
+      "id": "pdf.scanned_ocr",
+      "name": "OCR for scanned/image-only PDFs",
+      "status": "planned",
+      "inputs": [
+        "Scanned PDF pages"
+      ],
+      "outputs": [
+        "OCR text with page references"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No working OCR provider/path has been integrated and tested."
+      ]
+    },
+    {
+      "id": "office.readers",
+      "name": "DOCX, PPTX, XLSX and CSV readers",
+      "status": "planned",
+      "inputs": [
+        "Office and structured files"
+      ],
+      "outputs": [
+        "Ordered paragraphs, slides, sheets, cells and tables"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No production Office reader has been verified."
+      ]
+    },
+    {
+      "id": "image.ocr",
+      "name": "OCR for images and screenshots",
+      "status": "planned",
+      "inputs": [
+        "PNG/JPEG/WebP image"
+      ],
+      "outputs": [
+        "Extracted text and region/order metadata"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No production OCR engine/provider has been integrated and tested."
+      ]
+    },
+    {
+      "id": "image.understanding",
+      "name": "Visual understanding of charts, diagrams and UI screenshots",
+      "status": "planned",
+      "inputs": [
+        "Image or screenshot"
+      ],
+      "outputs": [
+        "Grounded visual interpretation with uncertainty"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No dedicated image-understanding adapter has been integrated into this app."
+      ]
+    },
+    {
+      "id": "audio.transcription",
+      "name": "Audio transcription",
+      "status": "planned",
+      "inputs": [
+        "Supported audio file or authorized URL"
+      ],
+      "outputs": [
+        "Transcript with timestamps/speakers when available"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No working transcription provider/path has been integrated and tested."
+      ]
+    },
+    {
+      "id": "video.transcription",
+      "name": "Video captions/transcription and Arabic translation",
+      "status": "planned",
+      "inputs": [
+        "Video URL or supported video file"
+      ],
+      "outputs": [
+        "Caption/transcript segments and timestamp-preserving translation"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No end-to-end video acquisition, transcription, translation, or SRT/VTT export has been tested."
+      ]
+    },
+    {
+      "id": "browser.javascript_rendering",
+      "name": "JavaScript-rendered browser runtime",
+      "status": "blocked_unavailable",
+      "inputs": [
+        "Dynamic web URL"
+      ],
+      "outputs": [
+        "Rendered DOM or screenshot"
+      ],
+      "evidence": [],
+      "blocker": "A supported headless browser runtime has not been confirmed in the current Floot environment.",
+      "limitations": [
+        "The public text reader is not equivalent to a full browser engine."
+      ]
+    },
+    {
+      "id": "browser.dom_automation",
+      "name": "Remote DOM inspection and browser automation",
+      "status": "blocked_unavailable",
+      "inputs": [
+        "Authorized page/session"
+      ],
+      "outputs": [
+        "DOM inspection and controlled interaction"
+      ],
+      "evidence": [],
+      "blocker": "No supported secure remote-browser runtime is deployed or connected.",
+      "limitations": [
+        "Do not claim remote clicking, form filling, or browser control."
+      ]
+    },
+    {
+      "id": "workspace.local_persistence",
+      "name": "Local tab/history/bookmark persistence",
+      "status": "implemented_unverified",
+      "inputs": [
+        "Workspace state"
+      ],
+      "outputs": [
+        "Local restore and bounded local snapshot"
+      ],
+      "evidence": [],
+      "limitations": [
+        "Partial Floot source edits exist but UI wiring, typecheck, tests and publication have not been verified."
+      ]
+    },
+    {
+      "id": "workspace.server_persistence",
+      "name": "Durable server-side workspace persistence",
+      "status": "planned",
+      "inputs": [
+        "Workspace state"
+      ],
+      "outputs": [
+        "Authenticated cross-device storage"
+      ],
+      "evidence": [],
+      "limitations": [
+        "No persistent storage implementation is connected to the published app."
+      ]
+    },
+    {
+      "id": "client.compatible_mcp",
+      "name": "Compatible VS Code/Copilot MCP configuration",
+      "status": "implemented_unverified",
+      "inputs": [
+        "Secure token prompt in client"
+      ],
+      "outputs": [
+        "Remote MCP connection configuration"
+      ],
+      "evidence": [
+        {
+          "label": "Repository config and allowlist CI",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019363098",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Configuration is validated, but a real user-side VS Code/Copilot session has not been tested here."
+      ]
+    },
+    {
+      "id": "client.chatgpt_android_mcp",
+      "name": "Direct custom MCP connection from ChatGPT Android Free",
+      "status": "blocked_unavailable",
+      "inputs": [
+        "ChatGPT Android app"
+      ],
+      "outputs": [
+        "Direct custom MCP tool invocation"
+      ],
+      "evidence": [
+        {
+          "label": "Official OpenAI custom MCP server availability documentation",
+          "url": "https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "blocker": "Current official documentation says custom MCP server connections are web-only and plan-limited; the current Free Android session cannot directly attach this custom MCP server.",
+      "limitations": [
+        "Do not claim this ChatGPT Android conversation is directly connected to CHRONO CROSS GPT."
+      ]
+    }
+  ]
+}
