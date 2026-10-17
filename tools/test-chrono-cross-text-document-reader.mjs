@@ -122,6 +122,13 @@ test("file-size limits are enforced before decoding", () => {
   failure(read("large.txt", "four", "text/plain", { maxBytes: 3 }), "size_limit_exceeded");
 });
 
+test("oversized typed-array inputs are rejected before buffer copying", () => {
+  const bytes = new Uint8Array(4096);
+  const result = readTextDocument({ filename: "large.txt", contentType: "text/plain", bytes, limits: { maxBytes: 32 } });
+  failure(result, "size_limit_exceeded");
+  assert.equal(result.source.byteSize, 4096);
+});
+
 test("unsupported extension and MIME mismatch are rejected", () => {
   failure(read("doc.docx", "not a word document", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"), "unsupported_type");
   failure(read("notes.txt", "hello", "application/pdf"), "unsupported_type");
