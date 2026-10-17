@@ -27,6 +27,8 @@ on:
       - "chrono-reader-core/server.mjs"
       - "chrono-reader-core/Dockerfile"
       - "tools/test-chrono-cross-reader-bridge-server.mjs"
+      - "render.yaml"
+      - "tools/test-chrono-cross-render-blueprint.rb"
   workflow_dispatch:
 
 permissions:
@@ -103,5 +105,7 @@ jobs:
           auth_status="$(curl --silent --output /tmp/chrono-bridge-auth.json --write-out "%{http_code}" -X POST http://127.0.0.1:18080/v1/read -H "Content-Type: application/json" -H "Authorization: Bearer $token" --data "$payload")"
           [ "$auth_status" = "200" ] || { echo "Expected HTTP 200 for authorized file read; got $auth_status"; exit 1; }
           node -e 'const fs=require("node:fs");const r=JSON.parse(fs.readFileSync("/tmp/chrono-bridge-auth.json","utf8"));if(!r.ok||!r.result?.content?.text?.includes("CHRONO READER CONTAINER CI"))process.exit(1);if(JSON.stringify(r).includes("CHRONO_BRIDGE_CI_DUMMY_TOKEN_1234567890"))process.exit(2);console.log("PASS container health, unauthenticated rejection and authenticated document read; credential not present in response");'
+      - name: Validate free Render Blueprint configuration
+        run: ruby tools/test-chrono-cross-render-blueprint.rb
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
