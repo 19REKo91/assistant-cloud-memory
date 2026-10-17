@@ -19,6 +19,9 @@ on:
       - "tools/chrono-cross-gpt-reader-smoke-test.mjs"
       - "chrono-reader-core/read-text-document.mjs"
       - "tools/test-chrono-cross-text-document-reader.mjs"
+      - "chrono-reader-core/package.json"
+      - "chrono-reader-core/read-office-document.mjs"
+      - "tools/test-chrono-cross-office-document-reader.mjs"
   workflow_dispatch:
 
 permissions:
@@ -56,5 +59,11 @@ jobs:
         run: node --check chrono-reader-core/read-text-document.mjs
       - name: Run text, Markdown, CSV and JSON reader tests (offline only)
         run: node tools/test-chrono-cross-text-document-reader.mjs
+      - name: Install pinned document-reader dependencies
+        run: npm install --prefix chrono-reader-core --ignore-scripts --no-audit --no-fund
+      - name: Validate Office reader syntax
+        run: node --check chrono-reader-core/read-office-document.mjs
+      - name: Run Office reader tests with synthetic DOCX and XLSX (offline fixtures)
+        run: node tools/test-chrono-cross-office-document-reader.mjs
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
