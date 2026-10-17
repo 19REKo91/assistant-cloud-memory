@@ -119,3 +119,10 @@ CI run [39020767305](https://github.com/19REKo91/assistant-cloud-memory/actions/
 - The Office adapter uses pinned `officeparser@8.1.1` and `fflate@0.8.2`, with explicit file-size, decompression, ZIP-entry, XML-element, cell, repeated-content, output-size and timeout caps.
 
 **Important boundary:** all these checks are deterministic offline synthetic fixtures. They prove that the repository modules work for the tested fixtures, not that the uploaded files can yet be submitted to CHRONO CROSS GPT through its published UI or MCP service. The registry keeps the new reader/router entries `implemented_unverified` until a real integration is deployed and tested. ODT/ODS/ODP/EPUB are accepted by the adapter but lack dedicated successful fixtures; OCR, image understanding, audio/video transcription and rendered-page browser automation remain unimplemented here.
+
+
+## Authenticated reader bridge container — 2026-10-17
+
+CI run [39021252566](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021252566) passed both loopback HTTP contract tests and a Docker end-to-end smoke test. The image built successfully; the container served its health endpoint, rejected an unauthenticated POST with HTTP 401, and returned HTTP 200 with the expected text from an authenticated synthetic text-file upload. The test token is a CI-only dummy, never a deployment credential.
+
+This validates the server/container contract only. The container has **not** been deployed to an external host, does not yet receive uploaded files from the published Floot UI, and is not connected as an additional MCP tool. A production secret must be configured via the hosting platform's secret manager. Keep `bridge.reader_api` at `implemented_unverified` until a deployment and secured integration are tested.
