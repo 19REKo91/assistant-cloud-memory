@@ -1,0 +1,17 @@
+{
+  "name": "chrono-reader-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Repository-side bounded document-reader adapters for CHRONO CROSS GPT",
+  "scripts": {
+    "test:text": "node ../tools/test-chrono-cross-text-document-reader.mjs",
+    "test:office": "node ../tools/test-chrono-cross-office-document-reader.mjs"
+  },
+  "dependencies": {
+    "officeparser": "8.1.1"
+  },
+  "devDependencies": {
+    "fflate": "0.8.2"
+  }
+}
