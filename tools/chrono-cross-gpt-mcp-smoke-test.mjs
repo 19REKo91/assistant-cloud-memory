@@ -166,6 +166,11 @@ try {
     console.error(JSON.stringify({ ok: false, stage: "tools/list", reason: "expected_tools_missing", missing, toolNames, credentialPrinted: false }, null, 2));
     process.exit(1);
   }
+  const readerTool = tools.find((tool) => tool?.name === "read_public_page");
+  const readerSchema = readerTool?.inputSchema;
+  if (readerSchema?.type !== "object" || readerSchema?.properties?.url?.type !== "string" || !Array.isArray(readerSchema.required) || !readerSchema.required.includes("url")) {
+    fail("tools/list", listed.response.status, "read_public_page must declare a required string url input.", listed.response.headers.get("www-authenticate"));
+  }
 
   const capabilitiesCall = await callTool("get_browser_capabilities", 3, {}, init.parsed.result.protocolVersion);
   const publicPageCall = await callTool("read_public_page", 4, { url: "https://example.com/" }, init.parsed.result.protocolVersion, "Example Domain");
@@ -181,7 +186,7 @@ try {
       missingToken: { httpStatus: missingAuth.response.status, rejected: true },
       wrongToken: { httpStatus: wrongAuth.response.status, rejected: true, tokenEchoed: false },
     },
-    toolsList: { httpStatus: listed.response.status, toolNames },
+    toolsList: { httpStatus: listed.response.status, toolNames, readPublicPageSchemaValid: true },
     toolCalls: [capabilitiesCall, publicPageCall],
     unsafeUrl: unsafeUrlCall,
     credentialPrinted: false,
