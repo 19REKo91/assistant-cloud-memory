@@ -731,3 +731,19 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - CI run [39014861224](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39014861224) completed with **success**; all steps passed, including the offline MCP mock suite and the URL-vector integrity check.
 - This confirms test-fixture and URL-parser behavior only; it does not validate production DNS, redirects, network connections, or the live reader.
 - Overall project remains **INCOMPLETE** until live reader validation and the local-PDF upload fix are completed.
+
+## Session update — 2026-10-17 production reliability pass
+
+- Status: **INCOMPLETE**. The live app remains at https://chrono-cross-gpt.floot.app. This update records work in Floot; it does not mean every planned capability is implemented.
+- Fixed the Floot TypeScript issue in `endpoints/read-pdf_POST.ts`: removed the unsupported `isEvalSupported` property for the installed `pdfjs-dist@6.4.299`. Typecheck is clean.
+- Updated `endpoints/read-page_POST.ts` so upstream fetch failure is reported as HTTP 502 and an abort timeout as HTTP 504, with generic user-facing errors instead of leaking network exception details.
+- Added reader URL tests for credentials, IPv4 loopback canonical forms (`127.1`, integer, hexadecimal), IPv6 loopback, non-standard ports, and upstream fetch failure. Added local PDF tests for empty, non-PDF, and malformed PDF uploads.
+- Updated MCP capability reporting to distinguish implemented public-page extraction and local selectable-text PDF extraction from unavailable OCR and unimplemented Office/image/audio/video readers, rendered-page extraction, remote DOM automation, persistence, and ChatGPT host setup.
+- Verification before publish: TypeScript typecheck clean; 5 regular spec files passed; 2 hook spec files passed (7 total).
+- Floot checkpoint: `16541eac-0087-4ca7-81b5-517115e23ee7` (“Fixed PDF typecheck and strengthened reader tests”).
+- Published successfully to the existing URL. Publish job: `b077a4ef-1c37-4f47-ae59-2587211dcbef`.
+- Live post-publish smoke tests: `GET /_api/mcp-status` returned HTTP 200 with `tokenConfigured=true`, `hostConnection=not_verified`; unauthenticated `POST /_api/mcp` returned HTTP 401 with a standard Bearer challenge; public `example.com` page read returned HTTP 200 with `resultStatus=returned`; a legacy numeric loopback URL was rejected; local multipart PDF extraction returned HTTP 200 with one page and the expected text, with `ocrAttempted=false`.
+- Important limit: authenticated MCP `initialize` / `notifications/initialized` / `tools/list` was **not re-run after this publish** because the connected token is only available in Floot's secure environment. Never copy it into chat or GitHub. The previously successful handshake is historical, not fresh evidence for this deployment.
+- Screenshot QA could not run because no Floot editor/preview window was open; the screenshot tool reported `awaiting_window`.
+- Remaining blockers: OCR and other document/media readers, JavaScript-rendered browser runtime, remote DOM automation, durable storage, and ChatGPT host configuration. Do not mark complete until these are implemented or explicitly excluded from the launch scope and their statuses are verified.
+
