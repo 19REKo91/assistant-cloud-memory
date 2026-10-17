@@ -63,6 +63,7 @@ try {
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
     assert.ok(output.toolCalls.every((call) => call.httpStatus === 200 && call.hasText));
+    assert.equal(output.toolCalls[1].expectedTextFound, true);
     assert.deepEqual(output.unsafeUrl, { name: "read_public_page", httpStatus: 200, rejected: true });
     assert.equal(output.credentialPrinted, false);
     assert.ok(!result.stdout.includes(dummyToken));
@@ -77,6 +78,7 @@ try {
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
+    assert.equal(output.toolCalls[1].expectedTextFound, true);
     assert.deepEqual(output.unsafeUrl, { name: "read_public_page", httpStatus: 200, rejected: true });
     assert.equal(output.credentialPrinted, false);
     assert.ok(!result.stdout.includes(dummyToken));
