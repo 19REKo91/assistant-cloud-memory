@@ -11,6 +11,7 @@ const requiredIds = [
   "mcp.tool_calls",
   "files.text_markdown_csv_json",
   "files.office_document_adapter",
+  "files.unified_reader_router",
   "web.public_page_text",
   "web.file_scheme_rejection",
   "web.ssrf_redirect_dns",
