@@ -22,6 +22,8 @@ on:
       - "chrono-reader-core/package.json"
       - "chrono-reader-core/read-office-document.mjs"
       - "tools/test-chrono-cross-office-document-reader.mjs"
+      - "chrono-reader-core/read-document.mjs"
+      - "tools/test-chrono-cross-document-router.mjs"
   workflow_dispatch:
 
 permissions:
@@ -65,5 +67,9 @@ jobs:
         run: node --check chrono-reader-core/read-office-document.mjs
       - name: Run Office reader tests with synthetic DOCX and XLSX (offline fixtures)
         run: node tools/test-chrono-cross-office-document-reader.mjs
+      - name: Validate unified reader router syntax
+        run: node --check chrono-reader-core/read-document.mjs
+      - name: Run unified reader routing tests (offline fixtures)
+        run: node tools/test-chrono-cross-document-router.mjs
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
