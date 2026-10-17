@@ -40,6 +40,36 @@ function makeXlsx() {
   });
 }
 
+function makePptx(text) {
+  return archive({
+    "[Content_Types].xml": '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/></Types>',
+    "_rels/.rels": '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>',
+    "ppt/presentation.xml": '<?xml version="1.0" encoding="UTF-8"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldIdLst><p:sldId id="256" r:id="rId1"/></p:sldIdLst><p:sldSz cx="9144000" cy="5143500"/></p:presentation>',
+    "ppt/_rels/presentation.xml.rels": '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide1.xml"/></Relationships>',
+    "ppt/slides/slide1.xml": '<?xml version="1.0" encoding="UTF-8"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id="2" name="TextBox 1"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US"/><a:t>' + text + '</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>'
+  });
+}
+
+const pptxText = "CHRONO PPTX SLIDE FIXTURE";
+const pptxResult = await readOfficeDocument({
+  filename: "deck.pptx",
+  contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  bytes: makePptx(pptxText)
+});
+assert.equal(pptxResult.ok, true, JSON.stringify(pptxResult.error));
+assert.ok(pptxResult.content.text.includes(pptxText), "PPTX slide marker missing");
+pass("PPTX: extracts text from a synthetic presentation slide");
+
+const rtfText = "CHRONO RTF FIXTURE";
+const rtfResult = await readOfficeDocument({
+  filename: "memo.rtf",
+  contentType: "application/rtf",
+  bytes: Buffer.from("{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Arial;}}\\pard " + rtfText + "\\par}", "utf8")
+});
+assert.equal(rtfResult.ok, true, JSON.stringify(rtfResult.error));
+assert.ok(rtfResult.content.text.includes(rtfText), "RTF text missing");
+pass("RTF: extracts text from a synthetic Rich Text Format document");
+
 const docxText = "CHRONO DOCX FIXTURE";
 const docx = makeDocx(docxText);
 const docxResult = await readOfficeDocument({
@@ -116,7 +146,7 @@ pass("XLSX: reads a synthetic worksheet including header and cell values");
 console.log(JSON.stringify({
   ok: true,
   passedTests: passed,
-  fixtureTypes: ["DOCX", "XLSX"],
+  fixtureTypes: ["DOCX", "PPTX", "XLSX", "RTF"],
   networkCalls: 0,
   originalDocumentContentPrinted: false,
   defaultInputLimitBytes: 4 * 1024 * 1024
