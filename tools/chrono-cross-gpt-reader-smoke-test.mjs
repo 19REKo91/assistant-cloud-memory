@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Read-only production smoke test for the public page and local PDF readers.
-// Uses only a fixed public URL and a synthetic one-page PDF; never logs response content.
+// Read-only production smoke test for selectable-text PDF extraction and safe invalid-input handling.
+// Uses synthetic fixtures only; never logs response content.
 const ORIGIN = "https://chrono-cross-gpt.floot.app";
 const PDF_URL = new URL("/_api/read-pdf", ORIGIN);
 const FIXTURE_TEXT = "CHRONO PDF SMOKE TEST";
@@ -45,14 +45,18 @@ async function main() {
     if (url.protocol !== "https:" || url.origin !== ORIGIN || url.pathname !== path) stop("endpoint_guard", null, "Refusing an unexpected test destination.");
   }
 
-  const form = new FormData();
-  form.append("file", new Blob([buildPdf(FIXTURE_TEXT)], { type: "application/pdf" }), "chrono-smoke.pdf");
-  const pdfResponse = await fetch(PDF_URL, {
-    method: "POST",
-    redirect: "error",
-    body: form,
-    signal: AbortSignal.timeout(25000),
-  });
+  async function upload(name, bytes, contentType) {
+    const form = new FormData();
+    form.append("file", new Blob([bytes], { type: contentType }), name);
+    return fetch(PDF_URL, {
+      method: "POST",
+      redirect: "error",
+      body: form,
+      signal: AbortSignal.timeout(25000),
+    });
+  }
+
+  const pdfResponse = await upload("chrono-smoke.pdf", buildPdf(FIXTURE_TEXT), "application/pdf");
   const pdfBody = await pdfResponse.text();
   let pdfData;
   try { pdfData = JSON.parse(pdfBody); } catch { stop("pdf_json", pdfResponse.status, "PDF reader did not return JSON."); }
@@ -60,9 +64,23 @@ async function main() {
   const pdfTextFound = pdfStrings.some((s) => s.includes(FIXTURE_TEXT));
   if (!pdfResponse.ok || !pdfTextFound) stop("pdf_text_extraction", pdfResponse.status, "Synthetic PDF text was not found in the reader result.");
 
+  const malformedResponse = await upload("malformed.pdf", Buffer.from("%PDF-1.4\\nnot a valid PDF structure\\n%%EOF\\n", "ascii"), "application/pdf");
+  await malformedResponse.body?.cancel();
+  if (malformedResponse.status < 400 || malformedResponse.status >= 500) {
+    stop("malformed_pdf_rejection", malformedResponse.status, "Malformed PDF should be rejected with a client error, not accepted or surfaced as a server error.");
+  }
+
+  const unsupportedResponse = await upload("not-a-pdf.txt", Buffer.from("plain text, not a PDF", "utf8"), "text/plain");
+  await unsupportedResponse.body?.cancel();
+  if (unsupportedResponse.status < 400 || unsupportedResponse.status >= 500) {
+    stop("unsupported_file_rejection", unsupportedResponse.status, "A non-PDF upload should be rejected with a client error.");
+  }
+
   console.log(JSON.stringify({
     ok: true,
     localPdf: { httpStatus: pdfResponse.status, syntheticOnePageFixture: true, expectedTextFound: true, responseBodyPrinted: false },
+    malformedPdf: { httpStatus: malformedResponse.status, rejectedWithClientError: true, responseBodyPrinted: false },
+    unsupportedUpload: { httpStatus: unsupportedResponse.status, rejectedWithClientError: true, responseBodyPrinted: false },
   }, null, 2));
 }
 
