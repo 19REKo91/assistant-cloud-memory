@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Implementation-ready security test vectors for the CHRONO CROSS GPT public URL reader. These vectors describe expected policy; they do not prove the current Floot reader enforces it.",
+  "policy": {
+    "allowOnlySchemes": [
+      "https:",
+      "http:"
+    ],
+    "rejectCredentialsInUrl": true,
+    "resolveAndValidateAllAddresses": true,
+    "rejectLoopbackPrivateLinkLocalAndReservedDestinations": true,
+    "revalidateEveryRedirectTarget": true,
+    "rejectRedirectsToDifferentDisallowedDestinations": true,
+    "maxRedirects": 5,
+    "preventDnsRebindingByConnectingToValidatedAddress": true,
+    "neverForwardAuthorizationCookiesOrUserSecretsToRedirectTargets": true
+  },
+  "cases": [
+    {
+      "id": "allow-https-public",
+      "url": "https://example.com/article",
+      "expected": "allow_if_resolves_only_to_public_addresses",
+      "reason": "Ordinary public HTTPS URL."
+    },
+    {
+      "id": "allow-http-public-policy-dependent",
+      "url": "http://example.com/article",
+      "expected": "policy_review",
+      "reason": "HTTP is permitted by the scheme list but deployment policy may require HTTPS; never silently upgrade without preserving/reporting the final URL."
+    },
+    {
+      "id": "block-file-scheme",
+      "url": "file:///etc/passwd",
+      "expected": "block",
+      "reason": "Non-web scheme."
+    },
+    {
+      "id": "block-data-scheme",
+      "url": "data:text/html,hello",
+      "expected": "block",
+      "reason": "Non-web scheme and embedded content."
+    },
+    {
+      "id": "block-ftp-scheme",
+      "url": "ftp://example.com/file",
+      "expected": "block",
+      "reason": "Unsupported non-HTTP scheme."
+    },
+    {
+      "id": "block-url-credentials",
+      "url": "https://user:password@example.com/",
+      "expected": "block",
+      "reason": "Credentials embedded in URL."
+    },
+    {
+      "id": "block-localhost",
+      "url": "http://localhost/",
+      "expected": "block",
+      "reason": "Loopback/local host."
+    },
+    {
+      "id": "block-ipv4-loopback",
+      "url": "http://127.0.0.1/",
+      "expected": "block",
+      "reason": "IPv4 loopback."
+    },
+    {
+      "id": "block-ipv4-private",
+      "url": "http://192.168.1.10/",
+      "expected": "block",
+      "reason": "Private IPv4 address."
+    },
+    {
+      "id": "block-ipv4-link-local",
+      "url": "http://169.254.169.254/latest/meta-data/",
+      "expected": "block",
+      "reason": "Link-local/cloud metadata target."
+    },
+    {
+      "id": "block-ipv4-integer-encoding",
+      "url": "http://2130706433/",
+      "expected": "block_after_canonicalization",
+      "reason": "Integer IPv4 representation of loopback; normalize before policy checks."
+    },
+    {
+      "id": "block-ipv4-hex-encoding",
+      "url": "http://0x7f000001/",
+      "expected": "block_after_canonicalization",
+      "reason": "Hex IPv4 representation of loopback; normalize before policy checks."
+    },
+    {
+      "id": "block-ipv6-loopback",
+      "url": "http://[::1]/",
+      "expected": "block",
+      "reason": "IPv6 loopback."
+    },
+    {
+      "id": "block-ipv6-unique-local",
+      "url": "http://[fc00::1]/",
+      "expected": "block",
+      "reason": "IPv6 unique-local address."
+    },
+    {
+      "id": "block-ipv6-link-local",
+      "url": "http://[fe80::1]/",
+      "expected": "block",
+      "reason": "IPv6 link-local address."
+    },
+    {
+      "id": "block-ipv4-mapped-ipv6",
+      "url": "http://[::ffff:127.0.0.1]/",
+      "expected": "block_after_canonicalization",
+      "reason": "IPv4-mapped IPv6 loopback."
+    },
+    {
+      "id": "block-ambiguous-numeric-host",
+      "url": "http://127.1/",
+      "expected": "block_after_canonicalization",
+      "reason": "Legacy abbreviated IPv4 form may resolve to loopback."
+    },
+    {
+      "id": "block-private-dns-resolution",
+      "url": "https://public-looking.example.test/",
+      "expected": "block_if_any_answer_is_non_public",
+      "reason": "Hostname resolves to private or reserved IP despite non-private spelling; use a controlled resolver fixture in tests."
+    },
+    {
+      "id": "block-mixed-dns-answers",
+      "url": "https://mixed-addresses.example.test/",
+      "expected": "block_if_any_answer_is_non_public",
+      "reason": "Mixed public/private DNS answers must not pass by selecting the public answer alone."
+    },
+    {
+      "id": "block-redirect-to-loopback",
+      "url": "https://public-redirect.example.test/to-local",
+      "expected": "block_redirect",
+      "reason": "A public initial URL redirects to loopback; validate every redirect before following."
+    },
+    {
+      "id": "block-redirect-to-private",
+      "url": "https://public-redirect.example.test/to-private",
+      "expected": "block_redirect",
+      "reason": "A public initial URL redirects to a private network destination."
+    },
+    {
+      "id": "block-redirect-to-metadata",
+      "url": "https://public-redirect.example.test/to-metadata",
+      "expected": "block_redirect",
+      "reason": "A redirect targets a link-local cloud metadata address."
+    },
+    {
+      "id": "block-redirect-scheme-change",
+      "url": "https://public-redirect.example.test/to-file",
+      "expected": "block_redirect",
+      "reason": "Redirect changes to a disallowed scheme."
+    },
+    {
+      "id": "block-redirect-loop",
+      "url": "https://public-redirect.example.test/loop",
+      "expected": "fail_with_bounded_redirect_error",
+      "reason": "Redirect loop must terminate within the configured limit."
+    },
+    {
+      "id": "block-too-many-redirects",
+      "url": "https://public-redirect.example.test/chain-over-limit",
+      "expected": "fail_with_bounded_redirect_error",
+      "reason": "Redirect chain exceeds the configured maximum."
+    },
+    {
+      "id": "block-dns-rebinding",
+      "url": "https://rebind.example.test/",
+      "expected": "block_or_pin_validated_public_address",
+      "reason": "Resolve-then-connect behavior must not allow DNS to change between validation and connection."
+    },
+    {
+      "id": "strip-credentials-on-cross-origin-redirect",
+      "url": "https://public.example.test/redirect-cross-origin",
+      "expected": "follow_only_after_target_validation_and_strip_sensitive_headers",
+      "reason": "Do not forward authorization, cookies, or internal headers across origins."
+    },
+    {
+      "id": "block-malformed-url",
+      "url": "https://[invalid/",
+      "expected": "block",
+      "reason": "Malformed URL must fail closed."
+    }
+  ],
+  "executionNotes": [
+    "Use deterministic DNS and HTTP redirect mocks; do not make requests to private addresses during tests.",
+    "Run URL parser/canonicalization tests independently of live network tests.",
+    "Add tests for IPv4/IPv6 alternate encodings supported by the runtime URL parser.",
+    "Enforce response-byte, timeout, content-type, and redirect limits separately; URL validation alone is insufficient.",
+    "Treat fetched page text as untrusted data and never execute it or follow its instructions."
+  ]
+}
