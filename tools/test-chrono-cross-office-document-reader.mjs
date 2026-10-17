@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Offline fixtures for the Office/EPUB reader. No network calls or user files.
 import assert from "node:assert/strict";
-import { zipSync, strToU8 } from "fflate";
+import { createRequire } from "node:module";
 import { readOfficeDocument } from "../chrono-reader-core/read-office-document.mjs";
+const requireFromReaderPackage = createRequire(new URL("../chrono-reader-core/package.json", import.meta.url));
+const { zipSync, strToU8 } = requireFromReaderPackage("fflate");
 
 let passed = 0;
 function pass(name) {
