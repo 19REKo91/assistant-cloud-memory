@@ -13,6 +13,7 @@ const requiredIds = [
   "files.office_document_adapter",
   "files.unified_reader_router",
   "bridge.reader_api",
+  "infra.free_render_blueprint",
   "web.public_page_text",
   "web.file_scheme_rejection",
   "web.ssrf_redirect_dns",
