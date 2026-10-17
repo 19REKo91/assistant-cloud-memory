@@ -105,3 +105,17 @@ Offline CI run [39020214789](https://github.com/19REKo91/assistant-cloud-memory/
 - Empty input, invalid UTF-8, NUL-containing bytes, input size limits, oversized typed-array input, unsupported extensions, and MIME mismatches return stable failures without echoing submitted content.
 
 Boundary: these results apply to the repository module `chrono-reader-core/read-text-document.mjs` only. It is not connected to the published Floot app or an external API, so the UI/MCP cannot invoke this reader yet. The capability registry intentionally labels it `implemented_unverified`, not production-tested.
+
+
+## Office adapters and unified routing — offline evidence, 2026-10-17
+
+CI run [39020767305](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305) completed **success** with the following repository-side tests:
+
+- Synthetic **DOCX** and **PPTX** inputs each returned the expected unique text marker.
+- Synthetic **XLSX** returned the worksheet header, a string cell and a numeric cell.
+- Synthetic **RTF** returned the expected text.
+- The unified router selected the UTF-8 text reader for Arabic text, the CSV reader for tabular data and the Office adapter for DOCX. It deliberately reports PDF as delegated to the existing production PDF endpoint; it does not pretend PDF is parsed by this local adapter.
+- Rejected inputs included malformed ZIP/Office data, MIME/extension mismatch, legacy `.doc`, arbitrary `.zip`, empty files, oversized input and unsupported types. Output clipping is labelled as a partial result.
+- The Office adapter uses pinned `officeparser@8.1.1` and `fflate@0.8.2`, with explicit file-size, decompression, ZIP-entry, XML-element, cell, repeated-content, output-size and timeout caps.
+
+**Important boundary:** all these checks are deterministic offline synthetic fixtures. They prove that the repository modules work for the tested fixtures, not that the uploaded files can yet be submitted to CHRONO CROSS GPT through its published UI or MCP service. The registry keeps the new reader/router entries `implemented_unverified` until a real integration is deployed and tested. ODT/ODS/ODP/EPUB are accepted by the adapter but lack dedicated successful fixtures; OCR, image understanding, audio/video transcription and rendered-page browser automation remain unimplemented here.
