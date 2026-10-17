@@ -75,14 +75,15 @@ function fail(stage, status, body, challenge, diagnostics = undefined) {
   process.exit(1);
 }
 
-async function callTool(name, id, args, protocolVersion) {
+async function callTool(name, id, args, protocolVersion, expectedText = null) {
   const call = await request("tools/call", id, { name, arguments: args }, protocolVersion);
   const result = call.parsed?.result;
   const textItems = Array.isArray(result?.content)
     ? result.content.filter((item) => item?.type === "text" && typeof item.text === "string" && item.text.trim().length > 0)
     : [];
   const hasStructuredContent = !!result?.structuredContent && typeof result.structuredContent === "object";
-  if (call.response.status !== 200 || call.parsed?.jsonrpc !== "2.0" || call.parsed?.id !== id || call.parsed?.error || !result || result.isError === true || (!textItems.length && !hasStructuredContent)) {
+  const expectedTextFound = expectedText === null ? null : textItems.some((item) => item.text.includes(expectedText));
+  if (call.response.status !== 200 || call.parsed?.jsonrpc !== "2.0" || call.parsed?.id !== id || call.parsed?.error || !result || result.isError === true || (!textItems.length && !hasStructuredContent) || (expectedText !== null && !expectedTextFound)) {
     // Do not log page/document contents: a generic excerpt is enough to diagnose this stage.
     fail(`tools/call:${name}`, call.response.status, "Tool call failed or returned no usable content.", call.response.headers.get("www-authenticate"), {
       jsonrpc: call.parsed?.jsonrpc ?? null,
@@ -102,6 +103,7 @@ async function callTool(name, id, args, protocolVersion) {
     isError: result.isError === true,
     contentItems: Array.isArray(result.content) ? result.content.length : 0,
     hasText: textItems.length > 0,
+    expectedTextFound,
     structuredContentPresent: hasStructuredContent,
   };
 }
@@ -155,7 +157,7 @@ try {
   }
 
   const capabilitiesCall = await callTool("get_browser_capabilities", 3, {}, init.parsed.result.protocolVersion);
-  const publicPageCall = await callTool("read_public_page", 4, { url: "https://example.com/" }, init.parsed.result.protocolVersion);
+  const publicPageCall = await callTool("read_public_page", 4, { url: "https://example.com/" }, init.parsed.result.protocolVersion, "Example Domain");
   // file: is intentionally non-networked; this checks scheme rejection without probing private hosts.
   const unsafeUrlCall = await callExpectedToolError("read_public_page", 5, { url: "file:///etc/passwd" }, init.parsed.result.protocolVersion);
 
