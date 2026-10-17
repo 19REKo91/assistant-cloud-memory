@@ -9,6 +9,7 @@ const allowed = new Set(registry.statusVocabulary);
 const requiredIds = [
   "mcp.protocol",
   "mcp.tool_calls",
+  "files.text_markdown_csv_json",
   "web.public_page_text",
   "web.file_scheme_rejection",
   "web.ssrf_redirect_dns",
