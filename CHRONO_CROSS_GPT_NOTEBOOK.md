@@ -816,3 +816,17 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - The first CI run on `fe140c5` failed only because that assertion still expected manual-only triggering; the assertion was updated and the subsequent run passed.
 - No Floot source was changed, no publish was attempted, and no secret value was read or stored. The earlier local-persistence edits remain partial and unverified.
 - Overall project status remains **INCOMPLETE**. Next independent work: audit and improve repository-side reader acceptance harnesses and capability status; once Floot actions are available, finish persistence wiring and run the full app typecheck/spec suite before publishing. The authenticated MCP handshake no longer needs to be described as stale for the deployment tested in run `39018777230`; keep the app's UI indicator unchanged until the UI can be safely updated and published.
+
+
+### Follow-up — production smoke test now invokes real MCP tools (2026-10-17)
+
+- Extended `tools/chrono-cross-gpt-mcp-smoke-test.mjs` beyond protocol negotiation and tool discovery. After `initialize`, `notifications/initialized`, and `tools/list`, it now calls:
+  - `get_browser_capabilities({})`
+  - `read_public_page({url: "https://example.com/"})`
+- The production test only emits safe summaries (HTTP status, whether text was returned, tool names and counts); it does not print fetched page text or credentials. Failure diagnostics report response shape, not page content.
+- Updated `tools/test-chrono-cross-gpt-mcp-smoke-test.mjs` to mock both tool calls offline, exercise JSON and SSE responses, test an expected reader-tool error, and continue checking missing/malformed/unauthorized credentials and response IDs/server identity.
+- Verification: [production workflow run 39018967518](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39018967518) completed **success** on commit `c5aa39983dca2bed2a4bbc01f79d60561e8cf3fd`. Its log confirms both real production `tools/call` requests returned HTTP 200 and non-empty text: `get_browser_capabilities` and `read_public_page` on the public `example.com` fixture.
+- Offline regression workflow [run 39018967549](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39018967549) also completed **success**. This covers the dummy-credential mock suite, MCP configuration and allowlist checks, workflow trigger validation, and URL safety fixture integrity.
+- The first attempt at expanding the live smoke test failed the offline mock suite because its mock did not yet implement `tools/call`. The mock was then extended and the latest workflow passed; the transient failure is resolved.
+- Security boundary: no live request was sent to localhost/private/link-local addresses. Those remain deterministic offline security test cases; successful public-page reading does not prove all SSRF/redirect/DNS-rebinding protections.
+- This validates the MCP server and both exposed tool calls on the currently published deployment. It still does not establish a direct ChatGPT Android host connection, and it does not publish the partial Floot local-persistence edits.
