@@ -12,6 +12,7 @@ const requiredIds = [
   "files.text_markdown_csv_json",
   "files.office_document_adapter",
   "files.unified_reader_router",
+  "bridge.reader_api",
   "web.public_page_text",
   "web.file_scheme_rejection",
   "web.ssrf_redirect_dns",
