@@ -2,7 +2,7 @@ name: CHRONO CROSS GPT MCP smoke-test utility
 
 on:
   push:
-    branches: [main]
+    branches: [main, chronocross-offline-prep-2026-10-16]
     paths:
       - ".mcp.json"
       - ".vscode/mcp.json"
@@ -10,6 +10,8 @@ on:
       - ".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml"
       - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
       - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
+      - "docs/CHRONO_CROSS_URL_SAFETY_TEST_VECTORS.json"
+      - "tools/test-chrono-cross-url-safety-vectors.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
   workflow_dispatch:
 
@@ -37,3 +39,5 @@ jobs:
         run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
         run: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
+      - name: Validate URL safety test-vector integrity (offline only)
+        run: node tools/test-chrono-cross-url-safety-vectors.mjs
