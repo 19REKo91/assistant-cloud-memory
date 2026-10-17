@@ -797,3 +797,22 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
   6. Do not label the authenticated MCP handshake fresh unless a secure valid-token test completes against this exact deployment; do not move the token into source, GitHub, chat, or logs.
   7. Screenshot QA still requires an actual Floot preview/editor window responding to the capture tool.
 - Overall project status: **INCOMPLETE**. Existing published core behavior and the negative-auth checks are verified; the new local persistence edits are partial, unverified, and not published. OCR, Office/image/audio/video readers, rendered-page browser runtime, remote DOM automation, and true persistent MCP host-session tracking remain unimplemented or unverified.
+
+
+## Session update — 2026-10-17: authenticated production MCP handshake verified; CI trigger fixed
+
+- User explicitly directed us to continue work independent of Floot's daily build-action limit rather than repeat quota status. This session therefore continued on GitHub's separate CI path.
+- Added a narrowly scoped `push` trigger to `.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml` while retaining manual `workflow_dispatch`. It only auto-runs on branch `chronocross-offline-prep-2026-10-16` when the handshake workflow or its smoke-test script changes. The job first checks whether the repository Actions secret `CHRONO_MCP_TOKEN` exists and never prints the value.
+- Commit: `fe140c534e45edccfa2eb9bdddbe57da72c26b3e`.
+- The production handshake workflow actually ran: [GitHub Actions run 39018777230](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39018777230), completed **success**. Job logs confirm the secret was configured and the real protocol step ran:
+  - `initialize`: HTTP 200; negotiated MCP protocol `2025-11-25`; server identity `chrono-cross-gpt`.
+  - `notifications/initialized`: HTTP 202, empty body.
+  - `tools/list`: HTTP 200; required tools `read_public_page` and `get_browser_capabilities` were present.
+  - The test script redacts the token from any response before parsing/logging, and the retrieved log summary showed no credential-like string.
+- This is fresh evidence that the **currently published deployment at the time of the run** accepts an authenticated MCP handshake. It does not mean the partially edited, unpublished Floot source is live, nor does it connect this Android ChatGPT conversation directly to the MCP server.
+- The same push exposed a stale CI assertion: the offline workflow still required the production handshake workflow to be manual-only. Fixed the assertion to require manual dispatch plus the exact narrow branch/path allowlist, and to reject any other triggers.
+- Fix commit: `69cd7bc2be1f1df56c72dce87783821333d3de9f`.
+- Verified CI: [GitHub Actions run 39018827653](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39018827653) completed **success**. This includes the configuration/allowlist checks, custom-agent YAML check, updated workflow trigger check, offline MCP mock tests (dummy credentials only), and URL safety-vector integrity check.
+- The first CI run on `fe140c5` failed only because that assertion still expected manual-only triggering; the assertion was updated and the subsequent run passed.
+- No Floot source was changed, no publish was attempted, and no secret value was read or stored. The earlier local-persistence edits remain partial and unverified.
+- Overall project status remains **INCOMPLETE**. Next independent work: audit and improve repository-side reader acceptance harnesses and capability status; once Floot actions are available, finish persistence wiring and run the full app typecheck/spec suite before publishing. The authenticated MCP handshake no longer needs to be described as stale for the deployment tested in run `39018777230`; keep the app's UI indicator unchanged until the UI can be safely updated and published.
