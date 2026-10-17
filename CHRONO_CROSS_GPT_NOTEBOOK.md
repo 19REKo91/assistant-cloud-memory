@@ -841,3 +841,17 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - The first version of the reader smoke test also attempted to POST to `/_api/read-page` using an assumed request body shape and got HTTP 400. This was a test-harness schema mismatch, not evidence that the MCP page reader is broken: the actual `read_public_page` MCP tool has already passed a real production `tools/call` with non-empty text. The redundant direct page endpoint call was removed rather than guessing its request schema.
 - No Floot files were changed or published. Current evidence now includes a real authenticated MCP protocol exchange, successful live calls to both exposed MCP tools, a successful public-page MCP read, and a successful synthetic PDF text extraction.
 - Overall project remains **INCOMPLETE**. Remaining major work includes finishing the partially edited Floot local persistence UI, validating security protections against the real reader implementation, and adding OCR/Office/image/audio/video/dynamic-browser capabilities or explicitly classifying each as blocked/unavailable. The PDF smoke test only proves selectable-text extraction for a synthetic one-page PDF, not scanned-PDF OCR.
+
+
+### PDF input rejection checks added and passed in production (2026-10-17)
+
+- Expanded the live reader smoke test with two negative fixtures, both synthetic and non-sensitive:
+  - Malformed PDF content with a PDF MIME type must be rejected as a client error.
+  - A plain-text upload with a `.txt` filename must be rejected as an unsupported file type.
+- Production result: [reader smoke run 39019167710](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710) completed **success**:
+  - Valid one-page synthetic PDF: HTTP 200; expected selectable text found.
+  - Malformed PDF: HTTP 422 (rejected).
+  - Unsupported text upload: HTTP 415 (rejected).
+- Offline CI: [run 39019167716](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167716) completed **success**.
+- These checks establish selectable-text PDF success plus safe rejection for these two invalid-input cases on the tested production deployment. They do not establish OCR for scanned PDFs, password-protected PDF support, large-file limits, or complete PDF layout/table extraction.
+- No Floot source or deployment was changed. Overall project remains **INCOMPLETE**.
