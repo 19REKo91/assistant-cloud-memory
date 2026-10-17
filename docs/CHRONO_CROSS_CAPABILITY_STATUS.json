@@ -128,13 +128,13 @@
       ],
       "evidence": [
         {
-          "label": "Production synthetic one-page PDF test",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "label": "Production synthetic two-page PDF test found both unique page text markers",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832",
           "verifiedAt": "2026-10-17"
         }
       ],
       "limitations": [
-        "One synthetic page was verified; this does not prove full layout, table, encrypted-file, or large-document support."
+        "The synthetic two-page fixture returned both unique text markers; page-by-page response structure, real-world layout, tables, encrypted files, scanned pages, and large-document support remain unverified."
       ]
     },
     {
@@ -149,13 +149,13 @@
       ],
       "evidence": [
         {
-          "label": "Production PDF input validation test",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "label": "Production PDF input validation (two-page read, malformed PDF and non-PDF rejection)",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832",
           "verifiedAt": "2026-10-17"
         }
       ],
       "limitations": [
-        "Only the tested malformed fixture is covered."
+        "The tested malformed synthetic PDF was rejected with a client error; broader corrupt/encrypted/polyglot input cases remain untested."
       ]
     },
     {
@@ -170,13 +170,13 @@
       ],
       "evidence": [
         {
-          "label": "Production PDF input validation test",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167710",
+          "label": "Production PDF input validation (two-page read, malformed PDF and non-PDF rejection)",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832",
           "verifiedAt": "2026-10-17"
         }
       ],
       "limitations": [
-        "Other MIME/extension mismatch cases still need a broader matrix."
+        "A text/plain upload was rejected with a client error; MIME/extension spoofing and other unsupported-type combinations remain untested."
       ]
     },
     {
