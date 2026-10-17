@@ -1,7 +1,7 @@
 # CHRONO CROSS GPT — Reader Acceptance Test Plan
 
-Date: 2026-10-16
-Status: **Prepared; not executed against the Floot app**
+Date: 2026-10-17
+Status: **Plan update complete; repository tests and selected production smoke tests recorded; full Floot/product acceptance remains incomplete**
 Branch: `chronocross-offline-prep-2026-10-16`
 
 ## Purpose
@@ -126,3 +126,43 @@ CI run [39020767305](https://github.com/19REKo91/assistant-cloud-memory/actions/
 CI run [39021252566](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021252566) passed both loopback HTTP contract tests and a Docker end-to-end smoke test. The image built successfully; the container served its health endpoint, rejected an unauthenticated POST with HTTP 401, and returned HTTP 200 with the expected text from an authenticated synthetic text-file upload. The test token is a CI-only dummy, never a deployment credential.
 
 This validates the server/container contract only. The container has **not** been deployed to an external host, does not yet receive uploaded files from the published Floot UI, and is not connected as an additional MCP tool. A production secret must be configured via the hosting platform's secret manager. Keep `bridge.reader_api` at `implemented_unverified` until a deployment and secured integration are tested.
+
+
+## Consolidated acceptance status — 2026-10-17
+
+This section supersedes the initial header's date and compiles the execution evidence gathered after the original plan was drafted. **Completing this plan document is not the same as accepting the whole product.** Rows marked "offline" prove only the tested repository fixtures; only the rows explicitly marked "production" were exercised against the current live Floot deployment.
+
+| Acceptance ID | Current result | Evidence | Acceptance boundary / what remains |
+|---|---|---|---|
+| MCP-01 | **PASS — production handshake** | [Production MCP handshake run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019598377) | Authenticated protocol handshake and tool-list/tool calls were exercised in that run. This does not establish a direct ChatGPT Android app attachment or persistent host session. |
+| WEB-01 | **PASS — one public fixture only** | [Production reader smoke](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019343189) | Public-page tool returned expected Example Domain text. Arbitrary-site extraction quality remains unverified. |
+| WEB-05 | **PARTIAL — one scheme rejection** | [Production MCP smoke](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019224577) | The `file:` scheme was rejected without probing a private resource. Private DNS answers, redirect-to-private destinations, DNS rebinding and every canonicalization edge remain unproven. |
+| PDF-01 | **PASS — synthetic two-page PDF** | [Production PDF smoke](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) | Both unique page text markers appeared in the HTTP 200 extraction response. Structured page-by-page boundaries, tables, real-world layout and larger documents remain unverified. |
+| PDF-02 | **NOT IMPLEMENTED** | No production evidence | Scanned/image-only PDF OCR has no integrated, tested path. |
+| PDF-03 | **PASS — limited validation fixtures** | [Production PDF smoke](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) | One malformed PDF was rejected with HTTP 422; one text upload with HTTP 415. Encrypted PDFs and broader malformed/polyglot files remain untested. |
+| FILES-01 | **PASS — synthetic text formats, offline** | [Current aggregate CI](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021709319) | UTF-8 text (including Arabic), Markdown headings, CSV quoting/multiline/limits, JSON nesting/node limits, invalid encoding, size limits, and MIME/extension rejection pass. This router is not wired to the public product. |
+| OFFICE-01 | **PASS — eight synthetic formats, offline** | [Eight-format Office/ebook tests](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020912180) | DOCX, PPTX, XLSX, ODT, ODS, ODP, RTF and EPUB synthetic fixtures return expected text. Real documents, complex workbook formulas/formatting, embedded media, encryption and high-fidelity table/slide/page boundaries remain unverified. |
+| ROUTER-01 | **PASS — offline** | [Router CI](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021709319) | Dispatches text/CSV/Office fixtures; explicitly delegates PDF to the existing production endpoint. The router is not used by live Floot/MCP yet. |
+| BRIDGE-01 | **PASS — 13 loopback HTTP cases, offline** | [Bridge plus container CI](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021252566) | Auth required, invalid tokens/JSON/Base64 rejected, fields restricted, size/response/concurrency limits tested, stable errors returned, and credentials not echoed. Loopback only, not public hosting. |
+| BRIDGE-02 | **PASS — Docker container smoke, offline** | [Container run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021636008) | Container build and health check passed; unauthenticated POST returned HTTP 401; authenticated synthetic file read returned HTTP 200. Test used a dummy-only token and platform-style `PORT=10000`. It does not prove an external service is deployed. |
+| HOST-01 | **PASS — Blueprint policy check only** | [Render Blueprint CI](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021709319) | Render declaration remains Free, manual-deploy only, correct Docker context/health path, and requires a dashboard-entered secret. It has **not** been applied; no Render instance or production token exists. |
+| INTEGRATION-01 | **NOT ACCEPTED / NOT DEPLOYED** | [Integration handoff](https://github.com/19REKo91/assistant-cloud-memory/blob/chronocross-offline-prep-2026-10-16/docs/CHRONO_CROSS_READER_BRIDGE_INTEGRATION.md) | The new readers and bridge are repository-side only. Floot has no verified server-side proxy call to this bridge and MCP does not expose the file reader. |
+| WORKSPACE-01 | **UNVERIFIED** | No passing live evidence | Local persistence changes in Floot are incomplete/unpublished; restore/persist UI wiring and the relevant Floot typecheck/tests remain unverified. |
+| OCR / IMAGE / AUDIO / VIDEO | **NOT ACCEPTED** | No passing evidence | OCR, image understanding, audio/video transcription and video-caption retrieval are not integrated and tested as product features. |
+| BROWSER-01 | **BLOCKED / NOT ACCEPTED** | No deployed runtime evidence | JavaScript-rendered browser runtime and remote DOM interaction are not available in the published deployment. |
+
+### Final completion checklist for this plan update
+
+- [x] Update the plan date/status.
+- [x] Link successful production tests separately from offline synthetic suites.
+- [x] Add text/Markdown/CSV/JSON regression suite and scope.
+- [x] Add all eight Office/ebook fixture formats and scope.
+- [x] Add unified-router result and explicit PDF delegation.
+- [x] Add authenticated bridge API tests and Docker/health/authenticated read.
+- [x] Add manual-only free Render Blueprint policy checks.
+- [x] Preserve explicit limitations for SSRF/DNS rebinding, OCR, browser runtime, persistence and live integration.
+- [ ] Deploy the bridge to an authorized host and verify a real HTTPS request with a newly provisioned secret.
+- [ ] Wire the bridge to a server-only Floot proxy/MCP tool, run Floot typecheck/full tests, publish, and verify end-to-end.
+- [ ] Finish the remaining product capabilities above before declaring the project complete.
+
+**Plan status:** the requested documentation update is complete in this revision. **Product acceptance status: INCOMPLETE.** Do not change the overall project to "complete" until the unchecked product-level items are genuinely tested.
