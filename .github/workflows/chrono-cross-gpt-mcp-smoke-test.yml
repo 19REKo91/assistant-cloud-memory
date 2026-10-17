@@ -78,5 +78,30 @@ jobs:
         run: node --check chrono-reader-core/server.mjs
       - name: Run reader bridge HTTP contract tests on loopback only
         run: node tools/test-chrono-cross-reader-bridge-server.mjs
+      - name: Build bridge container and smoke-test health plus authenticated read
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull -f chrono-reader-core/Dockerfile -t chrono-reader-bridge-ci chrono-reader-core
+          token="CHRONO_BRIDGE_CI_DUMMY_TOKEN_1234567890"
+          container_id="$(docker run -d --rm -e CHRONO_READER_BRIDGE_TOKEN="$token" -p 127.0.0.1:18080:8080 chrono-reader-bridge-ci)"
+          cleanup() { docker rm -f "$container_id" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          ready=false
+          for _ in $(seq 1 25); do
+            if curl --silent --show-error --fail http://127.0.0.1:18080/health >/dev/null; then ready=true; break; fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            echo "Reader bridge container did not become healthy."
+            docker logs "$container_id"
+            exit 1
+          fi
+          payload="$(node -e 'console.log(JSON.stringify({filename:"note.txt",contentType:"text/plain",contentBase64:Buffer.from("CHRONO READER CONTAINER CI","utf8").toString("base64")}))')"
+          unauth_status="$(curl --silent --output /tmp/chrono-bridge-unauth.json --write-out "%{http_code}" -X POST http://127.0.0.1:18080/v1/read -H "Content-Type: application/json" --data "$payload")"
+          [ "$unauth_status" = "401" ] || { echo "Expected HTTP 401 without auth; got $unauth_status"; exit 1; }
+          auth_status="$(curl --silent --output /tmp/chrono-bridge-auth.json --write-out "%{http_code}" -X POST http://127.0.0.1:18080/v1/read -H "Content-Type: application/json" -H "Authorization: Bearer $token" --data "$payload")"
+          [ "$auth_status" = "200" ] || { echo "Expected HTTP 200 for authorized file read; got $auth_status"; exit 1; }
+          node -e 'const fs=require("node:fs");const r=JSON.parse(fs.readFileSync("/tmp/chrono-bridge-auth.json","utf8"));if(!r.ok||!r.result?.content?.text?.includes("CHRONO READER CONTAINER CI"))process.exit(1);if(JSON.stringify(r).includes("CHRONO_BRIDGE_CI_DUMMY_TOKEN_1234567890"))process.exit(2);console.log("PASS container health, unauthenticated rejection and authenticated document read; credential not present in response");'
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
