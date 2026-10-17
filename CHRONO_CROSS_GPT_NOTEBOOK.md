@@ -747,3 +747,15 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Screenshot QA could not run because no Floot editor/preview window was open; the screenshot tool reported `awaiting_window`.
 - Remaining blockers: OCR and other document/media readers, JavaScript-rendered browser runtime, remote DOM automation, durable storage, and ChatGPT host configuration. Do not mark complete until these are implemented or explicitly excluded from the launch scope and their statuses are verified.
 
+## Session update — 2026-10-17: correct stale production handshake indicator
+
+- Inspected the live UI text supplied by the user and found the diagnostic status was hard-coded in `pages/_index.tsx` as `VERIFIED · RUN #5`; it did not reflect current deployment freshness.
+- The latest documented successful authenticated production handshake was GitHub Actions run `38878216200` (#6) on the previous deployment. The 2026-10-17 reliability publish had not been followed by a fresh authenticated handshake, so the UI was misleadingly optimistic.
+- Updated the UI to show `STALE · RUN #6` in warning state, and changed the explanatory copy to say that run #6 predates the latest deployment and must be rerun. This does not claim ChatGPT is connected or that a host session is active.
+- Updated `static/__dev/notes/chrono-mcp-handoff.md` to correct a contradictory historical statement and record the UI correction.
+- Validation after the UI edits: TypeScript typecheck clean; 5 regular spec files passed, 0 failed; 2 hook spec files passed, 0 failed (7 total).
+- Floot checkpoint created: `48c1b348-fdac-4680-9eb4-5cb9e8fbca54` (“Correct stale MCP verification status”).
+- Publish to the existing URL `https://chrono-cross-gpt.floot.app` was started as job `3805c66a-c02e-4281-83e7-2acb77ccdb7a`; at the time of this note update, completion is still pending and must be checked before claiming it is live.
+- Screenshot QA remains blocked: both desktop and iPhone screenshot jobs report `awaiting_window` until a Floot preview/editor window is opened.
+- **Overall project status: INCOMPLETE.** After publish succeeds, rerun the production authenticated MCP handshake through the secure GitHub Actions workflow if the required secret is available there; never expose or request the token. Until then, the UI correctly labels the last handshake as stale. Also continue the remaining reader/browser capability work.
+
