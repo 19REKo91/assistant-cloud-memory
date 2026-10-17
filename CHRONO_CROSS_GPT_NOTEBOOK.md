@@ -899,3 +899,14 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Offline regression workflow [run 39019475505](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019475505) completed **success**. It now mocks missing/wrong-token rejection and includes a regression scenario where an echoed invalid token must cause the test to fail without printing that token.
 - The first run after adding auth preflight failed only because the offline mock still threw on missing/incorrect Authorization rather than returning a mocked 401. The mock was updated; the subsequent run passed.
 - These results verify the currently published endpoint's tested authentication paths. They do not prove every edge/proxy header behavior or OAuth support; this server currently uses a static bearer token and is not an OAuth authorization server.
+
+
+### Machine-readable capability registry and CI validation added (2026-10-17)
+
+- Added `docs/CHRONO_CROSS_CAPABILITY_STATUS.json`, a 19-entry capability registry with explicit states: implemented/tested, implemented/unverified, planned, partial, and blocked/unavailable.
+- The registry includes evidence links for the real production MCP handshake/tool calls, public-page expected-content check, safe `file:` scheme rejection, and PDF success/malformed/unsupported-upload tests. It also marks scanned-PDF OCR, Office readers, image OCR/understanding, audio/video transcription, JavaScript-rendered browsing, DOM automation, persistent server storage, and direct ChatGPT Android custom-MCP use as not available/verified.
+- Added `tools/test-chrono-cross-capability-registry.mjs` to validate unique IDs, required capabilities, allowed status vocabulary, evidence URL/date shape, blocker/limitation fields, and absence of secret-like values.
+- Wired the validator into the existing offline CI workflow and its path triggers.
+- CI verification: [run 39019552935](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019552935) completed **success**, including the capability-registry validator, MCP offline mock suite, configuration checks, reader workflow validation, and URL safety fixture integrity check.
+- This registry is a repository-side source of truth for the next Floot UI update; it is not yet loaded by the live app. The published `get_browser_capabilities` response remains whatever the current Floot code reports until that code can be safely updated and tested.
+- Overall project remains **INCOMPLETE**.
