@@ -389,8 +389,8 @@
       ],
       "evidence": [
         {
-          "label": "Offline CI: text, Markdown, CSV and JSON reader tests within the unified reader suite",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
+          "label": "Offline CI: text, Markdown, CSV and JSON reader tests",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020912180",
           "verifiedAt": "2026-10-17"
         }
       ],
@@ -412,14 +412,14 @@
       ],
       "evidence": [
         {
-          "label": "Offline CI: synthetic DOCX, PPTX, XLSX and RTF fixtures; unified router regression suite",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
+          "label": "Offline CI: synthetic DOCX, PPTX, XLSX, ODT, ODS, ODP, RTF and EPUB fixtures",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020912180",
           "verifiedAt": "2026-10-17"
         }
       ],
       "limitations": [
-        "The adapter is implemented in the repository and synthetic DOCX, PPTX, XLSX and RTF fixtures pass offline tests, but it is not connected to the published Floot app, MCP endpoint, or a deployed bridge.",
-        "ODT, ODS, ODP and EPUB are accepted by the implementation but do not yet have dedicated passing fixtures; real-world Office files and embedded media remain unverified.",
+        "All eight allowlisted formats (DOCX, PPTX, XLSX, ODT, ODS, ODP, RTF and EPUB) pass synthetic offline fixtures; the adapter is not connected to the published Floot app, MCP endpoint, or a deployed bridge.",
+        "Real-world Office and ebook files, embedded media, password-protected files, charts/layout fidelity and larger files remain unverified; no PDF OCR is provided by this adapter.",
         "Input is capped at 4 MiB; ZIP entries, decompressed bytes, XML elements, table cells, repeated content, output characters and parser time are bounded.",
         "PDF OCR, image OCR, audio/video transcription and legacy binary .doc files are not provided by this adapter."
       ]
@@ -436,8 +436,8 @@
       ],
       "evidence": [
         {
-          "label": "Offline CI: text, Office and routing regression tests",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
+          "label": "Offline CI: unified routing tests for text, CSV, DOCX, PDF delegation and unsupported formats",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020912180",
           "verifiedAt": "2026-10-17"
         }
       ],
