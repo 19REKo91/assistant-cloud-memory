@@ -389,8 +389,8 @@
       ],
       "evidence": [
         {
-          "label": "Offline CI: text, Markdown, CSV and JSON parser regression suite",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020214789",
+          "label": "Offline CI: text, Markdown, CSV and JSON reader tests within the unified reader suite",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
           "verifiedAt": "2026-10-17"
         }
       ],
@@ -412,16 +412,39 @@
       ],
       "evidence": [
         {
-          "label": "Offline CI with synthetic DOCX, PPTX, XLSX and RTF fixtures",
-          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020638984",
+          "label": "Offline CI: synthetic DOCX, PPTX, XLSX and RTF fixtures; unified router regression suite",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
           "verifiedAt": "2026-10-17"
         }
       ],
       "limitations": [
-        "The adapter is implemented in the repository and the four listed synthetic fixture formats passed offline tests, but it is not connected to the published Floot app, MCP endpoint, or a deployed bridge.",
+        "The adapter is implemented in the repository and synthetic DOCX, PPTX, XLSX and RTF fixtures pass offline tests, but it is not connected to the published Floot app, MCP endpoint, or a deployed bridge.",
         "ODT, ODS, ODP and EPUB are accepted by the implementation but do not yet have dedicated passing fixtures; real-world Office files and embedded media remain unverified.",
         "Input is capped at 4 MiB; ZIP entries, decompressed bytes, XML elements, table cells, repeated content, output characters and parser time are bounded.",
         "PDF OCR, image OCR, audio/video transcription and legacy binary .doc files are not provided by this adapter."
+      ]
+    },
+    {
+      "id": "files.unified_reader_router",
+      "name": "Unified document reader routing layer (repository-side)",
+      "status": "implemented_unverified",
+      "inputs": [
+        "File name, content type and uploaded bytes"
+      ],
+      "outputs": [
+        "Dispatch to text-like or Office reader with standardized result envelopes"
+      ],
+      "evidence": [
+        {
+          "label": "Offline CI: text, Office and routing regression tests",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020767305",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "The router is implemented and tested within the repository only; the live UI/MCP endpoint does not yet call it.",
+        "PDF is explicitly delegated to the existing published PDF endpoint, not parsed by this router.",
+        "Audio, video, image OCR, scanned-PDF OCR and browser DOM rendering are not implemented here."
       ]
     }
   ]
