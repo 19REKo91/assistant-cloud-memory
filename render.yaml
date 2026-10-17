@@ -7,7 +7,7 @@ services:
     dockerfilePath: chrono-reader-core/Dockerfile
     dockerContext: chrono-reader-core
     healthCheckPath: /health
-    autoDeployTrigger: off
+    autoDeployTrigger: "off"
     envVars:
       - key: NODE_ENV
         value: production
