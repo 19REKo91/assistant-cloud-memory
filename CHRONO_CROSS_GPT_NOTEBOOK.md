@@ -770,3 +770,30 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Desktop and iPhone screenshot jobs remain `awaiting_window`; open the Floot preview/editor window to allow visual QA.
 - Project status remains **INCOMPLETE** for full scope. Keep the stale indicator until a fresh authenticated handshake succeeds against this deployment.
 
+
+
+## Session update — 2026-10-17: local persistence work started; Floot action quota reached
+
+- User requested autonomous continuation and authorized token creation/configuration if needed.
+- Before source edits in this session, the live deployment was rechecked:
+  - `GET /_api/mcp-status`: HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`.
+  - Production `POST /_api/mcp` without Authorization: HTTP 401 with `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`.
+  - A deliberately invalid bearer token also returned HTTP 401, did not echo the supplied test token, and did not expose any secret.
+  - TypeScript typecheck clean; 5 regular spec files passed; 2 hook specs passed (7 test files total), all before the new edits below.
+- Floot resource inventory confirms the existing server-side generic credential is connected as `CHRONO_MCP_TOKEN`. The secret itself was not read or printed. No rotation was performed, because replacing it without completing a secure external-host rollout could break an existing client.
+- Source changes that were actually accepted in Floot:
+  - Created `helpers/workspacePersistence.tsx`, with versioned snapshot validation, local-only workspace state, bounded tabs/history/bookmarks/activity, and exclusion/redaction rules for URLs containing likely credential parameters.
+  - Created `helpers/workspacePersistence.spec.tsx`, covering round-trip, corrupt snapshots, sensitive URL exclusion/redaction, and bounded events.
+  - Updated `pages/_index.tsx` to import the persistence helper and shared types; added local-storage restore/write effects; added a 25-second timeout/recheck state for the slow MCP status request; blocked navigation URLs with embedded username/password; and added a local-workspace reset handler.
+- **Important: the source work is partial and is NOT verified.** Floot refused the subsequent edits because the account's daily build-action limit was reached. The remaining UI wiring did not apply: the diagnostics still need to display the persistence state, expose the MCP status recheck control, and provide the local-data reset action. The newer state/handler may currently be unused and must be integrated or removed before calling typecheck.
+- No checkpoint or publish was created after these partial source edits. Do not claim the newly edited source is typechecked, tested, published, or visually QA'd. Production remains the previously published build until a new successful publish is confirmed.
+- Floot reported the build-action limit resets at `2026-10-18T07:00:00Z` (10:00 Asia/Baghdad). Until Floot allows source operations again, avoid further project mutations.
+- Exact next actions when the quota permits:
+  1. Finish `pages/_index.tsx`: display `LOCAL STORAGE` / `SESSION ONLY` honestly, wire the MCP status recheck button, wire the local-data reset button, and keep PDF/page text out of persistence.
+  2. Run typecheck; fix all errors from the new helper/component edits.
+  3. Run all regular specs plus hook specs; run a preview/local-storage restore test if browser access returns.
+  4. Create a checkpoint; publish only after checks pass.
+  5. Re-run live production status, no-token and wrong-token rejection, public-page-reader, and local PDF smoke tests after publish.
+  6. Do not label the authenticated MCP handshake fresh unless a secure valid-token test completes against this exact deployment; do not move the token into source, GitHub, chat, or logs.
+  7. Screenshot QA still requires an actual Floot preview/editor window responding to the capture tool.
+- Overall project status: **INCOMPLETE**. Existing published core behavior and the negative-auth checks are verified; the new local persistence edits are partial, unverified, and not published. OCR, Office/image/audio/video readers, rendered-page browser runtime, remote DOM automation, and true persistent MCP host-session tracking remain unimplemented or unverified.
