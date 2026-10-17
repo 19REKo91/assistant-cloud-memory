@@ -36,7 +36,7 @@ const mockSource = [
   "  if (request.method === 'initialize') { const payload = JSON.stringify({jsonrpc:'2.0',id:scenario === 'wrong_id' ? 999 : request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:scenario === 'wrong_server' ? 'unexpected-server' : 'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
   "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'}]; const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:{tools}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
-  "  if (request.method === 'tools/call') { const name = request.params?.name; const failed = scenario === 'tool_error' && name === 'read_public_page'; const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:failed ? {isError:true,content:[{type:'text',text:'mock failure'}]} : {content:[{type:'text',text:name === 'get_browser_capabilities' ? '{\"capabilities\":[\"public_page_text\"]}' : 'Example Domain'}]}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
+"  if (request.method === 'tools/call') { const name = request.params?.name; const args = request.params?.arguments || {}; const isUnsafeFileUrl = name === 'read_public_page' && typeof args.url === 'string' && args.url.startsWith('file:'); const failed = (scenario === 'tool_error' && name === 'read_public_page') || (isUnsafeFileUrl && scenario !== 'unsafe_url_allowed'); const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:failed ? {isError:true,content:[{type:'text',text:'mock failure'}]} : {content:[{type:'text',text:name === 'get_browser_capabilities' ? '{\"capabilities\":[\"public_page_text\"]}' : 'Example Domain'}]}}); if (scenario === 'sse') return new Response('event: message\\\\ndata: ' + payload + '\\\\n\\\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
   "  return new Response('unexpected method',{status:400});",
   "};"
 ].join("\n");
@@ -63,6 +63,7 @@ try {
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
     assert.ok(output.toolCalls.every((call) => call.httpStatus === 200 && call.hasText));
+    assert.deepEqual(output.unsafeUrl, { name: "read_public_page", httpStatus: 200, rejected: true });
     assert.equal(output.credentialPrinted, false);
     assert.ok(!result.stdout.includes(dummyToken));
     assert.ok(!result.stderr.includes(dummyToken));
@@ -76,10 +77,18 @@ try {
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
+    assert.deepEqual(output.unsafeUrl, { name: "read_public_page", httpStatus: 200, rejected: true });
     assert.equal(output.credentialPrinted, false);
     assert.ok(!result.stdout.includes(dummyToken));
     assert.ok(!result.stderr.includes(dummyToken));
     console.log("PASS SSE: parses Streamable HTTP event-stream responses for initialize and tools/list");
+  }
+  {
+    const result = run("unsafe_url_allowed");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.ok((result.stdout + result.stderr).includes('"stage": "tools/call:read_public_page:unsafe-url"'));
+    assert.ok(!(result.stdout + result.stderr).includes(dummyToken));
+    console.log("PASS unsafe URL regression: fails if a file: URL is not rejected");
   }
   {
     const result = run("tool_error");
