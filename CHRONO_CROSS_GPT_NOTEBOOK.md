@@ -759,3 +759,14 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Screenshot QA remains blocked: both desktop and iPhone screenshot jobs report `awaiting_window` until a Floot preview/editor window is opened.
 - **Overall project status: INCOMPLETE.** After publish succeeds, rerun the production authenticated MCP handshake through the secure GitHub Actions workflow if the required secret is available there; never expose or request the token. Until then, the UI correctly labels the last handshake as stale. Also continue the remaining reader/browser capability work.
 
+### Follow-up — diagnostics correction published and live-smoke-tested (2026-10-17)
+
+- Publish job `3805c66a-c02e-4281-83e7-2acb77ccdb7a` completed successfully. Live URL remains https://chrono-cross-gpt.floot.app.
+- Live smoke test after publish: homepage HTTP 200; HTML contains `STALE · RUN #6`; old `VERIFIED · RUN #5` claim is absent.
+- `GET /_api/mcp-status`: HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`.
+- Unauthenticated `POST /_api/mcp`: HTTP 401, Bearer challenge present, `authentication_required`; no secret was printed.
+- Typecheck clean; 5 regular test files passed and both hook test files passed (7 total).
+- The current deployment's authenticated MCP handshake remains unverified. The secure production token was not accessed by the VM and must not be copied into chat or logs.
+- Desktop and iPhone screenshot jobs remain `awaiting_window`; open the Floot preview/editor window to allow visual QA.
+- Project status remains **INCOMPLETE** for full scope. Keep the stale indicator until a fresh authenticated handshake succeeds against this deployment.
+
