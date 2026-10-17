@@ -77,3 +77,18 @@ Do not mark a capability as **implemented and tested** until its happy path and 
 3. Run PDF-01 and PDF-02 only after confirming supported PDF dependency/runtime.
 4. Capture sanitized results and update the project notebook.
 5. Fix one failure class at a time; rerun the relevant regression tests.
+
+
+## Executed production evidence — 2026-10-17
+
+The following rows have production evidence from the automated reader smoke test; all other rows in the matrix remain plans unless separately linked to a passing run.
+
+| ID | Observed status | Evidence | Exact scope / remaining limitation |
+|---|---|---|---|
+| WEB-01 (narrow smoke subset) | **Partial pass** | [MCP reader smoke run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019598377) | `read_public_page` returned HTTP 200 and contained the expected `Example Domain` marker for one stable public URL. This is not representative coverage for arbitrary websites. |
+| WEB-05 (scheme-rejection subset only) | **Partial pass** | [MCP reader smoke run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019598377) | `file:///etc/passwd` was rejected as a tool error without making a filesystem/network probe. Private DNS answers, redirect-to-private targets, DNS rebinding, and complete canonicalization defense remain unproven. |
+| PDF-01 (two-page selectable text subset) | **Pass for synthetic fixture** | [Two-page PDF production run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) | A synthetic two-page PDF was uploaded to production; both unique per-page text markers appeared in the result (HTTP 200). This checks extraction across both pages, but does not yet verify the result's page-by-page structured boundaries or real-world layout/tables. |
+| PDF-02 | **Not implemented / not tested** | No evidence | Image-only/scanned PDF detection and OCR remain unavailable. |
+| PDF-03 (narrow rejection subset) | **Pass for tested fixtures** | [Two-page PDF production run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) | One malformed synthetic PDF returned HTTP 422; one plain-text upload to the PDF endpoint returned HTTP 415. Encrypted PDFs and other malformed/archive edge cases remain untested. |
+
+All production tests use non-sensitive synthetic/public fixtures, avoid printing response content, and never send credentials to arbitrary destinations. Production fixture success must not be treated as full security certification or end-to-end feature completeness.
