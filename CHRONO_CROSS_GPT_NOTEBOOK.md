@@ -683,3 +683,12 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Confirmed latest visible GitHub Actions run `39021709319` / run #78 is the **offline protocol/configuration and local container test workflow**, not the production handshake. Its jobs and steps all passed, but it does not prove authenticated MCP behavior against the live deployment.
 - This connection exposes read operations and rerun-failed-job actions, but no workflow-dispatch action; the production handshake was **not triggered**. Next step requires someone with GitHub Actions write permission to open the workflow and select Run workflow, after verifying the `CHRONO_MCP_TOKEN` repository secret exists. Never paste the token into chat or logs.
 - Acceptance remains **INCOMPLETE** until a current successful production handshake run is observed and the navigation-history defect is resolved and retested.
+
+
+## Live capability matrix review — 2026-10-17
+
+- Opened the live `Capability notes` panel. Exact note says page DOM inspection, reliable click automation, persistent sessions, and ChatGPT control integration are not connected yet.
+- Live capability matrix labels: Navigation request `READY`; Tab state `LOCAL`; Embedded content `LIMITED`; Page DOM reading `NOT CONNECTED`; MCP token configuration `CONFIGURED`; Production MCP protocol test `STALE · RUN #6`; Active MCP host session `NOT TRACKED`; Persistence `SESSION ONLY`.
+- Confirmed `Read text` can retrieve public page content via the external Jina Reader integration (IANA title, headings, text and tables observed). This is **not** native DOM inspection and must not be described as such.
+- UI version inconsistency persists: main start page says `BUILD 0.1.0-MVP`; diagnostics says `BUILD 0.2` and `CAPABILITY MATRIX V0.2`. Source inspection and a single authoritative build/version value are needed.
+- No source or deployment changes made during this check. Current status remains **INCOMPLETE**.
