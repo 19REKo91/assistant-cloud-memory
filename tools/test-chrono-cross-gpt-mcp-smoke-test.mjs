@@ -36,7 +36,7 @@ const mockSource = [
   "  if (scenario === 'unauthorized' && request.method === 'initialize') return new Response(JSON.stringify({error:'authentication_required', echoed:expectedToken}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}});",
   "  if (request.method === 'initialize') { const payload = JSON.stringify({jsonrpc:'2.0',id:scenario === 'wrong_id' ? 999 : request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:scenario === 'wrong_server' ? 'unexpected-server' : 'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
-  "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'}]; const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:{tools}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
+"  if (request.method === 'tools/list') { const readerSchema = scenario === 'bad_schema' ? {type:'object',properties:{}} : {type:'object',properties:{url:{type:'string'}},required:['url']}; const tools = scenario === 'missing_tool' ? [{name:'read_public_page',inputSchema:readerSchema}] : [{name:'read_public_page',inputSchema:readerSchema},{name:'get_browser_capabilities',inputSchema:{type:'object',properties:{}}}]; const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:{tools}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
 "  if (request.method === 'tools/call') { const name = request.params?.name; const args = request.params?.arguments || {}; const isUnsafeFileUrl = name === 'read_public_page' && typeof args.url === 'string' && args.url.startsWith('file:'); const failed = (scenario === 'tool_error' && name === 'read_public_page') || (isUnsafeFileUrl && scenario !== 'unsafe_url_allowed'); const payload = JSON.stringify({jsonrpc:'2.0',id:request.id,result:failed ? {isError:true,content:[{type:'text',text:'mock failure'}]} : {content:[{type:'text',text:name === 'get_browser_capabilities' ? '{\"capabilities\":[\"public_page_text\"]}' : 'Example Domain'}]}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
   "  return new Response('unexpected method',{status:400});",
   "};"
@@ -63,6 +63,7 @@ try {
     assert.deepEqual(output.authChecks, { missingToken: { httpStatus: 401, rejected: true }, wrongToken: { httpStatus: 401, rejected: true, tokenEchoed: false } });
     assert.equal(output.initializedNotification.httpStatus, 202);
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
+    assert.equal(output.toolsList.readPublicPageSchemaValid, true);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
     assert.ok(output.toolCalls.every((call) => call.httpStatus === 200 && call.hasText));
     assert.equal(output.toolCalls[1].expectedTextFound, true);
@@ -80,6 +81,7 @@ try {
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
     assert.deepEqual(output.authChecks, { missingToken: { httpStatus: 401, rejected: true }, wrongToken: { httpStatus: 401, rejected: true, tokenEchoed: false } });
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
+    assert.equal(output.toolsList.readPublicPageSchemaValid, true);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
     assert.equal(output.toolCalls[1].expectedTextFound, true);
     assert.deepEqual(output.unsafeUrl, { name: "read_public_page", httpStatus: 200, rejected: true });
@@ -87,6 +89,13 @@ try {
     assert.ok(!result.stdout.includes(dummyToken));
     assert.ok(!result.stderr.includes(dummyToken));
     console.log("PASS SSE: parses Streamable HTTP event-stream responses for initialize and tools/list");
+  }
+  {
+    const result = run("bad_schema");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.ok((result.stdout + result.stderr).includes('"stage": "tools/list"'));
+    assert.ok(!(result.stdout + result.stderr).includes(dummyToken));
+    console.log("PASS tool schema regression: rejects a reader tool without required string url input");
   }
   {
     const result = run("auth_echo");
