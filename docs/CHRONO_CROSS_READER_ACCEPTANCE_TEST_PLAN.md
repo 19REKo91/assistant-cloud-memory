@@ -92,3 +92,16 @@ The following rows have production evidence from the automated reader smoke test
 | PDF-03 (narrow rejection subset) | **Pass for tested fixtures** | [Two-page PDF production run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) | One malformed synthetic PDF returned HTTP 422; one plain-text upload to the PDF endpoint returned HTTP 415. Encrypted PDFs and other malformed/archive edge cases remain untested. |
 
 All production tests use non-sensitive synthetic/public fixtures, avoid printing response content, and never send credentials to arbitrary destinations. Production fixture success must not be treated as full security certification or end-to-end feature completeness.
+
+
+## Repository-side text-document reader tests — 2026-10-17
+
+Offline CI run [39020214789](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020214789) passed the new bounded UTF-8/Markdown/CSV/JSON adapter regression suite. Coverage includes:
+
+- Plain text preserves Arabic Unicode and line references; filenames are reduced to a safe basename.
+- Markdown headings are indexed with source line numbers while original text is retained.
+- CSV parsing handles quoted commas, escaped quotes, CRLF, multiline quoted values and inconsistent-width rows; malformed quoting and configured row/column/cell overages fail safely.
+- JSON parses into structured data, rejects malformed input, and enforces nesting/node-count bounds.
+- Empty input, invalid UTF-8, NUL-containing bytes, input size limits, oversized typed-array input, unsupported extensions, and MIME mismatches return stable failures without echoing submitted content.
+
+Boundary: these results apply to the repository module `chrono-reader-core/read-text-document.mjs` only. It is not connected to the published Floot app or an external API, so the UI/MCP cannot invoke this reader yet. The capability registry intentionally labels it `implemented_unverified`, not production-tested.
