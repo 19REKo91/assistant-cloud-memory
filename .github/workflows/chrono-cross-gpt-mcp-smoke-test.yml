@@ -17,6 +17,8 @@ on:
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
       - ".github/workflows/chrono-cross-gpt-reader-production-smoke.yml"
       - "tools/chrono-cross-gpt-reader-smoke-test.mjs"
+      - "chrono-reader-core/read-text-document.mjs"
+      - "tools/test-chrono-cross-text-document-reader.mjs"
   workflow_dispatch:
 
 permissions:
@@ -50,5 +52,9 @@ jobs:
         run: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Validate capability registry and evidence status
         run: node tools/test-chrono-cross-capability-registry.mjs
+      - name: Validate text document reader syntax
+        run: node --check chrono-reader-core/read-text-document.mjs
+      - name: Run text, Markdown, CSV and JSON reader tests (offline only)
+        run: node tools/test-chrono-cross-text-document-reader.mjs
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
