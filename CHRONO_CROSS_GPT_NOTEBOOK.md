@@ -694,3 +694,16 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Cloudflare's documented Free CPU allowance (10 ms per invocation) makes it a poor default for heavy PDF/OCR/media processing. Vercel Hobby has personal/non-commercial constraints and request/runtime limits. No host was selected or deployed.
 - No service was created, no credentials were added, no billing enabled, and no user content uploaded. Research only; current terms must be rechecked before deployment.
 - Project status remains **INCOMPLETE**. Next: verify the new assessment file and notebook commit on this branch; when Floot actions return, inspect the current PDF implementation and execute Phase A tests before choosing a runtime.
+
+
+
+### Public URL reader security vectors — 2026-10-17
+
+- Added `docs/CHRONO_CROSS_URL_SAFETY_TEST_VECTORS.json` on branch `chronocross-offline-prep-2026-10-16`.
+- Commit returned by GitHub: `c794e9dc94444b79f33cc82fe659fa4c05cecb96`.
+- The file defines expected outcomes for ordinary public URLs, disallowed schemes, embedded URL credentials, localhost/private/link-local destinations, alternate IPv4/IPv6 encodings, private or mixed DNS answers, redirect-to-private/metadata targets, redirect loops/limits, cross-origin credential stripping, malformed URLs, and DNS rebinding.
+- Test vectors are designed to use deterministic resolver/HTTP mocks; they explicitly prohibit making real requests to private addresses.
+- This is test data/policy guidance only. It does **not** implement URL validation, prove the Floot reader is secure, or count as a passed runtime test. The live app source is not present in this GitHub repository, and Floot code actions have not been used in this step.
+- No production endpoint was called, no secret was read, no deployment or external service was changed.
+- Next: when Floot tools are available, inspect the actual reader's URL parsing, DNS/redirect handling, connection pinning, and response limits; convert these vectors into executable tests against the implementation and record each observed result.
+- Overall project remains **INCOMPLETE**.
