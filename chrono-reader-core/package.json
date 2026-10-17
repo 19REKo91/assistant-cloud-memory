@@ -5,10 +5,12 @@
   "type": "module",
   "description": "Repository-side bounded document-reader adapters for CHRONO CROSS GPT",
   "scripts": {
+    "start": "node server.mjs",
     "test:text": "node ../tools/test-chrono-cross-text-document-reader.mjs",
     "test:office": "node ../tools/test-chrono-cross-office-document-reader.mjs",
     "test:router": "node ../tools/test-chrono-cross-document-router.mjs",
-    "test": "npm run test:text && npm run test:office && npm run test:router"
+    "test:bridge": "node ../tools/test-chrono-cross-reader-bridge-server.mjs",
+    "test": "npm run test:text && npm run test:office && npm run test:router && npm run test:bridge"
   },
   "dependencies": {
     "officeparser": "8.1.1"
