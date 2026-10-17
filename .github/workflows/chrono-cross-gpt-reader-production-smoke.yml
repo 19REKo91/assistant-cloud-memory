@@ -1,0 +1,27 @@
+name: CHRONO CROSS GPT reader production smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - chronocross-offline-prep-2026-10-16
+    paths:
+      - ".github/workflows/chrono-cross-gpt-reader-production-smoke.yml"
+      - "tools/chrono-cross-gpt-reader-smoke-test.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  reader-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Check Node.js version
+        run: node --version
+      - name: Validate reader smoke-test syntax
+        run: node --check tools/chrono-cross-gpt-reader-smoke-test.mjs
+      - name: Test public page and synthetic local PDF on production
+        run: node tools/chrono-cross-gpt-reader-smoke-test.mjs
