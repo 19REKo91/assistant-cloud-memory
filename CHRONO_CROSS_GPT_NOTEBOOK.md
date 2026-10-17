@@ -868,3 +868,11 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Final offline regression workflow [run 39019296875](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019296875) completed **success**, including JSON/SSE protocol tests, tool-call errors, file-scheme rejection regression, and URL fixture integrity.
 - This is a narrow safe-scheme check, not proof against private-address DNS resolution, redirect-to-private attacks, DNS rebinding, response-size abuse, or every URL canonicalization edge case. Those still require deterministic tests against the actual reader implementation.
 - No Floot source or deployment was changed. Overall project remains **INCOMPLETE**.
+
+
+### Public-page fixture assertion strengthened (2026-10-17)
+
+- The production MCP smoke test now checks not only that `read_public_page` returns non-empty text, but that the result contains the expected public fixture phrase `Example Domain`. It still does not print the fetched text.
+- Production run [39019343189](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019343189) completed **success**; the output explicitly recorded `expectedTextFound: true` for the page-reader tool call and `rejected: true` for the `file:` URL case.
+- Offline test workflow [39019363098](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019363098) completed **success**, including JSON/SSE mock cases, expected page text, unsafe-scheme rejection, reader error handling, configuration allowlists, and URL fixture integrity.
+- This is stronger evidence for the exact tested public page than a simple HTTP 200. It remains one stable fixture only and does not establish full extraction quality across sites.
