@@ -2,6 +2,12 @@ name: CHRONO CROSS GPT production MCP handshake
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - chronocross-offline-prep-2026-10-16
+    paths:
+      - ".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml"
+      - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
 
 permissions:
   contents: read
