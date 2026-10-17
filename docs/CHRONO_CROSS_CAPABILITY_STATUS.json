@@ -102,8 +102,8 @@
     },
     {
       "id": "web.ssrf_redirect_dns",
-      "name": "Full SSRF, redirect and DNS-rebinding protection",
-      "status": "implemented_unverified",
+      "name": "SSRF, redirect and DNS-rebinding safety coverage",
+      "status": "partial",
       "inputs": [
         "Public URLs",
         "Deterministic DNS/redirect test fixtures"
@@ -113,7 +113,7 @@
       ],
       "evidence": [],
       "limitations": [
-        "Security vectors exist and their repository integrity test passes, but they have not been executed against the live reader implementation."
+        "Basic URL restrictions, request limits and timeouts exist, and a file: scheme rejection passed; full DNS answer validation, redirect-to-private protection, DNS rebinding prevention, and response-size abuse protections have not been proven against the live implementation."
       ]
     },
     {
