@@ -373,6 +373,26 @@
       "limitations": [
         "Do not claim this ChatGPT Android conversation is directly connected to CHRONO CROSS GPT."
       ]
+    },
+    {
+      "id": "files.text_markdown_csv_json",
+      "name": "Bounded UTF-8, Markdown, CSV and JSON file readers (repository adapter)",
+      "status": "implemented_unverified",
+      "inputs": [
+        "Uploaded UTF-8 text, Markdown, CSV and JSON bytes"
+      ],
+      "outputs": [
+        "Text with line references",
+        "Markdown with heading references",
+        "CSV rows/cells",
+        "Parsed JSON structure"
+      ],
+      "evidence": [],
+      "limitations": [
+        "Reader module is implemented in the repository and has an offline regression suite, but it is not wired into the published Floot UI/MCP endpoint or a deployed bridge.",
+        "DOCX/PPTX/XLSX, PDF OCR, images, audio/video, and archive formats are not handled by this adapter.",
+        "Input is limited to 1 MiB by default; CSV row/column/cell limits and JSON nesting/node limits are enforced."
+      ]
     }
   ]
 }
