@@ -876,3 +876,12 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Production run [39019343189](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019343189) completed **success**; the output explicitly recorded `expectedTextFound: true` for the page-reader tool call and `rejected: true` for the `file:` URL case.
 - Offline test workflow [39019363098](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019363098) completed **success**, including JSON/SSE mock cases, expected page text, unsafe-scheme rejection, reader error handling, configuration allowlists, and URL fixture integrity.
 - This is stronger evidence for the exact tested public page than a simple HTTP 200. It remains one stable fixture only and does not establish full extraction quality across sites.
+
+
+### ChatGPT-host integration constraint checked against current official docs (2026-10-17)
+
+- Reviewed the current OpenAI Help Center article: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+- The article says custom MCP server connections are available on ChatGPT web for Business and Enterprise/Edu; Pro users can connect custom MCP servers with read/fetch permissions in developer mode. It explicitly says custom MCP servers cannot currently be connected from mobile.
+- The user is currently using the ChatGPT Android app on the Free plan, so **directly attaching this custom MCP server to that Android ChatGPT session is a product-availability blocker**, not an MCP endpoint failure or a Floot quota issue.
+- Verified workaround already present in the repository: `.vscode/mcp.json` and `.mcp.json` provide safe configuration for compatible VS Code/Copilot MCP clients, with a prompted/secret-backed token rather than a hard-coded secret. The real server has now passed the production protocol and tool-call tests described above.
+- Do not claim that the current ChatGPT Android conversation can invoke the custom MCP server directly. Continue building/testing the server and compatible-client path; if direct ChatGPT integration becomes an explicit requirement, it needs a supported ChatGPT web plan/client and workspace permissions consistent with the current official docs.
