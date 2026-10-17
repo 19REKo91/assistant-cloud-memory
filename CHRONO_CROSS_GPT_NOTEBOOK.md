@@ -722,3 +722,12 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 
 - CI verification completed: [GitHub Actions run 39014618411](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39014618411) finished with **success** on commit `e76c3143bbe8788bd0aa40fcc0eed303fbd01653`.
 - Confirmed successful steps include the existing MCP configuration/YAML checks, the existing offline MCP protocol mock suite, and the new URL safety vector integrity check. This proves those repository-side checks passed; it does not test the live reader's SSRF defenses or the Floot deployment.
+
+
+### URL parser regression check — 2026-10-17
+
+- Extended `tools/test-chrono-cross-url-safety-vectors.mjs` to check how Node.js normalizes several alternate numeric IP spellings.
+- Commit: `0a86b820bfbc4fd82e4753926959656d75f3b706`.
+- CI run [39014861224](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39014861224) completed with **success**; all steps passed, including the offline MCP mock suite and the URL-vector integrity check.
+- This confirms test-fixture and URL-parser behavior only; it does not validate production DNS, redirects, network connections, or the live reader.
+- Overall project remains **INCOMPLETE** until live reader validation and the local-PDF upload fix are completed.
