@@ -74,3 +74,12 @@ The CI workflow builds `chrono-reader-core/Dockerfile`, starts the container wit
 ## Current integration boundary
 
 Nothing in this package has been deployed as a new endpoint. The live app's existing PDF and public-page tools remain as they were; the local document router cannot yet be invoked from the live app/MCP host. Keep the capability registry entries `implemented_unverified` until that connection is deployed and tested.
+
+
+## Optional free Render deployment blueprint
+
+The repository root contains `render.yaml`, a Render Blueprint for a single **free** Docker web service in Frankfurt. It points to this directory's Dockerfile/context, sets `/health` as the health check, explicitly sets `autoDeployTrigger: off`, and marks `CHRONO_READER_BRIDGE_TOKEN` as `sync: false` so Render prompts for the secret during the initial Blueprint flow instead of reading a token from Git.
+
+This file is a deployment recipe only; **it does not create or deploy a Render service by being committed**. To use it, an authorized account must connect this repository/branch in the Render dashboard and review the free service before applying the Blueprint. Render's official docs say free web services sleep after 15 minutes idle, take about a minute to wake, and have ephemeral storage; exceeding included outbound bandwidth can incur charges when a payment method is on file. Confirm the account's billing/payment settings before applying the Blueprint. References: https://render.com/docs/blueprint-spec and https://render.com/docs/free.
+
+No Render service, account, billing method, or production secret has been created or changed from this repository. After creation, set a fresh high-entropy bridge token in Render's secret prompt. Never reuse the CI dummy token. Keep auto-deploy disabled until the bridge and Floot integration have passed end-to-end tests.
