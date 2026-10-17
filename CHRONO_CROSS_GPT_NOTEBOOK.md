@@ -855,3 +855,16 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Offline CI: [run 39019167716](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019167716) completed **success**.
 - These checks establish selectable-text PDF success plus safe rejection for these two invalid-input cases on the tested production deployment. They do not establish OCR for scanned PDFs, password-protected PDF support, large-file limits, or complete PDF layout/table extraction.
 - No Floot source or deployment was changed. Overall project remains **INCOMPLETE**.
+
+
+### Safe-scheme rejection verified through production MCP (2026-10-17)
+
+- Extended the authenticated production smoke test to call `read_public_page({url: "file:///etc/passwd"})` and require a JSON-RPC/tool error. This uses a non-HTTP scheme and does not probe localhost, private, link-local, or cloud-metadata addresses.
+- Production workflow [run 39019224577](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019224577) completed **success**. It confirmed:
+  - `get_browser_capabilities`: HTTP 200 with non-empty text.
+  - `read_public_page("https://example.com/")`: HTTP 200 with non-empty text.
+  - `read_public_page("file:///etc/passwd")`: rejected as a tool error (HTTP 200 JSON-RPC response); the smoke test reports only `rejected: true`.
+- Extended offline mock tests to enforce that a regression allowing `file:` URLs makes the test fail. The first run failed because the test mock's SSE newline escaping had been over-escaped while adding this scenario; the mock escaping was corrected.
+- Final offline regression workflow [run 39019296875](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019296875) completed **success**, including JSON/SSE protocol tests, tool-call errors, file-scheme rejection regression, and URL fixture integrity.
+- This is a narrow safe-scheme check, not proof against private-address DNS resolution, redirect-to-private attacks, DNS rebinding, response-size abuse, or every URL canonicalization edge case. Those still require deterministic tests against the actual reader implementation.
+- No Floot source or deployment was changed. Overall project remains **INCOMPLETE**.
