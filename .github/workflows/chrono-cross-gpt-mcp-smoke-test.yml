@@ -12,6 +12,8 @@ on:
       - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
       - "docs/CHRONO_CROSS_URL_SAFETY_TEST_VECTORS.json"
       - "tools/test-chrono-cross-url-safety-vectors.mjs"
+      - "docs/CHRONO_CROSS_CAPABILITY_STATUS.json"
+      - "tools/test-chrono-cross-capability-registry.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
       - ".github/workflows/chrono-cross-gpt-reader-production-smoke.yml"
       - "tools/chrono-cross-gpt-reader-smoke-test.mjs"
@@ -46,5 +48,7 @@ jobs:
         run: node --check tools/chrono-cross-gpt-reader-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
         run: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
+      - name: Validate capability registry and evidence status
+        run: node tools/test-chrono-cross-capability-registry.mjs
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
