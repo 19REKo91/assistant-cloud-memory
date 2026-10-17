@@ -469,6 +469,30 @@
         "A server-side CHRONO_READER_BRIDGE_TOKEN must be configured through the deployment platform's secret manager before use. No token is committed or generated into source.",
         "Current API accepts a bounded Base64 file upload only. It does not fetch external URLs, support browser runtime/DOM control, or offer OCR/transcription."
       ]
+    },
+    {
+      "id": "infra.free_render_blueprint",
+      "name": "Manual-only Render Free Blueprint for reader bridge",
+      "status": "implemented_unverified",
+      "inputs": [
+        "GitHub branch with render.yaml and the container Dockerfile",
+        "Authorized Render account access"
+      ],
+      "outputs": [
+        "Free web service declaration, safe secret prompt, health check and automatic-deploy opt-out"
+      ],
+      "evidence": [
+        {
+          "label": "CI validates the free-only Docker Blueprint, no-auto-deploy setting, required secret prompt and platform-provided PORT",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021636008",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "Blueprint syntax/policy is tested in CI but has not been applied to a Render account; no host service exists yet.",
+        "Render free web services spin down after idle and may incur overage bandwidth charges if a payment method is attached; account billing conditions must be reviewed before applying.",
+        "Render deployment and secret provisioning are not performed through the currently connected tools. The bridge remains disconnected from Floot/MCP."
+      ]
     }
   ]
 }
