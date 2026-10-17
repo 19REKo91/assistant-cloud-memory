@@ -718,3 +718,7 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
   - `e76c3143bbe8788bd0aa40fcc0eed303fbd01653` — workflow update.
 - Important distinction: the new check validates test-data consistency only. It does not make network requests, test the deployed reader, or prove SSRF protections. The CI result is pending verification; do not mark it passed until a workflow run reports success.
 - No Floot source, deployment, credentials, or external service was changed. Overall project remains **INCOMPLETE**.
+
+
+- CI verification completed: [GitHub Actions run 39014618411](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39014618411) finished with **success** on commit `e76c3143bbe8788bd0aa40fcc0eed303fbd01653`.
+- Confirmed successful steps include the existing MCP configuration/YAML checks, the existing offline MCP protocol mock suite, and the new URL safety vector integrity check. This proves those repository-side checks passed; it does not test the live reader's SSRF defenses or the Floot deployment.
