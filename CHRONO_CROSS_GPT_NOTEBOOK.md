@@ -660,3 +660,18 @@ Reviewed the durable project memo, current manual-only production handshake work
   7. Add endpoint integration tests for missing file, malformed PDF, valid text PDF, page and byte limits, empty/scanned-like PDF, and unexpected parser failure.
 - These are review requirements, not assertions that each has already been tested or that a vulnerability has been found. No additional tests can be honestly marked passed from this read-only review.
 - Status remains **INCOMPLETE**. The deployed public-URL PDF reader and MCP handshake remain the verified baseline; local PDF upload remains unpublished until typecheck, tests, integration validation, checkpoint, and post-publish testing all pass.
+
+
+## Live acceptance follow-up — 2026-10-17 (read-only production checks)
+
+- Tested the public app without using Floot build actions: direct navigation to `https://example.com/` and `https://www.iana.org/domains/reserved` worked in the embedded workspace; Jina Reader extracted the IANA page title, URL, body, links, and tables.
+- Tested tab behavior: a second tab opened, the original tab could be selected again, and its address/content remained available during that live session.
+- Tested local save UI: `example.com` appeared in Saved with counter 01; after reload within the same browser session, both tabs and the saved address were still visible. This does **not** establish persistence after a full session/browser restart.
+- Tested `GET /_api/mcp-status`: HTTP 200; response contained `tokenConfigured: true` and `hostConnection: "not_verified"`; no secret value was returned.
+- Tested unauthenticated `POST /_api/mcp` with an `initialize` JSON-RPC request: HTTP 401, `authentication_required`, and standard `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`. No credential was sent.
+- Tested the same request with a deliberately invalid bearer token: HTTP 401 and the standard `WWW-Authenticate` header. No real token was used.
+- Navigation-history issue observed: after navigating to `https://www.iana.org/domains/reserved`, the Back and Forward controls remained disabled. The visible tab-state inspection showed a history array containing only the current URL with `historyIndex: 0`. This is a likely history implementation defect; confirm in source and add a regression test when Floot file access returns. Do not claim Back/Forward work.
+- A plain-text search-bar test timed out in the remote interaction tool; result is **inconclusive**, not a pass/fail.
+- Endpoint URL confirmed from the repository's smoke-test script: `https://chrono-cross-gpt.floot.app/_api/mcp`. The current deployment's authenticated `initialize` → `notifications/initialized` → `tools/list` sequence was **not** run in this session because the token is intentionally unavailable to the browser test environment. The UI still reports the prior authenticated test as stale / run #6; do not infer current authenticated success from the status endpoint.
+- No Floot source files were changed and no new deployment was made. The current acceptance status remains **INCOMPLETE**.
+- Next actions: (1) when Floot access returns, inspect tab history state/update logic and add tests for Back/Forward; (2) rerun the existing manual GitHub Actions production handshake against the current deployment using the stored secret, without printing it; (3) test plain-phrase search separately; (4) verify persistence only after a full restart if the app's persistence design intends it.
