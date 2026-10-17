@@ -399,6 +399,30 @@
         "Supports only UTF-8 plain text, Markdown, CSV and JSON; DOCX/PPTX/XLSX, PDF OCR, images, audio/video, and archive formats are not handled.",
         "Defaults to a 1 MiB input limit and enforces CSV row/column/cell limits and JSON nesting/node limits."
       ]
+    },
+    {
+      "id": "files.office_document_adapter",
+      "name": "Bounded Office and EPUB reader adapter (repository-side)",
+      "status": "implemented_unverified",
+      "inputs": [
+        "Uploaded DOCX, PPTX, XLSX, ODT, ODS, ODP, RTF or EPUB bytes"
+      ],
+      "outputs": [
+        "Markdown-like extracted text with safe warnings and truncation status"
+      ],
+      "evidence": [
+        {
+          "label": "Offline CI with synthetic DOCX, PPTX, XLSX and RTF fixtures",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020638984",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "The adapter is implemented in the repository and the four listed synthetic fixture formats passed offline tests, but it is not connected to the published Floot app, MCP endpoint, or a deployed bridge.",
+        "ODT, ODS, ODP and EPUB are accepted by the implementation but do not yet have dedicated passing fixtures; real-world Office files and embedded media remain unverified.",
+        "Input is capped at 4 MiB; ZIP entries, decompressed bytes, XML elements, table cells, repeated content, output characters and parser time are bounded.",
+        "PDF OCR, image OCR, audio/video transcription and legacy binary .doc files are not provided by this adapter."
+      ]
     }
   ]
 }
