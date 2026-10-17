@@ -86,7 +86,7 @@ jobs:
           set -euo pipefail
           docker build --pull -f chrono-reader-core/Dockerfile -t chrono-reader-bridge-ci chrono-reader-core
           token="CHRONO_BRIDGE_CI_DUMMY_TOKEN_1234567890"
-          container_id="$(docker run -d --rm -e CHRONO_READER_BRIDGE_TOKEN="$token" -p 127.0.0.1:18080:8080 chrono-reader-bridge-ci)"
+          container_id="$(docker run -d --rm -e CHRONO_READER_BRIDGE_TOKEN="$token" -e PORT=10000 -p 127.0.0.1:18080:10000 chrono-reader-bridge-ci)"
           cleanup() { docker rm -f "$container_id" >/dev/null 2>&1 || true; }
           trap cleanup EXIT
           ready=false
