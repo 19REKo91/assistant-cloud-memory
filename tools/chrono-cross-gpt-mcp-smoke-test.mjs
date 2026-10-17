@@ -62,13 +62,14 @@ async function request(method, id, params, protocolVersion) {
   return { response, body: redacted, parsed };
 }
 
-function fail(stage, status, body, challenge) {
+function fail(stage, status, body, challenge, diagnostics = undefined) {
   console.error(JSON.stringify({
     ok: false,
     stage,
     httpStatus: status,
     wwwAuthenticate: challenge || null,
     responseExcerpt: (body || "").slice(0, 350) || null,
+    diagnostics,
     credentialPrinted: false,
   }, null, 2));
   process.exit(1);
@@ -83,7 +84,17 @@ async function callTool(name, id, args, protocolVersion) {
   const hasStructuredContent = !!result?.structuredContent && typeof result.structuredContent === "object";
   if (call.response.status !== 200 || call.parsed?.jsonrpc !== "2.0" || call.parsed?.id !== id || call.parsed?.error || !result || result.isError === true || (!textItems.length && !hasStructuredContent)) {
     // Do not log page/document contents: a generic excerpt is enough to diagnose this stage.
-    fail(`tools/call:${name}`, call.response.status, "Tool call failed or returned no usable content.", call.response.headers.get("www-authenticate"));
+    fail(`tools/call:${name}`, call.response.status, "Tool call failed or returned no usable content.", call.response.headers.get("www-authenticate"), {
+      jsonrpc: call.parsed?.jsonrpc ?? null,
+      responseId: call.parsed?.id ?? null,
+      expectedId: id,
+      jsonRpcErrorPresent: !!call.parsed?.error,
+      resultKeys: result && typeof result === "object" ? Object.keys(result) : [],
+      contentItemTypes: Array.isArray(result?.content) ? result.content.map((item) => item?.type ?? "unknown") : [],
+      resultIsError: result?.isError === true,
+      hasUsableText: textItems.length > 0,
+      hasStructuredContent: hasStructuredContent,
+    });
   }
   return {
     name,
