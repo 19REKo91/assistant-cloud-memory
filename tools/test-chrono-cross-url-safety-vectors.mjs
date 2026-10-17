@@ -30,6 +30,18 @@ for (const test of data.cases) {
   }
 }
 
+// Confirm the JavaScript URL parser canonicalizes legacy numeric IPv4 forms before any
+// destination allow/deny decision. This tests parser behavior, not the app's network layer.
+for (const raw of [
+  "http://2130706433/",
+  "http://0x7f000001/",
+  "http://127.1/",
+]) {
+  assert.equal(new URL(raw).hostname, "127.0.0.1", `legacy loopback encoding not canonicalized: ${raw}`);
+}
+assert.equal(new URL("http://[::ffff:127.0.0.1]/").hostname, "[::ffff:7f00:1]",
+  "IPv4-mapped IPv6 fixture must be normalized by the runtime URL parser");
+
 const byId = new Map(data.cases.map((test) => [test.id, test]));
 for (const required of [
   "block-file-scheme",
