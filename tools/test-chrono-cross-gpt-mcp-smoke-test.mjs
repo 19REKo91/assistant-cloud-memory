@@ -31,7 +31,8 @@ const mockSource = [
   "  if (!accept.includes('application/json') || !accept.includes('text/event-stream')) throw new Error('Missing Streamable HTTP Accept values');",
   "  if (request.method !== 'initialize' && requestHeaders.get('mcp-protocol-version') !== '2025-11-25') throw new Error('Missing negotiated MCP protocol version');",
   "  if (request.method === 'initialize' && requestHeaders.has('mcp-protocol-version')) throw new Error('Initial request must not assume a negotiated version');",
-  "  if (authorization !== 'Bearer ' + expectedToken) throw new Error('Dummy token was not sent in the expected header');",
+"  if (!authorization) return new Response(JSON.stringify({error:'authentication_required'}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}});",
+"  if (authorization !== 'Bearer ' + expectedToken) { const body = scenario === 'auth_echo' ? {error:'authentication_required',echoed:authorization} : {error:'authentication_required'}; return new Response(JSON.stringify(body), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}}); }",
   "  if (scenario === 'unauthorized' && request.method === 'initialize') return new Response(JSON.stringify({error:'authentication_required', echoed:expectedToken}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}});",
   "  if (request.method === 'initialize') { const payload = JSON.stringify({jsonrpc:'2.0',id:scenario === 'wrong_id' ? 999 : request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:scenario === 'wrong_server' ? 'unexpected-server' : 'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}); if (scenario === 'sse') return new Response('event: message\\ndata: ' + payload + '\\n\\n',{status:200,headers:{'content-type':'text/event-stream'}}); return new Response(payload,{status:200,headers:{'content-type':'application/json'}}); }",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
@@ -59,6 +60,7 @@ try {
     const output = JSON.parse(result.stdout);
     assert.equal(output.ok, true);
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
+    assert.deepEqual(output.authChecks, { missingToken: { httpStatus: 401, rejected: true }, wrongToken: { httpStatus: 401, rejected: true, tokenEchoed: false } });
     assert.equal(output.initializedNotification.httpStatus, 202);
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
@@ -76,6 +78,7 @@ try {
     const output = JSON.parse(result.stdout);
     assert.equal(output.ok, true);
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
+    assert.deepEqual(output.authChecks, { missingToken: { httpStatus: 401, rejected: true }, wrongToken: { httpStatus: 401, rejected: true, tokenEchoed: false } });
     assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
     assert.deepEqual(output.toolCalls.map((call) => call.name), ["get_browser_capabilities", "read_public_page"]);
     assert.equal(output.toolCalls[1].expectedTextFound, true);
@@ -84,6 +87,14 @@ try {
     assert.ok(!result.stdout.includes(dummyToken));
     assert.ok(!result.stderr.includes(dummyToken));
     console.log("PASS SSE: parses Streamable HTTP event-stream responses for initialize and tools/list");
+  }
+  {
+    const result = run("auth_echo");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    const combined = result.stdout + result.stderr;
+    assert.ok(combined.includes('"stage": "wrong_auth"'));
+    assert.ok(!combined.includes("CHRONO_CROSS_INVALID_TEST_TOKEN_000000000000"));
+    console.log("PASS wrong-token echo regression: failure output does not reveal the supplied token");
   }
   {
     const result = run("unsafe_url_allowed");
