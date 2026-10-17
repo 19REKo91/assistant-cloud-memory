@@ -3,22 +3,44 @@
 // Uses synthetic fixtures only; never logs response content.
 const ORIGIN = "https://chrono-cross-gpt.floot.app";
 const PDF_URL = new URL("/_api/read-pdf", ORIGIN);
-const FIXTURE_TEXT = "CHRONO PDF SMOKE TEST";
+const FIXTURE_PAGES = [
+  "CHRONO PDF SMOKE PAGE ONE",
+  "CHRONO PDF SMOKE PAGE TWO",
+];
 
 function stop(stage, status, reason) {
   console.error(JSON.stringify({ ok: false, stage, httpStatus: status ?? null, reason, responseBodyPrinted: false }, null, 2));
   process.exit(1);
 }
 
-function buildPdf(text) {
-  const stream = "BT /F1 18 Tf 72 720 Td (" + text + ") Tj ET";
+function escapePdfText(value) {
+  return value.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+}
+
+function buildPdf(pageTexts) {
+  if (!Array.isArray(pageTexts) || pageTexts.length < 1 || pageTexts.some((value) => typeof value !== "string" || !value.length)) {
+    throw new TypeError("PDF fixture must have at least one non-empty page string.");
+  }
+  const count = pageTexts.length;
+  const fontId = 3 + count;
+  const firstContentId = fontId + 1;
   const objects = [
     "<< /Type /Catalog /Pages 2 0 R >>",
-    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
-    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-    "<< /Length " + Buffer.byteLength(stream, "ascii") + " >>\nstream\n" + stream + "\nendstream",
+    "<< /Type /Pages /Kids [" + pageTexts.map((_, i) => (3 + i) + " 0 R").join(" ") + "] /Count " + count + " >>",
   ];
+  for (let i = 0; i < count; i++) {
+    objects.push(
+      "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] " +
+      "/Resources << /Font << /F1 " + fontId + " 0 R >> >> " +
+      "/Contents " + (firstContentId + i) + " 0 R >>"
+    );
+  }
+  objects.push("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+  for (const text of pageTexts) {
+    const stream = "BT /F1 18 Tf 72 720 Td (" + escapePdfText(text) + ") Tj ET";
+    objects.push("<< /Length " + Buffer.byteLength(stream, "ascii") + " >>\nstream\n" + stream + "\nendstream");
+  }
+
   let pdf = "%PDF-1.4\n";
   const offsets = [0];
   for (let i = 0; i < objects.length; i++) {
@@ -41,8 +63,8 @@ function collectStrings(value, out = []) {
 }
 
 async function main() {
-  for (const [url, path] of [[PDF_URL, "/_api/read-pdf"]]) {
-    if (url.protocol !== "https:" || url.origin !== ORIGIN || url.pathname !== path) stop("endpoint_guard", null, "Refusing an unexpected test destination.");
+  if (PDF_URL.protocol !== "https:" || PDF_URL.origin !== ORIGIN || PDF_URL.pathname !== "/_api/read-pdf") {
+    stop("endpoint_guard", null, "Refusing an unexpected test destination.");
   }
 
   async function upload(name, bytes, contentType) {
@@ -56,15 +78,21 @@ async function main() {
     });
   }
 
-  const pdfResponse = await upload("chrono-smoke.pdf", buildPdf(FIXTURE_TEXT), "application/pdf");
+  const pdfResponse = await upload("chrono-smoke-multipage.pdf", buildPdf(FIXTURE_PAGES), "application/pdf");
   const pdfBody = await pdfResponse.text();
   let pdfData;
   try { pdfData = JSON.parse(pdfBody); } catch { stop("pdf_json", pdfResponse.status, "PDF reader did not return JSON."); }
   const pdfStrings = collectStrings(pdfData);
-  const pdfTextFound = pdfStrings.some((s) => s.includes(FIXTURE_TEXT));
-  if (!pdfResponse.ok || !pdfTextFound) stop("pdf_text_extraction", pdfResponse.status, "Synthetic PDF text was not found in the reader result.");
+  const markersFound = FIXTURE_PAGES.map((marker) => pdfStrings.some((value) => value.includes(marker)));
+  if (!pdfResponse.ok || markersFound.some((found) => !found)) {
+    stop("multipage_pdf_extraction", pdfResponse.status, "The reader did not return both unique text markers from the synthetic two-page PDF.");
+  }
 
-  const malformedResponse = await upload("malformed.pdf", Buffer.from("%PDF-1.4\\nnot a valid PDF structure\\n%%EOF\\n", "ascii"), "application/pdf");
+  const malformedResponse = await upload(
+    "malformed.pdf",
+    Buffer.from("%PDF-1.4\\nnot a valid PDF structure\\n%%EOF\\n", "ascii"),
+    "application/pdf",
+  );
   await malformedResponse.body?.cancel();
   if (malformedResponse.status < 400 || malformedResponse.status >= 500) {
     stop("malformed_pdf_rejection", malformedResponse.status, "Malformed PDF should be rejected with a client error, not accepted or surfaced as a server error.");
@@ -78,7 +106,13 @@ async function main() {
 
   console.log(JSON.stringify({
     ok: true,
-    localPdf: { httpStatus: pdfResponse.status, syntheticOnePageFixture: true, expectedTextFound: true, responseBodyPrinted: false },
+    localPdf: {
+      httpStatus: pdfResponse.status,
+      syntheticPageCount: FIXTURE_PAGES.length,
+      expectedMarkersFound: markersFound.length,
+      bothPageMarkersFound: true,
+      responseBodyPrinted: false,
+    },
     malformedPdf: { httpStatus: malformedResponse.status, rejectedWithClientError: true, responseBodyPrinted: false },
     unsupportedUpload: { httpStatus: unsupportedResponse.status, rejectedWithClientError: true, responseBodyPrinted: false },
   }, null, 2));
