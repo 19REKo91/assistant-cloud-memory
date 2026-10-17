@@ -106,6 +106,22 @@ async function callTool(name, id, args, protocolVersion) {
   };
 }
 
+async function callExpectedToolError(name, id, args, protocolVersion) {
+  const call = await request("tools/call", id, { name, arguments: args }, protocolVersion);
+  const result = call.parsed?.result;
+  const rejected = !!call.parsed?.error || result?.isError === true;
+  if (call.response.status !== 200 || call.parsed?.jsonrpc !== "2.0" || call.parsed?.id !== id || !rejected) {
+    fail(`tools/call:${name}:unsafe-url`, call.response.status, "Disallowed URL was not rejected as a JSON-RPC/tool error.", call.response.headers.get("www-authenticate"), {
+      jsonrpc: call.parsed?.jsonrpc ?? null,
+      responseId: call.parsed?.id ?? null,
+      jsonRpcErrorPresent: !!call.parsed?.error,
+      resultIsError: result?.isError === true,
+      resultKeys: result && typeof result === "object" ? Object.keys(result) : [],
+    });
+  }
+  return { name, httpStatus: call.response.status, rejected: true };
+}
+
 try {
   const init = await request("initialize", 1, {
     protocolVersion: "2025-11-25",
@@ -140,6 +156,8 @@ try {
 
   const capabilitiesCall = await callTool("get_browser_capabilities", 3, {}, init.parsed.result.protocolVersion);
   const publicPageCall = await callTool("read_public_page", 4, { url: "https://example.com/" }, init.parsed.result.protocolVersion);
+  // file: is intentionally non-networked; this checks scheme rejection without probing private hosts.
+  const unsafeUrlCall = await callExpectedToolError("read_public_page", 5, { url: "file:///etc/passwd" }, init.parsed.result.protocolVersion);
 
   console.log(JSON.stringify({
     ok: true,
@@ -148,6 +166,7 @@ try {
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
     toolCalls: [capabilitiesCall, publicPageCall],
+    unsafeUrl: unsafeUrlCall,
     credentialPrinted: false,
   }, null, 2));
 } catch (error) {
