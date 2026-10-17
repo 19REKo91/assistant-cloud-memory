@@ -50,6 +50,33 @@ function makePptx(text) {
   });
 }
 
+function makeOdt(text) {
+  return archive({
+    "mimetype": "application/vnd.oasis.opendocument.text",
+    "content.xml": '<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.2"><office:body><office:text><text:p>' + text + '</text:p></office:text></office:body></office:document-content>'
+  });
+}
+function makeOds() {
+  return archive({
+    "mimetype": "application/vnd.oasis.opendocument.spreadsheet",
+    "content.xml": '<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.2"><office:body><office:spreadsheet><table:table table:name="SmokeData"><table:table-row><table:table-cell office:value-type="string"><text:p>Product</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>Count</text:p></table:table-cell></table:table-row><table:table-row><table:table-cell office:value-type="string"><text:p>CHRONO ODS FIXTURE</text:p></table:table-cell><table:table-cell office:value-type="float" office:value="9"><text:p>9</text:p></table:table-cell></table:table-row></table:table></office:spreadsheet></office:body></office:document-content>'
+  });
+}
+function makeOdp(text) {
+  return archive({
+    "mimetype": "application/vnd.oasis.opendocument.presentation",
+    "content.xml": '<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.2"><office:body><office:presentation><draw:page draw:name="Slide1" draw:style-name="dp1"><draw:frame draw:style-name="gr1"><draw:text-box><text:p>' + text + '</text:p></draw:text-box></draw:frame></draw:page></office:presentation></office:body></office:document-content>'
+  });
+}
+function makeEpub(text) {
+  return archive({
+    "mimetype": "application/epub+zip",
+    "META-INF/container.xml": '<?xml version="1.0" encoding="UTF-8"?><container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>',
+    "OEBPS/content.opf": '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">urn:uuid:chrono-smoke</dc:identifier><dc:title>Smoke Book</dc:title><dc:language>en</dc:language></metadata><manifest><item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="chapter"/></spine></package>',
+    "OEBPS/chapter.xhtml": '<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Smoke</title></head><body><h1>' + text + '</h1></body></html>'
+  });
+}
+
 const pptxText = "CHRONO PPTX SLIDE FIXTURE";
 const pptxResult = await readOfficeDocument({
   filename: "deck.pptx",
@@ -59,6 +86,22 @@ const pptxResult = await readOfficeDocument({
 assert.equal(pptxResult.ok, true, JSON.stringify(pptxResult.error));
 assert.ok(pptxResult.content.text.includes(pptxText), "PPTX slide marker missing");
 pass("PPTX: extracts text from a synthetic presentation slide");
+
+for (const [extension, mediaType, bytes, marker] of [
+  [".odt", "application/vnd.oasis.opendocument.text", makeOdt("CHRONO ODT FIXTURE"), "CHRONO ODT FIXTURE"],
+  [".ods", "application/vnd.oasis.opendocument.spreadsheet", makeOds(), "CHRONO ODS FIXTURE"],
+  [".odp", "application/vnd.oasis.opendocument.presentation", makeOdp("CHRONO ODP FIXTURE"), "CHRONO ODP FIXTURE"],
+  [".epub", "application/epub+zip", makeEpub("CHRONO EPUB FIXTURE"), "CHRONO EPUB FIXTURE"]
+]) {
+  const result = await readOfficeDocument({
+    filename: "document" + extension,
+    contentType: mediaType,
+    bytes
+  });
+  assert.equal(result.ok, true, extension + ": " + JSON.stringify(result.error));
+  assert.ok(result.content.text.includes(marker), extension + " marker missing");
+  pass(extension.toUpperCase() + ": extracts text from a synthetic archive fixture");
+}
 
 const rtfText = "CHRONO RTF FIXTURE";
 const rtfResult = await readOfficeDocument({
@@ -146,7 +189,7 @@ pass("XLSX: reads a synthetic worksheet including header and cell values");
 console.log(JSON.stringify({
   ok: true,
   passedTests: passed,
-  fixtureTypes: ["DOCX", "PPTX", "XLSX", "RTF"],
+  fixtureTypes: ["DOCX", "PPTX", "XLSX", "ODT", "ODS", "ODP", "RTF", "EPUB"],
   networkCalls: 0,
   originalDocumentContentPrinted: false,
   defaultInputLimitBytes: 4 * 1024 * 1024
