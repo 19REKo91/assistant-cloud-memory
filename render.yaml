@@ -11,7 +11,5 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "10000"
       - key: CHRONO_READER_BRIDGE_TOKEN
         sync: false
