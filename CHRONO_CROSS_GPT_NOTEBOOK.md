@@ -707,3 +707,14 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - No production endpoint was called, no secret was read, no deployment or external service was changed.
 - Next: when Floot tools are available, inspect the actual reader's URL parsing, DNS/redirect handling, connection pinning, and response limits; convert these vectors into executable tests against the implementation and record each observed result.
 - Overall project remains **INCOMPLETE**.
+
+
+### URL safety vector integrity check wired into CI — 2026-10-17
+
+- Added `tools/test-chrono-cross-url-safety-vectors.mjs`, a dependency-free Node.js check for the JSON fixture's schema, unique case IDs, required security classes, and bounded redirect policy.
+- Updated `.github/workflows/chrono-cross-gpt-mcp-smoke-test.yml` to run the fixture-integrity check and trigger on pushes to `chronocross-offline-prep-2026-10-16` when relevant files change. Existing MCP smoke tests remain in the workflow.
+- Commits returned by GitHub:
+  - `0e684b06cc28363049714842c7a600c94b2fe0bc` — integrity test script.
+  - `e76c3143bbe8788bd0aa40fcc0eed303fbd01653` — workflow update.
+- Important distinction: the new check validates test-data consistency only. It does not make network requests, test the deployed reader, or prove SSRF protections. The CI result is pending verification; do not mark it passed until a workflow run reports success.
+- No Floot source, deployment, credentials, or external service was changed. Overall project remains **INCOMPLETE**.
