@@ -910,3 +910,11 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - CI verification: [run 39019552935](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019552935) completed **success**, including the capability-registry validator, MCP offline mock suite, configuration checks, reader workflow validation, and URL safety fixture integrity check.
 - This registry is a repository-side source of truth for the next Floot UI update; it is not yet loaded by the live app. The published `get_browser_capabilities` response remains whatever the current Floot code reports until that code can be safely updated and tested.
 - Overall project remains **INCOMPLETE**.
+
+
+### MCP reader input schema verified on production (2026-10-17)
+
+- Strengthened the production smoke test to inspect `tools/list` and require `read_public_page.inputSchema` to declare a required `url` property of type `string`. This catches client/server schema drift before trying to call the reader.
+- Production result: [run 39019598377](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019598377) completed **success**. The live server reported the expected schema; the script also verified missing-token 401, wrong-token 401 without echo, valid initialize/list, both real tool calls, expected public page text, and safe rejection of a `file:` URL.
+- Offline regression: [run 39019614492](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019614492) completed **success**, including a negative test that fails if the reader schema omits the required string URL input.
+- The first offline run on the script-only commit failed because the mock tool list had not yet been updated with input schemas; after updating the mock and adding a malformed-schema regression, the next run passed.
