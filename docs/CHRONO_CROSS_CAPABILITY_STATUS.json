@@ -387,11 +387,17 @@
         "CSV rows/cells",
         "Parsed JSON structure"
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "label": "Offline CI: text, Markdown, CSV and JSON parser regression suite",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39020214789",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
       "limitations": [
-        "Reader module is implemented in the repository and has an offline regression suite, but it is not wired into the published Floot UI/MCP endpoint or a deployed bridge.",
-        "DOCX/PPTX/XLSX, PDF OCR, images, audio/video, and archive formats are not handled by this adapter.",
-        "Input is limited to 1 MiB by default; CSV row/column/cell limits and JSON nesting/node limits are enforced."
+        "Repository module and offline tests pass, but the adapter is not wired into the published Floot UI/MCP endpoint or a deployed bridge.",
+        "Supports only UTF-8 plain text, Markdown, CSV and JSON; DOCX/PPTX/XLSX, PDF OCR, images, audio/video, and archive formats are not handled.",
+        "Defaults to a 1 MiB input limit and enforces CSV row/column/cell limits and JSON nesting/node limits."
       ]
     }
   ]
