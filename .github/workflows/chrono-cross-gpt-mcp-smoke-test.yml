@@ -13,6 +13,8 @@ on:
       - "docs/CHRONO_CROSS_URL_SAFETY_TEST_VECTORS.json"
       - "tools/test-chrono-cross-url-safety-vectors.mjs"
       - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
+      - ".github/workflows/chrono-cross-gpt-reader-production-smoke.yml"
+      - "tools/chrono-cross-gpt-reader-smoke-test.mjs"
   workflow_dispatch:
 
 permissions:
@@ -37,6 +39,11 @@ jobs:
           ruby -e 'require "yaml"; d=YAML.safe_load_file(".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml", aliases: false); triggers=d["on"] || d[true]; abort "workflow_dispatch trigger missing" unless triggers.is_a?(Hash) && triggers.key?("workflow_dispatch"); push=triggers["push"]; expected_branch=["chronocross-offline-prep-2026-10-16"]; expected_paths=[".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml", "tools/chrono-cross-gpt-mcp-smoke-test.mjs"]; abort "push trigger must be narrowly scoped" unless push && push["branches"] == expected_branch && push["paths"] == expected_paths; abort "unexpected workflow trigger" unless (triggers.keys - ["workflow_dispatch", "push"]).empty?; abort "missing handshake job" unless d.dig("jobs", "handshake", "steps").any? { |s| s["name"] == "Run real production MCP handshake" }; puts "PASS manual and narrowly scoped automatic production workflow YAML"'
       - name: Validate smoke-test syntax
         run: node --check tools/chrono-cross-gpt-mcp-smoke-test.mjs
+      - name: Validate reader production workflow YAML
+        run: |
+          ruby -e 'require "yaml"; d=YAML.safe_load_file(".github/workflows/chrono-cross-gpt-reader-production-smoke.yml", aliases: false); triggers=d["on"] || d[true]; abort "workflow_dispatch trigger missing" unless triggers.is_a?(Hash) && triggers.key?("workflow_dispatch"); push=triggers["push"]; abort "reader workflow push trigger must be narrowly scoped" unless push && push["branches"] == ["chronocross-offline-prep-2026-10-16"] && push["paths"] == [".github/workflows/chrono-cross-gpt-reader-production-smoke.yml", "tools/chrono-cross-gpt-reader-smoke-test.mjs"]; abort "missing reader smoke job" unless d.dig("jobs", "reader-smoke", "steps").any? { |s| s["name"] == "Test public page and synthetic local PDF on production" }; puts "PASS reader production workflow YAML and narrow trigger"'
+      - name: Validate reader smoke-test syntax
+        run: node --check tools/chrono-cross-gpt-reader-smoke-test.mjs
       - name: Run offline mock tests (dummy credentials only)
         run: node tools/test-chrono-cross-gpt-mcp-smoke-test.mjs
       - name: Validate URL safety test-vector integrity (offline only)
