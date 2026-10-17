@@ -704,3 +704,12 @@ Reviewed the durable project memo, current manual-only production handshake work
 - No destructive controls were used; in particular, Activity's CLEAR button was not clicked. No credentials were accessed or exposed.
 - **Status remains INCOMPLETE.** This is additional UI evidence, not a source fix or deployment. Persistent storage after a full browser/session restart, functional Back/Forward history, current authenticated MCP handshake, native DOM access, and real ChatGPT host connection remain unresolved or unverified.
 - Next: when Floot source access is available, inspect the history state reducer/update path and add regression tests for two distinct navigations, Back, Forward, and saved-entry navigation. Separately rerun the manual production MCP handshake using the stored GitHub secret without printing it.
+
+
+## Follow-up verification — 2026-10-17: deployment and MCP evidence rechecked
+
+- Floot's unmetered publish-status check confirms the app remains publicly published at `https://chrono-cross-gpt.floot.app`; visibility is public and no custom domain is attached. No publish or source change was made.
+- Re-opened the full GitHub Actions logs for production MCP handshake run `38878216200` (#6), job `116898309541`. The log confirms the secure secret was present without printing its value and the actual live protocol sequence returned `initialize` HTTP 200 (protocol `2025-11-25`), `notifications/initialized` HTTP 202 with an empty body, and `tools/list` HTTP 200 with `read_public_page` and `get_browser_capabilities`; `ok=true`, `credentialPrinted=false`.
+- This is valid evidence for the deployment tested by run #6, but that run occurred on 2026-10-16 and predates the latest 2026-10-17 live UI audit. It does **not** refresh the handshake status for any later deployment.
+- A fresh Floot file-list/read attempt was refused by the platform daily build-action quota. The current refusal states reset at `2026-10-18T07:00:00Z` (10:00 Asia/Baghdad), so no project source read/write, typecheck, test run, or publish can be performed before then unless the platform limit changes. Read-only publish-status remains available.
+- **Status: INCOMPLETE.** Next: after quota reset, inspect the current PDF.js upload implementation and its type error, run typecheck and tests, then address the tab-history defect. Separately, run the manual production handshake after the most recent publish and record its actual result. Do not describe the unpublished local-PDF upload code as live.
