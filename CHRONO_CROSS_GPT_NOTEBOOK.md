@@ -692,3 +692,15 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Confirmed `Read text` can retrieve public page content via the external Jina Reader integration (IANA title, headings, text and tables observed). This is **not** native DOM inspection and must not be described as such.
 - UI version inconsistency persists: main start page says `BUILD 0.1.0-MVP`; diagnostics says `BUILD 0.2` and `CAPABILITY MATRIX V0.2`. Source inspection and a single authoritative build/version value are needed.
 - No source or deployment changes made during this check. Current status remains **INCOMPLETE**.
+
+
+## Live UI acceptance — 2026-10-17: saved-address and activity behavior
+
+- Reopened the published app at `https://chrono-cross-gpt.floot.app` using a live browser session; no Floot build actions or source edits were used.
+- Confirmed the Activity panel logs current-session events. Before saving, it showed initialization, the AI control bridge notice, navigation requested, and frame load event. Clicking the save control added `Address saved` with `https://example.com/`; the EVENTS counter increased from 04 to 05.
+- Confirmed the Saved panel displayed `SAVED ADDRESSES`, one item, and a usable entry labelled `example.com https://example.com/ ↗`; the SAVED counter increased from 00 to 01.
+- Clicking that saved entry navigated the **current tab** to `https://example.com/`, did not create a second tab, and generated new `Navigation requested` and `Frame load event` entries. The OPEN TABS counter remained 01 and SAVED remained 01. This verifies saved-address navigation within the current live session only.
+- The Back and Forward buttons remained disabled even after this navigation to the same address. This session did not establish whether navigation to a different address restores history; the previously observed history defect remains open.
+- No destructive controls were used; in particular, Activity's CLEAR button was not clicked. No credentials were accessed or exposed.
+- **Status remains INCOMPLETE.** This is additional UI evidence, not a source fix or deployment. Persistent storage after a full browser/session restart, functional Back/Forward history, current authenticated MCP handshake, native DOM access, and real ChatGPT host connection remain unresolved or unverified.
+- Next: when Floot source access is available, inspect the history state reducer/update path and add regression tests for two distinct navigations, Back, Forward, and saved-entry navigation. Separately rerun the manual production MCP handshake using the stored GitHub secret without printing it.
