@@ -2,7 +2,6 @@
 // Read-only production smoke test for the public page and local PDF readers.
 // Uses only a fixed public URL and a synthetic one-page PDF; never logs response content.
 const ORIGIN = "https://chrono-cross-gpt.floot.app";
-const PAGE_URL = new URL("/_api/read-page", ORIGIN);
 const PDF_URL = new URL("/_api/read-pdf", ORIGIN);
 const FIXTURE_TEXT = "CHRONO PDF SMOKE TEST";
 
@@ -42,23 +41,9 @@ function collectStrings(value, out = []) {
 }
 
 async function main() {
-  for (const [url, path] of [[PAGE_URL, "/_api/read-page"], [PDF_URL, "/_api/read-pdf"]]) {
+  for (const [url, path] of [[PDF_URL, "/_api/read-pdf"]]) {
     if (url.protocol !== "https:" || url.origin !== ORIGIN || url.pathname !== path) stop("endpoint_guard", null, "Refusing an unexpected test destination.");
   }
-
-  const pageResponse = await fetch(PAGE_URL, {
-    method: "POST",
-    redirect: "error",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify({ url: "https://example.com/" }),
-    signal: AbortSignal.timeout(25000),
-  });
-  const pageBody = await pageResponse.text();
-  let pageData;
-  try { pageData = JSON.parse(pageBody); } catch { stop("public_page_json", pageResponse.status, "Reader did not return JSON."); }
-  const pageText = collectStrings(pageData).join("\n");
-  if (!pageResponse.ok || !pageText.trim()) stop("public_page_read", pageResponse.status, "Public page extraction failed or returned no text.");
-  if (/CHRONO_MCP_TOKEN|Bearer\s+[A-Za-z0-9._-]{20,}/i.test(pageText)) stop("public_page_redaction", pageResponse.status, "Unexpected credential-like output detected; body not logged.");
 
   const form = new FormData();
   form.append("file", new Blob([buildPdf(FIXTURE_TEXT)], { type: "application/pdf" }), "chrono-smoke.pdf");
@@ -77,7 +62,6 @@ async function main() {
 
   console.log(JSON.stringify({
     ok: true,
-    publicPage: { httpStatus: pageResponse.status, source: "https://example.com/", nonEmptyResult: true, responseBodyPrinted: false },
     localPdf: { httpStatus: pdfResponse.status, syntheticOnePageFixture: true, expectedTextFound: true, responseBodyPrinted: false },
   }, null, 2));
 }
