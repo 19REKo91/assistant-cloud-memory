@@ -24,6 +24,9 @@ on:
       - "tools/test-chrono-cross-office-document-reader.mjs"
       - "chrono-reader-core/read-document.mjs"
       - "tools/test-chrono-cross-document-router.mjs"
+      - "chrono-reader-core/server.mjs"
+      - "chrono-reader-core/Dockerfile"
+      - "tools/test-chrono-cross-reader-bridge-server.mjs"
   workflow_dispatch:
 
 permissions:
@@ -71,5 +74,9 @@ jobs:
         run: node --check chrono-reader-core/read-document.mjs
       - name: Run unified reader routing tests (offline fixtures)
         run: node tools/test-chrono-cross-document-router.mjs
+      - name: Validate reader bridge server syntax
+        run: node --check chrono-reader-core/server.mjs
+      - name: Run reader bridge HTTP contract tests on loopback only
+        run: node tools/test-chrono-cross-reader-bridge-server.mjs
       - name: Validate URL safety test-vector integrity (offline only)
         run: node tools/test-chrono-cross-url-safety-vectors.mjs
