@@ -925,3 +925,15 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - Refined `web.ssrf_redirect_dns` from `implemented_unverified` to `partial`. The reader has basic URL restrictions, request limits/timeouts, and a verified `file:` rejection, but full private-DNS/redirect/DNS-rebinding protections are not yet proven against the live implementation.
 - Registry validation CI: [run 39019657487](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019657487) completed **success** after the status refinement.
 - This is a reporting correction, not a runtime code change. Keep the overall project **INCOMPLETE**.
+
+
+## Session update — 2026-10-17: verified two-page PDF extraction
+
+- Continued independently of Floot's daily action quota; no Floot write/build/test action was attempted.
+- Updated `tools/chrono-cross-gpt-reader-smoke-test.mjs` to upload a generated two-page PDF with distinct text markers on each page. The smoke test now requires both markers to appear in the production extraction response, and still checks malformed-PDF and unsupported file rejection. It never prints extracted content.
+- Production reader smoke [run 39019833832](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019833832) completed **success**. Confirmed results: synthetic two-page PDF HTTP 200, both per-page markers found; malformed PDF HTTP 422; `text/plain` upload HTTP 415. The test does not yet verify the response preserves page boundaries as structured output, and it does not cover scanned PDFs/OCR.
+- Updated `docs/CHRONO_CROSS_CAPABILITY_STATUS.json` to replace the old one-page evidence for PDF text/input rejection with this newer run, and to state limitations accurately.
+- Updated `docs/CHRONO_CROSS_READER_ACCEPTANCE_TEST_PLAN.md` with executed-versus-planned evidence for the public URL smoke subset, non-networked `file:` rejection, multi-page PDF fixture, malformed PDF, and unsupported file type.
+- Commit containing the multi-page production smoke test: `3986dda2793eb999efb5669ed392af657ae7f8bc`. Capability registry commit: `c5cb9180ba5718b93239cde92149d4a5d1652521`. Acceptance-plan commit: `34ecc29ef1695e5691d00125e3de356f6edf449f`.
+- The smoke workflow passed. This is real production evidence for the tested fixtures, not certification of PDF fidelity in all documents or complete reader capability.
+- Project remains **INCOMPLETE**. Next independent task: implement a small, testable document-reader adapter layer (starting with safe plain-text/Markdown/CSV parsing and explicit typed result contracts) in the repository, with CI tests; do not represent it as live in Floot until integration and deployment are validated.
