@@ -74,6 +74,27 @@ function fail(stage, status, body, challenge) {
   process.exit(1);
 }
 
+async function callTool(name, id, args, protocolVersion) {
+  const call = await request("tools/call", id, { name, arguments: args }, protocolVersion);
+  const result = call.parsed?.result;
+  const textItems = Array.isArray(result?.content)
+    ? result.content.filter((item) => item?.type === "text" && typeof item.text === "string" && item.text.trim().length > 0)
+    : [];
+  const hasStructuredContent = !!result?.structuredContent && typeof result.structuredContent === "object";
+  if (call.response.status !== 200 || call.parsed?.jsonrpc !== "2.0" || call.parsed?.id !== id || call.parsed?.error || !result || result.isError === true || (!textItems.length && !hasStructuredContent)) {
+    // Do not log page/document contents: a generic excerpt is enough to diagnose this stage.
+    fail(`tools/call:${name}`, call.response.status, "Tool call failed or returned no usable content.", call.response.headers.get("www-authenticate"));
+  }
+  return {
+    name,
+    httpStatus: call.response.status,
+    isError: result.isError === true,
+    contentItems: Array.isArray(result.content) ? result.content.length : 0,
+    hasText: textItems.length > 0,
+    structuredContentPresent: hasStructuredContent,
+  };
+}
+
 try {
   const init = await request("initialize", 1, {
     protocolVersion: "2025-11-25",
@@ -106,12 +127,16 @@ try {
     process.exit(1);
   }
 
+  const capabilitiesCall = await callTool("get_browser_capabilities", 3, {}, init.parsed.result.protocolVersion);
+  const publicPageCall = await callTool("read_public_page", 4, { url: "https://example.com/" }, init.parsed.result.protocolVersion);
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
     initialize: { httpStatus: init.response.status, protocolVersion: init.parsed.result.protocolVersion, serverName: init.parsed.result.serverInfo.name },
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
+    toolCalls: [capabilitiesCall, publicPageCall],
     credentialPrinted: false,
   }, null, 2));
 } catch (error) {
