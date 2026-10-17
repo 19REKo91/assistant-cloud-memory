@@ -446,6 +446,30 @@
         "PDF is explicitly delegated to the existing published PDF endpoint, not parsed by this router.",
         "Audio, video, image OCR, scanned-PDF OCR and browser DOM rendering are not implemented here."
       ]
+    },
+    {
+      "id": "bridge.reader_api",
+      "name": "Authenticated document-reader HTTP bridge container (repository-side)",
+      "status": "implemented_unverified",
+      "inputs": [
+        "POST /v1/read with Bearer token and bounded Base64 file payload"
+      ],
+      "outputs": [
+        "Typed reading result or safe error envelope"
+      ],
+      "evidence": [
+        {
+          "label": "Loopback HTTP contract tests: auth, body/output limits, concurrency, input routing and safe errors",
+          "url": "https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39021174423",
+          "verifiedAt": "2026-10-17"
+        }
+      ],
+      "limitations": [
+        "The HTTP server and Dockerfile are implemented in the repository and local loopback tests pass, but the container is not deployed to any host and not connected to Floot/MCP.",
+        "A server-side CHRONO_READER_BRIDGE_TOKEN must be configured through the deployment platform's secret manager before use. No token is committed or generated into source.",
+        "Current API accepts a bounded Base64 file upload only. It does not fetch external URLs, support browser runtime/DOM control, or offer OCR/transcription.",
+        "Docker image has not yet been build-tested by CI at the time of this entry; a container smoke test is the next validation step."
+      ]
     }
   ]
 }
