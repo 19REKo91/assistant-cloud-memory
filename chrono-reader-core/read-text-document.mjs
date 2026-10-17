@@ -239,8 +239,8 @@ export function readTextDocument(input) {
   const extension = filename.includes(".") ? filename.slice(filename.lastIndexOf(".")).toLowerCase() : "";
   const mediaType = normalizedMediaType(candidate.contentType, extension);
   const bufferLike = Buffer.isBuffer(candidate.bytes) || candidate.bytes instanceof Uint8Array;
-  const buffer = bufferLike ? Buffer.from(candidate.bytes) : Buffer.alloc(0);
-  const source = makeSource(filename || "uploaded-file", mediaType, bufferLike ? buffer.byteLength : null);
+  const byteSize = bufferLike ? candidate.bytes.byteLength : null;
+  const source = makeSource(filename || "uploaded-file", mediaType, byteSize);
   const limits = resolveLimits(candidate.limits);
 
   if (!filename || filename === "." || filename === "..") {
@@ -249,12 +249,14 @@ export function readTextDocument(input) {
   if (!bufferLike) {
     return failure(source, "malformed_input", "File bytes must be supplied as a byte buffer.");
   }
-  if (buffer.byteLength === 0) {
+  if (byteSize === 0) {
     return failure(source, "empty_extraction", "The uploaded file is empty.");
   }
-  if (buffer.byteLength > limits.maxBytes) {
+  // Check the declared byte view before copying a Uint8Array into a Buffer.
+  if (byteSize > limits.maxBytes) {
     return failure(source, "size_limit_exceeded", "The uploaded file exceeds the configured byte limit.");
   }
+  const buffer = Buffer.isBuffer(candidate.bytes) ? candidate.bytes : Buffer.from(candidate.bytes);
   if (buffer.includes(0)) {
     return failure(source, "malformed_input", "Binary or NUL-containing data is not supported by this text reader.");
   }
