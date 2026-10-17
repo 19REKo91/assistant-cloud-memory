@@ -237,7 +237,8 @@ export function createReaderBridgeServer(options = {}) {
       if (responseBytes.length > maxResponseBytes) {
         return errorResponse(res, 413, "response_too_large", "The extracted result exceeds the response limit; use a smaller file or a narrower extraction.");
       }
-      return jsonResponse(res, statusForReaderFailure(result?.error?.code) === 400 && result?.ok === true ? 200 : result?.ok === true ? 200 : statusForReaderFailure(result?.error?.code), payload);
+      const statusCode = result?.ok === true ? 200 : statusForReaderFailure(result?.error?.code);
+      return jsonResponse(res, statusCode, payload);
     } finally {
       activeReads -= 1;
     }
