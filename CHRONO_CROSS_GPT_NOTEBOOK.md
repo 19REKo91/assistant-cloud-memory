@@ -885,3 +885,17 @@ The overall project remains **INCOMPLETE**: these documents improve execution re
 - The user is currently using the ChatGPT Android app on the Free plan, so **directly attaching this custom MCP server to that Android ChatGPT session is a product-availability blocker**, not an MCP endpoint failure or a Floot quota issue.
 - Verified workaround already present in the repository: `.vscode/mcp.json` and `.mcp.json` provide safe configuration for compatible VS Code/Copilot MCP clients, with a prompted/secret-backed token rather than a hard-coded secret. The real server has now passed the production protocol and tool-call tests described above.
 - Do not claim that the current ChatGPT Android conversation can invoke the custom MCP server directly. Continue building/testing the server and compatible-client path; if direct ChatGPT integration becomes an explicit requirement, it needs a supported ChatGPT web plan/client and workspace permissions consistent with the current official docs.
+
+
+### Production authentication negative checks added (2026-10-17)
+
+- The automated production smoke test now sends two additional requests before the valid MCP handshake:
+  - No Authorization header.
+  - A deliberately invalid dummy bearer token.
+- Production result: [run 39019453556](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019453556) completed **success**:
+  - Missing token: HTTP 401.
+  - Wrong token: HTTP 401; `tokenEchoed: false`.
+  - The subsequent valid MCP handshake and both tool calls still succeeded, including the `file:` scheme rejection.
+- Offline regression workflow [run 39019475505](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39019475505) completed **success**. It now mocks missing/wrong-token rejection and includes a regression scenario where an echoed invalid token must cause the test to fail without printing that token.
+- The first run after adding auth preflight failed only because the offline mock still threw on missing/incorrect Authorization rather than returning a mocked 401. The mock was updated; the subsequent run passed.
+- These results verify the currently published endpoint's tested authentication paths. They do not prove every edge/proxy header behavior or OAuth support; this server currently uses a static bearer token and is not an OAuth authorization server.
