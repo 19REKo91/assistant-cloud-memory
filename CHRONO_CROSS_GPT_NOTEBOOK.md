@@ -799,3 +799,13 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Created Floot checkpoint `4f765c34-955a-40d8-8625-cfc012d411f8`, titled “Repair missing Back/Forward history on workspace restore”.
 - **Source-only; not published.** This addresses the concrete invalid-restored-state case, but it does not prove the previously observed live case (history containing only the current URL after navigation) is fully fixed. Cross-origin navigation inside the sandboxed iframe cannot be reliably recorded by the parent page; this remains a separate limitation.
 - Project status remains **INCOMPLETE**. Next: run the targeted history specs when safe under the daily quota, then reproduce two distinct address-bar navigations and verify Back and Forward in the app before considering any publish.
+
+
+## Follow-up — 2026-10-18: Back/Forward cursor recovery and UI alignment
+
+- Continued work on Back/Forward only. Hardened `normalizeTabHistory()` and made it reusable by the page. Before a navigation append/move, the helper now checks that the history cursor actually points at the tab's current URL; if it does not, it recovers the cursor from the current URL, or inserts the current URL if absent. Navigation history remains capped at 80 entries.
+- Updated the active-tab derivation in `pages/_index.tsx` to use the normalized tab state, so the Back/Forward disabled state is based on the repaired cursor rather than a stale index. Updated the Back/Forward handler to store the same computed tab transition used for the address/frame, avoiding a second calculation against potentially newer state.
+- Added history regression specs for appending after a stale cursor and for Forward recovery when the active URL is not at the stored cursor.
+- **Validation boundary:** the history spec passed before the final page-integration edits. Floot then refused the follow-up test/typecheck/read request because the Free plan's daily build-action limit was reached; reset reported as `2026-10-19T07:00:00Z` (10:00 Asia/Baghdad). Therefore the final page integration and newly exposed normalization import are **not yet validated by a final test/typecheck run**.
+- No new checkpoint could be created after the latest edits because Floot actions are quota-blocked. No publish/deployment was triggered.
+- **Status: INCOMPLETE.** On quota reset, first run typecheck on `pages/_index.tsx`, `helpers/workspacePersistence.tsx`, and `helpers/workspacePersistence.spec.tsx`; run the history spec; then reproduce two distinct address-bar navigations and validate Back → Forward in the actual app. The project is not considered fixed until those checks pass. The published app still has not received these source-only edits.
