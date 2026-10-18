@@ -746,3 +746,12 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Created Floot checkpoint `f6b4d513-7447-4c4f-acaa-83c694940240`, titled “Preserve exact Back/Forward history position”.
 - **Source-only; not published.** This addresses a specific persistence/index edge case but does not yet prove the original live Back/Forward failure is fully fixed. The reported live history array containing only the current URL may have another cause that still needs reproduction and verification.
 - Next: when safe without exceeding the daily action limit, run the targeted/history specs and full typecheck; inspect runtime history after two different navigations; then address remaining history behavior and the PDF endpoint. Do not publish until validation is clean. Project remains **INCOMPLETE**.
+
+
+## Follow-up — 2026-10-18: local PDF endpoint source diagnostics
+
+- Re-read `endpoints/read-pdf_POST.ts` and `helpers/readPdfEndpoint.spec.tsx` from the current Floot source.
+- The unsupported `isEvalSupported` option is absent from the current PDF.js `getDocument()` options, and Floot's read diagnostics report `types: clean` for both files.
+- This supersedes the earlier source note that the `isEvalSupported` TypeScript error was still present. It does **not** mean PDF tests or integration tests have passed: they were not run in this pass, and the local PDF upload endpoint remains unpublished/unverified on production.
+- Remaining PDF checks: enforce a hard request-body cap when content length is missing or misleading, test valid/corrupt/encrypted/empty and oversized files, verify page/output limits and cleanup behavior, run endpoint specs and a live integration test, and only then consider publishing.
+- No tests, publish, or live endpoint upload were run as part of this source read. Overall project remains **INCOMPLETE**.
