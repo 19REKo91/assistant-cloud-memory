@@ -734,3 +734,15 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Created Floot checkpoint `f6817643-0cb5-4bf1-9ddd-1a68fd01181a`, titled “Align MCP version and storage capability reporting”.
 - **Not published.** These changes are in the Floot project source only and are not claimed to be live on `https://chrono-cross-gpt.floot.app`. The live Back/Forward behavior, PDF endpoint integration, and current production MCP handshake remain unverified.
 - Project status remains **INCOMPLETE**.
+
+
+## Follow-up — 2026-10-18: Back/Forward history restoration regression
+
+- Reviewed the current Floot source for tab history. The history helpers already support distinct navigations, Back/Forward, and branch truncation, but `cleanTab()` restored the active history position using `history.lastIndexOf(url)` unconditionally.
+- This loses the exact selected history position when a URL occurs more than once in a tab's history (for example A → B → A → C, then Back to the first A). After reload/restore, the index could jump to the later A, changing which Back/Forward destinations are selected.
+- Updated `helpers/workspacePersistence.tsx` to retain original history-entry indices while sanitizing URLs, and preserve the requested index when it still points to the current URL. The fallback remains the last matching URL for invalid/stale snapshots.
+- Added a regression spec in `helpers/workspacePersistence.spec.tsx` that checks restoration preserves index 0 for repeated URLs and that Forward from that position reaches B.
+- Floot's subsequent source read reported `types: clean` for both changed files and the page file. This is a type-diagnostic result only; the full test suite was **not run**, so the new spec is not yet confirmed passing.
+- Created Floot checkpoint `f6b4d513-7447-4c4f-acaa-83c694940240`, titled “Preserve exact Back/Forward history position”.
+- **Source-only; not published.** This addresses a specific persistence/index edge case but does not yet prove the original live Back/Forward failure is fully fixed. The reported live history array containing only the current URL may have another cause that still needs reproduction and verification.
+- Next: when safe without exceeding the daily action limit, run the targeted/history specs and full typecheck; inspect runtime history after two different navigations; then address remaining history behavior and the PDF endpoint. Do not publish until validation is clean. Project remains **INCOMPLETE**.
