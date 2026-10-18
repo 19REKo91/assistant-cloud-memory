@@ -777,3 +777,15 @@ Reviewed the durable project memo, current manual-only production handshake work
 - This does not establish a parser timeout, successful handling of malformed/encrypted PDFs, or correct behavior at page/byte/output limits. Tests and multipart integration checks were **not run**; no publish occurred.
 - The Back/Forward source review found the navigation helpers support normal history movement, but did not prove the observed live history-array failure's root cause. No speculative history change was made in this pass.
 - **Project status: INCOMPLETE.** Local PDF upload remains source-only and unverified; continue to avoid publishing until targeted tests, broader checks, and endpoint integration validation are safe and pass.
+
+
+## Follow-up — 2026-10-18: incremental PDF output cap and regression spec
+
+- Re-reviewed the local PDF endpoint and its existing specs. The handler previously joined every text item on a page into a complete temporary string before applying the 45,000-character output cap. Although the returned output was bounded, that intermediate string could be much larger than the intended response limit.
+- Changed extraction to append text items incrementally, stop when `MAX_PDF_TEXT_CHARS` is reached, and mark the response as truncated. Page cleanup and loading-task destruction remain protected by `finally` blocks.
+- Extended `helpers/readPdfEndpoint.spec.tsx` so the synthetic PDF helper can generate a long text fixture and a regression spec checks the output length, `truncated` flag, and `resultStatus`.
+- Floot read diagnostics report `types: clean` for both `endpoints/read-pdf_POST.ts` and `helpers/readPdfEndpoint.spec.tsx`. The spec has **not been run**; this is not evidence that PDF.js extracts the long fixture as expected.
+- Created checkpoint `cb59d939-d2bb-4c08-9740-c9270aa1200b`, titled “Bound PDF extracted text during iteration”.
+- No tests, typecheck command, integration upload, or publish was run. The source read itself returned clean type diagnostics. This incremental cap bounds the assembled response string, but PDF.js still materializes each page's text-content item list; it is not a complete parser-memory or execution-time limit.
+- Back/Forward source review: `go()` calls `appendTabNavigation`, and the history controls call `moveTabHistory`; unit specs cover basic movement, forward-branch truncation, duplicate URLs, and restoration of repeated-URL positions. The live failure where history contained only the current URL remains unexplained; no speculative navigation patch was made.
+- **Project status: INCOMPLETE.** Local PDF upload is source-only and unverified; the production deployment has not been updated. Next safe step is to inspect/validate the history state in a live session and run targeted PDF/history specs only when doing so is confirmed safe under the daily quota.
