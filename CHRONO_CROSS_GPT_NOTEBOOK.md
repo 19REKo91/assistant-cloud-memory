@@ -755,3 +755,14 @@ Reviewed the durable project memo, current manual-only production handshake work
 - This supersedes the earlier source note that the `isEvalSupported` TypeScript error was still present. It does **not** mean PDF tests or integration tests have passed: they were not run in this pass, and the local PDF upload endpoint remains unpublished/unverified on production.
 - Remaining PDF checks: enforce a hard request-body cap when content length is missing or misleading, test valid/corrupt/encrypted/empty and oversized files, verify page/output limits and cleanup behavior, run endpoint specs and a live integration test, and only then consider publishing.
 - No tests, publish, or live endpoint upload were run as part of this source read. Overall project remains **INCOMPLETE**.
+
+
+## Follow-up — 2026-10-18: bound local PDF upload body before parsing
+
+- Added a streaming request-body reader in `endpoints/read-pdf_POST.ts` that stops reading and cancels the stream once the multipart request exceeds the PDF size limit plus a bounded 64 KiB allowance for multipart headers/metadata.
+- Multipart parsing now happens only after the request body has been bounded. The implementation does not rely solely on `Content-Length`, so absent or understated length headers cannot cause `request.formData()` to buffer an unbounded body inside this handler.
+- Added explicit bounded-body read error handling and retained the per-file 15 MiB check and PDF signature check.
+- Floot read diagnostics reported `types: clean` for `endpoints/read-pdf_POST.ts` after the change. This is a source diagnostic, not a passing endpoint test.
+- Created checkpoint `d0ec55a6-8d29-4227-af72-a6f252b6063d`, titled “Bound local PDF request bodies”.
+- **Not published.** The endpoint specs and real multipart integration test were not run, and PDF.js resource cleanup/timeout behavior still needs review. Continue to treat local PDF upload as unverified and not live until tests and post-publish verification pass.
+- Overall project remains **INCOMPLETE**.
