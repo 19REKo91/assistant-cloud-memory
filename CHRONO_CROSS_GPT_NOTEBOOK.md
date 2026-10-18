@@ -789,3 +789,13 @@ Reviewed the durable project memo, current manual-only production handshake work
 - No tests, typecheck command, integration upload, or publish was run. The source read itself returned clean type diagnostics. This incremental cap bounds the assembled response string, but PDF.js still materializes each page's text-content item list; it is not a complete parser-memory or execution-time limit.
 - Back/Forward source review: `go()` calls `appendTabNavigation`, and the history controls call `moveTabHistory`; unit specs cover basic movement, forward-branch truncation, duplicate URLs, and restoration of repeated-URL positions. The live failure where history contained only the current URL remains unexplained; no speculative navigation patch was made.
 - **Project status: INCOMPLETE.** Local PDF upload is source-only and unverified; the production deployment has not been updated. Next safe step is to inspect/validate the history state in a live session and run targeted PDF/history specs only when doing so is confirmed safe under the daily quota.
+
+
+## Follow-up — 2026-10-18: repair missing current URL in Back/Forward history
+
+- Focused only on the Back/Forward history defect. Updated `helpers/workspacePersistence.tsx` so when a saved tab has a valid current URL but its sanitized history does not contain that URL, restoration appends the current URL and sets `historyIndex` to that entry. This repairs incomplete/older snapshots that otherwise restore with a URL but an unusable history index.
+- Added a regression spec in `helpers/workspacePersistence.spec.tsx` for a tab with a current URL and an empty history; expected restored history is exactly that URL at index 0.
+- Floot source diagnostics report `types: clean` for both changed files. The spec was **not run**, so runtime behavior is not yet verified.
+- Created Floot checkpoint `4f765c34-955a-40d8-8625-cfc012d411f8`, titled “Repair missing Back/Forward history on workspace restore”.
+- **Source-only; not published.** This addresses the concrete invalid-restored-state case, but it does not prove the previously observed live case (history containing only the current URL after navigation) is fully fixed. Cross-origin navigation inside the sandboxed iframe cannot be reliably recorded by the parent page; this remains a separate limitation.
+- Project status remains **INCOMPLETE**. Next: run the targeted history specs when safe under the daily quota, then reproduce two distinct address-bar navigations and verify Back and Forward in the app before considering any publish.
