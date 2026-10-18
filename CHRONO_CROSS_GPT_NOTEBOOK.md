@@ -766,3 +766,14 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Created checkpoint `d0ec55a6-8d29-4227-af72-a6f252b6063d`, titled “Bound local PDF request bodies”.
 - **Not published.** The endpoint specs and real multipart integration test were not run, and PDF.js resource cleanup/timeout behavior still needs review. Continue to treat local PDF upload as unverified and not live until tests and post-publish verification pass.
 - Overall project remains **INCOMPLETE**.
+
+
+## Follow-up — 2026-10-18: PDF.js resource cleanup
+
+- Reviewed the current local-PDF endpoint after adding the bounded request-body reader. The PDF.js extraction loop did not explicitly clean up each page, and the loading task was not explicitly destroyed after success or extraction failure.
+- Updated `endpoints/read-pdf_POST.ts` so each fetched page is cleaned up in a `finally` block and the PDF.js loading task is destroyed in an outer `finally` block. This is intended to release parser/page resources on both normal and exceptional paths.
+- Re-read the changed endpoint; Floot's source diagnostic reports `types: clean (this file)`.
+- Created checkpoint `b6e70359-cae6-4174-a90c-6be96f576ad1`, titled “Clean up PDF.js page and document resources”.
+- This does not establish a parser timeout, successful handling of malformed/encrypted PDFs, or correct behavior at page/byte/output limits. Tests and multipart integration checks were **not run**; no publish occurred.
+- The Back/Forward source review found the navigation helpers support normal history movement, but did not prove the observed live history-array failure's root cause. No speculative history change was made in this pass.
+- **Project status: INCOMPLETE.** Local PDF upload remains source-only and unverified; continue to avoid publishing until targeted tests, broader checks, and endpoint integration validation are safe and pass.
