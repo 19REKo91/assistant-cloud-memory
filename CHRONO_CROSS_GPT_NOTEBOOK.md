@@ -722,3 +722,15 @@ Reviewed the durable project memo, current manual-only production handshake work
 - This confirms repository read access and reported write permissions, but does not retrospectively establish the cause of the earlier blocked write. The prior attempt's exact error response was not available in the conversation, so its cause remains **undetermined**; do not attribute it to GitHub permissions, quota, or a SHA conflict without an actual error.
 - Attempting a fresh sequential update now using the current blob SHA and a single GitHub contents write. The resulting commit and a follow-up read will determine whether the notebook write path currently works.
 - Project status remains **INCOMPLETE**. This note records only the verification attempt; it does not change or imply the Floot source/deployment status.
+
+
+## Follow-up — 2026-10-18: source-only corrections without publish
+
+- Floot project file access became available, so a small source-only correction set was applied without publishing the app.
+- Updated `endpoints/mcp_POST.ts`: MCP `serverInfo.version` now matches the UI's current `0.2.1` version (was `0.2.0`).
+- Corrected `get_browser_capabilities` to describe the actual frontend behavior: tab/navigation history, saved addresses, and activity use the current browser's `localStorage` when available. Clarified that this is same-browser persistence only, not server-side storage or cross-device sync. Structured capability fields now distinguish `browserLocalStoragePersistence`, `persistentStorage: server_side_not_implemented`, and `crossDeviceSync: not_implemented`.
+- Corrected `static/chrono-mcp-setup.md`, which incorrectly called tab state and saved URLs session-only.
+- Floot reported the source typecheck as clean after the endpoint edits. The full test suite was not run in this pass to avoid unnecessary quota-consuming operations. No live-browser acceptance test was run.
+- Created Floot checkpoint `f6817643-0cb5-4bf1-9ddd-1a68fd01181a`, titled “Align MCP version and storage capability reporting”.
+- **Not published.** These changes are in the Floot project source only and are not claimed to be live on `https://chrono-cross-gpt.floot.app`. The live Back/Forward behavior, PDF endpoint integration, and current production MCP handshake remain unverified.
+- Project status remains **INCOMPLETE**.
