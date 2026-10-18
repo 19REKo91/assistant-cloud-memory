@@ -713,3 +713,12 @@ Reviewed the durable project memo, current manual-only production handshake work
 - This is valid evidence for the deployment tested by run #6, but that run occurred on 2026-10-16 and predates the latest 2026-10-17 live UI audit. It does **not** refresh the handshake status for any later deployment.
 - A fresh Floot file-list/read attempt was refused by the platform daily build-action quota. The current refusal states reset at `2026-10-18T07:00:00Z` (10:00 Asia/Baghdad), so no project source read/write, typecheck, test run, or publish can be performed before then unless the platform limit changes. Read-only publish-status remains available.
 - **Status: INCOMPLETE.** Next: after quota reset, inspect the current PDF.js upload implementation and its type error, run typecheck and tests, then address the tab-history defect. Separately, run the manual production handshake after the most recent publish and record its actual result. Do not describe the unpublished local-PDF upload code as live.
+
+
+## Follow-up — 2026-10-18: verify notebook write blocker
+
+- Rechecked repository metadata through the connected GitHub tool: repository `19REKo91/assistant-cloud-memory` exists, default branch is `main`, and the connected identity reports `push: true` and `admin: true`.
+- Re-read `CHRONO_CROSS_GPT_NOTEBOOK.md` successfully. Current blob SHA before this update: `1b22738607e5653ed3234462f558d5d8fed1c267`.
+- This confirms repository read access and reported write permissions, but does not retrospectively establish the cause of the earlier blocked write. The prior attempt's exact error response was not available in the conversation, so its cause remains **undetermined**; do not attribute it to GitHub permissions, quota, or a SHA conflict without an actual error.
+- Attempting a fresh sequential update now using the current blob SHA and a single GitHub contents write. The resulting commit and a follow-up read will determine whether the notebook write path currently works.
+- Project status remains **INCOMPLETE**. This note records only the verification attempt; it does not change or imply the Floot source/deployment status.
