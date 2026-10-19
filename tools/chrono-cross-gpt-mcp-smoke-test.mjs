@@ -40,14 +40,14 @@ function parseResponseBody(body, contentType = "") {
   try { return JSON.parse(body); } catch { return null; }
 }
 
-async function request(method, id, params, protocolVersion) {
+async function request(method, id, params, protocolVersion, authToken = token) {
   const message = { jsonrpc: "2.0", method };
   if (id !== undefined) message.id = id;
   if (params !== undefined) message.params = params;
   const headers = {
     "Content-Type": "application/json",
     "Accept": "application/json, text/event-stream",
-    "Authorization": `Bearer ${token}`,
+    ...(authToken === null ? {} : { "Authorization": `Bearer ${authToken}` }),
   };
   if (protocolVersion) headers["MCP-Protocol-Version"] = protocolVersion;
   const response = await fetch(endpoint, {
@@ -131,12 +131,44 @@ try {
     fail("tools/call:read_public_page", page.response.status, page.body, page.response.headers.get("www-authenticate"));
   }
 
+  const missingAuth = await request("initialize", 5, {
+    protocolVersion: "2025-11-25",
+    capabilities: {},
+    clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
+  }, init.parsed.result.protocolVersion, null);
+  if (missingAuth.response.status !== 200 || missingAuth.response.headers.get("x-floot-status") !== "401" || missingAuth.parsed?.error !== "authentication_required") {
+    fail("authentication:missing_token", missingAuth.response.status, missingAuth.body, missingAuth.response.headers.get("x-floot-www-authenticate"));
+  }
+
+  const wrongAuth = await request("initialize", 6, {
+    protocolVersion: "2025-11-25",
+    capabilities: {},
+    clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
+  }, init.parsed.result.protocolVersion, "deliberately-invalid-test-token");
+  if (wrongAuth.response.status !== 200 || wrongAuth.response.headers.get("x-floot-status") !== "401" || wrongAuth.parsed?.error !== "authentication_required") {
+    fail("authentication:wrong_token", wrongAuth.response.status, wrongAuth.body, wrongAuth.response.headers.get("x-floot-www-authenticate"));
+  }
+
+  const blockedUrl = await request("tools/call", 7, {
+    name: "read_public_page",
+    arguments: { url: "http://127.0.0.1/" },
+  }, init.parsed.result.protocolVersion);
+  const blockedResult = blockedUrl.parsed?.result;
+  const blockedText = Array.isArray(blockedResult?.content)
+    ? blockedResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (blockedUrl.response.status !== 200 || blockedUrl.parsed?.jsonrpc !== "2.0" || blockedUrl.parsed?.id !== 7 || blockedResult?.isError !== true || !blockedText.includes("Literal IP addresses are blocked")) {
+    fail("security:blocked_private_ip", blockedUrl.response.status, blockedUrl.body, blockedUrl.response.headers.get("www-authenticate"));
+  }
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
     initialize: { httpStatus: init.response.status, protocolVersion: init.parsed.result.protocolVersion, serverName: init.parsed.result.serverInfo.name },
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
+    authenticationChecks: { missingTokenRejected: true, wrongTokenRejected: true },
+    securityChecks: { privateIpUrlRejected: true },
     toolCalls: {
       getBrowserCapabilities: { httpStatus: capabilities.response.status, succeeded: true },
       readPublicPage: {
