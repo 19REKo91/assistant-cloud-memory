@@ -185,6 +185,42 @@ try {
     fail("validation:oversized_url", oversizedUrl.response.status, oversizedUrl.body, oversizedUrl.response.headers.get("www-authenticate"));
   }
 
+  const shortNumericIp = await request("tools/call", 10, {
+    name: "read_public_page",
+    arguments: { url: "http://127.1/" },
+  }, init.parsed.result.protocolVersion);
+  const shortIpResult = shortNumericIp.parsed?.result;
+  const shortIpText = Array.isArray(shortIpResult?.content)
+    ? shortIpResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (shortNumericIp.response.status !== 200 || shortNumericIp.parsed?.jsonrpc !== "2.0" || shortNumericIp.parsed?.id !== 10 || shortIpResult?.isError !== true || !shortIpText.includes("Literal IP addresses are blocked")) {
+    fail("security:blocked_noncanonical_loopback_ip", shortNumericIp.response.status, shortNumericIp.body, shortNumericIp.response.headers.get("www-authenticate"));
+  }
+
+  const credentialUrl = await request("tools/call", 11, {
+    name: "read_public_page",
+    arguments: { url: "https://user:password@example.com/" },
+  }, init.parsed.result.protocolVersion);
+  const credentialUrlResult = credentialUrl.parsed?.result;
+  const credentialUrlText = Array.isArray(credentialUrlResult?.content)
+    ? credentialUrlResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (credentialUrl.response.status !== 200 || credentialUrl.parsed?.jsonrpc !== "2.0" || credentialUrl.parsed?.id !== 11 || credentialUrlResult?.isError !== true || !credentialUrlText.includes("URLs containing embedded credentials are blocked")) {
+    fail("security:blocked_embedded_url_credentials", credentialUrl.response.status, credentialUrl.body, credentialUrl.response.headers.get("www-authenticate"));
+  }
+
+  const unusualPort = await request("tools/call", 12, {
+    name: "read_public_page",
+    arguments: { url: "https://example.com:8443/" },
+  }, init.parsed.result.protocolVersion);
+  const unusualPortResult = unusualPort.parsed?.result;
+  const unusualPortText = Array.isArray(unusualPortResult?.content)
+    ? unusualPortResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (unusualPort.response.status !== 200 || unusualPort.parsed?.jsonrpc !== "2.0" || unusualPort.parsed?.id !== 12 || unusualPortResult?.isError !== true || !unusualPortText.includes("Non-standard ports are not supported")) {
+    fail("security:blocked_nonstandard_port", unusualPort.response.status, unusualPort.body, unusualPort.response.headers.get("www-authenticate"));
+  }
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
@@ -192,7 +228,7 @@ try {
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
     authenticationChecks: { missingTokenRejected: true, wrongTokenRejected: true },
-    securityChecks: { privateIpUrlRejected: true, fileUrlRejected: true, oversizedUrlRejected: true },
+    securityChecks: { privateIpUrlRejected: true, noncanonicalLoopbackIpRejected: true, fileUrlRejected: true, embeddedCredentialsRejected: true, nonstandardPortRejected: true, oversizedUrlRejected: true },
     toolCalls: {
       getBrowserCapabilities: { httpStatus: capabilities.response.status, succeeded: true },
       readPublicPage: {
