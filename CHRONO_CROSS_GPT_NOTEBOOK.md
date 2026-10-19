@@ -848,3 +848,16 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Commit: `9f00674a0e82e36845c4a478412c2868243238d7` (`Test additional MCP reader URL security edge cases`).
 - This changes only the GitHub smoke-test script; no Floot production code or live app deployment was changed. Floot regular tests (6/6), hook tests (2/2), and TypeScript typecheck remain clean from the prior validation.
 - **Status remains INCOMPLETE overall:** ChatGPT is not connected as an MCP host, and MCP currently provides read-only public-page extraction/capability reporting rather than remote browser control. Next work should focus on capabilities that can be safely implemented and validated within the published app, without representing an MCP smoke test as proof of ChatGPT integration.
+
+
+## Follow-up — 2026-10-19: reading-capability audit and Floot quota block
+
+- Inspected the current Floot source for `pages/_index.tsx`, `endpoints/read-page_POST.ts`, `endpoints/read-pdf_POST.ts`, both schemas, and the page/PDF reader specs. No app source was changed in this audit.
+- Existing reading capabilities confirmed from source:
+  - Public web pages and public PDF URLs can be sent to the external Jina Reader service; returned content is capped at 45,000 characters and the request times out after 20 seconds.
+  - A user-selected local PDF can be uploaded to the app endpoint and parsed with PDF.js; upload limit 15 MiB, extraction limit 50 pages / 45,000 characters, selectable text only, no OCR.
+  - Reader status is recorded in the activity log, and empty/truncated outcomes are represented in the API response.
+- Reading-related follow-up opportunities: improve UI clarity around whether extraction actually returned readable body text versus only reader metadata; expose the local/public reader capabilities and limitations accurately in the capability matrix; consider more regression cases for stream-size limits, timeout/cancellation, malformed public-reader responses, and PDF edge cases. Do not advertise OCR, office-file reading, rendered-page reading, DOM inspection, or remote browser control as available.
+- Found stale diagnostics text in `pages/_index.tsx`: the UI still labels production MCP protocol status as “STALE · RUN #6” and describes run #6, while GitHub Actions run #19 has since passed against the current published MCP endpoint. This is a UI/source consistency issue to fix only after the Floot build-action quota resets, then rerun tests/typecheck and verify the published deployment status before changing the wording to a newer run.
+- Floot validation attempt on 2026-10-19 was rejected with “Daily build limit reached”; tool reports reset at `2026-10-20T07:00:00Z` (10:00 Asia/Baghdad). The attempted test/typecheck did not execute, so no new validation result is claimed. No deployment or checkpoint was created.
+- **Status: INCOMPLETE.** Next when quota permits: (1) correct the stale MCP status copy based on verified current deployment evidence; (2) add clearer reader-result feedback for empty/metadata-only output; (3) add tests for any behavior changed; (4) run relevant reader specs and typecheck; (5) publish only if a production code change is approved/needed, then rerun the production smoke test.
