@@ -106,12 +106,48 @@ try {
     process.exit(1);
   }
 
+  const capabilities = await request("tools/call", 3, {
+    name: "get_browser_capabilities",
+    arguments: {},
+  }, init.parsed.result.protocolVersion);
+  const capabilityResult = capabilities.parsed?.result;
+  const capabilityText = Array.isArray(capabilityResult?.content)
+    ? capabilityResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (capabilities.response.status !== 200 || capabilities.parsed?.jsonrpc !== "2.0" || capabilities.parsed?.id !== 3 || capabilities.parsed?.error || capabilityResult?.isError || !capabilityText.includes("CHRONO CROSS GPT capability status")) {
+    fail("tools/call:get_browser_capabilities", capabilities.response.status, capabilities.body, capabilities.response.headers.get("www-authenticate"));
+  }
+
+  const page = await request("tools/call", 4, {
+    name: "read_public_page",
+    arguments: { url: "https://example.com/" },
+  }, init.parsed.result.protocolVersion);
+  const pageResult = page.parsed?.result;
+  const pageText = Array.isArray(pageResult?.content)
+    ? pageResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  const pageMeta = pageResult?.structuredContent;
+  if (page.response.status !== 200 || page.parsed?.jsonrpc !== "2.0" || page.parsed?.id !== 4 || page.parsed?.error || pageResult?.isError || !pageText.includes("Example Domain") || pageMeta?.resultStatus !== "returned" || pageMeta?.url !== "https://example.com/") {
+    fail("tools/call:read_public_page", page.response.status, page.body, page.response.headers.get("www-authenticate"));
+  }
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
     initialize: { httpStatus: init.response.status, protocolVersion: init.parsed.result.protocolVersion, serverName: init.parsed.result.serverInfo.name },
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
+    toolCalls: {
+      getBrowserCapabilities: { httpStatus: capabilities.response.status, succeeded: true },
+      readPublicPage: {
+        httpStatus: page.response.status,
+        succeeded: true,
+        fixture: "https://example.com/",
+        resultStatus: pageMeta.resultStatus,
+        extractedExpectedText: true,
+        truncated: pageMeta.truncated,
+      },
+    },
     credentialPrinted: false,
   }, null, 2));
 } catch (error) {
