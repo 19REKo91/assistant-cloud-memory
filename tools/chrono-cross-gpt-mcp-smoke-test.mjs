@@ -161,6 +161,30 @@ try {
     fail("security:blocked_private_ip", blockedUrl.response.status, blockedUrl.body, blockedUrl.response.headers.get("www-authenticate"));
   }
 
+  const blockedFileUrl = await request("tools/call", 8, {
+    name: "read_public_page",
+    arguments: { url: "file:///etc/passwd" },
+  }, init.parsed.result.protocolVersion);
+  const fileResult = blockedFileUrl.parsed?.result;
+  const fileText = Array.isArray(fileResult?.content)
+    ? fileResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (blockedFileUrl.response.status !== 200 || blockedFileUrl.parsed?.jsonrpc !== "2.0" || blockedFileUrl.parsed?.id !== 8 || fileResult?.isError !== true || !fileText.includes("Only HTTP and HTTPS addresses can be read")) {
+    fail("security:blocked_file_url", blockedFileUrl.response.status, blockedFileUrl.body, blockedFileUrl.response.headers.get("www-authenticate"));
+  }
+
+  const oversizedUrl = await request("tools/call", 9, {
+    name: "read_public_page",
+    arguments: { url: "https://example.com/" + "a".repeat(2050) },
+  }, init.parsed.result.protocolVersion);
+  const oversizedResult = oversizedUrl.parsed?.result;
+  const oversizedText = Array.isArray(oversizedResult?.content)
+    ? oversizedResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
+    : "";
+  if (oversizedUrl.response.status !== 200 || oversizedUrl.parsed?.jsonrpc !== "2.0" || oversizedUrl.parsed?.id !== 9 || oversizedResult?.isError !== true || !oversizedText.includes("url must be a valid HTTP(S) URL string no longer than 2048 characters")) {
+    fail("validation:oversized_url", oversizedUrl.response.status, oversizedUrl.body, oversizedUrl.response.headers.get("www-authenticate"));
+  }
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
@@ -168,7 +192,7 @@ try {
     initializedNotification: { httpStatus: initialized.response.status, emptyBody: true },
     toolsList: { httpStatus: listed.response.status, toolNames },
     authenticationChecks: { missingTokenRejected: true, wrongTokenRejected: true },
-    securityChecks: { privateIpUrlRejected: true },
+    securityChecks: { privateIpUrlRejected: true, fileUrlRejected: true, oversizedUrlRejected: true },
     toolCalls: {
       getBrowserCapabilities: { httpStatus: capabilities.response.status, succeeded: true },
       readPublicPage: {
