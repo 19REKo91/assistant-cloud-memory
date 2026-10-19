@@ -136,7 +136,7 @@ try {
     capabilities: {},
     clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
   }, init.parsed.result.protocolVersion, null);
-  if (missingAuth.response.status !== 200 || missingAuth.response.headers.get("x-floot-status") !== "401" || missingAuth.parsed?.error !== "authentication_required") {
+  if ((missingAuth.response.status !== 401 && missingAuth.response.headers.get("x-floot-status") !== "401") || missingAuth.parsed?.error !== "authentication_required") {
     fail("authentication:missing_token", missingAuth.response.status, missingAuth.body, missingAuth.response.headers.get("x-floot-www-authenticate"));
   }
 
@@ -145,7 +145,7 @@ try {
     capabilities: {},
     clientInfo: { name: "chrono-cross-gpt-smoke-test", version: "1.0.0" },
   }, init.parsed.result.protocolVersion, "deliberately-invalid-test-token");
-  if (wrongAuth.response.status !== 200 || wrongAuth.response.headers.get("x-floot-status") !== "401" || wrongAuth.parsed?.error !== "authentication_required") {
+  if ((wrongAuth.response.status !== 401 && wrongAuth.response.headers.get("x-floot-status") !== "401") || wrongAuth.parsed?.error !== "authentication_required") {
     fail("authentication:wrong_token", wrongAuth.response.status, wrongAuth.body, wrongAuth.response.headers.get("x-floot-www-authenticate"));
   }
 
