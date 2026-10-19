@@ -809,3 +809,32 @@ Reviewed the durable project memo, current manual-only production handshake work
 - **Validation boundary:** the history spec passed before the final page-integration edits. Floot then refused the follow-up test/typecheck/read request because the Free plan's daily build-action limit was reached; reset reported as `2026-10-19T07:00:00Z` (10:00 Asia/Baghdad). Therefore the final page integration and newly exposed normalization import are **not yet validated by a final test/typecheck run**.
 - No new checkpoint could be created after the latest edits because Floot actions are quota-blocked. No publish/deployment was triggered.
 - **Status: INCOMPLETE.** On quota reset, first run typecheck on `pages/_index.tsx`, `helpers/workspacePersistence.tsx`, and `helpers/workspacePersistence.spec.tsx`; run the history spec; then reproduce two distinct address-bar navigations and validate Back → Forward in the actual app. The project is not considered fixed until those checks pass. The published app still has not received these source-only edits.
+
+
+## Follow-up — 2026-10-19: production MCP tool-call and security verification
+
+- Updated `tools/chrono-cross-gpt-mcp-smoke-test.mjs` to exercise the real production MCP endpoint at `https://chrono-cross-gpt.floot.app/_api/mcp`, not just the handshake:
+  - `initialize` negotiated protocol `2025-11-25` (HTTP 200).
+  - `notifications/initialized` returned HTTP 202.
+  - `tools/list` returned both `read_public_page` and `get_browser_capabilities` (HTTP 200).
+  - `get_browser_capabilities` was actually invoked and returned the expected capability report (HTTP 200).
+  - `read_public_page` was actually invoked against `https://example.com/`; the response contained `Example Domain`, reported `resultStatus=returned`, and was not truncated (HTTP 200).
+- Added production negative/security checks:
+  - Missing Bearer token rejected as `authentication_required`.
+  - Deliberately incorrect Bearer token rejected as `authentication_required`.
+  - Literal private IP URL `http://127.0.0.1/` rejected before reader access.
+  - `file:///etc/passwd` rejected; only HTTP/HTTPS URLs are accepted.
+  - URL exceeding the 2048-character limit rejected.
+  - Test output explicitly reports `credentialPrinted: false`; the valid production token is not logged or copied into source.
+- The workflow now runs automatically on pushes that modify the MCP smoke-test script or its workflow file, as well as remaining manually dispatchable.
+- Verified successful GitHub Actions production runs:
+  - #15: real tool-call checks, success — https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39243996154
+  - #17: authentication rejection and private-IP blocking, success — https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39244162095
+  - #18: additional file-URL and oversized-URL rejection, success — https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39244332173
+  - Run #16 failed because the smoke test expected a literal HTTP 401 in the handler's JSON status while Floot's documented edge bridge returns HTTP 200 internally with `x-floot-status: 401`. The assertion was corrected to accept the actual bridge contract; the next run #17 passed. This was a test expectation mismatch, not an authentication bypass.
+- Current Floot project validation after these GitHub-only changes: all 6 regular spec files passed, 0 failed; both hook specs passed, 0 failed; TypeScript typecheck clean.
+- Live production `GET /_api/mcp-status`: HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`. The endpoint intentionally does not claim an external host is connected.
+- **Verified complete:** production MCP protocol handshake, both real tool calls, expected public-page text extraction, rejection of missing/wrong credentials, and the three URL security/validation cases listed above.
+- **Still incomplete / blocked:** ChatGPT itself is not connected to this MCP server; the app does not remotely control browser tabs, click/type, inspect arbitrary live DOM, or share the ChatGPT browser session. A compatible MCP host must be separately configured using its secure credential store. Do not claim direct ChatGPT integration or remote browser automation until separately implemented and tested.
+- No Floot production publish was performed as part of these smoke-test updates; they change GitHub test code/workflow only. The existing Floot app remains published at https://chrono-cross-gpt.floot.app.
+- Next: pursue the no-cost, supported integration path and separately define a safe architecture for actual browser-session control; do not add a pretend command queue or mark host connection as connected without an end-to-end verified host call.
