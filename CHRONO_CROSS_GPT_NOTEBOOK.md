@@ -838,3 +838,13 @@ Reviewed the durable project memo, current manual-only production handshake work
 - **Still incomplete / blocked:** ChatGPT itself is not connected to this MCP server; the app does not remotely control browser tabs, click/type, inspect arbitrary live DOM, or share the ChatGPT browser session. A compatible MCP host must be separately configured using its secure credential store. Do not claim direct ChatGPT integration or remote browser automation until separately implemented and tested.
 - No Floot production publish was performed as part of these smoke-test updates; they change GitHub test code/workflow only. The existing Floot app remains published at https://chrono-cross-gpt.floot.app.
 - Next: pursue the no-cost, supported integration path and separately define a safe architecture for actual browser-session control; do not add a pretend command queue or mark host connection as connected without an end-to-end verified host call.
+
+
+## Follow-up — 2026-10-19: expanded production URL-validation regression checks
+
+- Extended the real production MCP smoke test with three additional negative cases: non-canonical loopback IPv4 spelling (`http://127.1/`), embedded URL credentials (`https://user:password@example.com/`), and a non-standard port (`https://example.com:8443/`).
+- GitHub Actions run #19 succeeded: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39244631641
+- The production report confirms all checks passed: missing/wrong token rejected; literal and non-canonical loopback IPs rejected; `file:` scheme rejected; embedded URL credentials rejected; non-standard port rejected; oversized URL rejected. Both MCP tools still execute successfully, including reading the public Example Domain fixture. The valid token was not printed.
+- Commit: `9f00674a0e82e36845c4a478412c2868243238d7` (`Test additional MCP reader URL security edge cases`).
+- This changes only the GitHub smoke-test script; no Floot production code or live app deployment was changed. Floot regular tests (6/6), hook tests (2/2), and TypeScript typecheck remain clean from the prior validation.
+- **Status remains INCOMPLETE overall:** ChatGPT is not connected as an MCP host, and MCP currently provides read-only public-page extraction/capability reporting rather than remote browser control. Next work should focus on capabilities that can be safely implemented and validated within the published app, without representing an MCP smoke test as proof of ChatGPT integration.
