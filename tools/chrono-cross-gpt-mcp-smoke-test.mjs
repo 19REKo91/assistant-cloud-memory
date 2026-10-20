@@ -251,3 +251,4 @@ try {
 // No-op marker added 2026-10-20 to trigger the existing post-deploy production handshake workflow.
 // Second marker: rerun the production handshake after the diagnostics-copy publish.
 // Third marker: verify the date-based diagnostics-copy publish.
+// Fourth marker: post-publish MCP verification after Back/Forward visibility polish.
