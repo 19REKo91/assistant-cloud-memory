@@ -247,3 +247,5 @@ try {
   console.error(JSON.stringify({ ok: false, stage: "network_or_protocol", errorType: error instanceof Error ? error.name : "unknown", message: "Request failed. Check TLS/network access and the server response; no request headers or credentials were printed.", credentialPrinted: false }, null, 2));
   process.exit(1);
 }
+
+// No-op marker added 2026-10-20 to trigger the existing post-deploy production handshake workflow.
