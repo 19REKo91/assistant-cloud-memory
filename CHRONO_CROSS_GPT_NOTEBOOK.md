@@ -872,3 +872,7 @@ Reviewed the durable project memo, current manual-only production handshake work
 - MCP run #19 remains the last recorded production protocol test. It was not rerun in this continuation because a new production deployment has not been confirmed. Do not describe it as a post-deployment test.
 - Notebook status: this entry is being appended through GitHub Contents API; verify the resulting commit and re-fetch the file after the write.
 - Still unavailable/unverified: OCR, rendered DOM reading, full browser automation, and a direct ChatGPT-to-MCP host session.
+
+- Publication retry succeeded on 2026-10-20: Floot publish job `963eafd9-633f-44ab-a078-b551d3ca2191` completed with status `succeeded`; live URL remains https://chrono-cross-gpt.floot.app. Published web-only (mobile:false), no paid features or native build allowance used.
+- After successful publish, the available GitHub connector exposes no workflow-dispatch action. Therefore a fresh post-deployment MCP workflow run could not be triggered through the available Actions tools in this session. Run #19 is still only the last verified earlier run; do not treat it as post-deployment verification. Next action: trigger the existing production MCP smoke test manually in GitHub Actions (if available) or add a permitted workflow-dispatch route, then inspect its result.
+- Notebook updated again after deployment; verify commit and content after write.
