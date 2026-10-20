@@ -249,3 +249,4 @@ try {
 }
 
 // No-op marker added 2026-10-20 to trigger the existing post-deploy production handshake workflow.
+// Second marker: rerun the production handshake after the diagnostics-copy publish.
