@@ -861,3 +861,14 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Found stale diagnostics text in `pages/_index.tsx`: the UI still labels production MCP protocol status as “STALE · RUN #6” and describes run #6, while GitHub Actions run #19 has since passed against the current published MCP endpoint. This is a UI/source consistency issue to fix only after the Floot build-action quota resets, then rerun tests/typecheck and verify the published deployment status before changing the wording to a newer run.
 - Floot validation attempt on 2026-10-19 was rejected with “Daily build limit reached”; tool reports reset at `2026-10-20T07:00:00Z` (10:00 Asia/Baghdad). The attempted test/typecheck did not execute, so no new validation result is claimed. No deployment or checkpoint was created.
 - **Status: INCOMPLETE.** Next when quota permits: (1) correct the stale MCP status copy based on verified current deployment evidence; (2) add clearer reader-result feedback for empty/metadata-only output; (3) add tests for any behavior changed; (4) run relevant reader specs and typecheck; (5) publish only if a production code change is approved/needed, then rerun the production smoke test.
+
+
+## Verified continuation — 2026-10-20 (UTC)
+- Re-read current Floot source. A retry of the earlier MCP bridge-copy replacement returned “string not found”; re-reading confirmed the UI source already contains the corrected wording: run #19 passed on 2026-10-20, dated CI result only, not a live connection check. This indicates that earlier attempted edit appears to have landed despite the prior tool error; treat source as authoritative.
+- Successfully edited `pages/_index.tsx` to clarify both local-PDF empty-text messages. They now distinguish possible scanned/image-only, empty, or unsupported PDFs and explicitly say OCR was not attempted. Floot source version after edits: `1792481847019` (latest write response).
+- Created Floot checkpoint `7d4ea8bf-31c5-4e85-8e1c-692ce27115d1`, titled “Clarified empty PDF extraction and MCP diagnostics”.
+- Validation after changes: 6 regular spec files passed, 0 failed; both hook specs (`useDebounce`, `useMediaQuery`) passed; full TypeScript typecheck clean.
+- Changes are saved in Floot source and checkpointed. Production publication has not yet been performed in this continuation, so the public app may still show the previous PDF messages. Publish only after confirming free-plan publish status and then verify the live UI.
+- MCP run #19 remains the last recorded production protocol test. It was not rerun in this continuation because a new production deployment has not been confirmed. Do not describe it as a post-deployment test.
+- Notebook status: this entry is being appended through GitHub Contents API; verify the resulting commit and re-fetch the file after the write.
+- Still unavailable/unverified: OCR, rendered DOM reading, full browser automation, and a direct ChatGPT-to-MCP host session.
