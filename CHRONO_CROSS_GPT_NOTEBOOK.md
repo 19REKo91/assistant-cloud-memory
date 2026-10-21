@@ -902,3 +902,14 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Published the web app successfully to https://chrono-cross-gpt.floot.app (no native build or paid feature used).
 - Post-publish authenticated production MCP smoke test run **#23**, ID `39388828908`, completed **success**: https://github.com/19REKo91/assistant-cloud-memory/actions/runs/39388828908. Logs verified `ok: true`, MCP protocol `2025-11-25`, initialize HTTP 200, initialized notification HTTP 202, tools/list HTTP 200, expected tools `read_public_page` and `get_browser_capabilities`, missing/wrong token rejection, public-page text extraction, and `credentialPrinted: false`.
 - Overall status remains **INCOMPLETE**: direct ChatGPT host connection is not verified, active host sessions are not tracked, full DOM/browser automation is not implemented, and OCR is not available. The UI controls have clearer visibility, but the user still needs to test Back/Forward visually on-device to confirm the experience.
+
+
+## Follow-up — 2026-10-21: local text-file reading added (Back/Forward deliberately untouched)
+- User explicitly asked to continue improving CHRONO CROSS GPT while leaving the Back/Forward defect alone for now. No Back/Forward code was changed in this work unit.
+- Added `helpers/localTextReader.tsx` and `helpers/localTextReader.spec.tsx`: the UI can read TXT, Markdown, CSV, JSON, LOG, XML, YAML, and TOML files directly in the browser, with a 2 MiB limit. It rejects unsupported extensions, empty files, oversized files, and blank content. File contents are read using the browser File API and are not uploaded to the app server or external reader.
+- Updated `pages/_index.tsx` with a TXT control and local reader panel; updated `endpoints/mcp_POST.ts` capability reporting and `helpers/mcpEndpoint.spec.tsx` to report/test this capability accurately.
+- Validation before publication: 8 regular spec files passed, 0 failed; both hook specs passed, 0 failed; TypeScript typecheck clean.
+- Floot checkpoint: `ee722c3a-9a76-445f-9974-9162347802c7`, “Add private local text and document reading”.
+- Published successfully to the existing free-plan subdomain `https://chrono-cross-gpt.floot.app` (publish job `5ee1e3dd-18df-4f01-ba80-17677c9160a2`, status succeeded).
+- Post-publish smoke check fetched the production homepage: HTTP 200; HTML contains the TXT reader control marker and CHRONO CROSS GPT title. This confirms the deployed page contains the feature entry point, not a full mobile interactive end-to-end file selection test.
+- **Status:** local text-like file reading is implemented and unit-tested; production publication is verified. DOCX/PPTX/XLSX readers, OCR, audio/video transcription, browser-rendered DOM extraction, and remote browser automation remain unimplemented. Back/Forward remains intentionally deferred and unresolved. No paid features or upgrades were used.
