@@ -950,3 +950,11 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Added regression coverage proving the MCP tool rejects a malformed pairing UUID and a literal loopback navigation target (`http://127.0.0.1/`) before attempting realtime dispatch.
 - Reran verification after this test addition: 8 regular spec files passed, 2 hook spec files passed, TypeScript typecheck clean.
 - Floot checkpoint: `8a1e0963-7984-4512-897e-c513596785a7` (“Added browser-control safety tests”). The app is still **not published**; production remains unchanged.
+
+
+### MCP protocol contract clarification — 2026-10-22
+- Corrected the `initialize` response instructions, which previously incorrectly described the server as read-only and said it did not control a browser tab. It now accurately describes the scoped paired-workspace navigation/tab bridge and explicitly says realtime delivery is not execution acknowledgement.
+- Extended the protocol test to assert `control_browser_workspace` appears in `tools/list`.
+- Verification after edits: 8 regular spec files passed, 2 hook spec files passed, TypeScript typecheck clean.
+- Floot checkpoint: `50bb8e28-3326-4f4d-b628-4e6ec29578a7` (“Clarified MCP browser-control contract”). Not published; live deployment unchanged.
+- Next blocker remains execution acknowledgement. Do not claim remote browser commands are executed until a real open-preview command is confirmed end-to-end.
