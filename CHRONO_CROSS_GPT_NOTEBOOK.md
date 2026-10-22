@@ -939,3 +939,8 @@ Reviewed the durable project memo, current manual-only production handshake work
 - **Not published.** The live app remains at `https://chrono-cross-gpt.floot.app` and has not been updated with these source changes. No paid feature, upgrade, or native build was used.
 - **Still incomplete / unverified:** the MCP bridge confirms realtime delivery but does not receive an execution acknowledgement; live end-to-end command execution has not yet been tested against an open workspace; DOM click/type automation and direct ChatGPT host integration remain unavailable/unverified. Do not mark the bridge complete or the host connected. Keep Back/Forward out of scope unless the user reopens it.
 - Next steps: add a secure, observable command-execution acknowledgement/status path; test a real command against an open preview; then update setup instructions and rerun the full checks. Do not publish without explicit user approval, and never expose `CHRONO_MCP_TOKEN`.
+
+
+### Documentation checkpoint — 2026-10-22
+- Updated and re-read the in-project MCP setup guide so it now lists all three current tools and accurately explains the pairing UUID, supported workspace actions, and delivery-only acknowledgement limitation.
+- Created follow-up Floot checkpoint `e55fb3fb-4b6c-4490-b943-0e8c5c2495a8` (“Documented MCP workspace control limits”). This checkpoint groups the setup-guide and handoff-note edits; it does not include a production publish.
