@@ -19,7 +19,7 @@ const preload = join(directory, "mock-fetch.mjs");
 const mockSource = [
   "const expectedToken = process.env.CHRONO_MCP_TOKEN;",
   "const scenario = process.env.CHRONO_MCP_SMOKE_SCENARIO || 'success';",
-  "const reject = (message) => { if (process.env.CHRONO_MCP_SMOKE_DEBUG === '1') console.error('MOCK_FETCH_REJECTED:', message); throw new Error(message); };"
+  "const reject = (message) => { if (process.env.CHRONO_MCP_SMOKE_DEBUG === '1') console.error('MOCK_FETCH_REJECTED:', message); throw new Error(message); };",
   "globalThis.fetch = async (input, init = {}) => {",
   "  const url = new URL(String(input));",
   "  if (url.origin !== 'https://chrono-cross-gpt.floot.app' || url.pathname !== '/_api/mcp') reject('Unexpected destination in test mock');",
