@@ -958,3 +958,31 @@ Reviewed the durable project memo, current manual-only production handshake work
 - Verification after edits: 8 regular spec files passed, 2 hook spec files passed, TypeScript typecheck clean.
 - Floot checkpoint: `50bb8e28-3326-4f4d-b628-4e6ec29578a7` (“Clarified MCP browser-control contract”). Not published; live deployment unchanged.
 - Next blocker remains execution acknowledgement. Do not claim remote browser commands are executed until a real open-preview command is confirmed end-to-end.
+
+
+## Session log — 2026-10-22 (UTC): persisted browser-control acknowledgements
+
+### Implemented in the Floot working copy — not published
+- Diagnosed the MCP browser-control gap: `control_browser_workspace` previously returned after Floot Realtime reported delivery, while the UI had no path to confirm acceptance/rejection. The generic browser-to-server `_realtime/send` endpoint remains disabled; this work did not enable it.
+- Provisioned a Floot-managed Postgres database and created `browser_control_commands` with action/status constraints, command/session identifiers, a SHA-256 hash of a one-use acknowledgement token, result JSON, delivery count, timestamps and expiry. The generated typed database helper now includes `BrowserControlCommands`.
+- Added `helpers/browserControlAck.tsx`, `endpoints/browser-control-ack_POST.schema.ts`, and `endpoints/browser-control-ack_POST.ts`. The public POST endpoint validates the payload, limits the request size, checks the Origin when present, and permits a single atomic state transition only when command ID, paired session ID, one-use token hash, pending status and expiry all match. It never stores the raw acknowledgement token.
+- Updated `endpoints/mcp_POST.ts` to mint a per-command acknowledgement token, store only its hash, publish the command, wait up to seven seconds for a reply, and report acknowledged/rejected/timeout instead of treating delivery as execution. A navigation acknowledgement means the CHRONO workspace accepted the navigation request; it does **not** verify the external website completed loading or is usable. Commands with no Realtime listener or publishing failures are recorded distinctly.
+- Updated `pages/_index.tsx` to validate command identifiers, handle command outcomes, and post accepted/rejected acknowledgement responses to the new endpoint. The Back/Forward UI and logic were not changed.
+- Updated `endpoints/mcp_POST.schema.ts` and `static/chrono-mcp-setup.md` to document the new semantics and security boundary. Added `helpers/browserControlAck.spec.tsx` with POST-only, cross-origin, malformed-payload and body-size tests.
+
+### Verification
+- TypeScript typecheck: **clean**.
+- Standard Floot tests: **9 spec files passed, 0 failed**.
+- Hook tests: **2 spec files passed, 0 failed**. Total verified locally in Floot test harness: 11 spec files, 0 failures.
+- Confirmed `browser_control_commands` exists in the preview database.
+- Preview API route check: a malformed POST to `/_api/browser-control-ack` returned HTTP 400 as expected after setting `flootPublic = true`; GET returned 404, consistent with this being a POST route.
+- End-to-end persistence check: inserted a synthetic, short-lived command row using only a hashed test token; POSTed the matching test acknowledgement to the preview API and received HTTP 200 with `{"ok":true,"status":"acknowledged"}`. Queried the row and confirmed `status=acknowledged` and the expected detail; deleted that synthetic row and queried again to verify it was gone. No test row remains.
+- Full MCP → Realtime → currently open browser UI → acknowledgement round-trip remains **unverified** because no responsive Floot editor/preview window was available in this session. This database-backed endpoint test does not substitute for that test.
+- The current production deployment was **not republished**. Source changes and database-backed acknowledgement code must still be validated against a live open preview before publish. An attempted Floot checkpoint was blocked because the account reached its daily build-action quota, so no new checkpoint was created in this session.
+- Direct automatic integration with the current ChatGPT Android Free session remains **unverified / host setup required**. DOM click/type automation, controlling Android Chrome or other apps, website login cookies and page-load confirmation remain unimplemented.
+
+### Next actions
+1. After Floot tool quota becomes available, open/focus the project preview and run a true command round-trip using an explicitly paired workspace; verify both accepted and rejected cases, timeout behavior, and no-listener behavior.
+2. Add or run a focused test for one-time token replay rejection and expiry, then rerun typecheck + standard/hook specs.
+3. Create a Floot checkpoint once its build-action quota resets.
+4. Update this notebook with the result of the real UI round-trip. Do not publish until approved and validated. Keep ChatGPT-host setup separate; do not claim a direct ChatGPT connection unless actually configured and verified.
