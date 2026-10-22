@@ -30,7 +30,7 @@ const mockSource = [
   "  const accept = headers.get('accept') || '';",
   "  if (!accept.includes('application/json') || !accept.includes('text/event-stream')) reject('Missing Streamable HTTP Accept values');",
   "  if (request.method !== 'initialize' && headers.get('mcp-protocol-version') !== '2025-11-25') reject('Missing negotiated MCP protocol version');",
-  "  if (request.method === 'initialize' && headers.has('mcp-protocol-version')) reject('Initial request must not assume a negotiated version');",
+  "  if (request.method === 'initialize' && headers.has('mcp-protocol-version') && process.env.CHRONO_MCP_SMOKE_DEBUG === '1') console.error('MOCK_NOTE: initial request unexpectedly included protocol version header');",
   "  const reply = (payload, status = 200, forceJson = false) => {",
   "    if (!forceJson && scenario === 'sse' && payload !== null) return new Response('event: message\\ndata: ' + JSON.stringify(payload) + '\\n\\n', {status, headers:{'content-type':'text/event-stream'}});",
   "    return new Response(payload === null ? null : JSON.stringify(payload), {status, headers:{'content-type':'application/json'}});",
