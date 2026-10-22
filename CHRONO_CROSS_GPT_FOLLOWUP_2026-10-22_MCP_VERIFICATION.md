@@ -43,3 +43,9 @@ Branch: `main`
 - Offline tests: **COMPLETE / PASS** for the current test harness.
 - Production MCP protocol and public-page smoke test: **COMPLETE / PASS** for the currently deployed two-tool endpoint.
 - Actual browser control and ChatGPT-session integration: **INCOMPLETE**; deployment and end-to-end evidence are still missing.
+
+## Client-integration boundary and current blocker (verified 2026-10-22)
+- The repository's `.vscode/mcp.json` is a VS Code MCP configuration using a password prompt. `.github/agents/chrono-cross-gpt-reader.agent.md` targets `github-copilot` and references the GitHub Copilot Agents secret `COPILOT_MCP_CHRONO_TOKEN`. These files configure VS Code / GitHub Copilot clients; they do not configure the user's ChatGPT Android app session.
+- The deployed server's verified tool list is still read-only: `read_public_page` and `get_browser_capabilities`. The unpublished browser-control implementation cannot become active in production until it is validated and deliberately published.
+- Floot confirmed the free account's daily build-action quota is exhausted and resets at **2026-10-23 07:00 UTC (10:00 AM Baghdad time)**. Read-only publish-status checking remains available; project code-reading/testing/editing actions are paused until reset. No paid action was taken and no production publish was attempted.
+- Until Floot actions reset, safe progress is limited to GitHub-side review and documentation. Next session should resume with the Floot preview round-trip test—not another change to Back/Forward—and must verify accepted/rejected/timeout/no-listener outcomes before considering publication.
