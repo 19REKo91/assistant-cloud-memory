@@ -19,17 +19,18 @@ const preload = join(directory, "mock-fetch.mjs");
 const mockSource = [
   "const expectedToken = process.env.CHRONO_MCP_TOKEN;",
   "const scenario = process.env.CHRONO_MCP_SMOKE_SCENARIO || 'success';",
+  "const reject = (message) => { if (process.env.CHRONO_MCP_SMOKE_DEBUG === '1') console.error('MOCK_FETCH_REJECTED:', message); throw new Error(message); };"
   "globalThis.fetch = async (input, init = {}) => {",
   "  const url = new URL(String(input));",
-  "  if (url.origin !== 'https://chrono-cross-gpt.floot.app' || url.pathname !== '/_api/mcp') throw new Error('Unexpected destination in test mock');",
-  "  if (init.redirect !== 'error') throw new Error('Client must refuse redirects when sending credentials');",
+  "  if (url.origin !== 'https://chrono-cross-gpt.floot.app' || url.pathname !== '/_api/mcp') reject('Unexpected destination in test mock');",
+  "  if (init.redirect !== 'error') reject('Client must refuse redirects when sending credentials');",
   "  const request = JSON.parse(String(init.body));",
   "  const headers = new Headers(init.headers);",
   "  const authorization = headers.get('authorization');",
   "  const accept = headers.get('accept') || '';",
-  "  if (!accept.includes('application/json') || !accept.includes('text/event-stream')) throw new Error('Missing Streamable HTTP Accept values');",
-  "  if (request.method !== 'initialize' && headers.get('mcp-protocol-version') !== '2025-11-25') throw new Error('Missing negotiated MCP protocol version');",
-  "  if (request.method === 'initialize' && headers.has('mcp-protocol-version')) throw new Error('Initial request must not assume a negotiated version');",
+  "  if (!accept.includes('application/json') || !accept.includes('text/event-stream')) reject('Missing Streamable HTTP Accept values');",
+  "  if (request.method !== 'initialize' && headers.get('mcp-protocol-version') !== '2025-11-25') reject('Missing negotiated MCP protocol version');",
+  "  if (request.method === 'initialize' && headers.has('mcp-protocol-version')) reject('Initial request must not assume a negotiated version');",
   "  const reply = (payload, status = 200, forceJson = false) => {",
   "    if (!forceJson && scenario === 'sse' && payload !== null) return new Response('event: message\\ndata: ' + JSON.stringify(payload) + '\\n\\n', {status, headers:{'content-type':'text/event-stream'}});",
   "    return new Response(payload === null ? null : JSON.stringify(payload), {status, headers:{'content-type':'application/json'}});",
@@ -60,7 +61,7 @@ const mockSource = [
 writeFileSync(preload, mockSource);
 
 function run(scenario, includeToken = true) {
-  const env = { ...process.env, CHRONO_MCP_SMOKE_SCENARIO: scenario };
+  const env = { ...process.env, CHRONO_MCP_SMOKE_SCENARIO: scenario, CHRONO_MCP_SMOKE_DEBUG: "1" };
   env.CHRONO_MCP_TOKEN = includeToken ? dummyToken : "";
   return spawnSync(process.execPath, ["--import", preload, script], {
     encoding: "utf8",
