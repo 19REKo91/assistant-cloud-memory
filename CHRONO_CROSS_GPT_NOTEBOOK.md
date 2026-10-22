@@ -944,3 +944,9 @@ Reviewed the durable project memo, current manual-only production handshake work
 ### Documentation checkpoint — 2026-10-22
 - Updated and re-read the in-project MCP setup guide so it now lists all three current tools and accurately explains the pairing UUID, supported workspace actions, and delivery-only acknowledgement limitation.
 - Created follow-up Floot checkpoint `e55fb3fb-4b6c-4490-b943-0e8c5c2495a8` (“Documented MCP workspace control limits”). This checkpoint groups the setup-guide and handoff-note edits; it does not include a production publish.
+
+
+### Browser-control input safety tests — 2026-10-22
+- Added regression coverage proving the MCP tool rejects a malformed pairing UUID and a literal loopback navigation target (`http://127.0.0.1/`) before attempting realtime dispatch.
+- Reran verification after this test addition: 8 regular spec files passed, 2 hook spec files passed, TypeScript typecheck clean.
+- Floot checkpoint: `8a1e0963-7984-4512-897e-c513596785a7` (“Added browser-control safety tests”). The app is still **not published**; production remains unchanged.
