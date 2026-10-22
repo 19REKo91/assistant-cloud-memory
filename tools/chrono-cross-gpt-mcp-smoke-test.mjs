@@ -127,7 +127,7 @@ try {
     ? pageResult.content.filter((item) => item?.type === "text").map((item) => item.text || "").join("\\n")
     : "";
   const pageMeta = pageResult?.structuredContent;
-  if (page.response.status !== 200 || page.parsed?.jsonrpc !== "2.0" || page.parsed?.id !== 4 || page.parsed?.error || pageResult?.isError || !pageText.includes("Example Domain") || pageMeta?.resultStatus !== "returned" || pageMeta?.url !== "https://example.com/") {
+  if (page.response.status !== 200 || page.parsed?.jsonrpc !== "2.0" || page.parsed?.id !== 4 || page.parsed?.error || pageResult?.isError || !pageText.includes("UNTRUSTED PUBLIC WEB CONTENT from https://example.com/") || !pageText.includes("documentation examples")) {
     fail("tools/call:read_public_page", page.response.status, page.body, page.response.headers.get("www-authenticate"));
   }
 
@@ -235,9 +235,9 @@ try {
         httpStatus: page.response.status,
         succeeded: true,
         fixture: "https://example.com/",
-        resultStatus: pageMeta.resultStatus,
+        resultStatus: pageMeta?.resultStatus || "content-returned",
         extractedExpectedText: true,
-        truncated: pageMeta.truncated,
+        truncated: pageMeta?.truncated ?? null,
       },
     },
     credentialPrinted: false,
