@@ -99,7 +99,7 @@ try {
     fail("tools/list", listed.response.status, listed.body, listed.response.headers.get("www-authenticate"));
   }
   const toolNames = tools.map((tool) => tool?.name).filter((name) => typeof name === "string");
-  const expected = ["read_public_page", "get_browser_capabilities"];
+  const expected = ["read_public_page", "get_browser_capabilities", "control_browser_workspace"];
   const missing = expected.filter((name) => !toolNames.includes(name));
   if (missing.length) {
     console.error(JSON.stringify({ ok: false, stage: "tools/list", reason: "expected_tools_missing", missing, toolNames, credentialPrinted: false }, null, 2));
