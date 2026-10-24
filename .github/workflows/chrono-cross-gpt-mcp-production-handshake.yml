@@ -2,6 +2,12 @@ name: CHRONO CROSS GPT production MCP handshake
 
 on:
   workflow_dispatch:
+    inputs:
+      browser_session_id:
+        description: "UUID shown in the open CHRONO workspace Diagnostics panel; leave blank for protocol-only checks."
+        required: false
+        type: string
+        default: ""
   push:
     paths:
       - 'tools/chrono-cross-gpt-mcp-smoke-test.mjs'
@@ -40,4 +46,5 @@ jobs:
         if: steps.secret.outputs.configured == 'true'
         env:
           CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
+          CHRONO_BROWSER_SESSION_ID: ${{ inputs.browser_session_id }}
         run: node tools/chrono-cross-gpt-mcp-smoke-test.mjs
