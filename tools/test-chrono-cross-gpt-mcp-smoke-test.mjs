@@ -160,7 +160,7 @@ try {
     assert.equal(result.status, 1, combined);
     assert.ok(combined.includes('"stage": "tools/call:control_browser_workspace"'));
     assert.ok(combined.includes("Realtime delivery was confirmed"));
-    assert.ok(combined.includes("acknowledgementStatus\\\\\\\":\\\\\\\"timeout"));
+    assert.ok(combined.includes("Execution remains unverified."));
     assert.ok(!combined.includes('"ok": true'));
     assert.ok(!combined.includes(dummyToken));
     console.log("PASS browser control timeout: delivery without acknowledgement fails");
