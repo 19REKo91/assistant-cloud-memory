@@ -253,3 +253,5 @@ try {
 // Third marker: verify the date-based diagnostics-copy publish.
 // Fourth marker: post-publish MCP verification after Back/Forward visibility polish.
 // Fifth marker: re-run production MCP handshake after the offline test suite passed on 2026-10-22.
+
+// Production tool-list check after publishing the browser-control tool.
