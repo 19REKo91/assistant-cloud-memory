@@ -221,6 +221,34 @@ try {
     fail("security:blocked_nonstandard_port", unusualPort.response.status, unusualPort.body, unusualPort.response.headers.get("www-authenticate"));
   }
 
+  let browserControlTest = { status: "skipped", reason: "CHRONO_BROWSER_SESSION_ID was not supplied; protocol-only check." };
+  const browserSessionId = process.env.CHRONO_BROWSER_SESSION_ID || "";
+  if (browserSessionId) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(browserSessionId)) {
+      stop("CHRONO_BROWSER_SESSION_ID must be the UUID shown in the open CHRONO workspace Diagnostics panel.");
+    }
+    const control = await request("tools/call", 13, {
+      name: "control_browser_workspace",
+      arguments: { sessionId: browserSessionId, action: "navigate", url: "https://example.com/" },
+    }, init.parsed.result.protocolVersion);
+    const controlResult = control.parsed?.result;
+    if (control.response.status !== 200 || control.parsed?.jsonrpc !== "2.0" || control.parsed?.id !== 13 || control.parsed?.error || controlResult?.isError === true) {
+      fail("tools/call:control_browser_workspace", control.response.status, control.body, control.response.headers.get("www-authenticate"));
+    }
+    const controlMeta = controlResult?.structuredContent;
+    if (controlMeta?.acknowledged !== true || controlMeta?.acknowledgementStatus !== "acknowledged" || controlMeta?.action !== "navigate") {
+      fail("tools/call:control_browser_workspace:acknowledgement", control.response.status, control.body, control.response.headers.get("www-authenticate"));
+    }
+    browserControlTest = {
+      status: "acknowledged",
+      action: "navigate",
+      acknowledgementStatus: controlMeta.acknowledgementStatus,
+      deliveryCount: controlMeta.deliveryCount,
+      pageLoadVerified: controlMeta.pageLoadVerified === true,
+      commandId: controlMeta.commandId,
+    };
+  }
+
   console.log(JSON.stringify({
     ok: true,
     endpoint: endpoint.origin + endpoint.pathname,
@@ -229,6 +257,7 @@ try {
     toolsList: { httpStatus: listed.response.status, toolNames },
     authenticationChecks: { missingTokenRejected: true, wrongTokenRejected: true },
     securityChecks: { privateIpUrlRejected: true, noncanonicalLoopbackIpRejected: true, fileUrlRejected: true, embeddedCredentialsRejected: true, nonstandardPortRejected: true, oversizedUrlRejected: true },
+    browserControlTest,
     toolCalls: {
       getBrowserCapabilities: { httpStatus: capabilities.response.status, succeeded: true },
       readPublicPage: {
