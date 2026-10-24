@@ -39,7 +39,7 @@ const mockSource = [
   "  if (authorization !== 'Bearer ' + expectedToken) return new Response(JSON.stringify({error:'authentication_required'}), {status:401,headers:{'content-type':'application/json','www-authenticate':'Bearer realm=chrono-cross-gpt'}});",
   "  if (request.method === 'initialize') { const payload = {jsonrpc:'2.0',id:scenario === 'wrong_id' ? 999 : request.id,result:{protocolVersion:'2025-11-25',serverInfo:{name:scenario === 'wrong_server' ? 'unexpected-server' : 'chrono-cross-gpt',version:'0.2.0'},capabilities:{tools:{listChanged:false}}}}; return reply(payload); }",
   "  if (request.method === 'notifications/initialized') return new Response(null,{status:202});",
-  "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'}]; return reply({jsonrpc:'2.0',id:request.id,result:{tools}}); }",
+  "  if (request.method === 'tools/list') { const tools = scenario === 'missing_tool' ? [{name:'read_public_page'}] : [{name:'read_public_page'},{name:'get_browser_capabilities'},{name:'control_browser_workspace'}]; return reply({jsonrpc:'2.0',id:request.id,result:{tools}}); }",
   "  if (request.method === 'tools/call') {",
   "    const name = request.params?.name;",
   "    const args = request.params?.arguments || {};",
@@ -78,7 +78,7 @@ try {
     assert.equal(output.ok, true);
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
     assert.equal(output.initializedNotification.httpStatus, 202);
-    assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
+    assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities", "control_browser_workspace"]);
     assert.equal(output.toolCalls.getBrowserCapabilities.succeeded, true);
     assert.equal(output.toolCalls.readPublicPage.fixture, "https://example.com/");
     assert.equal(output.credentialPrinted, false);
@@ -92,7 +92,7 @@ try {
     const output = JSON.parse(result.stdout);
     assert.equal(output.ok, true);
     assert.equal(output.initialize.serverName, "chrono-cross-gpt");
-    assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities"]);
+    assert.deepEqual(output.toolsList.toolNames, ["read_public_page", "get_browser_capabilities", "control_browser_workspace"]);
     assert.equal(output.toolCalls.getBrowserCapabilities.succeeded, true);
     assert.equal(output.credentialPrinted, false);
     assert.ok(!result.stdout.includes(dummyToken));
