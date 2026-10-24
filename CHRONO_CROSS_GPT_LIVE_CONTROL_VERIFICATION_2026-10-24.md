@@ -39,3 +39,13 @@ Branch: `main`
 - Live browser command/acknowledgement round trip: **INCOMPLETE / FAIL (ack timeout; delivery count 1)**.
 - Direct ChatGPT host integration: **INCOMPLETE / NOT VERIFIED**.
 - No credentials were written into this memo.
+
+
+## Regression-test follow-up — 2026-10-24 (UTC)
+
+- Commit `9eff4f4c031633dfcc4eb9137bb35c75f882c643` moved `CHRONO_BROWSER_SESSION_ID` UUID validation before the first MCP request, so malformed session IDs are rejected without contacting production. Protocol-only production handshake passed: [run 40081430891](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081430891). The offline workflow also passed on that commit: [run 40081430862](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081430862).
+- Commit `ef6a0497642c61b9733b10870ef6a7bd8f027611` added offline mock cases for acknowledged navigation, acknowledgement timeout, explicit rejection, and invalid session IDs. Its first test run failed only because the timeout assertion over-escaped the expected JSON text: [run 40081454193](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081454193).
+- Fixed that assertion in commit `6e29ced9b8c1742c956d395c098d1e153e10eb1d`. The subsequent complete offline workflow passed: [run 40081486428](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081486428). The run validated workflow/config files and script syntax, then passed the mocked success, SSE, auth, response-ID, server-identity, missing-tool, ACK, timeout, rejection, invalid-session-ID, and missing/malformed-token cases.
+- These are **mocked regression tests plus a protocol-only live handshake**. They do not change the status of the real browser-control round trip. The last real live command test remains failed with `acknowledgementStatus=timeout`, `acknowledged=false`, and `deliveryCount=1`.
+- A fresh Floot tool refusal at 2026-10-24 09:17 UTC confirmed its daily build-action limit is still exhausted, with reset at `2026-10-25T07:00:00Z`. Floot source files and runtime diagnostics could not be inspected in this session; no Floot app code was changed or republished.
+- Next action after the Floot limit resets: inspect the current published-source parity, active realtime subscription/channel and event payload in `pages/_index.tsx`, command state transitions in `endpoints/mcp_POST.ts`, and ACK validation/response in `endpoints/browser-control-ack_POST.ts`; then make a targeted fix and verify one real command/ACK round trip. Do not mark complete before the live acknowledgement succeeds.
