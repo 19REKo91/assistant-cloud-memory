@@ -46,6 +46,5 @@ jobs:
         if: steps.secret.outputs.configured == 'true'
         env:
           CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
-          # One-shot end-to-end verification for the currently paired workspace; remove after this run.
-          CHRONO_BROWSER_SESSION_ID: ${{ inputs.browser_session_id || '5eda4c31-e36d-445f-bf83-049e13594ebc' }}
+          CHRONO_BROWSER_SESSION_ID: ${{ inputs.browser_session_id }}
         run: node tools/chrono-cross-gpt-mcp-smoke-test.mjs
