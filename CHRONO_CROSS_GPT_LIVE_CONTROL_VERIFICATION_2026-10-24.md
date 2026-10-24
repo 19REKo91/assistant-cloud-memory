@@ -26,7 +26,7 @@ Branch: `main`
 - `80c9b8816931736db144800f3c6c9495d9c8425d` — removed temporary session fallback.
 
 ## Remaining blockers / next steps
-1. Poll the current post-revert runs for commit `80c9b8816931736db144800f3c6c9495d9c8425d`; expect protocol-only handshake and offline tests to pass without a session ID.
+1. **PASS after cleanup:** post-revert production handshake [run 40081125388](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081125388) and offline suite [run 40081125432](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081125432) both succeeded on commit `80c9b8816931736db144800f3c6c9495d9c8425d`. The temporary session fallback is absent; this successful handshake was protocol-only.
 2. Inspect the live app's browser-control session generation, realtime subscription lifecycle, and acknowledgement endpoint. The failed live test needs a root-cause investigation; do not blindly retry commands.
 3. Verify the actual workspace UUID and that the published app has the current listener/ACK implementation. Delivery count 1 alone is not proof the UI callback executed.
 4. Once the bridge is fixed, rerun with the UUID supplied through the workflow input and require an explicit acknowledgement.
