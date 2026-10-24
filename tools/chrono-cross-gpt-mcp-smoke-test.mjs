@@ -14,6 +14,11 @@ if (typeof token !== "string" || token.length < 32 || /\s/.test(token)) {
   stop("CHRONO_MCP_TOKEN is missing or malformed. Set it in a secure environment; do not put it in chat, a URL, source control, or a command that is saved in shell history.");
 }
 
+const browserSessionId = process.env.CHRONO_BROWSER_SESSION_ID || "";
+if (browserSessionId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(browserSessionId)) {
+  stop("CHRONO_BROWSER_SESSION_ID must be the UUID shown in the open CHRONO workspace Diagnostics panel.");
+}
+
 const endpoint = new URL(ENDPOINT_TEXT);
 if (endpoint.protocol !== "https:" || endpoint.hostname !== "chrono-cross-gpt.floot.app" || endpoint.pathname !== "/_api/mcp") {
   stop("Refusing to send credentials to an endpoint outside the verified CHRONO CROSS GPT production origin.");
@@ -222,11 +227,7 @@ try {
   }
 
   let browserControlTest = { status: "skipped", reason: "CHRONO_BROWSER_SESSION_ID was not supplied; protocol-only check." };
-  const browserSessionId = process.env.CHRONO_BROWSER_SESSION_ID || "";
   if (browserSessionId) {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(browserSessionId)) {
-      stop("CHRONO_BROWSER_SESSION_ID must be the UUID shown in the open CHRONO workspace Diagnostics panel.");
-    }
     const control = await request("tools/call", 13, {
       name: "control_browser_workspace",
       arguments: { sessionId: browserSessionId, action: "navigate", url: "https://example.com/" },
