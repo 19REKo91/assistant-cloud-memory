@@ -108,3 +108,12 @@ Branch: `main`
 - Rechecked publish status: app remains published at `https://chrono-cross-gpt.floot.app`; plan is **free**; no publish or paid action was performed.
 - Retried the supported live DOM runner; it reported no open Floot tab picked up the code before timeout. Therefore the current owner-session UUID, live command delivery, and matching ACK remain **NOT VERIFIED**. This tool failure does not prove a source defect.
 - **Next step:** open the CHRONO preview in Floot and keep that tab in the foreground, then retry the read-only DOM/session validation. Do not send a command, change `hostConnection`, or publish until the current session is verified and an actual matching ACK is observed.
+
+
+## User-provided workspace snapshot — 2026-10-25 (UTC)
+
+- The user supplied a fresh text snapshot of the CHRONO workspace showing the browser view on `example.com`, Diagnostics visible, Realtime browser bridge `CONNECTED`, MCP token configuration `CONFIGURED`, production protocol label `STALE · RUN #19 · 2026-10-20`, and ChatGPT host connection `HOST SETUP REQUIRED`.
+- The snapshot visibly contains a pairing ID in UUID format, but this is user-provided screen text, not a fresh read from the running app DOM or localStorage. The value was not copied into this memo.
+- Retried the canonical live DOM runner after receiving the snapshot; it returned `no browser picked up the code within the timeout`, indicating the tool could not reach the user's active Floot tab. No command was sent, no code changed, and no publish occurred.
+- Current-session localStorage match, command execution, and matching stored ACK remain **NOT VERIFIED**. The displayed Realtime `CONNECTED` status is not proof of ChatGPT host connection. Keep `hostConnection=not_verified`.
+- **Next action:** restore the Floot editor preview tab to the foreground so the canonical runner can execute inside that tab. Then validate the displayed pairing ID against the page's own localStorage in-place, and only after that use an authorized test route that can return a matching ACK without writing the session ID to public files.
