@@ -23,7 +23,7 @@ jobs:
         id: secret
         shell: bash
         env:
-          CHRONO_MCP_TOKEN: \${{ secrets.CHRONO_MCP_TOKEN }}
+          CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
         run: |
           if [ -n "$CHRONO_MCP_TOKEN" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
@@ -56,5 +56,5 @@ jobs:
       - name: Run live production command/ACK round trip and negative cases
         if: steps.secret.outputs.configured == 'true'
         env:
-          CHRONO_MCP_TOKEN: \${{ secrets.CHRONO_MCP_TOKEN }}
+          CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
         run: node tools/chrono-cross-gpt-mcp-live-control-test.mjs
