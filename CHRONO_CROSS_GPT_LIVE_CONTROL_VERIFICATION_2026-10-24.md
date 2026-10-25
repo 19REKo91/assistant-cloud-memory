@@ -126,3 +126,17 @@ Branch: `main`
 - This establishes the exact check needed next, but does **not** establish the value or state in the owner's active browser. A storage-blocked/in-memory fallback or a stale tab could produce a session mismatch, but neither is confirmed as the cause.
 - No app source was changed, no publish occurred, and no session ID or secret was read into the memo. Personal-session command/ACK and direct ChatGPT-host attachment remain **NOT VERIFIED**; keep `hostConnection=not_verified`.
 - **Next action:** make the Floot editor preview available in the foreground so the canonical runner can read the live page. It must compare the Diagnostics session ID against the current localStorage entry in-place and return only a match boolean plus storage availability; do not print the ID. Send no command until that check succeeds.
+
+
+## Follow-up server-side verification — 2026-10-25 (UTC, continued)
+
+- Live production checks were run without reading, printing, or transmitting the configured bearer secret:
+  - `GET /_api/mcp-status`: HTTP 200; `tokenConfigured=true`; `hostConnection=not_verified`.
+  - `POST /_api/mcp` `initialize` with no Authorization header: HTTP 401 with `WWW-Authenticate: Bearer realm="chrono-cross-gpt"`.
+  - The same request with a deliberately invalid test bearer: HTTP 401 with the same challenge. Neither response echoed the credential.
+- Floot regression verification on current project source version `1792659934587`: all 9 standard spec files passed, 0 failed; both hook spec files passed, 0 failed; TypeScript typecheck clean.
+- Read-only database inspection confirms `public.browser_control_commands` exists. Aggregate status counts returned one `acknowledged`, one `rejected`, and one `timed_out` row. This is corroborating historical test state, not a new command and not proof about the owner's currently open browser session.
+- Recent editor/runtime request logs include successful `mcp-status` and Realtime-token responses. One editor-side `mcp-status` request was aborted, and some browser-side timings were much longer than the server-side request durations; the logs alone do not prove the root cause.
+- The published project remains live at the same URL on the free plan. No app source was changed and nothing was republished.
+- A fresh read of the owner's current browser pairing ID was not performed: the supported browser-runner path had recently been blocked by its safety checks. No live command was sent, and the personal-session command/ACK remains **NOT VERIFIED**. Direct ChatGPT-host attachment remains **NOT VERIFIED / HOST SETUP REQUIRED**. Keep `hostConnection=not_verified`.
+- **Next step:** resume a foregrounded editor/preview with an available supported inspection path; compare the current Diagnostics pairing to the active page session without printing either value; only then run an explicitly authorized navigate test and require its matching persisted ACK. Do not retry the same blocked DOM-reading script unchanged, and do not publish unless a proven defect needs a code change.
