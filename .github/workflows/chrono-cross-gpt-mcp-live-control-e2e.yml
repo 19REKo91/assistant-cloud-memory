@@ -1,0 +1,60 @@
+name: CHRONO CROSS GPT live browser-control E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/chrono-cross-gpt-mcp-live-control-test.mjs"
+      - ".github/workflows/chrono-cross-gpt-mcp-live-control-e2e.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  live-control-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check whether the secure test secret exists
+        id: secret
+        shell: bash
+        env:
+          CHRONO_MCP_TOKEN: \${{ secrets.CHRONO_MCP_TOKEN }}
+        run: |
+          if [ -n "$CHRONO_MCP_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "Live E2E can run; secret value is not printed."
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipped live E2E because repository Actions secret CHRONO_MCP_TOKEN is not configured."
+          fi
+
+      - name: Set up Node.js
+        if: steps.secret.outputs.configured == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright test dependency
+        if: steps.secret.outputs.configured == 'true'
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.55.0
+
+      - name: Install Chromium and required system packages
+        if: steps.secret.outputs.configured == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate live test script
+        if: steps.secret.outputs.configured == 'true'
+        run: node --check tools/chrono-cross-gpt-mcp-live-control-test.mjs
+
+      - name: Run live production command/ACK round trip and negative cases
+        if: steps.secret.outputs.configured == 'true'
+        env:
+          CHRONO_MCP_TOKEN: \${{ secrets.CHRONO_MCP_TOKEN }}
+        run: node tools/chrono-cross-gpt-mcp-live-control-test.mjs
