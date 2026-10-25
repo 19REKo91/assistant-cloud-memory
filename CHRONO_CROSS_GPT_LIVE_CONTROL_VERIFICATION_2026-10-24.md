@@ -98,3 +98,13 @@ Branch: `main`
 - A second read-only DOM check intended to validate the pairing ID against the browser's current localStorage and capture the diagnostics labels queued, but the browser disconnected mid-execution before returning a result. Therefore the UUID-to-localStorage match and a command/ACK round trip in the owner's own tab remain **NOT VERIFIED**.
 - No app source was changed and no deployment was made. Keep hostConnection=not_verified; the visible CONNECTED status refers only to the app's Realtime bridge, not ChatGPT host connectivity.
 - **Next action:** bring the Floot editor/preview tab to the foreground again and rerun the read-only DOM check. If it remains connected, validate the session ID in-place and use an explicitly authorized MCP test path; do not put the ID or any bearer secret in a public file. Do not claim the personal-session end-to-end test passed until an actual command is accepted/rejected by the workspace and the MCP call receives its matching stored acknowledgement.
+
+
+## Superpowers verification follow-up — 2026-10-25 (UTC)
+
+- Invoked the Superpowers systematic-debugging workflow. No source changes were made because the live-session failure could not be reproduced while the user's Floot editor tab was unavailable.
+- Re-ran the targeted Floot Jasmine suite: `helpers/mcpEndpoint.spec.tsx`, `helpers/browserControlAck.spec.tsx`, and `helpers/mcpStatusEndpoint.spec.tsx` — **3 passed, 0 failed**.
+- Re-ran targeted TypeScript checks for the page, session helper, realtime channel/provider, MCP endpoint, and ACK endpoint — **clean**.
+- Rechecked publish status: app remains published at `https://chrono-cross-gpt.floot.app`; plan is **free**; no publish or paid action was performed.
+- Retried the supported live DOM runner; it reported no open Floot tab picked up the code before timeout. Therefore the current owner-session UUID, live command delivery, and matching ACK remain **NOT VERIFIED**. This tool failure does not prove a source defect.
+- **Next step:** open the CHRONO preview in Floot and keep that tab in the foreground, then retry the read-only DOM/session validation. Do not send a command, change `hostConnection`, or publish until the current session is verified and an actual matching ACK is observed.
