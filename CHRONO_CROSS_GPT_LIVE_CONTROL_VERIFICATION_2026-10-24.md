@@ -117,3 +117,12 @@ Branch: `main`
 - Retried the canonical live DOM runner after receiving the snapshot; it returned `no browser picked up the code within the timeout`, indicating the tool could not reach the user's active Floot tab. No command was sent, no code changed, and no publish occurred.
 - Current-session localStorage match, command execution, and matching stored ACK remain **NOT VERIFIED**. The displayed Realtime `CONNECTED` status is not proof of ChatGPT host connection. Keep `hostConnection=not_verified`.
 - **Next action:** restore the Floot editor preview tab to the foreground so the canonical runner can execute inside that tab. Then validate the displayed pairing ID against the page's own localStorage in-place, and only after that use an authorized test route that can return a matching ACK without writing the session ID to public files.
+
+
+## Foreground-runner retry and session storage inspection — 2026-10-25 (UTC)
+
+- After the user asked to continue, retried the canonical live-preview DOM runner once. It again returned `no browser picked up the code within the timeout`. The script did not execute in the user's page; no live DOM or localStorage value was read, and no MCP command was sent.
+- Read-only source inspection of published project version `1792659934587` confirms `helpers/browserControl.tsx` uses localStorage key `chrono.browser-control.session.v1`; `getBrowserControlSessionId()` reuses a stored value when valid, otherwise creates and stores a new ID, with an in-memory fallback if storage access throws. `pages/_index.tsx` obtains the ID on mount and subscribes to the matching `chrono-control:<sessionId>` channel. The Realtime token endpoint grants that channel only.
+- This establishes the exact check needed next, but does **not** establish the value or state in the owner's active browser. A storage-blocked/in-memory fallback or a stale tab could produce a session mismatch, but neither is confirmed as the cause.
+- No app source was changed, no publish occurred, and no session ID or secret was read into the memo. Personal-session command/ACK and direct ChatGPT-host attachment remain **NOT VERIFIED**; keep `hostConnection=not_verified`.
+- **Next action:** make the Floot editor preview available in the foreground so the canonical runner can read the live page. It must compare the Diagnostics session ID against the current localStorage entry in-place and return only a match boolean plus storage availability; do not print the ID. Send no command until that check succeeds.
