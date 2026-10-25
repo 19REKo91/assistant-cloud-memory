@@ -25,7 +25,7 @@ Branch: `main`
 - `ff87a79587a9365ab654a1a3b58ae57fa1da10ef` — temporary one-run test invocation; must not be used as final configuration.
 - `80c9b8816931736db144800f3c6c9495d9c8425d` — removed temporary session fallback.
 
-## Remaining blockers / next steps
+## Remaining blockers / next steps at end of 2026-10-24 (historical snapshot)
 1. **PASS after cleanup:** post-revert production handshake [run 40081125388](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081125388) and offline suite [run 40081125432](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081125432) both succeeded on commit `80c9b8816931736db144800f3c6c9495d9c8425d`. The temporary session fallback is absent; this successful handshake was protocol-only.
 2. Inspect the live app's browser-control session generation, realtime subscription lifecycle, and acknowledgement endpoint. The failed live test needs a root-cause investigation; do not blindly retry commands.
 3. Verify the actual workspace UUID and that the published app has the current listener/ACK implementation. Delivery count 1 alone is not proof the UI callback executed.
@@ -33,7 +33,7 @@ Branch: `main`
 5. Direct connection from the user's current ChatGPT Android conversation to this MCP server remains **not configured/verified**; MCP endpoint availability does not automatically attach it to this chat.
 6. Back/Forward remains intentionally deferred per the user's instruction.
 
-## Current status
+## Status at end of 2026-10-24 (historical snapshot)
 - MCP protocol/authentication/public-page reader: **COMPLETE / PASS**.
 - Browser-control tool listing: **COMPLETE / PASS**.
 - Live browser command/acknowledgement round trip: **INCOMPLETE / FAIL (ack timeout; delivery count 1)**.
