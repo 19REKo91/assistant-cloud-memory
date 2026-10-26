@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "tools/chrono-browser-command.json"
+      - "tools/chrono-cross-gpt-browser-command.mjs"
+      - ".github/workflows/chrono-cross-gpt-browser-command-bridge.yml"
 
 permissions:
   contents: read
@@ -22,6 +24,8 @@ jobs:
         with:
           node-version: "24"
           package-manager-cache: false
+      - name: Validate bridge script syntax
+        run: node --check tools/chrono-cross-gpt-browser-command.mjs
       - name: Send one command to the paired CHRONO workspace
         env:
           CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
