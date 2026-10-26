@@ -155,3 +155,35 @@ Branch: `main`
 - Floot refused the next server-side DB query because the free account's daily build-action limit had been exhausted; its reported reset time was 2026-10-26 07:00 UTC. No paid action was taken, and no application source or deployment changed. The failed query used the TypeScript camelCase name instead of the physical snake_case table name, so it yielded no database evidence; a corrected query could not run due to the quota refusal.
 - **Current status:** pairing UUID ↔ current localStorage match **PASS**; realtime bridge **CONNECTED**; public MCP endpoint token configured **PASS**; missing/invalid bearer rejection **PASS**; live command + matching ACK in the user's own session **NOT VERIFIED**; direct ChatGPT attachment **BLOCKED by current plan/surface constraints and additionally unverified authentication compatibility**; `hostConnection` must remain `not_verified`. No app code changed or republished.
 - **Next step without paid actions:** preserve the current verified state. Do not alter security to remove authentication. If an eligible web MCP host is available in the future, resolve authentication compatibility first, then use the active Diagnostics pairing (without logging it) for one safe `navigate https://example.com/` command and require a matching persisted ACK before calling personal-session control complete.
+
+
+## Verification update — 2026-10-26 (UTC)
+
+### Read-only production checks
+- The project remains published at [the existing production URL](https://chrono-cross-gpt.floot.app). Floot reports `published=true`, `plan=free`, `paid=false`; no publish, unpublish, source edit, or production setting change was performed.
+- A fresh server-side probe of `GET /_api/mcp-status` returned HTTP 200, `tokenConfigured=true`, and `hostConnection=not_verified`. The probe emitted only those safe status fields; it did not read or print the configured token.
+- A fresh unauthenticated MCP `initialize` probe was rejected with HTTP 401. The probe recorded only a boolean rejection result; no credential was sent or echoed.
+- The repository Actions secret is configured: in [live E2E run 40172582749](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40172582749), the secret-check step explicitly reported that the live E2E could run, without printing the value.
+
+### Tests and what they prove
+- Floot targeted specs passed on 2026-10-26: `helpers/mcpEndpoint.spec.tsx`, `helpers/mcpStatusEndpoint.spec.tsx`, and `helpers/browserControlAck.spec.tsx` — **3 passed, 0 failed**.
+- GitHub Actions [live browser-control E2E run 40172582749](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40172582749) completed **successfully** on 2026-10-25, commit `bb81cd2bf8d8b1c61cf25f6397ef66b1b9306880`. The run log records live navigation **PASS**, MCP acknowledgement `acknowledged`, UI navigation applied, and UI acknowledgement stored; negative rejection and acknowledgement-timeout cases also passed.
+- This E2E uses a **disposable Playwright/Chromium browser context** opened by GitHub Actions. It proves the production MCP → Realtime → workspace UI → acknowledgement round trip for that disposable session. It does **not** prove that this user's current browser pairing or the current ChatGPT conversation is connected.
+- Latest protocol-only production handshake visible in Actions remains [run 40081430891](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40081430891) on 2026-10-24; it is not evidence of an attached ChatGPT host.
+
+### Root cause of the displayed host status
+- In the current Floot source `pages/_index.tsx` lines 355–357, the Diagnostics matrix hard-codes `Production MCP protocol test = STALE · RUN #19 · 2026-10-20` and `ChatGPT host connection = HOST SETUP REQUIRED`. These labels are not derived from a current ChatGPT-host handshake. The “STALE · RUN #19” text is outdated UI copy; the “HOST SETUP REQUIRED” state correctly reflects that a ChatGPT host has not been attached/verified, but it is not a live connection probe.
+- The status endpoint intentionally returns `hostConnection: "not_verified"` and must remain that way until an actual host connection is verified. No code was changed in this run.
+
+### Free connection options reviewed
+- OpenAI Help Center documentation checked 2026-10-26: custom MCP server connections and full MCP support are documented for ChatGPT Business and Enterprise/Edu on the **web**; custom MCP connections are not supported on mobile. The current ChatGPT Free Android session therefore has no documented direct custom-MCP attachment path. Source: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+- The already-working GitHub Actions E2E workflow is the best verified free test host at present, but it is a disposable test session, not a persistent connection to the user's browser.
+- Cloudflare Workers AI Playground is documented as a remote MCP client (https://developers.cloudflare.com/agents/model-context-protocol/guides/test-remote-mcp-server/). Compatibility with this app's static Bearer-token authentication has **not** been verified; do not paste the production token into a third-party hosted client to experiment. A trusted client that can send the required Bearer header and receive the current pairing ID would need a separate test before being considered a viable alternative.
+- No code, production configuration, or published deployment was changed; no secret value or browser pairing UUID was written to this memo.
+
+### Remaining status
+- Production MCP endpoint/authentication: **PASS**.
+- Live browser-control round trip in disposable test browser: **PASS**.
+- Targeted endpoint/acknowledgement specs: **PASS (3/3)**.
+- Direct connection to this user's current ChatGPT Free Android conversation: **INCOMPLETE / NOT SUPPORTED BY DOCUMENTED CHATGPT CUSTOM-MCP AVAILABILITY**.
+- Persistent connection to the user's current browser session via an alternative host: **INCOMPLETE / NOT TESTED**. Next step is to verify a trusted free MCP client that supports the app's Bearer authentication, or continue using the existing free GitHub Actions E2E for isolated verification. Do not claim current-session control until a matching live acknowledgement is observed.
