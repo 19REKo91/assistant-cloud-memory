@@ -90,3 +90,13 @@ User should add the `CHRONO_BROWSER_SESSION_ID` repository secret using GitHub S
 - Targeted Floot tests: `helpers/browserControlAck.spec.tsx` and `helpers/mcpEndpoint.spec.tsx` both **PASS** (2 spec files, 0 failures). Typecheck for `endpoints/mcp_POST.ts`, `endpoints/browser-control-ack_POST.ts`, `pages/_index.tsx`, and `components/FlootRealtimeProvider.tsx` is **clean**.
 - The public command file remains disabled (`enabled: false`, request ID `disabled-after-unacknowledged-003`). Bridge script syntax validation run [40318274353](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40318274353) succeeded; this is not a live command test. No further live navigation was sent during this investigation.
 - Next live diagnostic requires the published CHRONO workspace to be foregrounded and `Realtime browser bridge = CONNECTED`, with the GitHub `CHRONO_BROWSER_SESSION_ID` secret matching that tab's current pairing ID. Do not share or commit the ID. After the one safe public navigation test, disable the command again and inspect the new safe acknowledgement diagnostics. Keep `HOST SETUP REQUIRED` until a supported external MCP host is actually verified.
+
+
+## Addendum — live browser acknowledgement verified (2026-10-26)
+
+- User supplied a current published workspace screenshot showing `Realtime browser bridge = CONNECTED`, `MCP token configuration = CONFIGURED`, and the existing E2E isolated-session pass. The visible pairing ID was not copied into this memo or any log.
+- Executed one controlled live command via GitHub Actions run [40319148808](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40319148808), request ID `nav-example-004`, action `navigate`, URL `https://example.com/`.
+- **Live workspace acknowledgement verified.** GitHub Actions returned `status: acknowledged`, `acknowledgementStatus: acknowledged`, `pageLoadVerified: false`, `credentialPrinted: false`. Production DB row showed `status=acknowledged`, `delivered_count=2`, and a stored acknowledgement result stating the workspace accepted the navigation request.
+- This proves the current browser-control message path can receive and persist an acknowledgement. It does **not** prove the external site finished loading, page DOM reading/click/type works, or ChatGPT is connected as an MCP host.
+- Immediately disabled the public command file in commit `492443245363c5d1762c833dd4213c4d9ba01f68`; re-fetched and verified `enabled: false`, request ID `disabled-after-live-test-004`. No further command is queued.
+- Status: live command acknowledgement is now **VERIFIED**. External page-load verification and native ChatGPT host connection remain **NOT VERIFIED / HOST SETUP REQUIRED**.
