@@ -118,3 +118,16 @@ User should add the `CHRONO_BROWSER_SESSION_ID` repository secret using GitHub S
 3. Run typecheck on the acknowledgement/load endpoints, their schemas, `endpoints/mcp_POST.ts`, and `pages/_index.tsx`; run the targeted endpoint/MCP specs.
 4. Review the safe result contract: report `frameLoadEventObserved` only when the matching event was persisted, and keep `pageLoadVerified: false` because iframe `onLoad` does not prove readable/usable content.
 5. Publish only after the checks pass. Then run one harmless `https://example.com/` command with the GitHub request file explicitly enabled for that single run, verify the command ACK and persisted matching frame-load receipt, and immediately set `enabled: false` and verify it again. Keep ChatGPT host connection marked `HOST SETUP REQUIRED`.
+
+
+## Addendum — Playwright MCP contingency plan prepared (2026-10-26)
+
+- User's decision: keep the current CHRONO MCP + Realtime bridge as the primary path; retain Playwright MCP only as a future fallback if the current path fails. No fallback implementation or production switch is authorized now.
+- Prepared design: [Playwright MCP fallback design](docs/superpowers/specs/2026-10-26-playwright-mcp-fallback-design.md).
+- Prepared implementation plan: [Playwright MCP fallback implementation plan](docs/superpowers/plans/2026-10-26-playwright-mcp-fallback.md).
+- Design commit: 60f7ac18ff8707e9020a161d33824380ad7cb8f4.
+- Plan commit: b35015d1308cd150c714f5dc81518fd312f7bd0b.
+- Superpowers recommendation: finish and validate the current ACK-before-load-receipt path first. Only consider Playwright after the current implementation is repaired and passes/fails the stated gates; the fallback must be isolated, authenticated, test-first, disabled by default, and hosted without charges.
+- The plan explicitly separates browser-engine failure from ChatGPT host availability. OpenAI's current help page says custom MCP servers cannot be connected from ChatGPT mobile; a Playwright server does not remove this limitation. Reference: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt.
+- Official Playwright MCP documentation describes standalone HTTP transport via --port, while also warning the server is not itself a security boundary. Any future remote deployment must add verified authentication/host protections and pass current free-host checks before code or provisioning.
+- Current production status remains unchanged. This work changed documentation only. No app source, dependencies, workflows, secrets, browser command configuration, or deployment were changed. No Playwright fallback was executed. Keep tools/chrono-browser-command.json disabled and keep hostConnection=not_verified / HOST SETUP REQUIRED until evidence proves otherwise.
