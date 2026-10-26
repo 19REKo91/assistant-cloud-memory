@@ -1,0 +1,29 @@
+name: CHRONO CROSS GPT browser command bridge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/chrono-browser-command.json"
+
+permissions:
+  contents: read
+
+jobs:
+  command:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Send one command to the paired CHRONO workspace
+        env:
+          CHRONO_MCP_TOKEN: ${{ secrets.CHRONO_MCP_TOKEN }}
+          CHRONO_BROWSER_SESSION_ID: ${{ secrets.CHRONO_BROWSER_SESSION_ID }}
+        run: node tools/chrono-cross-gpt-browser-command.mjs
