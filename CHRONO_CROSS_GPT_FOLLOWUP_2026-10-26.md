@@ -69,3 +69,14 @@
 
 ## Updated next action
 User should add the `CHRONO_BROWSER_SESSION_ID` repository secret using GitHub Settings → Secrets and variables → Actions, while keeping CHRONO open with Realtime browser bridge connected. After the user confirms setup, run one harmless public-navigation command through the new push-triggered bridge and verify both the GitHub acknowledgement and the visible CHRONO address/state before marking the bridge live.
+
+
+## Addendum — first live attempt through the new bridge (2026-10-26, follow-up)
+
+- User confirmed repository secret `CHRONO_BROWSER_SESSION_ID` was added. The secret value is not recorded here.
+- Enabled a single public navigation request to `https://example.com/` with request ID `nav-example-003`.
+- GitHub Actions run [40317998472](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40317998472) reached the MCP control call but **failed** with `stage=control_browser_workspace`, `reason=command_not_acknowledged`; the job masked both secrets and logged `credentialPrinted=false`. Do not count this as successful live control.
+- Immediately disabled the request file again in commit `2837cf448ba2b5a8bc8b32e0ebb2c4181156c72b`; the follow-up run [40318160228](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40318160228) succeeded with `status=skipped`, `reason=command_disabled`.
+- Updated the bridge script to parse both JSON and MCP Streamable HTTP SSE response bodies, and to emit only safe acknowledgement metadata on failure (never credentials). Added a `node --check` step and expanded workflow paths so script/workflow changes are validated by Actions.
+- Current command file should remain `enabled: false` until the reason for the missing acknowledgement is diagnosed. Likely areas to verify next: whether the currently open CHRONO workspace is still connected under the secret's pairing ID, and the exact structured acknowledgement returned by the MCP tool. The current attempt did not prove a successful command in the user's live workspace.
+- Keep the app status `HOST SETUP REQUIRED`; this GitHub Actions bridge is not a native ChatGPT MCP host connection.
