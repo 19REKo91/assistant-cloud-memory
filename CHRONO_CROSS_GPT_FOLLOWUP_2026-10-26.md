@@ -10,7 +10,7 @@
 ## Confirmed baseline
 - Latest documented production MCP-to-workspace browser-control E2E: GitHub Actions run [40172582749](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40172582749), successful on 2026-10-25, using a disposable Playwright/Chromium context.
 - That run verifies the MCP → Realtime → CHRONO workspace UI → persisted acknowledgement flow for the disposable test session only. It does not verify the owner's current browser session or this ChatGPT conversation.
-- The live `/ _api/mcp-status` status from the prior verified probe was HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`; unauthenticated MCP initialize was rejected with HTTP 401. Do not change this state absent a real host handshake.
+- The last verified live `/ _api/mcp-status` probe returned HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`; unauthenticated MCP initialize was rejected with HTTP 401. Do not change this state absent a real host handshake.
 - ChatGPT Free on Android has no documented direct custom-MCP attachment path. Do not recommend paid features; direct ChatGPT connection remains incomplete.
 
 ## Source change made in Floot preview
@@ -23,19 +23,20 @@
 - The edit is in the Floot project/preview source only. **It has not been published**; production remains unchanged.
 
 ## Verification after the edit
-- Ran `helpers/mcpEndpoint.spec.tsx`, `helpers/mcpStatusEndpoint.spec.tsx`, and `helpers/browserControlAck.spec.tsx`: **3 spec files passed, 0 failed**.
+- Targeted tests: `helpers/mcpEndpoint.spec.tsx`, `helpers/mcpStatusEndpoint.spec.tsx`, `helpers/browserControlAck.spec.tsx` — **3 passed, 0 failed**.
+- Full default Floot Jasmine suite — **9 spec files passed, 0 failed**. Two hook spec files were excluded by default and have not been run in this full-suite pass.
 - Floot type diagnostics for `pages/_index.tsx`: **clean**.
 - `CHRONO_MCP_TOKEN` value remains undisclosed. The status endpoint's boolean is not proof that an external host is connected.
 
 ## Current status
 - Production MCP endpoint/authentication: PASS per the last verified production probe.
 - Disposable-browser E2E and matching ACK: PASS in run 40172582749.
-- Targeted regression tests after UI-copy change: PASS (3/3).
+- Regression suite: PASS (9/9 default specs); two hook specs still not included in this run.
 - Diagnostics stale-label correction: implemented in Floot source, not yet published.
 - Direct ChatGPT Free Android attachment: INCOMPLETE / no documented supported path.
 - Persistent browser session controlled by an alternative free MCP host: INCOMPLETE / not tested.
 
 ## Next safe step
 1. Inspect the updated Floot preview and confirm the Diagnostics copy is legible on mobile.
-2. Continue testing a trusted free MCP client only if it supports the required Bearer header without exposing the production token to an untrusted hosted service.
+2. Run the two hook specs explicitly if needed, then continue testing a trusted free MCP client only if it supports the required Bearer header without exposing the production token to an untrusted hosted service.
 3. Do not publish this UI-copy-only correction unless the owner explicitly wants it live; do not mark ChatGPT host connected until an actual host handshake and matching live command acknowledgement are observed.
