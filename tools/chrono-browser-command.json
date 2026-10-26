@@ -1,0 +1,6 @@
+{
+  "enabled": false,
+  "requestId": "initial-template",
+  "action": "navigate",
+  "url": "https://example.com/"
+}
