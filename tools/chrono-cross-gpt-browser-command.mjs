@@ -45,6 +45,24 @@ function publicUrl(value) {
   return url.toString();
 }
 
+function parseResponseBody(text, contentType = "") {
+  if (!text) return null;
+  if (contentType.toLowerCase().includes("text/event-stream")) {
+    for (const event of text.split(/\r?\n\r?\n/)) {
+      const data = event.split(/\r?\n/)
+        .filter((line) => line.startsWith("data:"))
+        .map((line) => line.slice(5).replace(/^ /, ""));
+      if (!data.length) continue;
+      try {
+        const parsed = JSON.parse(data.join("\n"));
+        if (parsed && typeof parsed === "object" && ("result" in parsed || "error" in parsed)) return parsed;
+      } catch { /* Ignore non-JSON SSE events. */ }
+    }
+    return null;
+  }
+  try { return JSON.parse(text); } catch { return null; }
+}
+
 async function post(method, id, params, protocolVersion) {
   let response;
   try {
@@ -63,12 +81,7 @@ async function post(method, id, params, protocolVersion) {
     stop(method, "network_request_failed");
   }
   const text = await response.text();
-  let body;
-  try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    stop(method, "non_json_response");
-  }
+  const body = parseResponseBody(text, response.headers.get("content-type") || "");
   if (response.status >= 400 || !body) stop(method, "http_or_protocol_error");
   if (body.error) stop(method, "mcp_method_rejected");
   return { response, body };
@@ -142,7 +155,18 @@ const call = await post("tools/call", 3, { name: "control_browser_workspace", ar
 const result = call.body?.result;
 const meta = result?.structuredContent;
 if (call.response.status !== 200 || call.body?.jsonrpc !== "2.0" || call.body?.id !== 3 || result?.isError === true || meta?.acknowledged !== true || meta?.acknowledgementStatus !== "acknowledged") {
-  stop("control_browser_workspace", "command_not_acknowledged");
+  const diagnostic = {
+    httpStatus: call.response.status,
+    jsonrpcValid: call.body?.jsonrpc === "2.0",
+    responseIdValid: call.body?.id === 3,
+    toolReportedError: result?.isError === true,
+    structuredContentKeys: meta && typeof meta === "object" ? Object.keys(meta).slice(0, 20) : [],
+    acknowledged: meta?.acknowledged === true,
+    acknowledgementStatus: typeof meta?.acknowledgementStatus === "string" ? meta.acknowledgementStatus.slice(0, 40) : null,
+    contentItemTypes: Array.isArray(result?.content) ? result.content.map((item) => item?.type).slice(0, 5) : [],
+    credentialPrinted: false,
+  };
+  stop("control_browser_workspace", "command_not_acknowledged:" + JSON.stringify(diagnostic));
 }
 
 console.log(JSON.stringify({
