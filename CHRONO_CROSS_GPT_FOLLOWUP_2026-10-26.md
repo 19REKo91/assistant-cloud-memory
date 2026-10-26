@@ -100,3 +100,21 @@ User should add the `CHRONO_BROWSER_SESSION_ID` repository secret using GitHub S
 - This proves the current browser-control message path can receive and persist an acknowledgement. It does **not** prove the external site finished loading, page DOM reading/click/type works, or ChatGPT is connected as an MCP host.
 - Immediately disabled the public command file in commit `492443245363c5d1762c833dd4213c4d9ba01f68`; re-fetched and verified `enabled: false`, request ID `disabled-after-live-test-004`. No further command is queued.
 - Status: live command acknowledgement is now **VERIFIED**. External page-load verification and native ChatGPT host connection remain **NOT VERIFIED / HOST SETUP REQUIRED**.
+
+
+## Addendum — matching iframe load receipt draft blocked before validation (2026-10-26)
+
+- Goal: improve the live browser bridge so a navigate call can distinguish (1) workspace command accepted from (2) a matching iframe `onLoad` event observed for the requested URL. The second signal is deliberately **not** described as page usability or completed content loading.
+- Saved but **unpublished and unverified** Floot draft edits touch `pages/_index.tsx`, `endpoints/browser-control-ack_POST.ts`, `endpoints/browser-control-ack_POST.schema.ts`, and add `endpoints/browser-control-load_POST.ts` plus its schema. The new endpoint checks the paired session, command, acknowledgement-token hash, URL match, and short expiry before saving a separate frame-load event.
+- Floot's compiler initially flagged a JSX expression issue in `pages/_index.tsx`; that syntax issue was corrected. The latest reported TypeScript issue is that `pendingNavigationLoadRef` requires an `ackPromise` field but the pending navigation object has not yet been updated to include it. A follow-up edit to finish the ACK-promise sequencing was refused by Floot's daily build-action limit. The limit response stated it resets at `2026-10-27T07:00:00Z`.
+- The missing promise is a real blocker, not a cosmetic warning: without fixing it, the draft must not be published. The intended fix is to make `submitBrowserControlAck` return `Promise<boolean>`, store that promise with the pending navigation, and post a frame-load receipt only after the accepted-command ACK has actually been persisted. This prevents a fast iframe load from racing ahead of the first server acknowledgement.
+- The new endpoint had a clean typecheck result at creation time, but the **whole feature has not been typechecked cleanly, tested, published, or verified against the live workspace**. Do not mark this enhancement complete.
+- Re-fetched GitHub command file after the interruption and verified the live command remains safely disabled: `enabled: false`, request ID `disabled-after-live-test-004`. No new navigation command was dispatched from this draft work.
+- Production was not republished after these draft edits. The previously published version remains the known-good production version; the draft should be repaired and tested before publishing.
+
+### Next actions after the Floot build-action limit clears
+1. Fix the missing `ackPromise` field and implement ACK-before-load-receipt sequencing.
+2. Add targeted tests for `GET` rejection, cross-origin rejection, malformed payloads, non-HTTP(S) URLs, wrong URL/token/session, expiry, and duplicate receipt handling.
+3. Run typecheck on the acknowledgement/load endpoints, their schemas, `endpoints/mcp_POST.ts`, and `pages/_index.tsx`; run the targeted endpoint/MCP specs.
+4. Review the safe result contract: report `frameLoadEventObserved` only when the matching event was persisted, and keep `pageLoadVerified: false` because iframe `onLoad` does not prove readable/usable content.
+5. Publish only after the checks pass. Then run one harmless `https://example.com/` command with the GitHub request file explicitly enabled for that single run, verify the command ACK and persisted matching frame-load receipt, and immediately set `enabled: false` and verify it again. Keep ChatGPT host connection marked `HOST SETUP REQUIRED`.
