@@ -36,8 +36,10 @@ function publicUrl(value) {
   }
   if (host.includes(":") || /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host)) throw new Error("ip_literal_blocked");
   if (url.port && url.port !== "80" && url.port !== "443") throw new Error("nonstandard_port_blocked");
-  if (/(?:^|[?&])(?:access[_-]?token|api[_-]?key|auth|authorization|code|password|secret|session|token)=/i.test(url.search.slice(1))) {
-    throw new Error("sensitive_query_parameter_blocked");
+  for (const key of url.searchParams.keys()) {
+    if (/(?:access[_-]?token|api[_-]?key|auth|authorization|code|password|secret|session|token)/i.test(key)) {
+      throw new Error("sensitive_query_parameter_blocked");
+    }
   }
   url.hash = "";
   return url.toString();
