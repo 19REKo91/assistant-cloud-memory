@@ -986,3 +986,15 @@ Reviewed the durable project memo, current manual-only production handshake work
 2. Add or run a focused test for one-time token replay rejection and expiry, then rerun typecheck + standard/hook specs.
 3. Create a Floot checkpoint once its build-action quota resets.
 4. Update this notebook with the result of the real UI round-trip. Do not publish until approved and validated. Keep ChatGPT-host setup separate; do not claim a direct ChatGPT connection unless actually configured and verified.
+
+
+## Session log — 2026-10-27: ACK sequencing fix and live test result
+
+- Floot source: repaired the navigation ACK/load race in `pages/_index.tsx`. The load receipt now waits for confirmation that the accepted-command ACK was persisted; an unconfirmed ACK results in a skipped receipt.
+- Added `helpers/browserControlLoad.spec.tsx` with malformed/cross-origin/credential URL, state/session/URL/token, expiry, and duplicate-receipt cases.
+- TypeScript typecheck clean; 10 regular spec files and both hook spec files passed (12 distinct spec files, 0 failures). Floot checkpoint: `22d74841-0d27-434f-addc-c72e725c4ea2`.
+- Published the checked changes to https://chrono-cross-gpt.floot.app (web only; no paid or native-build action).
+- One public `https://example.com/` bridge attempt (GitHub Actions run [40502419906](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40502419906)) failed at `control_browser_workspace`. The MCP response itself was HTTP 200 but marked the tool result as an error, with no acknowledgement metadata. Read-only production DB evidence shows the new command row status `no_listener`, meaning the paired Realtime channel had zero subscribers for that command. This is not a successful execution and no iframe load receipt was observed.
+- Immediately disabled the command again. Follow-up disable workflow [40502472296](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40502472296) passed as `skipped / command_disabled`. Re-fetched the public command file and verified `enabled: false`, request ID `disabled-after-live-test-005`.
+- Live `/_api/mcp-status`: HTTP 200; `tokenConfigured=true`; `hostConnection=not_verified`. No secret was revealed. Do not claim a native ChatGPT host connection or a verified page load.
+- Next diagnostic before any separately approved retry: open/focus the published workspace; confirm Realtime bridge CONNECTED; securely confirm the Actions pairing-ID secret matches that workspace's current diagnostics ID. The failed test did not distinguish a stale/mismatched pairing ID from an inactive/frozen listener. Keep command disabled in the meantime.
