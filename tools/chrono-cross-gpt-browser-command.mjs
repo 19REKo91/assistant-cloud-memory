@@ -160,11 +160,11 @@ if (call.response.status !== 200 || call.body?.jsonrpc !== "2.0" || call.body?.i
         .filter((item) => item?.type === "text" && typeof item.text === "string")
         .map((item) => item.text)
         .join("\n")
-        .slice(0, 4000)
     : "";
-  const safeToolErrorText = [TOKEN, SESSION_ID]
+  const redactedToolErrorText = [TOKEN, SESSION_ID]
     .filter((secret) => typeof secret === "string" && secret.length > 0)
     .reduce((text, secret) => text.split(secret).join("[REDACTED]"), toolErrorText);
+  const safeToolErrorText = redactedToolErrorText.slice(0, 4000);
 
   const diagnostic = {
     httpStatus: call.response.status,
