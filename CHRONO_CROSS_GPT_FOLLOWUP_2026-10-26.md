@@ -131,3 +131,22 @@ User should add the `CHRONO_BROWSER_SESSION_ID` repository secret using GitHub S
 - The plan explicitly separates browser-engine failure from ChatGPT host availability. OpenAI's current help page says custom MCP servers cannot be connected from ChatGPT mobile; a Playwright server does not remove this limitation. Reference: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt.
 - Official Playwright MCP documentation describes standalone HTTP transport via --port, while also warning the server is not itself a security boundary. Any future remote deployment must add verified authentication/host protections and pass current free-host checks before code or provisioning.
 - Current production status remains unchanged. This work changed documentation only. No app source, dependencies, workflows, secrets, browser command configuration, or deployment were changed. No Playwright fallback was executed. Keep tools/chrono-browser-command.json disabled and keep hostConnection=not_verified / HOST SETUP REQUIRED until evidence proves otherwise.
+
+
+## Session update — 2026-10-27: ACK-before-load receipt repair and live test
+
+### Completed and verified in Floot
+- Repaired `pages/_index.tsx`: the accepted-navigation acknowledgement now returns a promise; the pending navigation stores it, and the matching iframe load receipt is submitted only after that acknowledgement endpoint explicitly returns `ok: true`. If the acknowledgement fails, the receipt is skipped and a warning is recorded.
+- Added `helpers/browserControlLoad.spec.tsx` covering POST-only access, cross-origin/malformed/credential-URL rejection, acknowledged state, session and URL matching, token-hash matching, expiry/conditional-update failure, and duplicate receipt idempotency.
+- Final validation: TypeScript typecheck **clean**; 10 standard spec files passed; both hook spec files passed (12 distinct spec files total, zero failures).
+- Floot checkpoint: `22d74841-0d27-434f-addc-c72e725c4ea2`, “Serialize browser load receipts after ACK”.
+- Published successfully to the existing URL https://chrono-cross-gpt.floot.app. No mobile/native build, domain change, upgrade, or paid service was used.
+- Current production `GET /_api/mcp-status`: HTTP 200, `tokenConfigured=true`, `hostConnection=not_verified`. No credential value was read or printed.
+
+### One controlled live browser-command attempt
+- Enabled exactly one public navigation request to `https://example.com/` under request ID `nav-example-005`, then immediately restored the public command file to `enabled: false`.
+- GitHub Actions run [40502419906](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40502419906) failed at `control_browser_workspace`: the MCP HTTP response was 200/valid JSON-RPC, but the tool result was an error and contained no acknowledgement metadata. Credentials remained masked; the diagnostic explicitly recorded `credentialPrinted=false`.
+- A read-only production database query found the corresponding navigation row in state `no_listener` at 2026-10-27T12:16:14Z. The production handler sets that state when the paired Realtime channel reports zero listeners. Therefore this test did **not** reach browser acknowledgement or iframe-load-receipt verification. Likely explanations are that the paired workspace listener was not connected/foregrounded or that the configured pairing ID no longer matches the active workspace; available evidence does not distinguish those cases.
+- The follow-up disable commit triggered run [40502472296](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/40502472296), which succeeded with `status=skipped`, `reason=command_disabled`. Re-fetched the command JSON and independently verified `enabled: false`, request ID `disabled-after-live-test-005`.
+- Do not retry navigation automatically. Before another approved live test, open/focus the published CHRONO workspace, confirm its Realtime browser bridge is connected, and securely ensure the repository's `CHRONO_BROWSER_SESSION_ID` matches the current pairing panel without posting or committing the value.
+- Do not mark page loading verified or ChatGPT connected. The real command attempt failed at `no_listener`; `hostConnection=not_verified` remains correct.
