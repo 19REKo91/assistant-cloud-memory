@@ -1,6 +1,6 @@
 {
-  "enabled": true,
-  "requestId": "nav-example-006",
+  "enabled": false,
+  "requestId": "disabled-after-live-test-006",
   "action": "navigate",
   "url": "https://example.com/"
 }
