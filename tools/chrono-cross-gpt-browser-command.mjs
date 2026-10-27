@@ -155,6 +155,17 @@ const call = await post("tools/call", 3, { name: "control_browser_workspace", ar
 const result = call.body?.result;
 const meta = result?.structuredContent;
 if (call.response.status !== 200 || call.body?.jsonrpc !== "2.0" || call.body?.id !== 3 || result?.isError === true || meta?.acknowledged !== true || meta?.acknowledgementStatus !== "acknowledged") {
+  const toolErrorText = Array.isArray(result?.content)
+    ? result.content
+        .filter((item) => item?.type === "text" && typeof item.text === "string")
+        .map((item) => item.text)
+        .join("\n")
+        .slice(0, 4000)
+    : "";
+  const safeToolErrorText = [TOKEN, SESSION_ID]
+    .filter((secret) => typeof secret === "string" && secret.length > 0)
+    .reduce((text, secret) => text.split(secret).join("[REDACTED]"), toolErrorText);
+
   const diagnostic = {
     httpStatus: call.response.status,
     jsonrpcValid: call.body?.jsonrpc === "2.0",
@@ -164,6 +175,7 @@ if (call.response.status !== 200 || call.body?.jsonrpc !== "2.0" || call.body?.i
     acknowledged: meta?.acknowledged === true,
     acknowledgementStatus: typeof meta?.acknowledgementStatus === "string" ? meta.acknowledgementStatus.slice(0, 40) : null,
     contentItemTypes: Array.isArray(result?.content) ? result.content.map((item) => item?.type).slice(0, 5) : [],
+    toolErrorText: safeToolErrorText || null,
     credentialPrinted: false,
   };
   stop("control_browser_workspace", "command_not_acknowledged:" + JSON.stringify(diagnostic));
