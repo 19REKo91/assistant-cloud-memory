@@ -21,7 +21,7 @@ The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memo
 
 The geometry layer includes scale-aware validation and coordinate construction, altitude projection to the supporting line, corrected angle-bisector points, and numerically stable triangle centers.
 
-There are 13 geometry regression tests. The GitHub Actions workflow runs unit tests and assembles a debug APK:
+There are 15 geometry regression tests. The GitHub Actions workflow runs unit tests and assembles a debug APK:
 
 `.github/workflows/triangle-lab-android-build.yml`
 

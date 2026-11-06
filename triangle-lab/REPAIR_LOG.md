@@ -36,7 +36,7 @@
 
 ## Automated verification
 
-- 13 geometry regression tests are present, covering side convention, triangle inequality, invalid/non-finite values, angle construction, rescaling, altitude projection, centers, angle-bisector ratios, tiny triangles and large coordinate offsets.
+- 15 geometry regression tests are present, covering side convention, triangle inequality, invalid/non-finite values, angle construction, rescaling, altitude projection, centers, angle-bisector ratios, tiny triangles and large coordinate offsets.
 - GitHub Actions workflow: `.github/workflows/triangle-lab-android-build.yml`.
 - Latest completed run before this log update: run 39, commit `f590a785cf4775e771815ee26d00973e3d3b98e5`.
 - In that run, `testDebugUnitTest` passed, `assembleDebug` passed, and the APK artifact uploaded successfully.
