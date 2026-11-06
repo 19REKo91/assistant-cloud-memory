@@ -91,6 +91,7 @@ private fun TriangleHome() {
     var zoom by remember { mutableFloatStateOf(1f) }
     var pan by remember { mutableStateOf(Offset.Zero) }
     var dragVertices by remember { mutableStateOf(false) }
+    var restoredState by remember { mutableStateOf(false) }
     val saved = remember { mutableStateListOf<Triangle>() }
 
     fun setSideFields(t: Triangle) {
@@ -161,6 +162,7 @@ private fun TriangleHome() {
                 }
             }
         }
+        restoredState = true
     }
 
     fun changeMode(next: EditMode) {
@@ -410,8 +412,10 @@ private fun TriangleHome() {
     }
     }
 
-    SideEffect {
-        preferences.edit().putString("current_triangle", triangleToJson(triangle).toString()).apply()
+    LaunchedEffect(triangle, restoredState) {
+        if (restoredState) {
+            preferences.edit().putString("current_triangle", triangleToJson(triangle).toString()).apply()
+        }
     }
 }
 
