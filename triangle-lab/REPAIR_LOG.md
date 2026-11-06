@@ -1,52 +1,50 @@
-# Triangle Lab — Repair log
+# Triangle Lab — Repair and verification log
 
-## Initial GitHub workspace
+## Workspace
 
-The project is isolated under `triangle-lab/` in `19REKo91/assistant-cloud-memory`. Existing archive and memory files are untouched.
+- Project root: `triangle-lab/` in `19REKo91/assistant-cloud-memory`.
+- Existing archive and memory files outside this directory were not modified.
+- Android package/application ID: `com.triangleapp`.
+- Stack: Kotlin, Jetpack Compose, Material 3, Android SDK 35, Java 17.
 
-## Geometry foundation reconstructed
+## Implemented application features
 
-- Corrected the side convention `a=BC, b=CA, c=AB` in coordinate construction.
-- Corrected `Triangle.isDegenerate` to Boolean semantics.
-- Added finite-number validation for side and angle inputs.
-- Removed segment clamping from altitude projection; the foot is on the supporting line, including outside the segment for obtuse triangles.
-- Implemented circumcenter and orthocenter using the vector identity `H=A+B+C-2O`.
-- Added input guards for invalid reference sides and non-positive/non-finite rescaling.
+- Four input modes: side lengths, two angles plus a selectable fixed reference side, Cartesian coordinates, and comparison triangle.
+- Live validation while editing; explicit Apply and Reset actions.
+- Switching input modes repopulates the fields from the current triangle.
+- Drag A/B/C to reshape the triangle; side, angle and coordinate fields synchronize after each valid move. Degenerate moves are rejected.
+- Pinch zoom and drag pan, plus zoom buttons and view reset.
+- Three distinct side colors; optional side extensions.
+- Optional altitudes with unbounded perpendicular projection, vertex angle bisectors with distinct colors, incenter-to-side perpendicular radii, centers G/I/O/H, internal-angle arcs, external-angle arcs, and side labels.
+- Comparison triangle drawn as a dashed overlay with side, area and perimeter differences.
+- Measurements for side lengths, angles, perimeter, area, centroid, incenter, circumcenter and orthocenter.
+- Save/load/delete triangles on-device; current triangle and comparison triangle restore after relaunch.
+- JSON clipboard export/import.
+- Arabic and English interface text, with RTL/LTR layout switching.
+- Arabic-Indic/Persian digit and decimal-separator parsing; locale-stable numeric formatting.
 
-## Not yet verified
+## Geometry corrections
 
-This is not yet a complete Android app. UI/state/persistence sources and Gradle project configuration still need to be restored and integrated. No build or runtime test has been claimed.
+- Enforced the side convention `a=BC, b=CA, c=AB` in side-based coordinate construction.
+- Corrected the `isDegenerate` property type and made its area test scale-relative.
+- Normalized side lengths before cosine-law coordinate construction to reduce overflow/underflow.
+- Made angle, centroid, incenter, circumcenter and orthocenter calculations more stable for very small triangles and for coordinates far from the origin.
+- Corrected circumcenter determinant threshold to be relative to triangle scale.
+- Removed segment clamping from altitude projection; the foot may lie outside the side segment in an obtuse triangle.
+- Corrected and verified angle-bisector division points.
+- Added finite-number and reference-side validation.
 
-## Follow-up work
+## Automated verification
 
-- Added a minimal Android/Compose application entry point and Gradle project configuration.
-- Added unit tests for side convention, invalid inputs, angle-based construction, obtuse-triangle altitude projection, triangle centers, and angle-bisector division.
-- Added the active GitHub Actions workflow at the repository root: `.github/workflows/triangle-lab-android-build.yml`. (A workflow file nested under the project directory was removed because GitHub only discovers workflows in the repository-root `.github/workflows` directory.)
-- Compiled the geometry source files with the available Kotlin compiler and ran independent geometry smoke checks: **passed**.
-- Full Android Gradle build has not yet been confirmed in this environment. The CI workflow is configured to run unit tests and assemble the debug APK when GitHub Actions executes.
+- 13 geometry regression tests are present, covering side convention, triangle inequality, invalid/non-finite values, angle construction, rescaling, altitude projection, centers, angle-bisector ratios, tiny triangles and large coordinate offsets.
+- GitHub Actions workflow: `.github/workflows/triangle-lab-android-build.yml`.
+- Latest completed run before this log update: run 39, commit `f590a785cf4775e771815ee26d00973e3d3b98e5`.
+- In that run, `testDebugUnitTest` passed, `assembleDebug` passed, and the APK artifact uploaded successfully.
+- Artifact name: `triangle-lab-debug-apk` (GitHub Actions artifact; debug-signed APK).
+- Build artifact is not a substitute for physical-device interaction testing. No claim is made that the app has been exercised on the user's phone.
 
-## Current limitations
+## Remaining verification boundary
 
-The current Compose screen is an initial functional shell, not the complete agreed interface. Editing modes, automatic side/angle synchronization, the full set of center/bisector/altitude toggles, compare mode, saved-triangle management, import/export, and complete state restoration still need implementation and verification.
-
-## Interface implementation pass
-
-- Replaced the initial placeholder screen with side, angle/reference-side, coordinate, and comparison input modes.
-- Added input validation and apply/reset actions; changing modes repopulates the next mode from the current triangle to preserve the selected geometry.
-- Added drawing toggles for altitudes, vertex bisectors, center-to-side radii, centers, internal/external angle indicators, and side labels.
-- Added pinch zoom, drag pan, and view reset.
-- Added on-device save/load/delete and JSON clipboard import/export.
-- Added Arabic/English UI text toggle.
-- Updated diagram bounds to account for centers and construction points that may lie outside the triangle.
-
-## Numerical stability pass
-
-- Reworked side-based coordinate construction to normalize lengths before squaring.
-- Made degeneracy detection scale-aware rather than rejecting every small-area triangle by an absolute threshold.
-- Made law-of-cosines angle evaluation scale-aware.
-- Added regression tests for very small valid triangles, rescaling, angle sums, invalid reference sides, and all three angle-bisector division ratios.
-
-## CI diagnosis
-
-- Initial workflow attempts failed before project compilation because the Android SDK setup action attempted to install the removed legacy `tools` package, and a follow-up manual SDK command had no SDK manager on PATH.
-- Updated the workflow to use `android-actions/setup-android@v3` with only `platform-tools`, then install API 35 and build-tools 35.0.0. The updated workflow has started running; final test/build outcome is still pending.
+- Automated tests and Android debug assembly have passed.
+- Physical-device verification of touch gestures, layout on the target screen, clipboard behavior and persistence across an actual process restart remains unperformed. The user has asked not to install interim builds, so no test APK installation has been requested.
+- A release-signed APK would require a stable signing key; the current CI artifact is debug-signed.
