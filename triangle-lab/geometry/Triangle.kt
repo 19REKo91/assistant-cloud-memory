@@ -42,7 +42,10 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     val circumcenter: Vec2
         get() {
             val d = 2.0 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y))
-            if (abs(d) < 1e-14 || !d.isFinite()) return Vec2(Double.NaN, Double.NaN)
+            val edgeScale = max(a, max(b, c))
+            val relativeDeterminant = abs(d / edgeScale / edgeScale)
+            if (!d.isFinite() || !relativeDeterminant.isFinite() || relativeDeterminant <= 1e-12)
+                return Vec2(Double.NaN, Double.NaN)
             val aa = A.x * A.x + A.y * A.y
             val bb = B.x * B.x + B.y * B.y
             val cc = C.x * C.x + C.y * C.y
