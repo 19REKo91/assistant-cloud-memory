@@ -44,7 +44,7 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
             val d = 2.0 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y))
             val edgeScale = max(a, max(b, c))
             val relativeDeterminant = abs(d / edgeScale / edgeScale)
-            if (!d.isFinite() || !relativeDeterminant.isFinite() || relativeDeterminant <= 1e-12)
+            if (!d.isFinite() || !relativeDeterminant.isFinite() || relativeDeterminant <= 4e-12)
                 return Vec2(Double.NaN, Double.NaN)
             val aa = A.x * A.x + A.y * A.y
             val bb = B.x * B.x + B.y * B.y
