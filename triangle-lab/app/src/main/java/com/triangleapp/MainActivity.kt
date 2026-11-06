@@ -324,12 +324,17 @@ private fun TriangleHome() {
             OutlinedButton(onClick = { zoom = (zoom * 1.2f).coerceAtMost(5f) }) { Text("+") }
             OutlinedButton(onClick = { zoom = (zoom / 1.2f).coerceAtLeast(0.6f) }) { Text("−") }
             TextButton(onClick = { zoom = 1f; pan = Offset.Zero }) { Text(if (english) "Reset view" else "إعادة ضبط العرض") }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ToggleChip(if (english) "Drag vertices" else "تحريك الرؤوس", dragVertices) { dragVertices = it }
-            Text(if (dragVertices) {
-                if (english) "Drag A, B or C to reshape" else "اسحب A أو B أو C لتغيير شكل المثلث"
-            } else {
-                if (english) "Pinch to zoom • drag to pan" else "قرّب بإصبعين واسحب لتحريك الرسم"
-            })
+            Text(
+                if (dragVertices) {
+                    if (english) "Drag A, B or C to reshape" else "اسحب A أو B أو C لتغيير شكل المثلث"
+                } else {
+                    if (english) "Pinch to zoom • drag to pan" else "قرّب بإصبعين واسحب لتحريك الرسم"
+                },
+                modifier = Modifier.weight(1f)
+            )
         }
 
         Text(if (english) "Display controls" else "عناصر الرسم", style = MaterialTheme.typography.titleMedium)
