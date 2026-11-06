@@ -69,21 +69,18 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     }
 
     fun bisectorFoot(vertex: Char): Vec2? {
-        val (p1, p2, len1, len2) = when (vertex.uppercaseChar()) {
-            'A' -> listOf(B, C, c, b)
-            'B' -> listOf(C, A, a, c)
-            'C' -> listOf(A, B, b, a)
-            else -> return null
-        }.let { list ->
-            @Suppress("UNCHECKED_CAST")
-            list as List<Any>
+        fun divide(p1: Vec2, p2: Vec2, len1: Double, len2: Double): Vec2? {
+            val sum = len1 + len2
+            if (sum <= 0.0 || !sum.isFinite()) return null
+            // Angle-bisector theorem: distance ratio from p1 to p2 is len1:len2.
+            return (p1 * len2 + p2 * len1) / sum
         }
-        val u = p1 as Vec2
-        val v = p2 as Vec2
-        val x = len1 as Double
-        val y = len2 as Double
-        val sum = x + y
-        if (sum <= 0.0 || !sum.isFinite()) return null
-        return (u * y + v * x) / sum
+        return when (vertex.uppercaseChar()) {
+            'A' -> divide(B, C, c, b)
+            'B' -> divide(C, A, a, c)
+            'C' -> divide(A, B, b, a)
+            else -> null
+        }
     }
+}
 }
