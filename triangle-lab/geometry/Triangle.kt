@@ -15,7 +15,7 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     }
     val isDegenerate: Boolean
         get() = !A.isFinite() || !B.isFinite() || !C.isFinite() ||
-            !a.isFinite() || !b.isFinite() || !c.isFinite() ||
+            !a.isFinite() || !b.isFinite() || !c.isFinite() || !area.isFinite() ||
             minOf(a, b, c) <= 0.0 || area <= 1e-11
 
     private fun angle(opposite: Double, side1: Double, side2: Double): Double {
