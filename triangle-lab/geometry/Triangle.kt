@@ -34,31 +34,34 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     val angleB: Double get() = angle(b, a, c)
     val angleC: Double get() = angle(c, a, b)
 
-    val centroid: Vec2 get() = (A + B + C) / 3.0
+    val centroid: Vec2 get() = A + ((B - A) + (C - A)) / 3.0
 
     val incenter: Vec2
-        get() = (A * a + B * b + C * c) / perimeter
+        get() = A + ((B - A) * b + (C - A) * c) / perimeter
 
     val circumcenter: Vec2
         get() {
-            val d = 2.0 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y))
+            // Work relative to A to avoid cancellation from large absolute coordinates.
+            val u = B - A
+            val v = C - A
+            val d = 2.0 * (u.x * v.y - u.y * v.x)
             val edgeScale = max(a, max(b, c))
             val relativeDeterminant = abs(d / edgeScale / edgeScale)
             if (!d.isFinite() || !relativeDeterminant.isFinite() || relativeDeterminant <= 4e-12)
                 return Vec2(Double.NaN, Double.NaN)
-            val aa = A.x * A.x + A.y * A.y
-            val bb = B.x * B.x + B.y * B.y
-            val cc = C.x * C.x + C.y * C.y
-            val ux = (aa * (B.y - C.y) + bb * (C.y - A.y) + cc * (A.y - B.y)) / d
-            val uy = (aa * (C.x - B.x) + bb * (A.x - C.x) + cc * (B.x - A.x)) / d
-            return Vec2(ux, uy)
+            val u2 = u.x * u.x + u.y * u.y
+            val v2 = v.x * v.x + v.y * v.y
+            val ox = (u2 * v.y - v2 * u.y) / d
+            val oy = (u.x * v2 - v.x * u2) / d
+            val result = A + Vec2(ox, oy)
+            return if (result.isFinite()) result else Vec2(Double.NaN, Double.NaN)
         }
 
     // Vector identity valid for every non-degenerate Euclidean triangle: H = A + B + C - 2O.
     val orthocenter: Vec2
         get() {
             val o = circumcenter
-            return if (o.isFinite()) A + B + C - o * 2.0 else Vec2(Double.NaN, Double.NaN)
+            return if (o.isFinite()) A + (B - A) + (C - A) - (o - A) * 2.0 else Vec2(Double.NaN, Double.NaN)
         }
 
     fun footFromVertex(vertex: Char): Vec2? {
