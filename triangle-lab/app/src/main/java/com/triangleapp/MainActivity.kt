@@ -218,7 +218,7 @@ private fun TriangleHome() {
                         FilterChip(selected = referenceSide == side, onClick = {
                             referenceSide = side
                             referenceLength = "%.4f".format(Locale.US, when (side) { 'a' -> triangle.a; 'b' -> triangle.b; else -> triangle.c })
-                        }, label = { Text("الضلع ${side.uppercaseChar()}") })
+                        }, label = { Text(if (english) "Side ${side.uppercaseChar()}" else "الضلع ${side.uppercaseChar()}") })
                     }
                     NumberInput(referenceLength, { referenceLength = it }, if (english) "Fixed length" else "الطول الثابت", Modifier.weight(1f))
                 }
@@ -253,6 +253,12 @@ private fun TriangleHome() {
                 setSideFields(triangle); setAngleFields(triangle)
                 message = if (english) "Reset to the reference triangle" else "أُعيد ضبط المثلث المرجعي"
             }) { Text(if (english) "Reset" else "إعادة ضبط") }
+            if (compareTriangle != null) {
+                TextButton(onClick = {
+                    compareTriangle = null
+                    message = if (english) "Comparison removed" else "أُزيل مثلث المقارنة"
+                }) { Text(if (english) "Clear compare" else "إزالة المقارنة") }
+            }
         }
         Text(message, color = MaterialTheme.colorScheme.primary)
 
