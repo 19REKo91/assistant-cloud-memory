@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -82,6 +83,8 @@ private fun TriangleHome() {
     var english by remember { mutableStateOf(false) }
 
     var options by remember { mutableStateOf(DrawOptions()) }
+    var zoom by remember { mutableFloatStateOf(1f) }
+    var pan by remember { mutableStateOf(Offset.Zero) }
     val saved = remember { mutableStateListOf<Triangle>() }
 
     fun setSideFields(t: Triangle) {
@@ -251,8 +254,17 @@ private fun TriangleHome() {
             triangle = triangle,
             compare = compareTriangle,
             options = options,
+            zoom = zoom,
+            pan = pan,
+            onViewTransform = { newZoom, newPan -> zoom = newZoom; pan = newPan },
             modifier = Modifier.fillMaxWidth().height(330.dp)
         )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { zoom = (zoom * 1.2f).coerceAtMost(5f) }) { Text("+") }
+            OutlinedButton(onClick = { zoom = (zoom / 1.2f).coerceAtLeast(0.6f) }) { Text("−") }
+            TextButton(onClick = { zoom = 1f; pan = Offset.Zero }) { Text(if (english) "Reset view" else "إعادة ضبط العرض") }
+            Text(if (english) "Pinch to zoom • drag to pan" else "قرّب بإصبعين واسحب لتحريك الرسم")
+        }
 
         Text(if (english) "Display controls" else "عناصر الرسم", style = MaterialTheme.typography.titleMedium)
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
