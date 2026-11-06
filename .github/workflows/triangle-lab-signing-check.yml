@@ -1,6 +1,9 @@
 name: Triangle Lab signing key validation
 
 on:
+  push:
+    paths:
+      - ".github/workflows/triangle-lab-signing-check.yml"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +23,6 @@ jobs:
           set -Eeuo pipefail
           set +x
 
-          STAGE="checking secret presence"
           KEYSTORE_FILE="$RUNNER_TEMP/triangle-lab-release.jks"
           KEYTOOL_LOG="$RUNNER_TEMP/triangle-lab-keytool.log"
           trap 'rm -f "$KEYSTORE_FILE" "$KEYTOOL_LOG"' EXIT
@@ -43,7 +45,6 @@ jobs:
           fi
           echo "PASS: key alias secret is present."
 
-          STAGE="decoding Base64 keystore"
           if ! printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > "$KEYSTORE_FILE"; then
             echo "::error::ANDROID_KEYSTORE_BASE64 is not valid Base64."
             exit 14
@@ -54,10 +55,9 @@ jobs:
           fi
           echo "PASS: Base64 decoded to a non-empty file."
 
-          STAGE="checking keystore password and alias"
           if ! keytool -list -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >"$KEYTOOL_LOG" 2>&1; then
             echo "::error::The decoded file, password, or alias did not validate. Safe keytool diagnostic follows:"
-            sed -E 's/(password|storepass)[^[:space:]]*/\1 [REDACTED]/Ig' "$KEYTOOL_LOG"
+            cat "$KEYTOOL_LOG"
             exit 16
           fi
 
