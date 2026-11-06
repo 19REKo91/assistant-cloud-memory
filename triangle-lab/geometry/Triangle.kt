@@ -16,12 +16,17 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     val isDegenerate: Boolean
         get() = !A.isFinite() || !B.isFinite() || !C.isFinite() ||
             !a.isFinite() || !b.isFinite() || !c.isFinite() || !area.isFinite() ||
-            minOf(a, b, c) <= 0.0 || area <= 1e-11
+            !perimeter.isFinite() || minOf(a, b, c) <= 0.0 ||
+            (area / max(a, max(b, c)) / max(a, max(b, c))) <= 1e-12
 
     private fun angle(opposite: Double, side1: Double, side2: Double): Double {
-        if (side1 <= 0.0 || side2 <= 0.0) return Double.NaN
-        val cosine = ((side1 * side1 + side2 * side2 - opposite * opposite) /
-            (2.0 * side1 * side2)).coerceIn(-1.0, 1.0)
+        if (side1 <= 0.0 || side2 <= 0.0 || !opposite.isFinite() ||
+            !side1.isFinite() || !side2.isFinite()) return Double.NaN
+        val scale = max(opposite, max(side1, side2))
+        val x = opposite / scale
+        val y = side1 / scale
+        val z = side2 / scale
+        val cosine = ((y * y + z * z - x * x) / (2.0 * y * z)).coerceIn(-1.0, 1.0)
         return Math.toDegrees(kotlin.math.acos(cosine))
     }
 
