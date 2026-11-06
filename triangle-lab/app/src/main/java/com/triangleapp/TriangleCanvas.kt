@@ -19,6 +19,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
+import java.util.Locale
 
 data class DrawOptions(
     val altitudes: Boolean = true,
@@ -172,7 +173,7 @@ fun TriangleCanvas(
                         if (s == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     }
                     drawPath(path, Color(0xFF455A64), style = Stroke(width = 2f))
-                    label("%.1f°".format(listOf(triangle.angleA, triangle.angleB, triangle.angleC)[i]), v)
+                    label("%.1f°".format(Locale.US, listOf(triangle.angleA, triangle.angleB, triangle.angleC)[i]), v)
                 }
                 if (options.externalAngles) {
                     val mid = a1 + delta / 2.0 + Math.PI
@@ -209,7 +210,7 @@ fun TriangleCanvas(
             label("ABC"[i].toString(), v, android.graphics.Color.BLACK)
         }
         if (options.sideLabels) {
-            val sideNames = listOf("a=%.2f".format(triangle.a), "b=%.2f".format(triangle.b), "c=%.2f".format(triangle.c))
+            val sideNames = listOf("a=%.2f".format(Locale.US, triangle.a), "b=%.2f".format(Locale.US, triangle.b), "c=%.2f".format(Locale.US, triangle.c))
             edges.forEachIndexed { i, edge ->
                 val mid = (edge.first + edge.second) / 2.0
                 label(sideNames[i], mid, android.graphics.Color.DKGRAY)
