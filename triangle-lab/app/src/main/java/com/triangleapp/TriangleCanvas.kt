@@ -3,8 +3,10 @@ package com.triangleapp
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,74 @@ data class DrawOptions(
     val sideLabels: Boolean = true
 )
 
+private data class TriangleViewport(
+    val minX: Double,
+    val minY: Double,
+    val scale: Float,
+    val left: Float,
+    val top: Float,
+    val width: Float,
+    val height: Float,
+    val zoom: Float,
+    val pan: Offset
+) {
+    fun toScreen(p: Vec2): Offset {
+        val raw = Offset(left + ((p.x - minX) * scale).toFloat(), height - top - ((p.y - minY) * scale).toFloat())
+        val center = Offset(width / 2f, height / 2f)
+        return Offset(center.x + (raw.x - center.x) * zoom + pan.x, center.y + (raw.y - center.y) * zoom + pan.y)
+    }
+
+    fun toModel(position: Offset): Vec2 {
+        val center = Offset(width / 2f, height / 2f)
+        val raw = Offset(
+            center.x + (position.x - center.x - pan.x) / zoom,
+            center.y + (position.y - center.y - pan.y) / zoom
+        )
+        return Vec2(minX + (raw.x - left) / scale, minY + (height - top - raw.y) / scale)
+    }
+}
+
+private fun buildViewport(
+    triangle: Triangle,
+    compare: Triangle?,
+    width: Float,
+    height: Float,
+    zoom: Float,
+    pan: Offset
+): TriangleViewport {
+    val vertices = listOf(triangle.A, triangle.B, triangle.C)
+    val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
+    fun projection(p: Vec2, u: Vec2, v: Vec2): Vec2 {
+        val e = v - u
+        val d = e.x * e.x + e.y * e.y
+        if (d <= 1e-16) return u
+        val t = ((p.x - u.x) * e.x + (p.y - u.y) * e.y) / d
+        return u + e * t
+    }
+    val constructionPoints = listOf(triangle.centroid, triangle.incenter, triangle.circumcenter, triangle.orthocenter) +
+        listOf(
+            projection(triangle.A, triangle.B, triangle.C),
+            projection(triangle.B, triangle.C, triangle.A),
+            projection(triangle.C, triangle.A, triangle.B),
+            triangle.bisectorFoot('A') ?: triangle.A,
+            triangle.bisectorFoot('B') ?: triangle.B,
+            triangle.bisectorFoot('C') ?: triangle.C
+        )
+    val all = (vertices + extra + constructionPoints).filter { it.isFinite() }
+    val minX = all.minOf { it.x }; val maxX = all.maxOf { it.x }
+    val minY = all.minOf { it.y }; val maxY = all.maxOf { it.y }
+    val spanX = max(maxX - minX, 1e-8)
+    val spanY = max(maxY - minY, 1e-8)
+    val pad = 44f
+    val scale = min(
+        (width - pad * 2).coerceAtLeast(1f) / spanX.toFloat(),
+        (height - pad * 2).coerceAtLeast(1f) / spanY.toFloat()
+    ).coerceAtLeast(1e-5f)
+    val usedW = spanX.toFloat() * scale
+    val usedH = spanY.toFloat() * scale
+    return TriangleViewport(minX, minY, scale, (width - usedW) / 2f, (height - usedH) / 2f, width, height, zoom, pan)
+}
+
 @Composable
 fun TriangleCanvas(
     triangle: Triangle,
@@ -39,53 +109,62 @@ fun TriangleCanvas(
     options: DrawOptions,
     zoom: Float,
     pan: Offset,
+    dragVertices: Boolean,
     onViewTransform: (Float, Offset) -> Unit,
+    onVertexMove: (Char, Vec2) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Canvas(
-        modifier = modifier.pointerInput(zoom, pan) {
+    val latestTriangle = rememberUpdatedState(triangle)
+    val latestCompare = rememberUpdatedState(compare)
+    val latestZoom = rememberUpdatedState(zoom)
+    val latestPan = rememberUpdatedState(pan)
+    val latestOnViewTransform = rememberUpdatedState(onViewTransform)
+    val latestOnVertexMove = rememberUpdatedState(onVertexMove)
+    val gestureModifier = if (dragVertices) {
+        Modifier.pointerInput(Unit) {
+            var selectedVertex: Char? = null
+            var activeViewport: TriangleViewport? = null
+            detectDragGestures(
+                onDragStart = { start ->
+                    val view = buildViewport(
+                        latestTriangle.value, latestCompare.value,
+                        size.width.toFloat(), size.height.toFloat(),
+                        latestZoom.value, latestPan.value
+                    )
+                    activeViewport = view
+                    val candidates = listOf('A' to latestTriangle.value.A, 'B' to latestTriangle.value.B, 'C' to latestTriangle.value.C)
+                    val nearest = candidates.minByOrNull { (view.toScreen(it.second) - start).getDistance() }
+                    selectedVertex = nearest?.takeIf { (view.toScreen(it.second) - start).getDistance() <= 48f }?.first
+                },
+                onDrag = { change, dragAmount ->
+                    change.consume()
+                    val vertex = selectedVertex
+                    val view = activeViewport ?: return@detectDragGestures
+                    if (vertex != null) {
+                        latestOnVertexMove.value(vertex, view.toModel(change.position))
+                    } else {
+                        latestOnViewTransform.value(latestZoom.value, latestPan.value + dragAmount)
+                    }
+                },
+                onDragEnd = { selectedVertex = null; activeViewport = null },
+                onDragCancel = { selectedVertex = null; activeViewport = null }
+            )
+        }
+    } else {
+        Modifier.pointerInput(Unit) {
             detectTransformGestures { _, panChange, zoomChange, _ ->
-                onViewTransform((zoom * zoomChange).coerceIn(0.6f, 5f), pan + panChange)
+                latestOnViewTransform.value(
+                    (latestZoom.value * zoomChange).coerceIn(0.6f, 5f),
+                    latestPan.value + panChange
+                )
             }
         }
-    ) {
+    }
+
+    Canvas(modifier = modifier.then(gestureModifier)) {
         val vertices = listOf(triangle.A, triangle.B, triangle.C)
-        val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
-        fun projection(p: Vec2, u: Vec2, v: Vec2): Vec2 {
-            val e = v - u
-            val d = e.x * e.x + e.y * e.y
-            if (d <= 1e-16) return u
-            val t = ((p.x - u.x) * e.x + (p.y - u.y) * e.y) / d
-            return u + e * t
-        }
-        val constructionPoints = listOf(triangle.centroid, triangle.incenter, triangle.circumcenter, triangle.orthocenter) +
-            listOf(
-                projection(triangle.A, triangle.B, triangle.C),
-                projection(triangle.B, triangle.C, triangle.A),
-                projection(triangle.C, triangle.A, triangle.B),
-                triangle.bisectorFoot('A') ?: triangle.A,
-                triangle.bisectorFoot('B') ?: triangle.B,
-                triangle.bisectorFoot('C') ?: triangle.C
-            )
-        val all = (vertices + extra + constructionPoints).filter { it.isFinite() }
-        val minX = all.minOf { it.x }; val maxX = all.maxOf { it.x }
-        val minY = all.minOf { it.y }; val maxY = all.maxOf { it.y }
-        val spanX = max(maxX - minX, 1e-8)
-        val spanY = max(maxY - minY, 1e-8)
-        val pad = 44f
-        val scale = min((size.width - pad * 2) / spanX.toFloat(), (size.height - pad * 2) / spanY.toFloat())
-        val usedW = spanX.toFloat() * scale
-        val usedH = spanY.toFloat() * scale
-        val left = (size.width - usedW) / 2f
-        val top = (size.height - usedH) / 2f
-        fun point(p: Vec2): Offset {
-            val raw = Offset(left + ((p.x - minX) * scale).toFloat(), size.height - top - ((p.y - minY) * scale).toFloat())
-            val center = Offset(size.width / 2f, size.height / 2f)
-            return Offset(
-                center.x + (raw.x - center.x) * zoom + pan.x,
-                center.y + (raw.y - center.y) * zoom + pan.y
-            )
-        }
+        val viewport = buildViewport(triangle, compare, size.width, size.height, zoom, pan)
+        fun point(p: Vec2): Offset = viewport.toScreen(p)
         fun segment(p: Vec2, q: Vec2, color: Color, width: Float = 2.5f, dashed: Boolean = false) {
             drawLine(color, point(p), point(q), width, pathEffect = if (dashed) androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(12f, 8f)) else null)
         }
