@@ -47,8 +47,25 @@ fun TriangleCanvas(
             }
         }
     ) {
+        val vertices = listOf(triangle.A, triangle.B, triangle.C)
         val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
-        val all = listOf(triangle.A, triangle.B, triangle.C) + extra
+        fun projection(p: Vec2, u: Vec2, v: Vec2): Vec2 {
+            val e = v - u
+            val d = e.x * e.x + e.y * e.y
+            if (d <= 1e-16) return u
+            val t = ((p.x - u.x) * e.x + (p.y - u.y) * e.y) / d
+            return u + e * t
+        }
+        val constructionPoints = listOf(triangle.centroid, triangle.incenter, triangle.circumcenter, triangle.orthocenter) +
+            listOf(
+                projection(triangle.A, triangle.B, triangle.C),
+                projection(triangle.B, triangle.C, triangle.A),
+                projection(triangle.C, triangle.A, triangle.B),
+                triangle.bisectorFoot('A') ?: triangle.A,
+                triangle.bisectorFoot('B') ?: triangle.B,
+                triangle.bisectorFoot('C') ?: triangle.C
+            )
+        val all = (vertices + extra + constructionPoints).filter { it.isFinite() }
         val minX = all.minOf { it.x }; val maxX = all.maxOf { it.x }
         val minY = all.minOf { it.y }; val maxY = all.maxOf { it.y }
         val spanX = max(maxX - minX, 1e-8)
@@ -86,7 +103,6 @@ fun TriangleCanvas(
             return u + e * t
         }
         val colors = listOf(Color(0xFF1565C0), Color(0xFF2E7D32), Color(0xFFEF6C00))
-        val vertices = listOf(triangle.A, triangle.B, triangle.C)
         val edges = listOf(triangle.B to triangle.C, triangle.C to triangle.A, triangle.A to triangle.B)
 
         compare?.let {
