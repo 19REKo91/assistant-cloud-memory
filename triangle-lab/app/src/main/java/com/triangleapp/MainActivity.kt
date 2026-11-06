@@ -3,6 +3,7 @@ package com.triangleapp
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -372,9 +373,8 @@ private fun triangleFromJson(json: JSONObject): Triangle = Triangle(
     Vec2(json.getDouble("cx"), json.getDouble("cy"))
 )
 
-private fun persistTriangles(context: Context, triangles: List<Triangle>) {
+private fun persistTriangles(preferences: SharedPreferences, triangles: List<Triangle>) {
     val array = JSONArray()
     triangles.forEach { array.put(triangleToJson(it)) }
-    context.getSharedPreferences("triangle_lab", Context.MODE_PRIVATE)
-        .edit().putString("saved_triangles", array.toString()).apply()
+    preferences.edit().putString("saved_triangles", array.toString()).apply()
 }
