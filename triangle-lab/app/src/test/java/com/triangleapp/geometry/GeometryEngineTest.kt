@@ -91,4 +91,13 @@ class GeometryEngineTest {
         assertEquals(t.b / t.a, dist(t.A, c) / dist(c, t.B), 1e-8)
     }
 
+    @Test fun constructionIsScaleAwareForVerySmallTriangles() {
+        val t = GeometryEngine.triangleFromSides(5e-12, 4e-12, 3e-12)!!
+        assertFalse(t.isDegenerate)
+        assertEquals(5e-12, t.a, 1e-22)
+        assertEquals(4e-12, t.b, 1e-22)
+        assertEquals(3e-12, t.c, 1e-22)
+        assertEquals(90.0, t.angleA, 1e-7)
+    }
+
 }
