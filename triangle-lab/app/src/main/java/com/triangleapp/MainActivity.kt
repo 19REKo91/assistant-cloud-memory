@@ -43,6 +43,7 @@ import com.triangleapp.geometry.Triangle
 import com.triangleapp.geometry.Vec2
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Locale
 
 private enum class EditMode { SIDES, ANGLES, COORDS, COMPARE }
 
@@ -92,31 +93,31 @@ private fun TriangleHome() {
     val saved = remember { mutableStateListOf<Triangle>() }
 
     fun setSideFields(t: Triangle) {
-        sideA = "%.4f".format(t.a); sideB = "%.4f".format(t.b); sideC = "%.4f".format(t.c)
+        sideA = "%.4f".format(Locale.US, t.a); sideB = "%.4f".format(Locale.US, t.b); sideC = "%.4f".format(Locale.US, t.c)
     }
     fun setAngleFields(t: Triangle) {
-        angleA = "%.4f".format(t.angleA); angleB = "%.4f".format(t.angleB)
-        referenceLength = when (referenceSide) { 'a' -> t.a; 'b' -> t.b; else -> t.c }.let { "%.4f".format(it) }
+        angleA = "%.4f".format(Locale.US, t.angleA); angleB = "%.4f".format(Locale.US, t.angleB)
+        referenceLength = when (referenceSide) { 'a' -> t.a; 'b' -> t.b; else -> t.c }.let { "%.4f".format(Locale.US, it) }
     }
     fun applyCurrent(): Boolean {
         val result = when (mode) {
             EditMode.SIDES -> {
-                val a = sideA.toDoubleOrNull(); val b = sideB.toDoubleOrNull(); val c = sideC.toDoubleOrNull()
+                val a = parseNumber(sideA); val b = parseNumber(sideB); val c = parseNumber(sideC)
                 if (a == null || b == null || c == null) null else GeometryEngine.triangleFromSides(a, b, c)
             }
             EditMode.ANGLES -> {
-                val a = angleA.toDoubleOrNull(); val b = angleB.toDoubleOrNull(); val length = referenceLength.toDoubleOrNull()
+                val a = parseNumber(angleA); val b = parseNumber(angleB); val length = parseNumber(referenceLength)
                 if (a == null || b == null || length == null) null else GeometryEngine.triangleFromAngles(a, b, referenceSide, length)
             }
             EditMode.COORDS -> {
-                val points = listOf(ax, ay, bx, by, cx, cy).map { it.toDoubleOrNull() }
+                val points = listOf(ax, ay, bx, by, cx, cy).map { parseNumber(it) }
                 if (points.any { it == null }) null else {
                     val v = points.map { it!! }
                     Triangle(Vec2(v[0], v[1]), Vec2(v[2], v[3]), Vec2(v[4], v[5])).takeUnless { it.isDegenerate }
                 }
             }
             EditMode.COMPARE -> {
-                val a = compareA.toDoubleOrNull(); val b = compareB.toDoubleOrNull(); val c = compareC.toDoubleOrNull()
+                val a = parseNumber(compareA); val b = parseNumber(compareB); val c = parseNumber(compareC)
                 val candidate = if (a == null || b == null || c == null) null else GeometryEngine.triangleFromSides(a, b, c)
                 if (candidate == null) {
                     message = if (english) "Comparison values do not form a valid triangle" else "أضلاع مثلث المقارنة غير صالحة"
@@ -167,13 +168,13 @@ private fun TriangleHome() {
             EditMode.SIDES -> setSideFields(triangle)
             EditMode.ANGLES -> setAngleFields(triangle)
             EditMode.COORDS -> {
-                ax = "%.4f".format(triangle.A.x); ay = "%.4f".format(triangle.A.y)
-                bx = "%.4f".format(triangle.B.x); by = "%.4f".format(triangle.B.y)
-                cx = "%.4f".format(triangle.C.x); cy = "%.4f".format(triangle.C.y)
+                ax = "%.4f".format(Locale.US, triangle.A.x); ay = "%.4f".format(Locale.US, triangle.A.y)
+                bx = "%.4f".format(Locale.US, triangle.B.x); by = "%.4f".format(Locale.US, triangle.B.y)
+                cx = "%.4f".format(Locale.US, triangle.C.x); cy = "%.4f".format(Locale.US, triangle.C.y)
             }
             EditMode.COMPARE -> {
                 val t = compareTriangle ?: triangle
-                compareA = "%.4f".format(t.a); compareB = "%.4f".format(t.b); compareC = "%.4f".format(t.c)
+                compareA = "%.4f".format(Locale.US, t.a); compareB = "%.4f".format(Locale.US, t.b); compareC = "%.4f".format(Locale.US, t.c)
             }
         }
         mode = next
@@ -216,7 +217,7 @@ private fun TriangleHome() {
                     listOf('a', 'b', 'c').forEach { side ->
                         FilterChip(selected = referenceSide == side, onClick = {
                             referenceSide = side
-                            referenceLength = "%.4f".format(when (side) { 'a' -> triangle.a; 'b' -> triangle.b; else -> triangle.c })
+                            referenceLength = "%.4f".format(Locale.US, when (side) { 'a' -> triangle.a; 'b' -> triangle.b; else -> triangle.c })
                         }, label = { Text("الضلع ${side.uppercaseChar()}") })
                     }
                     NumberInput(referenceLength, { referenceLength = it }, if (english) "Fixed length" else "الطول الثابت", Modifier.weight(1f))
@@ -359,6 +360,22 @@ private fun NumberInput(value: String, onValueChange: (String) -> Unit, label: S
 @Composable
 private fun ToggleChip(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
     FilterChip(selected = checked, onClick = { onChecked(!checked) }, label = { Text(label) })
+}
+
+
+private fun parseNumber(raw: String): Double? {
+    val normalized = buildString {
+        raw.trim().forEach { ch ->
+            when (ch) {
+                in '٠'..'٩' -> append(('0'.code + (ch.code - '٠'.code)).toChar())
+                in '۰'..'۹' -> append(('0'.code + (ch.code - '۰'.code)).toChar())
+                '٫', '،' -> append('.')
+                '٬', ' ' -> Unit
+                else -> append(ch)
+            }
+        }
+    }
+    return normalized.toDoubleOrNull()
 }
 
 private fun triangleToJson(t: Triangle): JSONObject = JSONObject().apply {
