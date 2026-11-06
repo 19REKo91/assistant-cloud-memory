@@ -83,4 +83,3 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
         }
     }
 }
-}
