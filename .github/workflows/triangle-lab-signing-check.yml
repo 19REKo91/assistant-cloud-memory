@@ -10,21 +10,55 @@ jobs:
   validate-signing-key:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate signing secrets without exposing them
+      - name: Diagnose and validate signing secrets safely
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
           set +x
-          test -n "$KEYSTORE_BASE64" || { echo "Missing keystore Base64 secret"; exit 1; }
-          test -n "$KEYSTORE_PASSWORD" || { echo "Missing keystore password secret"; exit 1; }
-          test -n "$KEY_ALIAS" || { echo "Missing key alias secret"; exit 1; }
+
+          STAGE="checking secret presence"
           KEYSTORE_FILE="$RUNNER_TEMP/triangle-lab-release.jks"
-          trap 'rm -f "$KEYSTORE_FILE"' EXIT
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_FILE"
-          test -s "$KEYSTORE_FILE" || { echo "Decoded keystore is empty"; exit 1; }
-          keytool -list -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
-          echo "Signing keystore, password, and alias validated successfully."
+          KEYTOOL_LOG="$RUNNER_TEMP/triangle-lab-keytool.log"
+          trap 'rm -f "$KEYSTORE_FILE" "$KEYTOOL_LOG"' EXIT
+
+          if [[ -z "${KEYSTORE_BASE64:-}" ]]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is missing or empty."
+            exit 11
+          fi
+          echo "PASS: Base64 secret is present."
+
+          if [[ -z "${KEYSTORE_PASSWORD:-}" ]]; then
+            echo "::error::ANDROID_KEYSTORE_PASSWORD is missing or empty."
+            exit 12
+          fi
+          echo "PASS: keystore password secret is present."
+
+          if [[ -z "${KEY_ALIAS:-}" ]]; then
+            echo "::error::ANDROID_KEY_ALIAS is missing or empty."
+            exit 13
+          fi
+          echo "PASS: key alias secret is present."
+
+          STAGE="decoding Base64 keystore"
+          if ! printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > "$KEYSTORE_FILE"; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is not valid Base64."
+            exit 14
+          fi
+          if [[ ! -s "$KEYSTORE_FILE" ]]; then
+            echo "::error::Base64 decoded to an empty keystore file."
+            exit 15
+          fi
+          echo "PASS: Base64 decoded to a non-empty file."
+
+          STAGE="checking keystore password and alias"
+          if ! keytool -list -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >"$KEYTOOL_LOG" 2>&1; then
+            echo "::error::The decoded file, password, or alias did not validate. Safe keytool diagnostic follows:"
+            sed -E 's/(password|storepass)[^[:space:]]*/\1 [REDACTED]/Ig' "$KEYTOOL_LOG"
+            exit 16
+          fi
+
+          echo "PASS: keystore file, password, and alias are valid."
