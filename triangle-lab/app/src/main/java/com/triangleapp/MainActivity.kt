@@ -29,7 +29,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -175,6 +178,7 @@ private fun TriangleHome() {
         mode = next
     }
 
+    CompositionLocalProvider(LocalLayoutDirection provides if (english) LayoutDirection.Ltr else LayoutDirection.Rtl) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -280,7 +284,10 @@ private fun TriangleHome() {
                 ToggleChip(if (english) "Internal angles" else "الزوايا الداخلية", options.internalAngles) { options = options.copy(internalAngles = it) }
                 ToggleChip(if (english) "External angles" else "الزوايا الخارجية", options.externalAngles) { options = options.copy(externalAngles = it) }
             }
-            ToggleChip(if (english) "Side labels" else "قياسات الأضلاع", options.sideLabels) { options = options.copy(sideLabels = it) }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Extend sides" else "تطويل الأضلاع", options.sideExtensions) { options = options.copy(sideExtensions = it) }
+                ToggleChip(if (english) "Side labels" else "قياسات الأضلاع", options.sideLabels) { options = options.copy(sideLabels = it) }
+            }
         }
 
         Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
@@ -328,6 +335,7 @@ private fun TriangleHome() {
             }
         }
         Spacer(Modifier.height(8.dp))
+    }
     }
 
     SideEffect {
