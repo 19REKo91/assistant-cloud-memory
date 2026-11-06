@@ -180,6 +180,28 @@ private fun TriangleHome() {
         mode = next
     }
 
+    val liveInputValid = when (mode) {
+        EditMode.SIDES -> {
+            val a = parseNumber(sideA); val b = parseNumber(sideB); val c = parseNumber(sideC)
+            a != null && b != null && c != null && GeometryEngine.triangleFromSides(a, b, c) != null
+        }
+        EditMode.ANGLES -> {
+            val a = parseNumber(angleA); val b = parseNumber(angleB); val length = parseNumber(referenceLength)
+            a != null && b != null && length != null && GeometryEngine.triangleFromAngles(a, b, referenceSide, length) != null
+        }
+        EditMode.COORDS -> {
+            val v = listOf(ax, ay, bx, by, cx, cy).map { parseNumber(it) }
+            if (v.any { it == null }) false else {
+                val n = v.map { it!! }
+                !Triangle(Vec2(n[0], n[1]), Vec2(n[2], n[3]), Vec2(n[4], n[5])).isDegenerate
+            }
+        }
+        EditMode.COMPARE -> {
+            val a = parseNumber(compareA); val b = parseNumber(compareB); val c = parseNumber(compareC)
+            a != null && b != null && c != null && GeometryEngine.triangleFromSides(a, b, c) != null
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides if (english) LayoutDirection.Ltr else LayoutDirection.Rtl) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(14.dp),
@@ -245,6 +267,14 @@ private fun TriangleHome() {
             }
         }
 
+        Text(
+            if (liveInputValid) {
+                if (english) "Live check: valid triangle input" else "التحقق الفوري: المدخلات تكوّن مثلثاً صالحاً"
+            } else {
+                if (english) "Live check: incomplete or invalid values" else "التحقق الفوري: المدخلات ناقصة أو غير صالحة"
+            },
+            color = if (liveInputValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { applyCurrent() }) { Text(if (english) "Apply" else "اعتماد") }
             OutlinedButton(onClick = {
@@ -299,11 +329,16 @@ private fun TriangleHome() {
         }
 
         Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
-        Text("a = %.4f    b = %.4f    c = %.4f".format(triangle.a, triangle.b, triangle.c))
-        Text("A = %.3f°    B = %.3f°    C = %.3f°".format(triangle.angleA, triangle.angleB, triangle.angleC))
+        Text("a = %.4f    b = %.4f    c = %.4f".format(Locale.US, triangle.a, triangle.b, triangle.c))
+        Text("A = %.3f°    B = %.3f°    C = %.3f°".format(Locale.US, triangle.angleA, triangle.angleB, triangle.angleC))
         Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(triangle.area))
-        Text("G(%.3f, %.3f)    I(%.3f, %.3f)".format(triangle.centroid.x, triangle.centroid.y, triangle.incenter.x, triangle.incenter.y))
-        Text("O(%.3f, %.3f)    H(%.3f, %.3f)".format(triangle.circumcenter.x, triangle.circumcenter.y, triangle.orthocenter.x, triangle.orthocenter.y))
+        Text("G(%.3f, %.3f)    I(%.3f, %.3f)".format(Locale.US, triangle.centroid.x, triangle.centroid.y, triangle.incenter.x, triangle.incenter.y))
+        Text("O(%.3f, %.3f)    H(%.3f, %.3f)".format(Locale.US, triangle.circumcenter.x, triangle.circumcenter.y, triangle.orthocenter.x, triangle.orthocenter.y))
+        compareTriangle?.let { other ->
+            Text(if (english) "Comparison differences (comparison − current)" else "فروق المقارنة (المقارن − الأساسي)", style = MaterialTheme.typography.titleSmall)
+            Text("Δa = %.4f   Δb = %.4f   Δc = %.4f".format(Locale.US, other.a - triangle.a, other.b - triangle.b, other.c - triangle.c))
+            Text("ΔArea = %.4f   ΔPerimeter = %.4f".format(Locale.US, other.area - triangle.area, other.perimeter - triangle.perimeter))
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
