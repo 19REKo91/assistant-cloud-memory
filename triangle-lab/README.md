@@ -14,7 +14,7 @@ The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memo
 - Dashed comparison-triangle overlay and numerical differences for sides, area and perimeter.
 - Measurements for sides, angles, perimeter, area and triangle centers.
 - Save/load/delete triangles; current and comparison triangles restore after relaunch.
-- Complete geometry JSON clipboard export/import: vertex coordinates, side lengths, internal/external angles, angle sum, perimeter, area, centers G/I/O/H, triangle classification, comparison results and active display options. Length units are explicitly marked as unspecified.
+- Geometry JSON clipboard export/import: vertex coordinates, side lengths, internal/external angles, perimeter, area, centers G/I/O/H, comparison results, the three centroid regions ABG/ACG/BCG, and all six sectors around G. Length units are explicitly marked as unspecified.
 - Arabic/English interface text, RTL/LTR layout, and Arabic-Indic/Persian numeric input support.
 
 ## Geometry and tests
@@ -36,3 +36,12 @@ There are 13 geometry regression tests. The GitHub Actions workflow runs unit te
 ## Verification limitation
 
 Automated build and geometry tests passed. The app has not been installed or exercised on the target physical phone. Touch behavior, screen layout, clipboard integration and persistence after a real process restart therefore remain unverified. A release-signed APK requires a stable signing key; the current CI artifact is debug-signed.
+
+
+## Centroid subdivision and G-angle analysis
+
+- The centroid G divides the original triangle into ABG, ACG and BCG; each is calculated as a real triangle with its own side lengths, three angles, area and perimeter.
+- The six sectors around G are formed by the six rays toward A, B, C and the three opposite-side midpoints. Their individual measures and their 360° total are exported.
+- The drawing has a separate “Angles around G” switch for the six arcs and labels.
+- Regression tests verify equal one-third areas, 180° sums in each inner triangle, six positive sectors and a 360° total.
+- These additions are on `feature/triangle-lab-complete-json-export`; verification is pending until the workflow completes.

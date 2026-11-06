@@ -367,6 +367,9 @@ private fun TriangleHome() {
                 ToggleChip(if (english) "External angles" else "الزوايا الخارجية", options.externalAngles) { options = options.copy(externalAngles = it) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Angles around G" else "الزوايا حول G", options.centroidAngles) { options = options.copy(centroidAngles = it) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Extend sides" else "تطويل الأضلاع", options.sideExtensions) { options = options.copy(sideExtensions = it) }
                 ToggleChip(if (english) "Side labels" else "قياسات الأضلاع", options.sideLabels) { options = options.copy(sideLabels = it) }
             }

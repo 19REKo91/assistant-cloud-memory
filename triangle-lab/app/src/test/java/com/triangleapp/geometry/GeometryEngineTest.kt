@@ -121,4 +121,28 @@ class GeometryEngineTest {
         assertEquals(origin, t.orthocenter.y, 1e-3)
     }
 
+    @Test fun centroidSplitsTriangleIntoThreeEqualAreaRegions() {
+        val t = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
+        val inner = t.internalTriangles()
+        assertEquals(listOf("ABG", "ACG", "BCG"), inner.map { it.name })
+        assertEquals(3, inner.size)
+        inner.forEach { item ->
+            assertEquals(t.area / 3.0, item.triangle.area, 1e-9)
+            assertEquals(180.0, item.triangle.angleA + item.triangle.angleB + item.triangle.angleC, 1e-8)
+        }
+        assertEquals(t.area, inner.sumOf { it.triangle.area }, 1e-9)
+    }
+
+    @Test fun sixCentroidSectorsArePositiveAndSumToFullTurn() {
+        val t = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
+        val sectors = t.centroidSectors()
+        assertEquals(6, sectors.size)
+        sectors.forEach {
+            assertTrue(it.angleDegrees > 0.0)
+            assertTrue(it.angleDegrees < 180.0)
+        }
+        assertEquals(360.0, sectors.sumOf { it.angleDegrees }, 1e-8)
+        assertEquals(6, sectors.map { it.startRay }.toSet().size)
+    }
+
 }
