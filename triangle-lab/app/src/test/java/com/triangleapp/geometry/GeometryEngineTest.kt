@@ -53,4 +53,42 @@ class GeometryEngineTest {
         val p = t.bisectorFoot('A')!!
         assertEquals(0.0, dist(t.B, p) / dist(p, t.C) - t.c / t.b, 1e-9)
     }
+    @Test fun angleSumIs180AndSidesArePreserved() {
+        val t = GeometryEngine.triangleFromSides(7.0, 6.0, 5.0)!!
+        assertEquals(180.0, t.angleA + t.angleB + t.angleC, 1e-8)
+        assertEquals(7.0, t.a, 1e-8)
+        assertEquals(6.0, t.b, 1e-8)
+        assertEquals(5.0, t.c, 1e-8)
+    }
+
+    @Test fun rejectsNonFiniteAnglesAndUnknownReferenceSide() {
+        assertNull(GeometryEngine.triangleFromAngles(Double.NaN, 30.0, 'c', 5.0))
+        assertNull(GeometryEngine.triangleFromAngles(60.0, 60.0, 'x', 5.0))
+        assertNull(GeometryEngine.triangleFromAngles(60.0, 60.0, 'c', Double.POSITIVE_INFINITY))
+    }
+
+    @Test fun rescalingKeepsAnglesAndSetsSelectedSide() {
+        val original = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
+        val scaled = GeometryEngine.rescaleToReference(original, 'b', 12.0)!!
+        assertEquals(12.0, scaled.b, 1e-8)
+        assertEquals(original.angleA, scaled.angleA, 1e-8)
+        assertEquals(original.angleB, scaled.angleB, 1e-8)
+        assertEquals(original.angleC, scaled.angleC, 1e-8)
+    }
+
+    @Test fun rejectsCollinearCoordinates() {
+        val t = Triangle(Vec2(0.0, 0.0), Vec2(1.0, 1.0), Vec2(2.0, 2.0))
+        assertTrue(t.isDegenerate)
+    }
+
+    @Test fun allThreeBisectorFeetDivideOppositeSidesCorrectly() {
+        val t = GeometryEngine.triangleFromSides(7.0, 6.0, 5.0)!!
+        val a = t.bisectorFoot('A')!!
+        val b = t.bisectorFoot('B')!!
+        val c = t.bisectorFoot('C')!!
+        assertEquals(t.c / t.b, dist(t.B, a) / dist(a, t.C), 1e-8)
+        assertEquals(t.a / t.c, dist(t.C, b) / dist(b, t.A), 1e-8)
+        assertEquals(t.b / t.a, dist(t.A, c) / dist(c, t.B), 1e-8)
+    }
+
 }
