@@ -151,6 +151,13 @@ private fun TriangleHome() {
                 }
             }
         }
+        val savedCompare = preferences.getString("compare_triangle", null)
+        if (!savedCompare.isNullOrBlank()) {
+            runCatching {
+                val t = triangleFromJson(JSONObject(savedCompare))
+                if (!t.isDegenerate) compareTriangle = t
+            }
+        }
         val restored = preferences.getString("current_triangle", null)
         if (!restored.isNullOrBlank()) {
             runCatching {
@@ -415,6 +422,14 @@ private fun TriangleHome() {
     LaunchedEffect(triangle, restoredState) {
         if (restoredState) {
             preferences.edit().putString("current_triangle", triangleToJson(triangle).toString()).apply()
+        }
+    }
+    LaunchedEffect(compareTriangle, restoredState) {
+        if (restoredState) {
+            val editor = preferences.edit()
+            if (compareTriangle == null) editor.remove("compare_triangle")
+            else editor.putString("compare_triangle", triangleToJson(compareTriangle!!).toString())
+            editor.apply()
         }
     }
 }
