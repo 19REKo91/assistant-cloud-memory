@@ -176,10 +176,18 @@ fun TriangleCanvas(
                     label("%.1f°".format(Locale.US, listOf(triangle.angleA, triangle.angleB, triangle.angleC)[i]), v)
                 }
                 if (options.externalAngles) {
-                    val mid = a1 + delta / 2.0 + Math.PI
-                    val p = point(v)
-                    val q = Offset(p.x + cos(mid).toFloat() * radius * 1.4f, p.y + sin(mid).toFloat() * radius * 1.4f)
-                    drawLine(Color(0xFF5D4037), p, q, 2f)
+                    var externalDelta = (a2 + Math.PI) - a1
+                    while (externalDelta > Math.PI) externalDelta -= 2 * Math.PI
+                    while (externalDelta < -Math.PI) externalDelta += 2 * Math.PI
+                    val path = Path()
+                    for (s in 0..24) {
+                        val angle = a1 + externalDelta * s / 24
+                        val p = point(v)
+                        val x = p.x + cos(angle).toFloat() * radius * 1.3f
+                        val y = p.y + sin(angle).toFloat() * radius * 1.3f
+                        if (s == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                    }
+                    drawPath(path, Color(0xFF5D4037), style = Stroke(width = 2f))
                 }
             }
         }
