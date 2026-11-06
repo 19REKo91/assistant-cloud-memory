@@ -1,5 +1,9 @@
 name: Triangle Lab Android build
 
+concurrency:
+  group: triangle-lab-android-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     paths:
