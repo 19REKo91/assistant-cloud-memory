@@ -90,6 +90,7 @@ private fun TriangleHome() {
     var options by remember { mutableStateOf(DrawOptions()) }
     var zoom by remember { mutableFloatStateOf(1f) }
     var pan by remember { mutableStateOf(Offset.Zero) }
+    var dragVertices by remember { mutableStateOf(false) }
     val saved = remember { mutableStateListOf<Triangle>() }
 
     fun setSideFields(t: Triangle) {
@@ -298,14 +299,37 @@ private fun TriangleHome() {
             options = options,
             zoom = zoom,
             pan = pan,
+            dragVertices = dragVertices,
             onViewTransform = { newZoom, newPan -> zoom = newZoom; pan = newPan },
+            onVertexMove = { vertex, position ->
+                val moved = when (vertex) {
+                    'A' -> triangle.copy(A = position)
+                    'B' -> triangle.copy(B = position)
+                    else -> triangle.copy(C = position)
+                }
+                if (!moved.isDegenerate) {
+                    triangle = moved
+                    setSideFields(moved); setAngleFields(moved)
+                    ax = "%.4f".format(Locale.US, moved.A.x); ay = "%.4f".format(Locale.US, moved.A.y)
+                    bx = "%.4f".format(Locale.US, moved.B.x); by = "%.4f".format(Locale.US, moved.B.y)
+                    cx = "%.4f".format(Locale.US, moved.C.x); cy = "%.4f".format(Locale.US, moved.C.y)
+                    message = if (english) "Vertex $vertex moved" else "تم تحريك الرأس $vertex"
+                } else {
+                    message = if (english) "That move would collapse the triangle" else "هذه الحركة تجعل المثلث منحلّاً"
+                }
+            },
             modifier = Modifier.fillMaxWidth().height(330.dp)
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { zoom = (zoom * 1.2f).coerceAtMost(5f) }) { Text("+") }
             OutlinedButton(onClick = { zoom = (zoom / 1.2f).coerceAtLeast(0.6f) }) { Text("−") }
             TextButton(onClick = { zoom = 1f; pan = Offset.Zero }) { Text(if (english) "Reset view" else "إعادة ضبط العرض") }
-            Text(if (english) "Pinch to zoom • drag to pan" else "قرّب بإصبعين واسحب لتحريك الرسم")
+            ToggleChip(if (english) "Drag vertices" else "تحريك الرؤوس", dragVertices) { dragVertices = it }
+            Text(if (dragVertices) {
+                if (english) "Drag A, B or C to reshape" else "اسحب A أو B أو C لتغيير شكل المثلث"
+            } else {
+                if (english) "Pinch to zoom • drag to pan" else "قرّب بإصبعين واسحب لتحريك الرسم"
+            })
         }
 
         Text(if (english) "Display controls" else "عناصر الرسم", style = MaterialTheme.typography.titleMedium)
