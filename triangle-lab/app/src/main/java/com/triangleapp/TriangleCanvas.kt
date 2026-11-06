@@ -308,7 +308,7 @@ fun TriangleCanvas(
                 "MAB" to midpointAB
             ).map { (name, modelPoint) ->
                 val screenPoint = point(modelPoint)
-                Triple(name, screenPoint, kotlin.math.atan2(screenPoint.y - point(g).y, screenPoint.x - point(g).x))
+                Triple(name, screenPoint, kotlin.math.atan2((screenPoint.y - point(g).y).toDouble(), (screenPoint.x - point(g).x).toDouble()))
             }.sortedBy { ((it.third % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) }
 
             val center = point(g)
