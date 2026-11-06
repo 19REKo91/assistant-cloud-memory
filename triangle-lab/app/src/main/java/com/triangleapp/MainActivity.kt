@@ -331,7 +331,7 @@ private fun TriangleHome() {
         Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
         Text("a = %.4f    b = %.4f    c = %.4f".format(Locale.US, triangle.a, triangle.b, triangle.c))
         Text("A = %.3f°    B = %.3f°    C = %.3f°".format(Locale.US, triangle.angleA, triangle.angleB, triangle.angleC))
-        Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(triangle.area))
+        Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(Locale.US, triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(Locale.US, triangle.area))
         Text("G(%.3f, %.3f)    I(%.3f, %.3f)".format(Locale.US, triangle.centroid.x, triangle.centroid.y, triangle.incenter.x, triangle.incenter.y))
         Text("O(%.3f, %.3f)    H(%.3f, %.3f)".format(Locale.US, triangle.circumcenter.x, triangle.circumcenter.y, triangle.orthocenter.x, triangle.orthocenter.y))
         compareTriangle?.let { other ->
