@@ -101,6 +101,16 @@ private fun TriangleHome() {
         angleA = "%.4f".format(Locale.US, t.angleA); angleB = "%.4f".format(Locale.US, t.angleB)
         referenceLength = when (referenceSide) { 'a' -> t.a; 'b' -> t.b; else -> t.c }.let { "%.4f".format(Locale.US, it) }
     }
+    fun setCoordinateFields(t: Triangle) {
+        ax = "%.4f".format(Locale.US, t.A.x); ay = "%.4f".format(Locale.US, t.A.y)
+        bx = "%.4f".format(Locale.US, t.B.x); by = "%.4f".format(Locale.US, t.B.y)
+        cx = "%.4f".format(Locale.US, t.C.x); cy = "%.4f".format(Locale.US, t.C.y)
+    }
+    fun syncAllFields(t: Triangle) {
+        setSideFields(t)
+        setAngleFields(t)
+        setCoordinateFields(t)
+    }
     fun applyCurrent(): Boolean {
         val result = when (mode) {
             EditMode.SIDES -> {
@@ -164,8 +174,7 @@ private fun TriangleHome() {
                 val t = triangleFromJson(JSONObject(restored))
                 if (!t.isDegenerate) {
                     triangle = t
-                    setSideFields(t)
-                    setAngleFields(t)
+                    syncAllFields(t)
                 }
             }
         }
@@ -177,11 +186,7 @@ private fun TriangleHome() {
         when (next) {
             EditMode.SIDES -> setSideFields(triangle)
             EditMode.ANGLES -> setAngleFields(triangle)
-            EditMode.COORDS -> {
-                ax = "%.4f".format(Locale.US, triangle.A.x); ay = "%.4f".format(Locale.US, triangle.A.y)
-                bx = "%.4f".format(Locale.US, triangle.B.x); by = "%.4f".format(Locale.US, triangle.B.y)
-                cx = "%.4f".format(Locale.US, triangle.C.x); cy = "%.4f".format(Locale.US, triangle.C.y)
-            }
+            EditMode.COORDS -> setCoordinateFields(triangle)
             EditMode.COMPARE -> {
                 val t = compareTriangle ?: triangle
                 compareA = "%.4f".format(Locale.US, t.a); compareB = "%.4f".format(Locale.US, t.b); compareC = "%.4f".format(Locale.US, t.c)
@@ -290,7 +295,11 @@ private fun TriangleHome() {
             OutlinedButton(onClick = {
                 triangle = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
                 compareTriangle = null
-                setSideFields(triangle); setAngleFields(triangle)
+                referenceSide = 'c'
+                angleA = "90"; angleB = "53.13"; referenceLength = "3"
+                compareA = "5"; compareB = "4"; compareC = "3"
+                zoom = 1f; pan = Offset.Zero; dragVertices = false
+                syncAllFields(triangle)
                 message = if (english) "Reset to the reference triangle" else "أُعيد ضبط المثلث المرجعي"
             }) { Text(if (english) "Reset" else "إعادة ضبط") }
             if (compareTriangle != null) {
@@ -318,10 +327,7 @@ private fun TriangleHome() {
                 }
                 if (!moved.isDegenerate) {
                     triangle = moved
-                    setSideFields(moved); setAngleFields(moved)
-                    ax = "%.4f".format(Locale.US, moved.A.x); ay = "%.4f".format(Locale.US, moved.A.y)
-                    bx = "%.4f".format(Locale.US, moved.B.x); by = "%.4f".format(Locale.US, moved.B.y)
-                    cx = "%.4f".format(Locale.US, moved.C.x); cy = "%.4f".format(Locale.US, moved.C.y)
+                    syncAllFields(moved)
                     message = if (english) "Vertex $vertex moved" else "تم تحريك الرأس $vertex"
                 } else {
                     message = if (english) "That move would collapse the triangle" else "هذه الحركة تجعل المثلث منحلّاً"
@@ -394,7 +400,7 @@ private fun TriangleHome() {
                 val raw = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString()
                 val imported = runCatching { raw?.let { triangleFromJson(JSONObject(it)) } }.getOrNull()
                 if (imported != null && !imported.isDegenerate) {
-                    triangle = imported; setSideFields(imported); setAngleFields(imported)
+                    triangle = imported; syncAllFields(imported)
                     message = if (english) "Triangle imported" else "تم استيراد المثلث"
                 } else message = if (english) "Clipboard does not contain valid Triangle Lab JSON" else "محتوى الحافظة ليس بيانات مثلث صالحة"
             }) { Text(if (english) "Import" else "استيراد") }
@@ -406,7 +412,7 @@ private fun TriangleHome() {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("${index + 1}. a=%.2f, b=%.2f, c=%.2f".format(item.a, item.b, item.c))
                     Row {
-                        TextButton(onClick = { triangle = item; setSideFields(item); setAngleFields(item) }) { Text(if (english) "Load" else "تحميل") }
+                        TextButton(onClick = { triangle = item; syncAllFields(item) }) { Text(if (english) "Load" else "تحميل") }
                         TextButton(onClick = {
                             saved.removeAt(index)
                             persistTriangles(preferences, saved)
