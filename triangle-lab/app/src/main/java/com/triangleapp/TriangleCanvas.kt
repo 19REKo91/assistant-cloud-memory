@@ -1,6 +1,7 @@
 package com.triangleapp
 
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -30,6 +31,7 @@ data class DrawOptions(
     val centers: Boolean = true,
     val internalAngles: Boolean = true,
     val externalAngles: Boolean = false,
+    val centroidAngles: Boolean = true,
     val sideExtensions: Boolean = false,
     val sideLabels: Boolean = true
 )
@@ -289,6 +291,70 @@ fun TriangleCanvas(
                     drawCircle(color, 7f, point(p))
                     label(name, p)
                 }
+            }
+        }
+
+        if (options.centroidAngles) {
+            val g = triangle.centroid
+            val midpointBC = (triangle.B + triangle.C) / 2.0
+            val midpointCA = (triangle.C + triangle.A) / 2.0
+            val midpointAB = (triangle.A + triangle.B) / 2.0
+            val spokes = listOf(
+                "A" to triangle.A,
+                "MBC" to midpointBC,
+                "B" to triangle.B,
+                "MCA" to midpointCA,
+                "C" to triangle.C,
+                "MAB" to midpointAB
+            ).map { (name, modelPoint) ->
+                val screenPoint = point(modelPoint)
+                Triple(name, screenPoint, kotlin.math.atan2((screenPoint.y - point(g).y).toDouble(), (screenPoint.x - point(g).x).toDouble()))
+            }.sortedBy { ((it.third % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) }
+
+            val center = point(g)
+            val arcRadius = min(size.width, size.height) * 0.055f
+            val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = android.graphics.Color.rgb(0, 121, 107)
+                style = Paint.Style.STROKE
+                strokeWidth = 2.2f
+            }
+            val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = android.graphics.Color.rgb(0, 96, 86)
+                textSize = 27f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.CENTER
+            }
+            spokes.forEach { (_, screenPoint, _) ->
+                drawLine(Color(0xFF78909C), center, screenPoint, 1.4f)
+            }
+            listOf("MBC" to midpointBC, "MCA" to midpointCA, "MAB" to midpointAB).forEach { (name, p) ->
+                drawCircle(Color(0xFF00897B), 4.5f, point(p))
+                label(name, p, android.graphics.Color.rgb(0, 105, 92))
+            }
+            for (i in spokes.indices) {
+                val start = spokes[i]
+                val end = spokes[(i + 1) % spokes.size]
+                var sweep = end.third - start.third
+                while (sweep < 0.0) sweep += 2 * Math.PI
+                val startDegrees = Math.toDegrees(start.third).toFloat()
+                val sweepDegrees = Math.toDegrees(sweep).toFloat()
+                drawContext.canvas.nativeCanvas.drawArc(
+                    RectF(center.x - arcRadius, center.y - arcRadius, center.x + arcRadius, center.y + arcRadius),
+                    startDegrees,
+                    sweepDegrees,
+                    false,
+                    arcPaint
+                )
+                val middle = start.third + sweep / 2.0
+                val labelRadius = arcRadius * 1.75f
+                val labelX = center.x + kotlin.math.cos(middle).toFloat() * labelRadius
+                val labelY = center.y + kotlin.math.sin(middle).toFloat() * labelRadius
+                drawContext.canvas.nativeCanvas.drawText(
+                    "%.1f°".format(Locale.US, Math.toDegrees(sweep)),
+                    labelX,
+                    labelY,
+                    textPaint
+                )
             }
         }
 

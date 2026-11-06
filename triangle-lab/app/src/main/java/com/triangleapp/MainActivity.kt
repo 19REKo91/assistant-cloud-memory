@@ -367,6 +367,9 @@ private fun TriangleHome() {
                 ToggleChip(if (english) "External angles" else "الزوايا الخارجية", options.externalAngles) { options = options.copy(externalAngles = it) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Angles around G" else "الزوايا حول G", options.centroidAngles) { options = options.copy(centroidAngles = it) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Extend sides" else "تطويل الأضلاع", options.sideExtensions) { options = options.copy(sideExtensions = it) }
                 ToggleChip(if (english) "Side labels" else "قياسات الأضلاع", options.sideLabels) { options = options.copy(sideLabels = it) }
             }
@@ -392,13 +395,30 @@ private fun TriangleHome() {
             }) { Text(if (english) "Save" else "حفظ") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab", triangleToJson(triangle).toString()))
-                message = if (english) "Triangle data copied as JSON" else "نُسخت بيانات المثلث بصيغة JSON"
-            }) { Text(if (english) "Export" else "تصدير") }
+                val json = triangleExportJson(triangle, compareTriangle, options).toString(2)
+                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab JSON", json))
+                message = if (english) "Complete geometry JSON copied to clipboard" else "نُسخت بيانات المثلث وقياساته كاملة بصيغة JSON"
+            }) { Text(if (english) "Copy JSON" else "نسخ JSON") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val raw = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString()
-                val imported = runCatching { raw?.let { triangleFromJson(JSONObject(it)) } }.getOrNull()
+                val imported = runCatching {
+                    raw?.let {
+                        val source = JSONObject(it)
+                        val coordinates = if (source.has("current_triangle")) {
+                            val vertices = source.getJSONObject("current_triangle").getJSONObject("vertices")
+                            JSONObject().apply {
+                                put("ax", vertices.getJSONObject("A").getDouble("x"))
+                                put("ay", vertices.getJSONObject("A").getDouble("y"))
+                                put("bx", vertices.getJSONObject("B").getDouble("x"))
+                                put("by", vertices.getJSONObject("B").getDouble("y"))
+                                put("cx", vertices.getJSONObject("C").getDouble("x"))
+                                put("cy", vertices.getJSONObject("C").getDouble("y"))
+                            }
+                        } else source
+                        triangleFromJson(coordinates)
+                    }
+                }.getOrNull()
                 if (imported != null && !imported.isDegenerate) {
                     triangle = imported; syncAllFields(imported)
                     message = if (english) "Triangle imported" else "تم استيراد المثلث"
