@@ -3,6 +3,7 @@ package com.triangleapp
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import com.triangleapp.geometry.Triangle
 import com.triangleapp.geometry.Vec2
 import kotlin.math.atan2
@@ -33,9 +35,18 @@ fun TriangleCanvas(
     triangle: Triangle,
     compare: Triangle?,
     options: DrawOptions,
+    zoom: Float,
+    pan: Offset,
+    onViewTransform: (Float, Offset) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = modifier) {
+    Canvas(
+        modifier = modifier.pointerInput(zoom, pan) {
+            detectTransformGestures { _, panChange, zoomChange, _ ->
+                onViewTransform((zoom * zoomChange).coerceIn(0.6f, 5f), pan + panChange)
+            }
+        }
+    ) {
         val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
         val all = listOf(triangle.A, triangle.B, triangle.C) + extra
         val minX = all.minOf { it.x }; val maxX = all.maxOf { it.x }
@@ -48,7 +59,14 @@ fun TriangleCanvas(
         val usedH = spanY.toFloat() * scale
         val left = (size.width - usedW) / 2f
         val top = (size.height - usedH) / 2f
-        fun point(p: Vec2) = Offset(left + ((p.x - minX) * scale).toFloat(), size.height - top - ((p.y - minY) * scale).toFloat())
+        fun point(p: Vec2): Offset {
+            val raw = Offset(left + ((p.x - minX) * scale).toFloat(), size.height - top - ((p.y - minY) * scale).toFloat())
+            val center = Offset(size.width / 2f, size.height / 2f)
+            return Offset(
+                center.x + (raw.x - center.x) * zoom + pan.x,
+                center.y + (raw.y - center.y) * zoom + pan.y
+            )
+        }
         fun segment(p: Vec2, q: Vec2, color: Color, width: Float = 2.5f, dashed: Boolean = false) {
             drawLine(color, point(p), point(q), width, pathEffect = if (dashed) androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(12f, 8f)) else null)
         }
