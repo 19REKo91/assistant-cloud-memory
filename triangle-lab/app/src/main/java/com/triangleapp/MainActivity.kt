@@ -1,9 +1,12 @@
 package com.triangleapp
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,93 +15,346 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.triangleapp.geometry.GeometryEngine
 import com.triangleapp.geometry.Triangle
-import kotlin.math.max
+import com.triangleapp.geometry.Vec2
+import org.json.JSONArray
+import org.json.JSONObject
+
+private enum class EditMode { SIDES, ANGLES, COORDS, COMPARE }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { Surface(Modifier.fillMaxSize()) { TriangleHome() } } }
+        setContent {
+            MaterialTheme {
+                Surface(Modifier.fillMaxSize()) {
+                    TriangleHome()
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun TriangleHome() {
-    var a by remember { mutableStateOf("5") }
-    var b by remember { mutableStateOf("4") }
-    var c by remember { mutableStateOf("3") }
-    var triangle by remember { mutableStateOf(GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)) }
-    var message by remember { mutableStateOf("أدخل أطوال الأضلاع") }
+    val context = LocalContext.current
+    val preferences = remember { context.getSharedPreferences("triangle_lab", Context.MODE_PRIVATE) }
+    var mode by remember { mutableStateOf(EditMode.SIDES) }
+    var triangle by remember { mutableStateOf(GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!) }
+    var compareTriangle by remember { mutableStateOf<Triangle?>(null) }
+    var message by remember { mutableStateOf("مثلث صالح — يمكنك تغيير المدخلات") }
+
+    var sideA by remember { mutableStateOf("5") }
+    var sideB by remember { mutableStateOf("4") }
+    var sideC by remember { mutableStateOf("3") }
+    var angleA by remember { mutableStateOf("90") }
+    var angleB by remember { mutableStateOf("53.13") }
+    var referenceSide by remember { mutableStateOf('c') }
+    var referenceLength by remember { mutableStateOf("3") }
+    var ax by remember { mutableStateOf("0") }
+    var ay by remember { mutableStateOf("0") }
+    var bx by remember { mutableStateOf("3") }
+    var by by remember { mutableStateOf("0") }
+    var cx by remember { mutableStateOf("0") }
+    var cy by remember { mutableStateOf("4") }
+    var compareA by remember { mutableStateOf("5") }
+    var compareB by remember { mutableStateOf("4") }
+    var compareC by remember { mutableStateOf("3") }
+    var english by remember { mutableStateOf(false) }
+
+    var options by remember { mutableStateOf(DrawOptions()) }
+    val saved = remember { mutableStateListOf<Triangle>() }
+
+    fun setSideFields(t: Triangle) {
+        sideA = "%.4f".format(t.a); sideB = "%.4f".format(t.b); sideC = "%.4f".format(t.c)
+    }
+    fun setAngleFields(t: Triangle) {
+        angleA = "%.4f".format(t.angleA); angleB = "%.4f".format(t.angleB)
+        referenceLength = when (referenceSide) { 'a' -> t.a; 'b' -> t.b; else -> t.c }.let { "%.4f".format(it) }
+    }
+    fun applyCurrent(): Boolean {
+        val result = when (mode) {
+            EditMode.SIDES -> {
+                val a = sideA.toDoubleOrNull(); val b = sideB.toDoubleOrNull(); val c = sideC.toDoubleOrNull()
+                if (a == null || b == null || c == null) null else GeometryEngine.triangleFromSides(a, b, c)
+            }
+            EditMode.ANGLES -> {
+                val a = angleA.toDoubleOrNull(); val b = angleB.toDoubleOrNull(); val length = referenceLength.toDoubleOrNull()
+                if (a == null || b == null || length == null) null else GeometryEngine.triangleFromAngles(a, b, referenceSide, length)
+            }
+            EditMode.COORDS -> {
+                val points = listOf(ax, ay, bx, by, cx, cy).map { it.toDoubleOrNull() }
+                if (points.any { it == null }) null else {
+                    val v = points.map { it!! }
+                    Triangle(Vec2(v[0], v[1]), Vec2(v[2], v[3]), Vec2(v[4], v[5])).takeUnless { it.isDegenerate }
+                }
+            }
+            EditMode.COMPARE -> {
+                val a = compareA.toDoubleOrNull(); val b = compareB.toDoubleOrNull(); val c = compareC.toDoubleOrNull()
+                val candidate = if (a == null || b == null || c == null) null else GeometryEngine.triangleFromSides(a, b, c)
+                if (candidate == null) {
+                    message = if (english) "Comparison values do not form a valid triangle" else "أضلاع مثلث المقارنة غير صالحة"
+                    return false
+                }
+                compareTriangle = candidate
+                message = if (english) "Comparison triangle updated" else "تم تحديث مثلث المقارنة"
+                return true
+            }
+        }
+        if (result == null || result.isDegenerate) {
+            message = if (english) "Invalid values: no valid triangle can be formed" else "مدخلات غير صالحة: لا يمكن تكوين مثلث بهذه القيم"
+            return false
+        }
+        triangle = result
+        message = if (english) "Valid triangle — geometry updated" else "مثلث صالح — تم تحديث الرسم والقياسات"
+        return true
+    }
+
+    LaunchedEffect(Unit) {
+        val raw = preferences.getString("saved_triangles", null)
+        if (!raw.isNullOrBlank()) {
+            runCatching {
+                val array = JSONArray(raw)
+                for (i in 0 until array.length()) {
+                    val item = array.getJSONObject(i)
+                    val t = triangleFromJson(item)
+                    if (!t.isDegenerate) saved.add(t)
+                }
+            }
+        }
+        val restored = preferences.getString("current_triangle", null)
+        if (!restored.isNullOrBlank()) {
+            runCatching {
+                val t = triangleFromJson(JSONObject(restored))
+                if (!t.isDegenerate) {
+                    triangle = t
+                    setSideFields(t)
+                    setAngleFields(t)
+                }
+            }
+        }
+    }
+
+    fun changeMode(next: EditMode) {
+        if (next == mode) return
+        when (next) {
+            EditMode.SIDES -> setSideFields(triangle)
+            EditMode.ANGLES -> setAngleFields(triangle)
+            EditMode.COORDS -> {
+                ax = "%.4f".format(triangle.A.x); ay = "%.4f".format(triangle.A.y)
+                bx = "%.4f".format(triangle.B.x); by = "%.4f".format(triangle.B.y)
+                cx = "%.4f".format(triangle.C.x); cy = "%.4f".format(triangle.C.y)
+            }
+            EditMode.COMPARE -> {
+                val t = compareTriangle ?: triangle
+                compareA = "%.4f".format(t.a); compareB = "%.4f".format(t.b); compareC = "%.4f".format(t.c)
+            }
+        }
+        mode = next
+    }
 
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text("مختبر المثلث", style = MaterialTheme.typography.headlineMedium)
-        Text("إدخال أطوال الأضلاع والتحقق الهندسي الفوري")
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(if (english) "Triangle Lab" else "مختبر المثلث", style = MaterialTheme.typography.headlineMedium)
+            TextButton(onClick = { english = !english }) { Text(if (english) "العربية" else "English") }
+        }
+        Text(if (english) "Geometry workspace — values are validated before applying" else "مساحة هندسية — تُفحص القيم قبل اعتمادها")
+
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            FilterChip(selected = mode == EditMode.SIDES, onClick = { changeMode(EditMode.SIDES) }, label = { Text(if (english) "Sides" else "الأضلاع") })
+            FilterChip(selected = mode == EditMode.ANGLES, onClick = { changeMode(EditMode.ANGLES) }, label = { Text(if (english) "Angles" else "الزوايا") })
+            FilterChip(selected = mode == EditMode.COORDS, onClick = { changeMode(EditMode.COORDS) }, label = { Text(if (english) "Coordinates" else "الإحداثيات") })
+            FilterChip(selected = mode == EditMode.COMPARE, onClick = { changeMode(EditMode.COMPARE) }, label = { Text(if (english) "Compare" else "المقارنة") })
+        }
+
+        when (mode) {
+            EditMode.SIDES -> {
+                Text(if (english) "Side lengths (a=BC, b=CA, c=AB)" else "أطوال الأضلاع (a=BC، b=CA، c=AB)")
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(sideA, { sideA = it }, "a", Modifier.weight(1f))
+                    NumberInput(sideB, { sideB = it }, "b", Modifier.weight(1f))
+                    NumberInput(sideC, { sideC = it }, "c", Modifier.weight(1f))
+                }
+            }
+            EditMode.ANGLES -> {
+                Text(if (english) "Enter A and B, then select the fixed reference side" else "أدخل الزاويتين A وB ثم اختر الضلع المرجعي الثابت")
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(angleA, { angleA = it }, if (english) "Angle A°" else "زاوية A°", Modifier.weight(1f))
+                    NumberInput(angleB, { angleB = it }, if (english) "Angle B°" else "زاوية B°", Modifier.weight(1f))
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf('a', 'b', 'c').forEach { side ->
+                        FilterChip(selected = referenceSide == side, onClick = {
+                            referenceSide = side
+                            referenceLength = "%.4f".format(when (side) { 'a' -> triangle.a; 'b' -> triangle.b; else -> triangle.c })
+                        }, label = { Text("الضلع ${side.uppercaseChar()}") })
+                    }
+                    NumberInput(referenceLength, { referenceLength = it }, if (english) "Fixed length" else "الطول الثابت", Modifier.weight(1f))
+                }
+            }
+            EditMode.COORDS -> {
+                Text(if (english) "Vertex coordinates" else "إحداثيات الرؤوس")
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(ax, { ax = it }, "Ax", Modifier.weight(1f)); NumberInput(ay, { ay = it }, "Ay", Modifier.weight(1f))
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(bx, { bx = it }, "Bx", Modifier.weight(1f)); NumberInput(by, { by = it }, "By", Modifier.weight(1f))
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(cx, { cx = it }, "Cx", Modifier.weight(1f)); NumberInput(cy, { cy = it }, "Cy", Modifier.weight(1f))
+                }
+            }
+            EditMode.COMPARE -> {
+                Text(if (english) "Comparison triangle side lengths" else "أطوال أضلاع مثلث المقارنة")
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    NumberInput(compareA, { compareA = it }, "a₂", Modifier.weight(1f))
+                    NumberInput(compareB, { compareB = it }, "b₂", Modifier.weight(1f))
+                    NumberInput(compareC, { compareC = it }, "c₂", Modifier.weight(1f))
+                }
+            }
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(a, { a = it }, Modifier.weight(1f), label = { Text("a = BC") })
-            OutlinedTextField(b, { b = it }, Modifier.weight(1f), label = { Text("b = CA") })
-            OutlinedTextField(c, { c = it }, Modifier.weight(1f), label = { Text("c = AB") })
+            Button(onClick = { applyCurrent() }) { Text(if (english) "Apply" else "اعتماد") }
+            OutlinedButton(onClick = {
+                triangle = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
+                compareTriangle = null
+                setSideFields(triangle); setAngleFields(triangle)
+                message = if (english) "Reset to the reference triangle" else "أُعيد ضبط المثلث المرجعي"
+            }) { Text(if (english) "Reset" else "إعادة ضبط") }
         }
-        Button(onClick = {
-            val av = a.toDoubleOrNull()
-            val bv = b.toDoubleOrNull()
-            val cv = c.toDoubleOrNull()
-            triangle = if (av != null && bv != null && cv != null)
-                GeometryEngine.triangleFromSides(av, bv, cv) else null
-            message = if (triangle == null) "الأطوال لا تكوّن مثلثاً صالحاً" else "مثلث صالح"
-        }) { Text("تحقق وارسم") }
-        Text(message)
-        triangle?.let { tri ->
-            TrianglePreview(tri, Modifier.fillMaxWidth().height(260.dp))
-            Text("المحيط: %.4f".format(tri.perimeter))
-            Text("المساحة: %.4f".format(tri.area))
-            Text("الزوايا: A %.2f°  |  B %.2f°  |  C %.2f°".format(tri.angleA, tri.angleB, tri.angleC))
-            Text("مركز الثقل G: (%.3f, %.3f)".format(tri.centroid.x, tri.centroid.y))
-            Text("مركز الدائرة الداخلية I: (%.3f, %.3f)".format(tri.incenter.x, tri.incenter.y))
-            Text("مركز الدائرة المحيطة O: (%.3f, %.3f)".format(tri.circumcenter.x, tri.circumcenter.y))
-            Text("مركز التعامد H: (%.3f, %.3f)".format(tri.orthocenter.x, tri.orthocenter.y))
+        Text(message, color = MaterialTheme.colorScheme.primary)
+
+        TriangleCanvas(
+            triangle = triangle,
+            compare = compareTriangle,
+            options = options,
+            modifier = Modifier.fillMaxWidth().height(330.dp)
+        )
+
+        Text(if (english) "Display controls" else "عناصر الرسم", style = MaterialTheme.typography.titleMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Altitudes" else "الارتفاعات", options.altitudes) { options = options.copy(altitudes = it) }
+                ToggleChip(if (english) "Vertex bisectors" else "منصفات الرؤوس", options.vertexBisectors) { options = options.copy(vertexBisectors = it) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Centers" else "المراكز G/I/O/H", options.centers) { options = options.copy(centers = it) }
+                ToggleChip(if (english) "I radii" else "وصلات I للأضلاع", options.centerRadii) { options = options.copy(centerRadii = it) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ToggleChip(if (english) "Internal angles" else "الزوايا الداخلية", options.internalAngles) { options = options.copy(internalAngles = it) }
+                ToggleChip(if (english) "External angles" else "الزوايا الخارجية", options.externalAngles) { options = options.copy(externalAngles = it) }
+            }
+            ToggleChip(if (english) "Side labels" else "قياسات الأضلاع", options.sideLabels) { options = options.copy(sideLabels = it) }
         }
-        Spacer(Modifier.size(8.dp))
+
+        Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
+        Text("a = %.4f    b = %.4f    c = %.4f".format(triangle.a, triangle.b, triangle.c))
+        Text("A = %.3f°    B = %.3f°    C = %.3f°".format(triangle.angleA, triangle.angleB, triangle.angleC))
+        Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(triangle.area))
+        Text("G(%.3f, %.3f)    I(%.3f, %.3f)".format(triangle.centroid.x, triangle.centroid.y, triangle.incenter.x, triangle.incenter.y))
+        Text("O(%.3f, %.3f)    H(%.3f, %.3f)".format(triangle.circumcenter.x, triangle.circumcenter.y, triangle.orthocenter.x, triangle.orthocenter.y))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = {
+                saved.add(triangle)
+                persistTriangles(preferences, saved)
+                message = if (english) "Triangle saved on this device" else "تم حفظ المثلث على هذا الجهاز"
+            }) { Text(if (english) "Save" else "حفظ") }
+            OutlinedButton(onClick = {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab", triangleToJson(triangle).toString()))
+                message = if (english) "Triangle data copied as JSON" else "نُسخت بيانات المثلث بصيغة JSON"
+            }) { Text(if (english) "Export" else "تصدير") }
+            OutlinedButton(onClick = {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val raw = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString()
+                val imported = runCatching { raw?.let { triangleFromJson(JSONObject(it)) } }.getOrNull()
+                if (imported != null && !imported.isDegenerate) {
+                    triangle = imported; setSideFields(imported); setAngleFields(imported)
+                    message = if (english) "Triangle imported" else "تم استيراد المثلث"
+                } else message = if (english) "Clipboard does not contain valid Triangle Lab JSON" else "محتوى الحافظة ليس بيانات مثلث صالحة"
+            }) { Text(if (english) "Import" else "استيراد") }
+        }
+
+        if (saved.isNotEmpty()) {
+            Text(if (english) "Saved triangles" else "المثلثات المحفوظة", style = MaterialTheme.typography.titleMedium)
+            saved.forEachIndexed { index, item ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("${index + 1}. a=%.2f, b=%.2f, c=%.2f".format(item.a, item.b, item.c))
+                    Row {
+                        TextButton(onClick = { triangle = item; setSideFields(item); setAngleFields(item) }) { Text(if (english) "Load" else "تحميل") }
+                        TextButton(onClick = {
+                            saved.removeAt(index)
+                            persistTriangles(preferences, saved)
+                        }) { Text(if (english) "Delete" else "حذف") }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+
+    SideEffect {
+        preferences.edit().putString("current_triangle", triangleToJson(triangle).toString()).apply()
     }
 }
 
 @Composable
-private fun TrianglePreview(triangle: Triangle, modifier: Modifier = Modifier) {
-    Canvas(modifier) {
-        val points = listOf(triangle.A, triangle.B, triangle.C)
-        val minX = points.minOf { it.x }; val maxX = points.maxOf { it.x }
-        val minY = points.minOf { it.y }; val maxY = points.maxOf { it.y }
-        val spanX = max(maxX - minX, 1e-6); val spanY = max(maxY - minY, 1e-6)
-        val scale = minOf((size.width - 48f) / spanX.toFloat(), (size.height - 48f) / spanY.toFloat())
-        fun map(p: com.triangleapp.geometry.Vec2) = Offset(
-            24f + ((p.x - minX) * scale).toFloat(),
-            size.height - 24f - ((p.y - minY) * scale).toFloat()
-        )
-        val path = Path().apply {
-            moveTo(map(triangle.A).x, map(triangle.A).y)
-            lineTo(map(triangle.B).x, map(triangle.B).y)
-            lineTo(map(triangle.C).x, map(triangle.C).y)
-            close()
-        }
-        drawPath(path, Color(0xFF1565C0), style = Stroke(width = 4f))
-        listOf(triangle.A, triangle.B, triangle.C).forEach { drawCircle(Color(0xFFD32F2F), 7f, map(it)) }
-    }
+private fun NumberInput(value: String, onValueChange: (String) -> Unit, label: String, modifier: Modifier = Modifier) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+    )
+}
+
+@Composable
+private fun ToggleChip(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
+    FilterChip(selected = checked, onClick = { onChecked(!checked) }, label = { Text(label) })
+}
+
+private fun triangleToJson(t: Triangle): JSONObject = JSONObject().apply {
+    put("ax", t.A.x); put("ay", t.A.y)
+    put("bx", t.B.x); put("by", t.B.y)
+    put("cx", t.C.x); put("cy", t.C.y)
+}
+
+private fun triangleFromJson(json: JSONObject): Triangle = Triangle(
+    Vec2(json.getDouble("ax"), json.getDouble("ay")),
+    Vec2(json.getDouble("bx"), json.getDouble("by")),
+    Vec2(json.getDouble("cx"), json.getDouble("cy"))
+)
+
+private fun persistTriangles(context: Context, triangles: List<Triangle>) {
+    val array = JSONArray()
+    triangles.forEach { array.put(triangleToJson(it)) }
+    context.getSharedPreferences("triangle_lab", Context.MODE_PRIVATE)
+        .edit().putString("saved_triangles", array.toString()).apply()
 }
