@@ -98,6 +98,10 @@ class GeometryEngineTest {
         assertEquals(4e-12, t.b, 1e-22)
         assertEquals(3e-12, t.c, 1e-22)
         assertEquals(90.0, t.angleA, 1e-7)
+        assertEquals(1.5e-12, t.circumcenter.x, 1e-21)
+        assertEquals(2.0e-12, t.circumcenter.y, 1e-21)
+        assertEquals(0.0, t.orthocenter.x, 1e-21)
+        assertEquals(0.0, t.orthocenter.y, 1e-21)
     }
 
 }
