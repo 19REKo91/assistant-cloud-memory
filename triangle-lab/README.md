@@ -14,7 +14,7 @@ The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memo
 - Dashed comparison-triangle overlay and numerical differences for sides, area and perimeter.
 - Measurements for sides, angles, perimeter, area and triangle centers.
 - Save/load/delete triangles; current and comparison triangles restore after relaunch.
-- JSON clipboard import/export.
+- Complete geometry JSON clipboard export/import: vertex coordinates, side lengths, internal/external angles, angle sum, perimeter, area, centers G/I/O/H, triangle classification, comparison results and active display options. Length units are explicitly marked as unspecified.
 - Arabic/English interface text, RTL/LTR layout, and Arabic-Indic/Persian numeric input support.
 
 ## Geometry and tests
