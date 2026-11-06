@@ -1,0 +1,30 @@
+name: Triangle Lab signing key validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-signing-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate signing secrets without exposing them
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          set +x
+          test -n "$KEYSTORE_BASE64" || { echo "Missing keystore Base64 secret"; exit 1; }
+          test -n "$KEYSTORE_PASSWORD" || { echo "Missing keystore password secret"; exit 1; }
+          test -n "$KEY_ALIAS" || { echo "Missing key alias secret"; exit 1; }
+          KEYSTORE_FILE="$RUNNER_TEMP/triangle-lab-release.jks"
+          trap 'rm -f "$KEYSTORE_FILE"' EXIT
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_FILE"
+          test -s "$KEYSTORE_FILE" || { echo "Decoded keystore is empty"; exit 1; }
+          keytool -list -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          echo "Signing keystore, password, and alias validated successfully."
