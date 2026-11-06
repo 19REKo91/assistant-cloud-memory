@@ -104,4 +104,21 @@ class GeometryEngineTest {
         assertEquals(0.0, t.orthocenter.y, 1e-21)
     }
 
+    @Test fun centersRemainStableWhenCoordinatesAreFarFromOrigin() {
+        val origin = 1e12
+        val t = Triangle(
+            Vec2(origin, origin),
+            Vec2(origin + 3.0, origin),
+            Vec2(origin, origin + 4.0)
+        )
+        assertEquals(origin + 1.0, t.centroid.x, 1e-3)
+        assertEquals(origin + 4.0 / 3.0, t.centroid.y, 1e-3)
+        assertEquals(origin + 1.0, t.incenter.x, 1e-3)
+        assertEquals(origin + 1.0, t.incenter.y, 1e-3)
+        assertEquals(origin + 1.5, t.circumcenter.x, 1e-3)
+        assertEquals(origin + 2.0, t.circumcenter.y, 1e-3)
+        assertEquals(origin, t.orthocenter.x, 1e-3)
+        assertEquals(origin, t.orthocenter.y, 1e-3)
+    }
+
 }
