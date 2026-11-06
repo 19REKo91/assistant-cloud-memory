@@ -27,6 +27,7 @@ data class DrawOptions(
     val centers: Boolean = true,
     val internalAngles: Boolean = true,
     val externalAngles: Boolean = false,
+    val sideExtensions: Boolean = false,
     val sideLabels: Boolean = true
 )
 
@@ -118,6 +119,12 @@ fun TriangleCanvas(
         }
 
         edges.forEachIndexed { i, edge -> segment(edge.first, edge.second, colors[i], 5f) }
+        if (options.sideExtensions) {
+            edges.forEachIndexed { i, edge ->
+                val direction = edge.second - edge.first
+                segment(edge.first - direction * 0.22, edge.second + direction * 0.22, colors[i], 1.8f, true)
+            }
+        }
 
         if (options.altitudes) {
             vertices.forEachIndexed { i, v ->
@@ -131,7 +138,8 @@ fun TriangleCanvas(
         if (options.vertexBisectors) {
             vertices.forEachIndexed { i, v ->
                 val f = triangle.bisectorFoot("ABC"[i]) ?: return@forEachIndexed
-                segment(v, f, Color(0xFFD81B60), 2.8f)
+                val bisectorColors = listOf(Color(0xFF00897B), Color(0xFF8E24AA), Color(0xFFEF6C00))
+                segment(v, f, bisectorColors[i], 3f)
             }
         }
 
