@@ -2,35 +2,37 @@
 
 Android-only Kotlin + Jetpack Compose geometry application.
 
-This directory isolates the Triangle Lab project from the repository's existing memory/archive content.
+The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memory`. Existing archive and memory files outside this directory remain untouched.
 
-## Current implemented features
+## Implemented features
 
-- Side-length input with triangle-inequality validation.
-- Angle input with selectable fixed reference side.
-- Cartesian coordinate input for A, B and C.
-- Separate comparison-triangle input and dashed overlay.
-- Distinct colors for the three sides.
-- Optional altitudes, vertex angle bisectors, incenter-to-side radii, centers G/I/O/H, internal/external angle indicators, and side labels.
+- Side-length, angle/reference-side, Cartesian-coordinate and comparison input modes.
+- Live validity feedback and automatic field synchronization when changing modes.
+- Direct dragging of vertices A, B and C, with synchronized side, angle and coordinate values.
+- Pinch zoom, drag pan, zoom buttons and view reset.
+- Three distinct side colors, optional side extensions, altitudes, colored vertex bisectors, incenter-to-side radii, centers G/I/O/H, internal and external angle arcs, and side labels.
+- Dashed comparison-triangle overlay and numerical differences for sides, area and perimeter.
 - Measurements for sides, angles, perimeter, area and triangle centers.
-- Pinch zoom, drag pan and view reset.
-- Save/load/delete triangles using on-device preferences.
+- Save/load/delete triangles; current and comparison triangles restore after relaunch.
 - JSON clipboard import/export.
-- Arabic-first interface with an English/Arabic text toggle.
-- Geometry regression tests and a GitHub Actions Android build workflow.
+- Arabic/English interface text, RTL/LTR layout, and Arabic-Indic/Persian numeric input support.
 
-## Build verification
+## Geometry and tests
 
-The GitHub Actions workflow is `.github/workflows/triangle-lab-android-build.yml`. It runs unit tests and assembles a debug APK. A successful workflow run is required before the project can be called build-verified.
+The geometry layer includes scale-aware validation and coordinate construction, altitude projection to the supporting line, corrected angle-bisector points, and numerically stable triangle centers.
 
-## Package root
+There are 13 geometry regression tests. The GitHub Actions workflow runs unit tests and assembles a debug APK:
 
-`com.triangleapp`
+`.github/workflows/triangle-lab-android-build.yml`
 
-Geometry package: `com.triangleapp.geometry`
+## Latest verified build
 
-## Known work remaining
+- Workflow run 39: [view GitHub Actions run](https://github.com/19REKo91/assistant-cloud-memory/actions/runs/42142407696)
+- Commit tested: `f590a785cf4775e771815ee26d00973e3d3b98e5`
+- Unit tests: passed.
+- Android debug APK assembly: passed.
+- Artifact: `triangle-lab-debug-apk` (debug-signed APK).
 
-- Complete end-to-end UI verification on a physical Android device.
-- Confirm the final CI build and inspect the produced APK artifact.
-- Review coordinate editing, comparison visualization and all display controls against the agreed original specification.
+## Verification limitation
+
+Automated build and geometry tests passed. The app has not been installed or exercised on the target physical phone. Touch behavior, screen layout, clipboard integration and persistence after a real process restart therefore remain unverified. A release-signed APK requires a stable signing key; the current CI artifact is debug-signed.
