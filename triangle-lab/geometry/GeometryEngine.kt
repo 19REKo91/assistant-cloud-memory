@@ -8,13 +8,20 @@ object GeometryEngine {
     fun triangleFromSides(a: Double, b: Double, c: Double): Triangle? {
         if (!Validation.sides(a, b, c).ok) return null
 
+        // Normalize first to avoid overflow/underflow in the cosine-law squares.
         // Convention: a=BC, b=CA, c=AB. Place A=(0,0), B=(c,0).
-        val cx = (b * b + c * c - a * a) / (2.0 * c)
-        val cySquared = b * b - cx * cx
-        val tolerance = 1e-12 * max(1.0, b * b)
-        if (!cx.isFinite() || !cySquared.isFinite() || cySquared < -tolerance) return null
-        val cy = sqrt(max(0.0, cySquared))
-        if (cy <= 1e-11) return null
+        val scale = max(a, max(b, c))
+        val an = a / scale
+        val bn = b / scale
+        val cn = c / scale
+        val cxn = (bn * bn + cn * cn - an * an) / (2.0 * cn)
+        val cySquared = bn * bn - cxn * cxn
+        if (!cxn.isFinite() || !cySquared.isFinite() || cySquared < -1e-12) return null
+        val cyn = sqrt(max(0.0, cySquared))
+        if (cyn <= 1e-12) return null
+        val cx = cxn * scale
+        val cy = cyn * scale
+        if (!cx.isFinite() || !cy.isFinite()) return null
         return Triangle(Vec2(0.0, 0.0), Vec2(c, 0.0), Vec2(cx, cy))
     }
 
