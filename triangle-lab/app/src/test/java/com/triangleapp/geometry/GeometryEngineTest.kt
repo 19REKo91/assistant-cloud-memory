@@ -122,6 +122,14 @@ class GeometryEngineTest {
     }
 
 
+    @Test fun adjacentExteriorAnglesAreSupplementaryToInteriorAngles() {
+        val t = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
+        assertEquals(180.0, t.angleA + t.externalAngleA, 1e-9)
+        assertEquals(180.0, t.angleB + t.externalAngleB, 1e-9)
+        assertEquals(180.0, t.angleC + t.externalAngleC, 1e-9)
+        assertEquals(90.0, t.externalAngleA, 1e-9)
+    }
+
     @Test fun centroidSubtrianglesPartitionOriginalTriangleIntoThirds() {
         val t = GeometryEngine.triangleFromSides(10.0, 8.0, 6.0)!!
         val parts = t.centroidSubtriangles()
