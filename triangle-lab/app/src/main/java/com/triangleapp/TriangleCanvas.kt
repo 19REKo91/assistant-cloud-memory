@@ -248,6 +248,7 @@ fun TriangleCanvas(
 
         if (options.internalAngles || options.externalAngles || options.angleLabels) {
             val internalDegrees = listOf(triangle.angleA, triangle.angleB, triangle.angleC)
+            val externalDegrees = listOf(triangle.externalAngleA, triangle.externalAngleB, triangle.externalAngleC)
             vertices.forEachIndexed { i, v ->
                 val p1 = vertices[(i + 1) % 3] - v
                 val p2 = vertices[(i + 2) % 3] - v
@@ -299,8 +300,7 @@ fun TriangleCanvas(
                         cos(externalMid).toFloat() * radius * 1.75f,
                         sin(externalMid).toFloat() * radius * 1.75f
                     )
-                    val externalDegrees = 180.0 - internalDegrees[i]
-                    screenLabel("%.1f°".format(Locale.US, externalDegrees), externalLabelPoint,
+                    screenLabel("%.1f°".format(Locale.US, externalDegrees[i]), externalLabelPoint,
                         android.graphics.Color.rgb(93, 64, 55))
                 }
             }
