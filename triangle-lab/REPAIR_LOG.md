@@ -48,3 +48,14 @@
 - Automated tests and Android debug assembly have passed.
 - Physical-device verification of touch gestures, layout on the target screen, clipboard behavior and persistence across an actual process restart remains unperformed. The user has asked not to install interim builds, so no test APK installation has been requested.
 - A release-signed APK would require a stable signing key; the current CI artifact is debug-signed.
+
+
+## Complete geometry JSON export repair (2026-11-07)
+
+- Replaced the export button's coordinate-only payload with a structured snapshot generated from the same geometry model used by the measurements panel.
+- The export includes primary vertices, side lengths, internal and adjacent external angles, angle sum, area, perimeter, classification, and centers G/I/O/H.
+- It includes ABG, ACG and BCG with their side lengths, angle values and vertex-label mapping, areas, perimeters and classifications.
+- It includes the partition-area check (sum of internal areas versus original area, tolerance and pass/fail result).
+- It includes every selected comparison triangle (up to the app's existing three-item limit), full measurements and differences from the primary triangle, plus the active display-option values.
+- The existing import implementation and legacy six-coordinate format were not changed. A regression test round-trips the structured export through the existing importer.
+- Added three export regression tests. CI and physical-device clipboard verification are still pending; a successful source update alone is not proof that the phone export has been tested.
