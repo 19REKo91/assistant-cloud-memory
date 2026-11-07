@@ -222,6 +222,18 @@ fun TriangleCanvas(
             }
             drawPath(p, color, style = Stroke(width = 3.5f, pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 9f))))
             cp.forEachIndexed { i, v -> label("C${comparisonIndex + 1}-${"ABC"[i]}", v, nativeColor) }
+
+            // Show the centroid of every comparison overlay, not only the primary triangle.
+            val comparisonCentroid = compared.centroid
+            if (options.centroidDivisions) {
+                cp.forEach { vertex ->
+                    segment(comparisonCentroid, vertex, color, 2f, dashed = true)
+                }
+            }
+            if (options.centers || options.centroidDivisions) {
+                drawCircle(color, 8f, point(comparisonCentroid))
+                label("G${comparisonIndex + 1}", comparisonCentroid, nativeColor)
+            }
         }
 
         edges.forEachIndexed { i, edge -> segment(edge.first, edge.second, colors[i], 5f) }
