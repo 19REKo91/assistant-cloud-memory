@@ -28,6 +28,7 @@ data class DrawOptions(
     val vertexBisectors: Boolean = true,
     val centerRadii: Boolean = true,
     val centers: Boolean = true,
+    val centroidDivisions: Boolean = true,
     val internalAngles: Boolean = true,
     val externalAngles: Boolean = false,
     val sideExtensions: Boolean = false,
@@ -269,6 +270,16 @@ fun TriangleCanvas(
                     drawPath(path, Color(0xFF5D4037), style = Stroke(width = 2f))
                 }
             }
+        }
+
+        if (options.centroidDivisions) {
+            val g = triangle.centroid
+            val divisionColors = listOf(Color(0xFF00838F), Color(0xFF7B1FA2), Color(0xFFEF6C00))
+            vertices.forEachIndexed { i, vertex ->
+                segment(g, vertex, divisionColors[i], 2.8f)
+            }
+            drawCircle(Color(0xFFD81B60), 8f, point(g))
+            label("G", g, android.graphics.Color.rgb(216, 27, 96))
         }
 
         if (options.centers) {
