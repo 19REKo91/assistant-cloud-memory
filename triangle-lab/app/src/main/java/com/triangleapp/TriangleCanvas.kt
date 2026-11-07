@@ -31,6 +31,7 @@ data class DrawOptions(
     val centroidDivisions: Boolean = true,
     val internalAngles: Boolean = true,
     val externalAngles: Boolean = false,
+    val angleLabels: Boolean = true,
     val sideExtensions: Boolean = false,
     val sideLabels: Boolean = true
 )
@@ -68,7 +69,8 @@ private fun buildViewport(
     width: Float,
     height: Float,
     zoom: Float,
-    pan: Offset
+    pan: Offset,
+    options: DrawOptions
 ): TriangleViewport {
     val vertices = listOf(triangle.A, triangle.B, triangle.C)
     val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
@@ -93,7 +95,7 @@ private fun buildViewport(
     val minY = all.minOf { it.y }; val maxY = all.maxOf { it.y }
     val spanX = max(maxX - minX, 1e-8)
     val spanY = max(maxY - minY, 1e-8)
-    val pad = 44f
+    val pad = if (options.angleLabels || options.externalAngles) min(width, height) * 0.12f + 20f else 44f
     val scale = min(
         (width - pad * 2).coerceAtLeast(1f) / spanX.toFloat(),
         (height - pad * 2).coerceAtLeast(1f) / spanY.toFloat()
@@ -119,6 +121,7 @@ fun TriangleCanvas(
     val latestCompare = rememberUpdatedState(compare)
     val latestZoom = rememberUpdatedState(zoom)
     val latestPan = rememberUpdatedState(pan)
+    val latestOptions = rememberUpdatedState(options)
     val latestOnViewTransform = rememberUpdatedState(onViewTransform)
     val latestOnVertexMove = rememberUpdatedState(onVertexMove)
     val gestureModifier = if (dragVertices) {
@@ -130,7 +133,7 @@ fun TriangleCanvas(
                     val view = buildViewport(
                         latestTriangle.value, latestCompare.value,
                         size.width.toFloat(), size.height.toFloat(),
-                        latestZoom.value, latestPan.value
+                        latestZoom.value, latestPan.value, latestOptions.value
                     )
                     activeViewport = view
                     val candidates = listOf('A' to latestTriangle.value.A, 'B' to latestTriangle.value.B, 'C' to latestTriangle.value.C)
@@ -164,7 +167,7 @@ fun TriangleCanvas(
 
     Canvas(modifier = modifier.then(gestureModifier)) {
         val vertices = listOf(triangle.A, triangle.B, triangle.C)
-        val viewport = buildViewport(triangle, compare, size.width, size.height, zoom, pan)
+        val viewport = buildViewport(triangle, compare, size.width, size.height, zoom, pan, options)
         fun point(p: Vec2): Offset = viewport.toScreen(p)
         fun segment(p: Vec2, q: Vec2, color: Color, width: Float = 2.5f, dashed: Boolean = false) {
             drawLine(color, point(p), point(q), width, pathEffect = if (dashed) androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(12f, 8f)) else null)
@@ -177,6 +180,17 @@ fun TriangleCanvas(
             }
             drawContext.canvas.nativeCanvas.drawText(text, point(at).x + 8f, point(at).y - 8f, paint)
         }
+        fun screenLabel(text: String, at: Offset, color: Int) {
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                this.color = color
+                textSize = 28f
+                textAlign = Paint.Align.CENTER
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                setShadowLayer(2f, 0f, 1f, android.graphics.Color.WHITE)
+            }
+            drawContext.canvas.nativeCanvas.drawText(text, at.x, at.y + 9f, paint)
+        }
+
         fun foot(p: Vec2, u: Vec2, v: Vec2): Vec2 {
             val e = v - u
             val d = e.x * e.x + e.y * e.y
@@ -232,7 +246,8 @@ fun TriangleCanvas(
             }
         }
 
-        if (options.internalAngles || options.externalAngles) {
+        if (options.internalAngles || options.externalAngles || options.angleLabels) {
+            val internalDegrees = listOf(triangle.angleA, triangle.angleB, triangle.angleC)
             vertices.forEachIndexed { i, v ->
                 val p1 = vertices[(i + 1) % 3] - v
                 val p2 = vertices[(i + 2) % 3] - v
@@ -241,33 +256,52 @@ fun TriangleCanvas(
                 var delta = a2 - a1
                 while (delta > Math.PI) delta -= 2 * Math.PI
                 while (delta < -Math.PI) delta += 2 * Math.PI
-                val radius = min(size.width, size.height) * 0.075f
+                var externalDelta = (a2 + Math.PI) - a1
+                while (externalDelta > Math.PI) externalDelta -= 2 * Math.PI
+                while (externalDelta < -Math.PI) externalDelta += 2 * Math.PI
+
+                val radius = min(size.width, size.height) * 0.055f
+                val vertexPoint = point(v)
+
                 if (options.internalAngles) {
                     val path = Path()
-                    val steps = 24
-                    for (s in 0..steps) {
-                        val angle = a1 + delta * s / steps
-                        val p = point(v)
-                        val x = p.x + cos(angle).toFloat() * radius
-                        val y = p.y + sin(angle).toFloat() * radius
+                    for (s in 0..24) {
+                        val angle = a1 + delta * s / 24
+                        val x = vertexPoint.x + cos(angle).toFloat() * radius
+                        val y = vertexPoint.y + sin(angle).toFloat() * radius
                         if (s == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     }
                     drawPath(path, Color(0xFF455A64), style = Stroke(width = 2f))
-                    label("%.1f°".format(Locale.US, listOf(triangle.angleA, triangle.angleB, triangle.angleC)[i]), v)
                 }
+
                 if (options.externalAngles) {
-                    var externalDelta = (a2 + Math.PI) - a1
-                    while (externalDelta > Math.PI) externalDelta -= 2 * Math.PI
-                    while (externalDelta < -Math.PI) externalDelta += 2 * Math.PI
                     val path = Path()
                     for (s in 0..24) {
                         val angle = a1 + externalDelta * s / 24
-                        val p = point(v)
-                        val x = p.x + cos(angle).toFloat() * radius * 1.3f
-                        val y = p.y + sin(angle).toFloat() * radius * 1.3f
+                        val x = vertexPoint.x + cos(angle).toFloat() * radius * 1.3f
+                        val y = vertexPoint.y + sin(angle).toFloat() * radius * 1.3f
                         if (s == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     }
                     drawPath(path, Color(0xFF5D4037), style = Stroke(width = 2f))
+                }
+
+                if (options.angleLabels) {
+                    val internalMid = a1 + delta / 2.0
+                    val internalLabelPoint = vertexPoint + Offset(
+                        cos(internalMid).toFloat() * radius * 1.65f,
+                        sin(internalMid).toFloat() * radius * 1.65f
+                    )
+                    screenLabel("%.1f°".format(Locale.US, internalDegrees[i]), internalLabelPoint,
+                        android.graphics.Color.rgb(38, 50, 56))
+
+                    val externalMid = a1 + externalDelta / 2.0
+                    val externalLabelPoint = vertexPoint + Offset(
+                        cos(externalMid).toFloat() * radius * 1.75f,
+                        sin(externalMid).toFloat() * radius * 1.75f
+                    )
+                    val externalDegrees = 180.0 - internalDegrees[i]
+                    screenLabel("%.1f°".format(Locale.US, externalDegrees), externalLabelPoint,
+                        android.graphics.Color.rgb(93, 64, 55))
                 }
             }
         }
