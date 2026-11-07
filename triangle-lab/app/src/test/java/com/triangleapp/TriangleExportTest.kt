@@ -25,7 +25,21 @@ class TriangleExportTest {
         assertEquals(32.0, primary.getDouble("perimeter"), 1e-9)
         assertEquals(180.0, primary.getDouble("angle_sum_degrees"), 1e-8)
         assertTrue(primary.has("external_angles_degrees"))
-        assertEquals(8.0, primary.getJSONObject("centers").getJSONObject("G_centroid").getDouble("x"), 1e-9)
+        val internalAngles = primary.getJSONObject("internal_angles_degrees")
+        val externalAngles = primary.getJSONObject("external_angles_degrees")
+        listOf("A", "B", "C").forEach { vertex ->
+            assertEquals(180.0, internalAngles.getDouble(vertex) + externalAngles.getDouble(vertex), 1e-8)
+        }
+
+        val centers = primary.getJSONObject("centers")
+        assertEquals(8.0, centers.getJSONObject("G_centroid").getDouble("x"), 1e-9)
+        assertEquals(17.0 / 3.0, centers.getJSONObject("G_centroid").getDouble("y"), 1e-9)
+        assertEquals(8.0, centers.getJSONObject("I_incenter").getDouble("x"), 1e-9)
+        assertEquals(6.0, centers.getJSONObject("I_incenter").getDouble("y"), 1e-9)
+        assertEquals(8.0, centers.getJSONObject("O_circumcenter").getDouble("x"), 1e-9)
+        assertEquals(4.75, centers.getJSONObject("O_circumcenter").getDouble("y"), 1e-9)
+        assertEquals(8.0, centers.getJSONObject("H_orthocenter").getDouble("x"), 1e-9)
+        assertEquals(7.5, centers.getJSONObject("H_orthocenter").getDouble("y"), 1e-9)
 
         val centroid = exported.getJSONObject("centroid_G_analysis")
         val parts = centroid.getJSONArray("internal_triangles")
