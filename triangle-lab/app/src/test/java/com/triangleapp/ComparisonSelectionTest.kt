@@ -41,10 +41,10 @@ class ComparisonSelectionTest {
         assertEquals(3, added.triangles.size)
     }
 
-    @Test fun duplicateGeometryDoesNotConsumeAnotherSlot() {
+    @Test fun togglingDuplicateGeometryRemovesExistingSelection() {
         val first = triangle(0.0)
         val result = ComparisonSelection.toggle(listOf(first), triangle(0.0))
-        assertEquals(listOf(first), result.triangles)
+        assertTrue(result.triangles.isEmpty())
         assertTrue(result.changed)
         assertFalse(result.limitReached)
     }
