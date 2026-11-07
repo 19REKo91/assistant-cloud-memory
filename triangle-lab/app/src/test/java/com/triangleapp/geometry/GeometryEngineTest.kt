@@ -121,4 +121,16 @@ class GeometryEngineTest {
         assertEquals(origin, t.orthocenter.y, 1e-3)
     }
 
+
+    @Test fun centroidSubtrianglesPartitionOriginalTriangleIntoThirds() {
+        val t = GeometryEngine.triangleFromSides(10.0, 8.0, 6.0)!!
+        val parts = t.centroidSubtriangles()
+        assertEquals(listOf("ABG", "ACG", "BCG"), parts.map { it.first })
+        parts.forEach { (_, sub) ->
+            assertFalse(sub.isDegenerate)
+            assertEquals(t.area / 3.0, sub.area, 1e-8)
+        }
+        assertEquals(t.area, parts.sumOf { it.second.area }, 1e-8)
+    }
+
 }
