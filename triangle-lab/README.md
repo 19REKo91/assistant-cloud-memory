@@ -14,6 +14,7 @@ The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memo
 - Dashed comparison-triangle overlay and numerical differences for sides, area and perimeter.
 - Measurements for sides, angles, perimeter, area and triangle centers.
 - Save/load/delete triangles; current and comparison triangles restore after relaunch.
+- Unlimited local saved-triangle library with one active primary triangle and up to three selected comparison overlays at once; comparison selection persists across relaunches and each overlay uses a distinct color.
 - JSON clipboard import/export.
 - Arabic/English interface text, RTL/LTR layout, and Arabic-Indic/Persian numeric input support.\n- Clipboard JSON import accepts both the legacy flat coordinates and structured `triangle-lab.geometry-export.v2` files.\n- Optional on-canvas numeric labels show all three interior angles and their adjacent exterior supplementary angles outside the triangle.
 
@@ -21,7 +22,7 @@ The project is isolated in `triangle-lab/` inside `19REKo91/assistant-cloud-memo
 
 The geometry layer includes scale-aware validation and coordinate construction, altitude projection to the supporting line, corrected angle-bisector points, and numerically stable triangle centers.
 
-There are 15 geometry regression tests and 2 JSON import regression tests. The GitHub Actions workflow runs unit tests and assembles a debug APK:
+There are 15 geometry regression tests, 4 comparison-selection regression tests, and 2 JSON import regression tests. The GitHub Actions workflow runs unit tests and assembles a debug APK:
 
 `.github/workflows/triangle-lab-android-build.yml`
 
