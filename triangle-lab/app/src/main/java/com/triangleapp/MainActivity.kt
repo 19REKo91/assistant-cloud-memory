@@ -66,7 +66,7 @@ private fun TriangleHome() {
     val preferences = remember { context.getSharedPreferences("triangle_lab", Context.MODE_PRIVATE) }
     var mode by remember { mutableStateOf(EditMode.SIDES) }
     var triangle by remember { mutableStateOf(GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!) }
-    var compareTriangle by remember { mutableStateOf<Triangle?>(null) }
+    val compareTriangles = remember { mutableStateListOf<Triangle>() }
     var message by remember { mutableStateOf("مثلث صالح — يمكنك تغيير المدخلات") }
 
     var sideA by remember { mutableStateOf("5") }
@@ -135,8 +135,14 @@ private fun TriangleHome() {
                     message = if (english) "Comparison values do not form a valid triangle" else "أضلاع مثلث المقارنة غير صالحة"
                     return false
                 }
-                compareTriangle = candidate
-                message = if (english) "Comparison triangle updated" else "تم تحديث مثلث المقارنة"
+                if (candidate !in compareTriangles) {
+                    if (compareTriangles.size >= ComparisonSelection.MAX_COMPARISONS) {
+                        message = if (english) "You can compare up to three triangles at once" else "يمكن مقارنة ثلاثة مثلثات كحد أقصى في الوقت نفسه"
+                        return false
+                    }
+                    compareTriangles.add(candidate)
+                }
+                message = if (english) "Comparison set updated (${compareTriangles.size}/3)" else "تم تحديث مجموعة المقارنة (${compareTriangles.size}/3)"
                 return true
             }
         }
@@ -161,11 +167,23 @@ private fun TriangleHome() {
                 }
             }
         }
-        val savedCompare = preferences.getString("compare_triangle", null)
-        if (!savedCompare.isNullOrBlank()) {
+        val savedComparisons = preferences.getString("compare_triangles", null)
+        if (!savedComparisons.isNullOrBlank()) {
             runCatching {
-                val t = triangleFromJson(JSONObject(savedCompare))
-                if (!t.isDegenerate) compareTriangle = t
+                val array = JSONArray(savedComparisons)
+                for (i in 0 until array.length()) {
+                    val t = triangleFromJson(array.getJSONObject(i))
+                    if (!t.isDegenerate && t !in compareTriangles && compareTriangles.size < ComparisonSelection.MAX_COMPARISONS) {
+                        compareTriangles.add(t)
+                    }
+                }
+            }
+        } else {
+            // Migrate the previous single-comparison preference without losing it.
+            val legacyCompare = preferences.getString("compare_triangle", null)
+            if (!legacyCompare.isNullOrBlank()) runCatching {
+                val t = triangleFromJson(JSONObject(legacyCompare))
+                if (!t.isDegenerate) compareTriangles.add(t)
             }
         }
         val restored = preferences.getString("current_triangle", null)
@@ -188,7 +206,7 @@ private fun TriangleHome() {
             EditMode.ANGLES -> setAngleFields(triangle)
             EditMode.COORDS -> setCoordinateFields(triangle)
             EditMode.COMPARE -> {
-                val t = compareTriangle ?: triangle
+                val t = compareTriangles.firstOrNull() ?: triangle
                 compareA = "%.4f".format(Locale.US, t.a); compareB = "%.4f".format(Locale.US, t.b); compareC = "%.4f".format(Locale.US, t.c)
             }
         }
@@ -294,7 +312,7 @@ private fun TriangleHome() {
             Button(onClick = { applyCurrent() }) { Text(if (english) "Apply" else "اعتماد") }
             OutlinedButton(onClick = {
                 triangle = GeometryEngine.triangleFromSides(5.0, 4.0, 3.0)!!
-                compareTriangle = null
+                compareTriangles.clear()
                 referenceSide = 'c'
                 angleA = "90"; angleB = "53.13"; referenceLength = "3"
                 compareA = "5"; compareB = "4"; compareC = "3"
@@ -302,10 +320,10 @@ private fun TriangleHome() {
                 syncAllFields(triangle)
                 message = if (english) "Reset to the reference triangle" else "أُعيد ضبط المثلث المرجعي"
             }) { Text(if (english) "Reset" else "إعادة ضبط") }
-            if (compareTriangle != null) {
+            if (compareTriangles.isNotEmpty()) {
                 TextButton(onClick = {
-                    compareTriangle = null
-                    message = if (english) "Comparison removed" else "أُزيل مثلث المقارنة"
+                    compareTriangles.clear()
+                    message = if (english) "Comparison set cleared" else "أُزيلت كل مثلثات المقارنة"
                 }) { Text(if (english) "Clear compare" else "إزالة المقارنة") }
             }
         }
@@ -313,7 +331,7 @@ private fun TriangleHome() {
 
         TriangleCanvas(
             triangle = triangle,
-            compare = compareTriangle,
+            compare = compareTriangles.toList(),
             options = options,
             zoom = zoom,
             pan = pan,
@@ -381,10 +399,15 @@ private fun TriangleHome() {
         Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(Locale.US, triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(Locale.US, triangle.area))
         Text("G(%.3f, %.3f)    I(%.3f, %.3f)".format(Locale.US, triangle.centroid.x, triangle.centroid.y, triangle.incenter.x, triangle.incenter.y))
         Text("O(%.3f, %.3f)    H(%.3f, %.3f)".format(Locale.US, triangle.circumcenter.x, triangle.circumcenter.y, triangle.orthocenter.x, triangle.orthocenter.y))
-        compareTriangle?.let { other ->
-            Text(if (english) "Comparison differences (comparison − current)" else "فروق المقارنة (المقارن − الأساسي)", style = MaterialTheme.typography.titleSmall)
-            Text("Δa = %.4f   Δb = %.4f   Δc = %.4f".format(Locale.US, other.a - triangle.a, other.b - triangle.b, other.c - triangle.c))
-            Text("ΔArea = %.4f   ΔPerimeter = %.4f".format(Locale.US, other.area - triangle.area, other.perimeter - triangle.perimeter))
+        if (compareTriangles.isNotEmpty()) {
+            Text(if (english) "Comparison differences (each comparison − primary)" else "فروق كل مثلث مقارن عن المثلث الأساسي", style = MaterialTheme.typography.titleSmall)
+            compareTriangles.forEachIndexed { index, other ->
+                Text(
+                    (if (english) "Compare ${index + 1}" else "المقارن ${index + 1}") +
+                        " — Δa = %.4f   Δb = %.4f   Δc = %.4f".format(Locale.US, other.a - triangle.a, other.b - triangle.b, other.c - triangle.c)
+                )
+                Text("ΔArea = %.4f   ΔPerimeter = %.4f".format(Locale.US, other.area - triangle.area, other.perimeter - triangle.perimeter))
+            }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -395,8 +418,13 @@ private fun TriangleHome() {
             }) { Text(if (english) "Save" else "حفظ") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab", triangleToJson(triangle).toString()))
-                message = if (english) "Triangle data copied as JSON" else "نُسخت بيانات المثلث بصيغة JSON"
+                val json = triangleExportJson(triangle, compareTriangles.toList(), options).toString(2)
+                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab Complete Geometry JSON", json))
+                message = if (english) {
+                    "Complete geometry data copied as JSON"
+                } else {
+                    "نُسخت بيانات المثلث والقياسات والمراكز والتقسيم والمقارنات كاملة بصيغة JSON"
+                }
             }) { Text(if (english) "Export" else "تصدير") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -410,16 +438,34 @@ private fun TriangleHome() {
         }
 
         if (saved.isNotEmpty()) {
-            Text(if (english) "Saved triangles" else "المثلثات المحفوظة", style = MaterialTheme.typography.titleMedium)
+            Text(
+                if (english) "Saved triangles (${saved.size}) — comparing ${compareTriangles.size}/3" else "المثلثات المحفوظة (${saved.size}) — المقارنة ${compareTriangles.size}/3",
+                style = MaterialTheme.typography.titleMedium
+            )
             saved.forEachIndexed { index, item ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text("${index + 1}. a=%.2f, b=%.2f, c=%.2f".format(item.a, item.b, item.c))
-                    Row {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                         TextButton(onClick = { triangle = item; syncAllFields(item) }) { Text(if (english) "Load" else "تحميل") }
                         TextButton(onClick = {
                             saved.removeAt(index)
+                            compareTriangles.remove(item)
                             persistTriangles(preferences, saved)
                         }) { Text(if (english) "Delete" else "حذف") }
+                        TextButton(onClick = {
+                            val result = ComparisonSelection.toggle(compareTriangles.toList(), item)
+                            if (result.limitReached) {
+                                message = if (english) "Three comparison slots are already in use" else "اكتملت خانات المقارنة الثلاث"
+                            } else {
+                                compareTriangles.clear()
+                                compareTriangles.addAll(result.triangles)
+                                message = if (english) {
+                                    if (item in compareTriangles) "Added to comparison" else "Removed from comparison"
+                                } else {
+                                    if (item in compareTriangles) "أُضيف للمقارنة" else "أُزيل من المقارنة"
+                                }
+                            }
+                        }) { Text(if (item in compareTriangles) (if (english) "Compared ✓" else "ضمن المقارنة ✓") else (if (english) "Compare" else "قارن")) }
                     }
                 }
             }
@@ -433,12 +479,14 @@ private fun TriangleHome() {
             preferences.edit().putString("current_triangle", triangleToJson(triangle).toString()).apply()
         }
     }
-    LaunchedEffect(compareTriangle, restoredState) {
+    LaunchedEffect(compareTriangles.toList(), restoredState) {
         if (restoredState) {
-            val editor = preferences.edit()
-            if (compareTriangle == null) editor.remove("compare_triangle")
-            else editor.putString("compare_triangle", triangleToJson(compareTriangle!!).toString())
-            editor.apply()
+            val array = JSONArray()
+            compareTriangles.forEach { array.put(triangleToJson(it)) }
+            preferences.edit()
+                .putString("compare_triangles", array.toString())
+                .remove("compare_triangle")
+                .apply()
         }
     }
 }

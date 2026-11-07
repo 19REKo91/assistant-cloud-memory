@@ -65,7 +65,7 @@ private data class TriangleViewport(
 
 private fun buildViewport(
     triangle: Triangle,
-    compare: Triangle?,
+    compare: List<Triangle>,
     width: Float,
     height: Float,
     zoom: Float,
@@ -73,7 +73,7 @@ private fun buildViewport(
     options: DrawOptions
 ): TriangleViewport {
     val vertices = listOf(triangle.A, triangle.B, triangle.C)
-    val extra = compare?.let { listOf(it.A, it.B, it.C) }.orEmpty()
+    val extra = compare.flatMap { listOf(it.A, it.B, it.C) }
     fun projection(p: Vec2, u: Vec2, v: Vec2): Vec2 {
         val e = v - u
         val d = e.x * e.x + e.y * e.y
@@ -108,7 +108,7 @@ private fun buildViewport(
 @Composable
 fun TriangleCanvas(
     triangle: Triangle,
-    compare: Triangle?,
+    compare: List<Triangle>,
     options: DrawOptions,
     zoom: Float,
     pan: Offset,
@@ -201,16 +201,39 @@ fun TriangleCanvas(
         val colors = listOf(Color(0xFF1565C0), Color(0xFF2E7D32), Color(0xFFEF6C00))
         val edges = listOf(triangle.B to triangle.C, triangle.C to triangle.A, triangle.A to triangle.B)
 
-        compare?.let {
-            val cp = listOf(it.A, it.B, it.C)
+        val comparisonColors = listOf(
+            Color(0xFF8E24AA), // purple
+            Color(0xFF00897B), // teal
+            Color(0xFFEF6C00)  // orange
+        )
+        compare.take(3).forEachIndexed { comparisonIndex, compared ->
+            val cp = listOf(compared.A, compared.B, compared.C)
+            val color = comparisonColors[comparisonIndex]
+            val nativeColor = when (comparisonIndex) {
+                0 -> android.graphics.Color.rgb(142, 36, 170)
+                1 -> android.graphics.Color.rgb(0, 137, 123)
+                else -> android.graphics.Color.rgb(239, 108, 0)
+            }
             val p = Path().apply {
                 moveTo(point(cp[0]).x, point(cp[0]).y)
                 lineTo(point(cp[1]).x, point(cp[1]).y)
                 lineTo(point(cp[2]).x, point(cp[2]).y)
                 close()
             }
-            drawPath(p, Color(0xFF8E24AA), style = Stroke(width = 3.5f, pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 9f))))
-            cp.forEachIndexed { i, v -> label("D${i + 1}", v, android.graphics.Color.rgb(142, 36, 170)) }
+            drawPath(p, color, style = Stroke(width = 3.5f, pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 9f))))
+            cp.forEachIndexed { i, v -> label("C${comparisonIndex + 1}-${"ABC"[i]}", v, nativeColor) }
+
+            // Show the centroid of every comparison overlay, not only the primary triangle.
+            val comparisonCentroid = compared.centroid
+            if (options.centroidDivisions) {
+                cp.forEach { vertex ->
+                    segment(comparisonCentroid, vertex, color, 2f, dashed = true)
+                }
+            }
+            if (options.centers || options.centroidDivisions) {
+                drawCircle(color, 8f, point(comparisonCentroid))
+                label("G${comparisonIndex + 1}", comparisonCentroid, nativeColor)
+            }
         }
 
         edges.forEachIndexed { i, edge -> segment(edge.first, edge.second, colors[i], 5f) }
