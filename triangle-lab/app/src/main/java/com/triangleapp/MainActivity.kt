@@ -360,6 +360,7 @@ private fun TriangleHome() {
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Centers" else "المراكز G/I/O/H", options.centers) { options = options.copy(centers = it) }
+                ToggleChip(if (english) "Centroid divisions" else "تقسيمات مركز الثقل", options.centroidDivisions) { options = options.copy(centroidDivisions = it) }
                 ToggleChip(if (english) "I radii" else "وصلات I للأضلاع", options.centerRadii) { options = options.copy(centerRadii = it) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -373,6 +374,7 @@ private fun TriangleHome() {
         }
 
         Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
+        InternalTrianglePanel(triangle = triangle, english = english)
         Text("a = %.4f    b = %.4f    c = %.4f".format(Locale.US, triangle.a, triangle.b, triangle.c))
         Text("A = %.3f°    B = %.3f°    C = %.3f°".format(Locale.US, triangle.angleA, triangle.angleB, triangle.angleC))
         Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(Locale.US, triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(Locale.US, triangle.area))
