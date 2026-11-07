@@ -418,8 +418,13 @@ private fun TriangleHome() {
             }) { Text(if (english) "Save" else "حفظ") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab", triangleToJson(triangle).toString()))
-                message = if (english) "Triangle data copied as JSON" else "نُسخت بيانات المثلث بصيغة JSON"
+                val json = triangleExportJson(triangle, compareTriangles.toList(), options).toString(2)
+                clipboard.setPrimaryClip(ClipData.newPlainText("Triangle Lab Complete Geometry JSON", json))
+                message = if (english) {
+                    "Complete geometry data copied as JSON"
+                } else {
+                    "نُسخت بيانات المثلث والقياسات والمراكز والتقسيم والمقارنات كاملة بصيغة JSON"
+                }
             }) { Text(if (english) "Export" else "تصدير") }
             OutlinedButton(onClick = {
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
