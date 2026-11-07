@@ -33,6 +33,10 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
     val angleA: Double get() = angle(a, b, c)
     val angleB: Double get() = angle(b, a, c)
     val angleC: Double get() = angle(c, a, b)
+    // Adjacent exterior angle at each vertex is supplementary to its interior angle.
+    val externalAngleA: Double get() = 180.0 - angleA
+    val externalAngleB: Double get() = 180.0 - angleB
+    val externalAngleC: Double get() = 180.0 - angleC
 
     val centroid: Vec2 get() = A + ((B - A) + (C - A)) / 3.0
 
