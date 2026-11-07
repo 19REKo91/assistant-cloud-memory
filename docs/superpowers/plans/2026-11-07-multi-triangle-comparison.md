@@ -58,3 +58,15 @@
 
 - [ ] Document the saved-versus-selected distinction and three-overlay limit.
 - [ ] Review the full diff and verify the final workflow result.
+
+
+---
+
+## Follow-up: comparison centroid visibility (2026-11-07)
+
+- Updated `TriangleCanvas.kt` so each comparison overlay also displays its own centroid marker and label (`G1`, `G2`, `G3`) in that overlay's color.
+- When centroid divisions are enabled, dashed segments connect that comparison triangle's vertices to its own centroid.
+- The comparison centroid is shown whenever either the Centers or Centroid divisions display option is enabled.
+- Primary triangle rendering and comparison selection behavior remain unchanged.
+- Commit: `00cefab858d6839b3e1e404cfb03314a6f15de86`.
+- Android CI verification is pending; no physical-device test has been performed yet.
