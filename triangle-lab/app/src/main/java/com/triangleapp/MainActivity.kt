@@ -433,11 +433,14 @@ private fun TriangleHome() {
         }
 
         if (saved.isNotEmpty()) {
-            Text(if (english) "Saved triangles" else "المثلثات المحفوظة", style = MaterialTheme.typography.titleMedium)
+            Text(
+                if (english) "Saved triangles (${saved.size}) — comparing ${compareTriangles.size}/3" else "المثلثات المحفوظة (${saved.size}) — المقارنة ${compareTriangles.size}/3",
+                style = MaterialTheme.typography.titleMedium
+            )
             saved.forEachIndexed { index, item ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text("${index + 1}. a=%.2f, b=%.2f, c=%.2f".format(item.a, item.b, item.c))
-                    Row {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                         TextButton(onClick = { triangle = item; syncAllFields(item) }) { Text(if (english) "Load" else "تحميل") }
                         TextButton(onClick = {
                             saved.removeAt(index)
