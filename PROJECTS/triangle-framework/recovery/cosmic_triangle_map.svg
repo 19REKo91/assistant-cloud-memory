@@ -1,0 +1,164 @@
+<svg viewBox="0 0 1600 1160" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+  <rect width="1600" height="1160" fill="#fafafa"/>
+  <text x="800" y="32" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">Cosmic Triangle Framework — خريطة 118 عنصراً</text>
+  <text x="800" y="56" text-anchor="middle" font-size="12" fill="#7f8c8d">Sectoral barycentric placement — موضع تقريبي، ليس الـIncenter الهندسي الدقيق</text>
+  <polygon points="200,900 500,525 800,650 800,900" fill="#d5f5e3" opacity="0.45"/>
+  <polygon points="1400,900 800,900 800,650 1100,525" fill="#d6eaf8" opacity="0.45"/>
+  <polygon points="800,150 1100,525 800,650 500,525" fill="#fef9e7" opacity="0.55"/>
+  <polygon points="200,900 1400,900 800,150" fill="none" stroke="#2c3e50" stroke-width="2.5"/>
+  <line x1="200" y1="900" x2="1100" y2="525" stroke="#95a5a6" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="1400" y1="900" x2="500" y2="525" stroke="#95a5a6" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="800" y1="150" x2="800" y2="900" stroke="#95a5a6" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <circle cx="200" cy="900" r="15" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="200" y="943" text-anchor="middle" font-size="17" font-weight="bold" fill="#27ae60">A</text>
+  <text x="200" y="962" text-anchor="middle" font-size="11" fill="#27ae60">مادة</text>
+  <circle cx="1400" cy="900" r="15" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="1400" y="943" text-anchor="middle" font-size="17" font-weight="bold" fill="#2980b9">B</text>
+  <text x="1400" y="962" text-anchor="middle" font-size="11" fill="#2980b9">زمكان</text>
+  <circle cx="800" cy="150" r="15" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+  <text x="800" y="127" text-anchor="middle" font-size="17" font-weight="bold" fill="#e67e22">C</text>
+  <text x="800" y="112" text-anchor="middle" font-size="11" fill="#e67e22">قانون</text>
+  <!-- n=0 non-Ln elements (66) -->
+  <circle cx="769" cy="662" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="769" y="678" font-size="9" text-anchor="middle" fill="#2c3e50">Li</text>
+  <circle cx="730" cy="604" r="6" fill="#f39c12" stroke="#e67e22"/><text x="730" y="620" font-size="9" text-anchor="middle" fill="#2c3e50">Be</text>
+  <circle cx="731" cy="600" r="6" fill="#f39c12" stroke="#e67e22"/><text x="731" y="594" font-size="9" text-anchor="middle" fill="#2c3e50">B</text>
+  <circle cx="734" cy="605" r="6" fill="#f39c12" stroke="#e67e22"/><text x="734" y="621" font-size="9" text-anchor="middle" fill="#2c3e50">C</text>
+  <circle cx="778" cy="664" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="778" y="680" font-size="9" text-anchor="middle" fill="#2c3e50">Mg</text>
+  <circle cx="760" cy="634" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="760" y="650" font-size="9" text-anchor="middle" fill="#2c3e50">Al</text>
+  <circle cx="770" cy="649" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="770" y="665" font-size="9" text-anchor="middle" fill="#2c3e50">Si</text>
+  <circle cx="794" cy="683" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="794" y="699" font-size="9" text-anchor="middle" fill="#2c3e50">P</text>
+  <circle cx="787" cy="672" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="787" y="688" font-size="9" text-anchor="middle" fill="#2c3e50">S</text>
+  <circle cx="787" cy="666" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="787" y="682" font-size="9" text-anchor="middle" fill="#2c3e50">Sc</text>
+  <circle cx="768" cy="632" r="6" fill="#f39c12" stroke="#e67e22"/><text x="768" y="648" font-size="9" text-anchor="middle" fill="#2c3e50">Ti</text>
+  <circle cx="761" cy="612" r="6" fill="#f39c12" stroke="#e67e22"/><text x="761" y="628" font-size="9" text-anchor="middle" fill="#2c3e50">V</text>
+  <circle cx="758" cy="601" r="6" fill="#f39c12" stroke="#e67e22"/><text x="758" y="617" font-size="9" text-anchor="middle" fill="#2c3e50">Cr</text>
+  <circle cx="760" cy="603" r="6" fill="#f39c12" stroke="#e67e22"/><text x="760" y="619" font-size="9" text-anchor="middle" fill="#2c3e50">Mn</text>
+  <circle cx="759" cy="597" r="7" fill="#f39c12" stroke="#e67e22" stroke-width="1.5"/><text x="759" y="612" font-size="10" font-weight="bold" text-anchor="middle" fill="#2c3e50">Fe</text>
+  <circle cx="759" cy="591" r="6" fill="#f39c12" stroke="#e67e22"/><text x="742" y="590" font-size="9" text-anchor="middle" fill="#2c3e50">Co</text>
+  <circle cx="759" cy="590" r="6" fill="#f39c12" stroke="#e67e22"/><text x="776" y="588" font-size="9" text-anchor="middle" fill="#2c3e50">Ni</text>
+  <circle cx="762" cy="593" r="6" fill="#f39c12" stroke="#e67e22"/><text x="780" y="605" font-size="9" text-anchor="middle" fill="#2c3e50">Cu</text>
+  <circle cx="768" cy="613" r="6" fill="#f39c12" stroke="#e67e22"/><text x="768" y="629" font-size="9" text-anchor="middle" fill="#2c3e50">Zn</text>
+  <circle cx="778" cy="635" r="6" fill="#f39c12" stroke="#e67e22"/><text x="778" y="651" font-size="9" text-anchor="middle" fill="#2c3e50">Ga</text>
+  <circle cx="786" cy="649" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="803" y="652" font-size="9" text-anchor="middle" fill="#2c3e50">Ge</text>
+  <circle cx="784" cy="644" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="784" y="660" font-size="9" text-anchor="middle" fill="#2c3e50">As</text>
+  <circle cx="799" cy="669" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="799" y="685" font-size="9" text-anchor="middle" fill="#2c3e50">Se</text>
+  <circle cx="777" cy="603" r="6" fill="#f39c12" stroke="#e67e22"/><text x="777" y="619" font-size="9" text-anchor="middle" fill="#2c3e50">Mo</text>
+  <circle cx="776" cy="594" r="6" fill="#f39c12" stroke="#e67e22"/><text x="759" y="592" font-size="9" text-anchor="middle" fill="#2c3e50">Tc</text>
+  <circle cx="777" cy="589" r="6" fill="#f39c12" stroke="#e67e22"/><text x="760" y="605" font-size="9" text-anchor="middle" fill="#2c3e50">Ru</text>
+  <circle cx="778" cy="589" r="6" fill="#f39c12" stroke="#e67e22"/><text x="795" y="598" font-size="9" text-anchor="middle" fill="#2c3e50">Rh</text>
+  <circle cx="780" cy="594" r="6" fill="#f39c12" stroke="#e67e22"/><text x="797" y="613" font-size="9" text-anchor="middle" fill="#2c3e50">Pd</text>
+  <circle cx="783" cy="609" r="6" fill="#f39c12" stroke="#e67e22"/><text x="783" y="625" font-size="9" text-anchor="middle" fill="#2c3e50">Ag</text>
+  <circle cx="792" cy="633" r="6" fill="#f39c12" stroke="#e67e22"/><text x="792" y="649" font-size="9" text-anchor="middle" fill="#2c3e50">Cd</text>
+  <circle cx="816" cy="693" r="6" fill="#3498db" stroke="#2980b9"/><text x="816" y="709" font-size="9" text-anchor="middle" fill="#2c3e50">Y</text>
+  <circle cx="791" cy="647" r="6" fill="#7f8c8d" stroke="#95a5a6"/><text x="791" y="663" font-size="9" text-anchor="middle" fill="#2c3e50">Zr</text>
+  <circle cx="780" cy="619" r="6" fill="#f39c12" stroke="#e67e22"/><text x="780" y="635" font-size="9" text-anchor="middle" fill="#2c3e50">Nb</text>
+  <circle cx="807" cy="620" r="6" fill="#f39c12" stroke="#e67e22"/><text x="807" y="636" font-size="9" text-anchor="middle" fill="#2c3e50">Hf</text>
+  <circle cx="803" cy="591" r="6" fill="#f39c12" stroke="#e67e22"/><text x="803" y="607" font-size="9" text-anchor="middle" fill="#2c3e50">Ta</text>
+  <circle cx="804" cy="574" r="6" fill="#f39c12" stroke="#e67e22"/><text x="786" y="572" font-size="9" text-anchor="middle" fill="#2c3e50">W</text>
+  <circle cx="805" cy="563" r="6" fill="#f39c12" stroke="#e67e22"/><text x="823" y="561" font-size="9" text-anchor="middle" fill="#2c3e50">Re</text>
+  <circle cx="807" cy="554" r="8" fill="#f39c12" stroke="#e67e22" stroke-width="2"/><text x="807" y="549" font-size="10" font-weight="bold" text-anchor="middle" fill="#c0392b">Os</text>
+  <circle cx="807" cy="555" r="6" fill="#f39c12" stroke="#e67e22"/><text x="825" y="558" font-size="9" text-anchor="middle" fill="#2c3e50">Ir</text>
+  <circle cx="807" cy="563" r="6" fill="#f39c12" stroke="#e67e22"/><text x="788" y="560" font-size="9" text-anchor="middle" fill="#2c3e50">Pt</text>
+  <circle cx="807" cy="578" r="6" fill="#f39c12" stroke="#e67e22"/><text x="807" y="594" font-size="9" text-anchor="middle" fill="#2c3e50">Au</text>
+  <circle cx="815" cy="628" r="6" fill="#f39c12" stroke="#e67e22"/><text x="833" y="628" font-size="9" text-anchor="middle" fill="#2c3e50">Hg</text>
+  <circle cx="823" cy="650" r="6" fill="#3498db" stroke="#2980b9"/><text x="823" y="666" font-size="9" text-anchor="middle" fill="#2c3e50">Tl</text>
+  <circle cx="827" cy="658" r="6" fill="#3498db" stroke="#2980b9"/><text x="809" y="672" font-size="9" text-anchor="middle" fill="#2c3e50">Pb</text>
+  <circle cx="839" cy="684" r="6" fill="#3498db" stroke="#2980b9"/><text x="839" y="700" font-size="9" text-anchor="middle" fill="#2c3e50">Bi</text>
+  <circle cx="844" cy="695" r="6" fill="#3498db" stroke="#2980b9"/><text x="862" y="698" font-size="9" text-anchor="middle" fill="#2c3e50">Po</text>
+  <circle cx="813" cy="674" r="6" fill="#3498db" stroke="#2980b9"/><text x="795" y="674" font-size="9" text-anchor="middle" fill="#2c3e50">Sb</text>
+  <circle cx="824" cy="690" r="6" fill="#3498db" stroke="#2980b9"/><text x="824" y="706" font-size="9" text-anchor="middle" fill="#2c3e50">Te</text>
+  <circle cx="846" cy="690" r="6" fill="#3498db" stroke="#2980b9"/><text x="846" y="706" font-size="9" text-anchor="middle" fill="#2c3e50">Ac</text>
+  <circle cx="836" cy="667" r="6" fill="#3498db" stroke="#2980b9"/><text x="836" y="683" font-size="9" text-anchor="middle" fill="#2c3e50">Th</text>
+  <circle cx="821" cy="623" r="6" fill="#f39c12" stroke="#e67e22"/><text x="821" y="639" font-size="9" text-anchor="middle" fill="#2c3e50">Pa</text>
+  <circle cx="818" cy="594" r="6" fill="#f39c12" stroke="#e67e22"/><text x="818" y="610" font-size="9" text-anchor="middle" fill="#2c3e50">U</text>
+  <circle cx="818" cy="583" r="6" fill="#f39c12" stroke="#e67e22"/><text x="834" y="585" font-size="9" text-anchor="middle" fill="#2c3e50">Np</text>
+  <circle cx="820" cy="589" r="6" fill="#f39c12" stroke="#e67e22"/><text x="820" y="605" font-size="9" text-anchor="middle" fill="#2c3e50">Pu</text>
+  <circle cx="831" cy="647" r="6" fill="#3498db" stroke="#2980b9"/><text x="849" y="646" font-size="9" text-anchor="middle" fill="#2c3e50">Am</text>
+  <circle cx="833" cy="650" r="6" fill="#3498db" stroke="#2980b9"/><text x="833" y="666" font-size="9" text-anchor="middle" fill="#2c3e50">Cm</text>
+  <circle cx="829" cy="636" r="6" fill="#f39c12" stroke="#e67e22"/><text x="847" y="633" font-size="9" text-anchor="middle" fill="#2c3e50">Bk</text>
+  <circle cx="829" cy="634" r="6" fill="#f39c12" stroke="#e67e22"/><text x="811" y="631" font-size="9" text-anchor="middle" fill="#2c3e50">Cf</text>
+  <circle cx="860" cy="706" r="6" fill="#3498db" stroke="#2980b9"/><text x="860" y="722" font-size="9" text-anchor="middle" fill="#2c3e50">Md</text>
+  <circle cx="833" cy="635" r="6" fill="#f39c12" stroke="#e67e22"/><text x="851" y="645" font-size="9" text-anchor="middle" fill="#2c3e50">Lr</text>
+  <circle cx="825" cy="573" r="6" fill="#f39c12" stroke="#e67e22"/><text x="825" y="589" font-size="9" text-anchor="middle" fill="#2c3e50">Rf</text>
+  <circle cx="829" cy="574" r="6" fill="#f39c12" stroke="#e67e22"/><text x="847" y="577" font-size="9" text-anchor="middle" fill="#2c3e50">Cn</text>
+  <circle cx="838" cy="639" r="6" fill="#3498db" stroke="#2980b9"/><text x="838" y="655" font-size="9" text-anchor="middle" fill="#2c3e50">Nh</text>
+  <circle cx="847" cy="664" r="6" fill="#3498db" stroke="#2980b9"/><text x="865" y="665" font-size="9" text-anchor="middle" fill="#2c3e50">Fl</text>
+  <circle cx="850" cy="672" r="6" fill="#3498db" stroke="#2980b9"/><text x="850" y="688" font-size="9" text-anchor="middle" fill="#2c3e50">Mc</text>
+  <circle cx="854" cy="682" r="6" fill="#3498db" stroke="#2980b9"/><text x="854" y="698" font-size="9" text-anchor="middle" fill="#2c3e50">Lv</text>
+  <!-- Ln band (15) -->
+  <g opacity="0.85">
+    <circle cx="737" cy="705" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="737" y="719" font-size="8" text-anchor="middle" fill="#2c3e50">La</text>
+    <circle cx="746" cy="692" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="746" y="706" font-size="8" text-anchor="middle" fill="#2c3e50">Ce</text>
+    <circle cx="755" cy="694" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="755" y="708" font-size="8" text-anchor="middle" fill="#2c3e50">Pr</text>
+    <circle cx="764" cy="688" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="764" y="702" font-size="8" text-anchor="middle" fill="#2c3e50">Nd</text>
+    <circle cx="773" cy="684" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="773" y="698" font-size="8" text-anchor="middle" fill="#2c3e50">Pm</text>
+    <circle cx="782" cy="683" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="782" y="697" font-size="8" text-anchor="middle" fill="#2c3e50">Sm</text>
+    <circle cx="791" cy="687" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="791" y="701" font-size="8" text-anchor="middle" fill="#e67e22">Eu*</text>
+    <circle cx="800" cy="681" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="800" y="695" font-size="8" text-anchor="middle" fill="#2c3e50">Gd</text>
+    <circle cx="809" cy="676" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="809" y="690" font-size="8" text-anchor="middle" fill="#2c3e50">Tb</text>
+    <circle cx="818" cy="673" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="818" y="687" font-size="8" text-anchor="middle" fill="#2c3e50">Dy</text>
+    <circle cx="827" cy="670" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="827" y="684" font-size="8" text-anchor="middle" fill="#2c3e50">Ho</text>
+    <circle cx="836" cy="667" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="836" y="681" font-size="8" text-anchor="middle" fill="#2c3e50">Er</text>
+    <circle cx="845" cy="664" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="845" y="678" font-size="8" text-anchor="middle" fill="#2c3e50">Tm</text>
+    <circle cx="854" cy="656" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="854" y="670" font-size="8" text-anchor="middle" fill="#e67e22">Yb*</text>
+    <circle cx="863" cy="660" r="5.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="1,2"/><text x="863" y="674" font-size="8" text-anchor="middle" fill="#2c3e50">Lu</text>
+  </g>
+  <!-- n>0 non-gas (19) — dashed circles -->
+  <circle cx="893" cy="686" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="893" y="702" font-size="9" text-anchor="middle" fill="#2c3e50">Na</text>
+  <circle cx="1075" cy="727" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1075" y="743" font-size="9" text-anchor="middle" fill="#2c3e50">K</text>
+  <circle cx="906" cy="696" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="906" y="712" font-size="9" text-anchor="middle" fill="#2c3e50">Ca</text>
+  <circle cx="839" cy="690" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="839" y="706" font-size="9" text-anchor="middle" fill="#2c3e50">Br</text>
+  <circle cx="1262" cy="741" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1262" y="757" font-size="9" text-anchor="middle" fill="#2c3e50">Rb</text>
+  <circle cx="1014" cy="695" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1014" y="711" font-size="9" text-anchor="middle" fill="#2c3e50">Sr</text>
+  <circle cx="802" cy="605" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="802" y="621" font-size="9" text-anchor="middle" fill="#2c3e50">In</text>
+  <circle cx="805" cy="608" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="823" y="610" font-size="9" text-anchor="middle" fill="#2c3e50">Sn</text>
+  <circle cx="915" cy="685" r="6.5" fill="#2ecc71" fill-opacity="0.75" stroke="#27ae60" stroke-dasharray="2,2"/><text x="915" y="701" font-size="9" text-anchor="middle" fill="#2c3e50">I</text>
+  <circle cx="1075" cy="765" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1075" y="781" font-size="9" text-anchor="middle" fill="#2c3e50">Cs</text>
+  <circle cx="1047" cy="726" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1047" y="742" font-size="9" text-anchor="middle" fill="#2c3e50">Ba</text>
+  <circle cx="870" cy="704" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="870" y="720" font-size="9" text-anchor="middle" fill="#2c3e50">At</text>
+  <circle cx="1075" cy="776" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="1095" y="778" font-size="9" text-anchor="middle" fill="#2c3e50">Fr</text>
+  <circle cx="911" cy="731" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="911" y="747" font-size="9" text-anchor="middle" fill="#2c3e50">Ra</text>
+  <circle cx="868" cy="689" r="6.5" fill="#2ecc71" fill-opacity="0.75" stroke="#27ae60" stroke-dasharray="2,2"/><text x="852" y="688" font-size="9" text-anchor="middle" fill="#2c3e50">Es</text>
+  <circle cx="860" cy="674" r="6.5" fill="#f39c12" fill-opacity="0.75" stroke="#e67e22" stroke-dasharray="2,2"/><text x="878" y="676" font-size="9" text-anchor="middle" fill="#2c3e50">Fm</text>
+  <circle cx="859" cy="671" r="6.5" fill="#f39c12" fill-opacity="0.75" stroke="#e67e22" stroke-dasharray="2,2"/><text x="841" y="668" font-size="9" text-anchor="middle" fill="#2c3e50">No</text>
+  <circle cx="914" cy="724" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="914" y="740" font-size="9" text-anchor="middle" fill="#2c3e50">Ts</text>
+  <circle cx="966" cy="746" r="6.5" fill="#3498db" fill-opacity="0.75" stroke="#2980b9" stroke-dasharray="2,2"/><text x="966" y="762" font-size="9" text-anchor="middle" fill="#2c3e50">Og</text>
+  <!-- Gases cloud (11) -->
+  <rect x="1130" y="980" width="420" height="135" fill="#eaf4fd" stroke="#3498db" stroke-width="1.2" stroke-dasharray="5,3" rx="10"/>
+  <text x="1340" y="1005" text-anchor="middle" font-size="12" fill="#2980b9" font-weight="bold">الغازات — تمدد B فائق (n &gt; 100)</text>
+  <circle cx="1170" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1170" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">H</text>
+  <circle cx="1230" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1230" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">He</text>
+  <circle cx="1290" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1290" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">N</text>
+  <circle cx="1350" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1350" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">O</text>
+  <circle cx="1410" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1410" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">F</text>
+  <circle cx="1470" cy="1035" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1470" y="1052" font-size="10" text-anchor="middle" fill="#2c3e50">Ne</text>
+  <circle cx="1200" cy="1095" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1200" y="1112" font-size="10" text-anchor="middle" fill="#2c3e50">Cl</text>
+  <circle cx="1260" cy="1095" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1260" y="1112" font-size="10" text-anchor="middle" fill="#2c3e50">Ar</text>
+  <circle cx="1320" cy="1095" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1320" y="1112" font-size="10" text-anchor="middle" fill="#2c3e50">Kr</text>
+  <circle cx="1380" cy="1095" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1380" y="1112" font-size="10" text-anchor="middle" fill="#2c3e50">Xe</text>
+  <circle cx="1440" cy="1095" r="8" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,1"/><text x="1440" y="1112" font-size="10" text-anchor="middle" fill="#2c3e50">Rn</text>
+  <!-- Excluded (7) -->
+  <rect x="150" y="980" width="440" height="135" fill="#fdedec" stroke="#e74c3c" stroke-width="1.2" stroke-dasharray="5,3" rx="10"/>
+  <text x="370" y="1005" text-anchor="middle" font-size="12" fill="#c0392b" font-weight="bold">مستبعدة — خارج المعايرة (θ₁ &lt; 0)</text>
+  <text x="175" y="1035" font-size="10" fill="#2c3e50">Db (105)  θ₁ = −12.5°</text>
+  <text x="175" y="1052" font-size="10" fill="#2c3e50">Sg (106)  θ₁ = −31.7°</text>
+  <text x="175" y="1069" font-size="10" fill="#2c3e50">Bh (107)  θ₁ = −38.7°</text>
+  <text x="175" y="1086" font-size="10" fill="#2c3e50">Hs (108)  θ₁ = −50.8°</text>
+  <text x="380" y="1035" font-size="10" fill="#2c3e50">Mt (109)  θ₁ = −39.7°</text>
+  <text x="380" y="1052" font-size="10" fill="#2c3e50">Ds (110)  θ₁ = −31.0°</text>
+  <text x="380" y="1069" font-size="10" fill="#2c3e50">Rg (111)  θ₁ = −10.5°</text>
+  <text x="380" y="1095" font-size="9" fill="#c0392b" font-style="italic">سبب: ρ &gt; RHO_MAX (22.59)</text>
+  <!-- Legend -->
+  <g font-size="11" fill="#2c3e50">
+    <rect x="30" y="30" width="300" height="140" fill="white" stroke="#bdc3c7" rx="6"/>
+    <text x="45" y="52" font-weight="bold" font-size="12">المفتاح</text>
+    <circle cx="55" cy="72" r="6" fill="#2ecc71" stroke="#27ae60"/><text x="70" y="76">A — مادة (S_A أكبر)</text>
+    <circle cx="55" cy="92" r="6" fill="#3498db" stroke="#2980b9"/><text x="70" y="96">B — زمكان (S_B أكبر)</text>
+    <circle cx="55" cy="112" r="6" fill="#f39c12" stroke="#e67e22"/><text x="70" y="116">C — قانون (S_C أكبر)</text>
+    <circle cx="55" cy="132" r="6" fill="#7f8c8d"/><text x="70" y="136">A≈C — متساويان</text>
+    <circle cx="200" cy="72" r="6" fill="#3498db" stroke="#2980b9" stroke-dasharray="2,2"/><text x="215" y="76">n&gt;0 (ممتد)</text>
+    <circle cx="200" cy="92" r="6" fill="#3498db" stroke="#2980b9" stroke-dasharray="1,2"/><text x="215" y="96">Ln (موضع تقريبي)</text>
+    <circle cx="200" cy="112" r="6" fill="#e74c3c" stroke="#c0392b"/><text x="215" y="116">مستبعد</text>
+  </g>
+  <text x="800" y="1150" text-anchor="middle" font-size="10" fill="#95a5a6" font-style="italic">الموضع = ثقل قطاعي (S_A:S_B:S_C) — تخطيطي، وليس الـIncenter الهندسي. Ln بموضع تقريبي (SA/SB غير محسوبين). * = n=1 (S_C غير موثوق).</text>
+</svg>
