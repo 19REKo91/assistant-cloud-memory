@@ -36,7 +36,7 @@
 
 ## Automated verification
 
-- 13 geometry regression tests are present, covering side convention, triangle inequality, invalid/non-finite values, angle construction, rescaling, altitude projection, centers, angle-bisector ratios, tiny triangles and large coordinate offsets.
+- 15 geometry regression tests are present, covering side convention, triangle inequality, invalid/non-finite values, angle construction, rescaling, altitude projection, centers, angle-bisector ratios, tiny triangles and large coordinate offsets.
 - GitHub Actions workflow: `.github/workflows/triangle-lab-android-build.yml`.
 - Latest completed run before this log update: run 39, commit `f590a785cf4775e771815ee26d00973e3d3b98e5`.
 - In that run, `testDebugUnitTest` passed, `assembleDebug` passed, and the APK artifact uploaded successfully.
@@ -48,3 +48,24 @@
 - Automated tests and Android debug assembly have passed.
 - Physical-device verification of touch gestures, layout on the target screen, clipboard behavior and persistence across an actual process restart remains unperformed. The user has asked not to install interim builds, so no test APK installation has been requested.
 - A release-signed APK would require a stable signing key; the current CI artifact is debug-signed.
+
+## Complete JSON export enhancement
+
+- The JSON clipboard action now exports a structured snapshot rather than only the six vertex coordinates.
+- Export schema: `triangle-lab.geometry-export.v1`.
+- Included: vertices, side lengths with the established side convention, internal and external angles, angle sum, perimeter, area, centers G/I/O/H, side/angle classification, comparison-triangle measurements and differences, and active drawing options.
+- Length units are explicitly marked as unspecified; the export does not invent a unit.
+- The Import action accepts both the previous coordinate-only JSON and the new complete export format.
+- Changes are isolated on branch `feature/triangle-lab-complete-json-export`; the stable `main` branch has not been changed.
+- Build and unit-test verification is pending for this enhancement.
+
+
+## Centroid subdivision and six G-sectors
+
+- Added geometric construction of the three internal triangles ABG, ACG and BCG using the actual centroid G.
+- Each internal triangle exports its labeled vertices, three side lengths, three internal angles, angle sum, area and perimeter.
+- Added the six consecutive sectors formed by the rays G→A, G→B, G→C and G→the three opposite-side midpoints. Each sector exports its start ray, end ray and angle; the total is checked against 360°.
+- Added a separate drawing toggle for the six arcs, degree labels, median rays and opposite-side midpoint labels.
+- Added regression tests for the one-third area property, 180° angle sums, six positive sectors and 360° total.
+- Export schema advanced to `triangle-lab.geometry-export.v2`; previous coordinate-only and v1 imports remain supported because the import reads the vertex object.
+- Automated verification for this addition is pending; no physical-device test is claimed.
