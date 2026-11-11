@@ -8,16 +8,17 @@
 
 ## ابدأ من هنا
 
-1. [COGNITIVE_HANDOVER.md](handover/COGNITIVE_HANDOVER.md) — تعليمات القراءة والانضباط وأهم التحذيرات.
-2. [HANDOVER_README.md](handover/HANDOVER_README.md) — وصف قاعدة البيانات التجميعية وقيودها.
-3. [version-lineage-6.2.1.md](recovery/version-lineage-6.2.1.md) — تسلسل الإصدارات وحالة المرجعية.
-4. [erratum-6.2.1.md](recovery/erratum-6.2.1.md) — التصحيحات التفسيرية الملزمة.
-5. [original_equations.md](recovery/original_equations.md) — مرجع المعادلات والقواعد المحفوظ في المستودع.
-6. [elements_118.csv](recovery/elements_118.csv) — جدول العناصر الحالي، 118 صفاً.
-7. [data_audit.md](recovery/data_audit.md) — تقرير التدقيق الحالي، مع ضرورة قراءة التنبيهات الواردة في تقرير المراجعة.
-8. [data-audit-theta3-gases-correction-addendum-2026-11-10.md](recovery/data-audit-theta3-gases-correction-addendum-2026-11-10.md) — ملحق تصحيح حسابات الغازات.
-9. [blind-test-controlled-correction-closure-2026-11-10.md](recovery/blind-test-controlled-correction-closure-2026-11-10.md) — سجل الاختبار المنضبط وإغلاق الادعاءات المرفوضة.
-10. [REPOSITORY_AUDIT_2026-11-10.md](audit/REPOSITORY_AUDIT_2026-11-10.md) — نتيجة فحص المستودع والفجوات والتعارضات.
+1. [CONTINUITY_MEMORY_ADDENDUM.md](handover/CONTINUITY_MEMORY_ADDENDUM.md) — ملحق الاستمرارية المعرفية؛ اقرأه بعد ملف نقل الوعي لتستعيد القرارات والمنهج ونقطة التوقف.
+2. [COGNITIVE_HANDOVER.md](handover/COGNITIVE_HANDOVER.md) — تعليمات القراءة والانضباط وأهم التحذيرات.
+3. [HANDOVER_README.md](handover/HANDOVER_README.md) — وصف قاعدة البيانات التجميعية وقيودها.
+4. [version-lineage-6.2.1.md](recovery/version-lineage-6.2.1.md) — تسلسل الإصدارات وحالة المرجعية.
+5. [erratum-6.2.1.md](recovery/erratum-6.2.1.md) — التصحيحات التفسيرية الملزمة.
+6. [original_equations.md](recovery/original_equations.md) — مرجع المعادلات والقواعد المحفوظ في المستودع.
+7. [elements_118.csv](recovery/elements_118.csv) — جدول العناصر الحالي، 118 صفاً.
+8. [data_audit.md](recovery/data_audit.md) — تقرير التدقيق الحالي، مع ضرورة قراءة التنبيهات الواردة في تقرير المراجعة.
+9. [data-audit-theta3-gases-correction-addendum-2026-11-10.md](recovery/data-audit-theta3-gases-correction-addendum-2026-11-10.md) — ملحق تصحيح حسابات الغازات.
+10. [blind-test-controlled-correction-closure-2026-11-10.md](recovery/blind-test-controlled-correction-closure-2026-11-10.md) — سجل الاختبار المنضبط وإغلاق الادعاءات المرفوضة.
+11. [REPOSITORY_AUDIT_2026-11-10.md](audit/REPOSITORY_AUDIT_2026-11-10.md) — نتيجة فحص المستودع والفجوات والتعارضات.
 
 ## خريطة المجلدات
 
