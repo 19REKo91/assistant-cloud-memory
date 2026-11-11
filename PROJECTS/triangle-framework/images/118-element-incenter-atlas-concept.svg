@@ -8,8 +8,8 @@
 <polygon points="390,570 800,235 1210,570" fill="#edf2f7" stroke="#334e68" stroke-width="5"/>
 <circle cx="390" cy="570" r="12" fill="#239b56"/><circle cx="1210" cy="570" r="12" fill="#2874a6"/><circle cx="800" cy="235" r="12" fill="#d68910"/>
 <text x="340" y="615" class="b">A — المادة</text><text x="1110" y="615" class="b">B — الزمكان</text><text x="800" y="205" text-anchor="middle" class="b">C — القانون</text>
-<path d="M390 570 L800 433 M1210 570 L800 433 M800 235 L800 433" class="d"/>
-<circle cx="800" cy="433" r="13" fill="#c0392b" stroke="#fff" stroke-width="4"/><text x="825" y="426" class="h">G</text><text x="825" y="458" class="s">مركز الدائرة الداخلية</text>
+<path d="M390 570 L800 424 M1210 570 L800 424 M800 235 L800 424" class="d"/>
+<circle cx="800" cy="424" r="13" fill="#c0392b" stroke="#fff" stroke-width="4"/><text x="825" y="417" class="h">G</text><text x="825" y="449" class="s">مركز الدائرة الداخلية</text>
 <rect x="1260" y="230" width="240" height="320" rx="16" fill="#f3f6f9" stroke="#d6dde5"/>
 <text x="1380" y="275" text-anchor="middle" class="h">بيانات المشروع</text><text x="1380" y="345" text-anchor="middle" class="h">118</text><text x="1380" y="375" text-anchor="middle" class="s">عنصراً إجمالاً</text><text x="1380" y="440" text-anchor="middle" class="h">111</text><text x="1380" y="470" text-anchor="middle" class="s">مصنّفاً</text><text x="1380" y="515" text-anchor="middle" class="h">7 مستبعدة</text>
 <text x="95" y="655" class="s">G في هذا الرسم توضيحي فقط؛ لا يمثل إحداثيات عنصر حقيقي.</text>
