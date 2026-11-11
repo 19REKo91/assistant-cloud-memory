@@ -360,11 +360,13 @@ private fun TriangleHome() {
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Centers" else "المراكز G/I/O/H", options.centers) { options = options.copy(centers = it) }
+                ToggleChip(if (english) "Centroid divisions" else "تقسيمات مركز الثقل", options.centroidDivisions) { options = options.copy(centroidDivisions = it) }
                 ToggleChip(if (english) "I radii" else "وصلات I للأضلاع", options.centerRadii) { options = options.copy(centerRadii = it) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Internal angles" else "الزوايا الداخلية", options.internalAngles) { options = options.copy(internalAngles = it) }
                 ToggleChip(if (english) "External angles" else "الزوايا الخارجية", options.externalAngles) { options = options.copy(externalAngles = it) }
+                ToggleChip(if (english) "Angle numbers" else "أرقام الزوايا", options.angleLabels) { options = options.copy(angleLabels = it) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ToggleChip(if (english) "Extend sides" else "تطويل الأضلاع", options.sideExtensions) { options = options.copy(sideExtensions = it) }
@@ -373,6 +375,7 @@ private fun TriangleHome() {
         }
 
         Text(if (english) "Measurements" else "القياسات", style = MaterialTheme.typography.titleMedium)
+        InternalTrianglePanel(triangle = triangle, english = english)
         Text("a = %.4f    b = %.4f    c = %.4f".format(Locale.US, triangle.a, triangle.b, triangle.c))
         Text("A = %.3f°    B = %.3f°    C = %.3f°".format(Locale.US, triangle.angleA, triangle.angleB, triangle.angleC))
         Text((if (english) "Perimeter" else "المحيط") + ": %.4f".format(Locale.US, triangle.perimeter) + "    " + (if (english) "Area" else "المساحة") + ": %.4f".format(Locale.US, triangle.area))
@@ -472,18 +475,6 @@ private fun parseNumber(raw: String): Double? {
     }
     return normalized.toDoubleOrNull()
 }
-
-private fun triangleToJson(t: Triangle): JSONObject = JSONObject().apply {
-    put("ax", t.A.x); put("ay", t.A.y)
-    put("bx", t.B.x); put("by", t.B.y)
-    put("cx", t.C.x); put("cy", t.C.y)
-}
-
-private fun triangleFromJson(json: JSONObject): Triangle = Triangle(
-    Vec2(json.getDouble("ax"), json.getDouble("ay")),
-    Vec2(json.getDouble("bx"), json.getDouble("by")),
-    Vec2(json.getDouble("cx"), json.getDouble("cy"))
-)
 
 private fun persistTriangles(preferences: SharedPreferences, triangles: List<Triangle>) {
     val array = JSONArray()

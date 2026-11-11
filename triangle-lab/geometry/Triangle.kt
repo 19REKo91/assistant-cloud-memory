@@ -93,4 +93,15 @@ data class Triangle(val A: Vec2, val B: Vec2, val C: Vec2) {
             else -> null
         }
     }
+
+    /** Three non-overlapping triangles formed by joining centroid G to A, B and C. */
+    fun centroidSubtriangles(): List<Pair<String, Triangle>> {
+        val g = centroid
+        return listOf(
+            "ABG" to Triangle(A, B, g),
+            "ACG" to Triangle(A, C, g),
+            "BCG" to Triangle(B, C, g)
+        )
+    }
+
 }
