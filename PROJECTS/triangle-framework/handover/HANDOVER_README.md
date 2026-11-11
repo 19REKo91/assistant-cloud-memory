@@ -9,6 +9,9 @@
 قاعدة بيانات تجميعية للعناصر الـ118. ليست إصداراً دستورياً.
 توثيق وتسليم فقط.
 
+### ملحق الاستمرارية المعرفية
+اقرأ [CONTINUITY_MEMORY_ADDENDUM.md](CONTINUITY_MEMORY_ADDENDUM.md) بعد COGNITIVE_HANDOVER.md. هذا الملحق يسجل منهج العمل وقرارات صاحب المشروع والتعارضات ونقطة البحث المفتوحة؛ لا يستبدل الدستور ولا يغيّر البيانات.
+
 ### نقطة التوقف
 - 118 عنصراً (111 مصنف + 7 مستبعد)
 - 18 تعارضاً محفوظاً (11 غازات + 7 إصدارات)
@@ -18,15 +21,16 @@
 
 ### الملفات المسلَّمة
 1. COGNITIVE_HANDOVER.md (اقرأ أولاً)
-2. HANDOVER_README.md (هذا)
-3. original_equations.md
-4. data_audit.md
-5. OPEN_ISSUES.md
-6. SUCCESSION_INSTRUCTIONS.md
-7. elements_118.csv
-8. elements_118.json
-9. excluded_elements.csv
-10. cosmic_triangle_map.svg (اختياري)
+2. CONTINUITY_MEMORY_ADDENDUM.md (اقرأ ثانياً لاستعادة الاستمرارية)
+3. HANDOVER_README.md (هذا)
+4. original_equations.md
+5. data_audit.md
+6. OPEN_ISSUES.md
+7. SUCCESSION_INSTRUCTIONS.md
+8. elements_118.csv
+9. elements_118.json
+10. excluded_elements.csv
+11. cosmic_triangle_map.svg (اختياري)
 
 ### القيود الملزمة
 - لا تحسب a, b, C, I (بقرار صاحب المشروع)
