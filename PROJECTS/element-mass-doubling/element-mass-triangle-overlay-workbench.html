@@ -37,7 +37,7 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 <section class="workspace">
 <div class="chartbox">
 <div class="toolbar">
-<button id="zin" type="button">Zoom +</button><button id="zout" type="button">Zoom −</button><button id="reset" type="button">Reset view</button><label class="note" for="triangleScale">Triangle display scale: <input id="triangleScale" type="range" min="1" max="6" step="0.5" value="3"> <output id="scaleValue">3 px / unit</output></label>
+<button id="zin" type="button">Zoom +</button><button id="zout" type="button">Zoom −</button><button id="reset" type="button">Reset view</button><button id="exportSvg" type="button">Export SVG</button><label class="note" for="triangleScale">Triangle display scale: <input id="triangleScale" type="range" min="1" max="6" step="0.5" value="3"> <output id="scaleValue">3 px / unit</output></label>
 <span class="note">Mouse wheel / pinch to zoom · drag to pan</span>
 </div>
 <?xml version="1.0" encoding="UTF-8"?>
@@ -105,6 +105,12 @@ for(const point of svg.querySelectorAll(':scope > circle')){
  const tip=document.createElementNS('http://www.w3.org/2000/svg','title');tip.textContent='Z='+z+' '+symbol+' — '+status;ring.appendChild(tip);classLayer.appendChild(ring);
 }
 
+document.querySelector('#exportSvg').addEventListener('click',()=>{
+ const clone=svg.cloneNode(true);clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+ const source='<?xml version="1.0" encoding="UTF-8"?>\\n'+new XMLSerializer().serializeToString(clone);
+ const blob=new Blob([source],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob);
+ const a=document.createElement('a');a.href=url;a.download='element-mass-triangle-overlay.svg';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
 function apply(){svg.setAttribute('viewBox',[v.x,v.y,v.w,v.h].join(' '))}
 function zoom(f,cx=v.x+v.w/2,cy=v.y+v.h/2){const nw=Math.max(180,Math.min(1440,v.w*f)),nh=nw*820/1440,rx=(cx-v.x)/v.w,ry=(cy-v.y)/v.h;v={x:cx-rx*nw,y:cy-ry*nh,w:nw,h:nh};apply()}
 document.querySelector('#zin').onclick=()=>zoom(.8);document.querySelector('#zout').onclick=()=>zoom(1.25);document.querySelector('#reset').onclick=()=>{v={...base};apply()};
