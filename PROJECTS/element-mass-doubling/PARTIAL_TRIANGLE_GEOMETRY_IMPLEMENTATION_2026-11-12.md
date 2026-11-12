@@ -54,3 +54,8 @@ After the latest update, the HTML was fetched back from GitHub and checked:
 - The triangle overlay layer and display-scale slider are present.
 
 Page path: PROJECTS/element-mass-doubling/element-mass-triangle-overlay-workbench.html
+
+## Follow-up implementation — classification and export
+The chart now draws colored rings around the unchanged original blue points for the 3 Anomalous (Be, B, C), 11 Gas (H, He, N, O, F, Ne, Cl, Ar, Kr, Xe, Rn), and 7 Excluded (Db, Sg, Bh, Hs, Mt, Ds, Rg) elements. Each ring has a hover title with Z, symbol, and status. The classification marker is a separate SVG layer; it does not move or replace the original points.
+
+An Export SVG button serializes the current SVG chart, including the classification and triangle layers, to an SVG file. This is a browser-side export feature.
