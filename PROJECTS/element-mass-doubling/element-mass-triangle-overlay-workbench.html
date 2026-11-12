@@ -37,11 +37,11 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 <section class="workspace">
 <div class="chartbox">
 <div class="toolbar">
-<button id="zin" type="button">Zoom +</button><button id="zout" type="button">Zoom −</button><button id="reset" type="button">Reset view</button>
+<button id="zin" type="button">Zoom +</button><button id="zout" type="button">Zoom −</button><button id="reset" type="button">Reset view</button><label class="note" for="triangleScale">Triangle display scale: <input id="triangleScale" type="range" min="1" max="6" step="0.5" value="3"> <output id="scaleValue">3 px / unit</output></label>
 <span class="note">Mouse wheel / pinch to zoom · drag to pan</span>
 </div>
 <?xml version="1.0" encoding="UTF-8"?>
-<svg class="chart" viewBox="0 0 1440 820" role="img" aria-label="Atomic Mass Position Map for Elements 1–118">
+<svg id="chart" class="chart" viewBox="0 0 1440 820" role="img" aria-label="Atomic Mass Position Map for Elements 1–118">
 <rect width="1440" height="820" fill="#fff"/>
 <line x1="100" y1="720" x2="1395" y2="720" stroke="#d9dee7" stroke-width="1"/><text x="82" y="725" text-anchor="end" font-size="15" fill="#344054">0%</text><line x1="100" y1="655" x2="1395" y2="655" stroke="#d9dee7" stroke-width="1"/><text x="82" y="660" text-anchor="end" font-size="15" fill="#344054">10%</text><line x1="100" y1="590" x2="1395" y2="590" stroke="#d9dee7" stroke-width="1"/><text x="82" y="595" text-anchor="end" font-size="15" fill="#344054">20%</text><line x1="100" y1="525" x2="1395" y2="525" stroke="#d9dee7" stroke-width="1"/><text x="82" y="530" text-anchor="end" font-size="15" fill="#344054">30%</text><line x1="100" y1="460" x2="1395" y2="460" stroke="#d9dee7" stroke-width="1"/><text x="82" y="465" text-anchor="end" font-size="15" fill="#344054">40%</text><line x1="100" y1="395" x2="1395" y2="395" stroke="#d9dee7" stroke-width="1"/><text x="82" y="400" text-anchor="end" font-size="15" fill="#344054">50%</text><line x1="100" y1="330" x2="1395" y2="330" stroke="#d9dee7" stroke-width="1"/><text x="82" y="335" text-anchor="end" font-size="15" fill="#344054">60%</text><line x1="100" y1="265" x2="1395" y2="265" stroke="#d9dee7" stroke-width="1"/><text x="82" y="270" text-anchor="end" font-size="15" fill="#344054">70%</text><line x1="100" y1="200" x2="1395" y2="200" stroke="#d9dee7" stroke-width="1"/><text x="82" y="205" text-anchor="end" font-size="15" fill="#344054">80%</text><line x1="100" y1="135" x2="1395" y2="135" stroke="#d9dee7" stroke-width="1"/><text x="82" y="140" text-anchor="end" font-size="15" fill="#344054">90%</text><line x1="100" y1="70" x2="1395" y2="70" stroke="#d9dee7" stroke-width="1"/><text x="82" y="75" text-anchor="end" font-size="15" fill="#344054">100%</text>
 <line x1="100" y1="70" x2="100" y2="720" stroke="#475467" stroke-width="1.5"/>
@@ -63,7 +63,7 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 <div class="status"><span>Excluded ⊘</span><strong>7</strong></div>
 <p><b>Check:</b> 19 + 78 + 3 + 11 + 7 = 118. Completed excluding 7 = 111.</p></div>
 <div class="panel"><h2>Triangle layer</h2>
-<p>Overlay layer is prepared but no element triangles have been inserted in this build.</p>
+<p><b>2 geometry checks inserted:</b> H (documented gas-angle test) and Li (direct 180° triangle). Other elements remain unplotted until their exact rows and angle interpretation are available.</p><p class="note">Slider changes display size only. It does not alter AB = 3 or claim a physical/chart-axis conversion.</p>
 <p>Raw angle data must remain distinct from any derived periodic-angle values. The 360° dosage system in version 6.2.1 is not used as a triangle-construction rule.</p>
 <p class="note">Base length AB = 3. A display scale for placing triangles on this chart is not yet specified.</p></div>
 <div class="panel"><h2>Reference integrity</h2><p>All 118 original plot points and the original polyline are retained in this derived SVG. Only the two axis captions and accessibility label are translated to English.</p></div>
@@ -72,6 +72,21 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 </main>
 <script>
 (()=>{const svg=document.querySelector('#chart'), base={x:0,y:0,w:1440,h:820};let v={...base},drag=null;
+const overlay=document.querySelector('#triangle-overlay'), scaleInput=document.querySelector('#triangleScale'), scaleValue=document.querySelector('#scaleValue');
+const triangleData=[
+ {z:1,symbol:'H',x:100,y:90.28,raw:[85.84,70227,7],angles:[85.84,27,7],source:'Hydrogen test: theta2 raw 70227°, derived periodic angle 27°',sides:{a:24.5516715579,b:11.1756694601},C:[0.8107045477,11.1462256400],G:[0.9285202929,0.8634384918]},
+ {z:3,symbol:'Li',x:122.1367521368,y:268.705,raw:[84.05,46.95,49],angles:[84.05,46.95,49],source:'Direct angle sum = 180°',sides:{a:3.9536243915,b:2.9047925978},C:[0.3011123678,2.8891437102],G:[0.9755841031,0.8791909634]}
+];
+function drawTriangles(){const s=Number(scaleInput.value);scaleValue.textContent=s+' px / unit';overlay.innerHTML='';
+ for(const t of triangleData){const gx=t.G[0],gy=t.G[1],pts=[[-gx,gy],[3-gx,gy],[t.C[0]-gx,gy-t.C[1]]].map(p=>p.join(',')).join(' ');
+ const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('transform',`translate(${t.x} ${t.y}) scale(${s})`);g.setAttribute('fill','none');g.setAttribute('stroke',t.symbol==='H'?'#d92d20':'#039855');g.setAttribute('stroke-width',String(1.5/s));g.setAttribute('vector-effect','non-scaling-stroke');
+ const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');poly.setAttribute('points',pts);poly.setAttribute('fill',t.symbol==='H'?'#fef3f2':'#ecfdf3');poly.setAttribute('fill-opacity','.42');g.appendChild(poly);
+ const center=document.createElementNS('http://www.w3.org/2000/svg','circle');center.setAttribute('cx','0');center.setAttribute('cy','0');center.setAttribute('r',String(1.4/s));center.setAttribute('fill',t.symbol==='H'?'#d92d20':'#039855');center.setAttribute('stroke','none');g.appendChild(center);
+ const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=`${t.symbol} (Z=${t.z}) — angles ${t.angles.join('°, ')}°; AB=3; a=${t.sides.a.toFixed(4)}; b=${t.sides.b.toFixed(4)}. ${t.source}. G centered on original element point. Display scale only: ${s} px/unit.`;g.appendChild(title);overlay.appendChild(g);
+ const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',String(t.x+8));label.setAttribute('y',String(t.y-8));label.setAttribute('font-size','12');label.setAttribute('font-weight','700');label.setAttribute('fill',t.symbol==='H'?'#b42318':'#027a48');label.textContent=t.symbol+' · G';overlay.appendChild(label);
+ }
+}
+scaleInput.addEventListener('input',drawTriangles);drawTriangles();
 function apply(){svg.setAttribute('viewBox',[v.x,v.y,v.w,v.h].join(' '))}
 function zoom(f,cx=v.x+v.w/2,cy=v.y+v.h/2){const nw=Math.max(180,Math.min(1440,v.w*f)),nh=nw*820/1440,rx=(cx-v.x)/v.w,ry=(cy-v.y)/v.h;v={x:cx-rx*nw,y:cy-ry*nh,w:nw,h:nh};apply()}
 document.querySelector('#zin').onclick=()=>zoom(.8);document.querySelector('#zout').onclick=()=>zoom(1.25);document.querySelector('#reset').onclick=()=>{v={...base};apply()};
