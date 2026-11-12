@@ -63,7 +63,7 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 <div class="status"><span>Excluded ⊘</span><strong>7</strong></div>
 <p><b>Check:</b> 19 + 78 + 3 + 11 + 7 = 118. Completed excluding 7 = 111.</p></div>
 <div class="panel"><h2>Triangle layer</h2>
-<p><b>2 geometry checks inserted:</b> H (documented gas-angle test) and Li (direct 180° triangle). Other elements remain unplotted until their exact rows and angle interpretation are available.</p><p class="note">Slider changes display size only. It does not alter AB = 3 or claim a physical/chart-axis conversion.</p>
+<p><b>1 valid Euclidean triangle inserted:</b> Li (direct angle sum = 180°). H is retained only as a diagnostic: its documented test angles 85.84°, 27°, 7° sum to 119.84°, so it is not drawn as a Euclidean triangle. Other elements remain unplotted until their exact rows and angle interpretation are available.</p><p class="note">Slider changes display size only. It does not alter AB = 3 or claim a physical/chart-axis conversion.</p>
 <p>Raw angle data must remain distinct from any derived periodic-angle values. The 360° dosage system in version 6.2.1 is not used as a triangle-construction rule.</p>
 <p class="note">Base length AB = 3. A display scale for placing triangles on this chart is not yet specified.</p></div>
 <div class="panel"><h2>Reference integrity</h2><p>All 118 original plot points and the original polyline are retained in this derived SVG. Only the two axis captions and accessibility label are translated to English.</p></div>
@@ -74,7 +74,6 @@ aside{display:grid;gap:10px}.panel h2{font-size:15px;margin:0 0 7px}.panel p{mar
 (()=>{const svg=document.querySelector('#chart'), base={x:0,y:0,w:1440,h:820};let v={...base},drag=null;
 const overlay=document.querySelector('#triangle-overlay'), scaleInput=document.querySelector('#triangleScale'), scaleValue=document.querySelector('#scaleValue');
 const triangleData=[
- {z:1,symbol:'H',x:100,y:90.28,raw:[85.84,70227,7],angles:[85.84,27,7],source:'Hydrogen test: theta2 raw 70227°, derived periodic angle 27°',sides:{a:24.5516715579,b:11.1756694601},C:[0.8107045477,11.1462256400],G:[0.9285202929,0.8634384918]},
  {z:3,symbol:'Li',x:122.1367521368,y:268.705,raw:[84.05,46.95,49],angles:[84.05,46.95,49],source:'Direct angle sum = 180°',sides:{a:3.9536243915,b:2.9047925978},C:[0.3011123678,2.8891437102],G:[0.9755841031,0.8791909634]}
 ];
 function drawTriangles(){const s=Number(scaleInput.value);scaleValue.textContent=s+' px / unit';overlay.innerHTML='';
