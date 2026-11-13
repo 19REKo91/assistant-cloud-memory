@@ -191,8 +191,8 @@ def self_test():
     assert abs(g["area"] - 6.0) < 1e-9
     assert abs(g["I_x"] - 2.0) < 1e-9
     assert abs(g["I_y"] - 1.0) < 1e-9
-    assert abs(g["G_x"] - 2.0) < 1e-9
-    assert abs(g["G_y"] - 1.0) < 1e-9
+    assert abs(g["G_x"] - (6.8 / 3.0)) < 1e-9
+    assert abs(g["G_y"] - 0.8) < 1e-9
     assert clock_reading(190.0)[0] == 190.0
     assert clock_reading(190.0)[2] == "NEGATIVE"
     assert clock_reading(360.0)[2] == "BOUNDARY"
