@@ -74,7 +74,7 @@ def triangle(a, b, c):
             "angle_C_from_sides":C,"angle_sum_check":A+B+C}
 
 
-def angle_triangle(angles):
+def angle_triangle(angles, base_side=3.0):
     t1,t2,t3 = angles
     if not all(math.isfinite(x) for x in angles):
         raise ValueError("NON_FINITE_ANGLE")
@@ -85,8 +85,8 @@ def angle_triangle(angles):
     s3 = math.sin(math.radians(t3))
     if abs(s3) <= EPS:
         raise ValueError("DEGENERATE_SINE")
-    g = triangle(3.0*math.sin(math.radians(t1))/s3,
-                 3.0*math.sin(math.radians(t2))/s3, 3.0)
+    g = triangle(base_side*math.sin(math.radians(t1))/s3,
+                 base_side*math.sin(math.radians(t2))/s3, base_side)
     g.update({"angle_input_A":t1,"angle_input_B":t2,"angle_input_C":t3})
     return g
 
@@ -207,7 +207,7 @@ def write_csv(path, rows):
 def self_test():
     g=triangle(4,3,5)
     assert abs(g["area"]-6)<1e-9 and abs(g["I_x"]-2)<1e-9 and abs(g["I_y"]-1)<1e-9
-    q=angle_triangle((30.0,60.0,90.0))
+    q=angle_triangle((30.0,60.0,90.0),2.0)
     assert abs(q["a"]-1)<1e-8 and abs(q["b"]-math.sqrt(3))<1e-8
     for bad in [(-5.0,80.0,105.0),(20.0,20.0,20.0)]:
         try: angle_triangle(bad)
