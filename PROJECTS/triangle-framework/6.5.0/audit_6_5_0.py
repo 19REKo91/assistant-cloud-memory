@@ -29,6 +29,10 @@ def number(raw):
     if raw is None:
         return None, "NOT_FOUND"
     s = str(raw).strip()
+    if s.upper() == "NOT_FOUND":
+        return None, "NOT_FOUND"
+    if s.upper() == "NO_DATA":
+        return None, "NO_DATA"
     if not s or s.upper() in {"NA","N/A","NULL","NONE"}:
         return None, "EMPTY"
     try:
