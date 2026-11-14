@@ -1,0 +1,30 @@
+name: Run Prism Engine 6.4.0-alpha
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip pandas scipy
+      - name: Run Prism Engine 6.4.0-alpha
+        run: |
+          mkdir -p output
+          set -o pipefail
+          python PROJECTS/prism-engine/6.4.0-alpha/main.py 2>&1 | tee output/full.log
+      - name: Upload CSV and full log
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-engine-6.4.0-alpha-results
+          path: |
+            output/element-table-6.4.0-alpha.csv
+            output/full.log
+          if-no-files-found: error
