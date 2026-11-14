@@ -106,6 +106,7 @@ def calc(row):
         flags.append("THETA3_GT_180")
 
     # Ox is constitutionally independent of all geometry denominators.
+    out["c"] = 3.0
     out["Ox"] = 1.5
     a=b=cx=cy=gx=gy=ix=iy=oy=dio=None
     den3 = abs(sd(theta3)) if theta3 is not None else None
