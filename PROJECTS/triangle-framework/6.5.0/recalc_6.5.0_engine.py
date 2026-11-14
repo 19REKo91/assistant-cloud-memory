@@ -207,7 +207,10 @@ def self_test():
     doses_sum = sum(90.0 + t / 2.0 for t in (theta1, theta2, theta3, theta4, theta5))
     assert abs(angles_sum - 300.0) < 1e-12, angles_sum
     assert abs(doses_sum - 600.0) < 1e-12, doses_sum
-    assert abs(((-360.0) % 360.0) or 360.0 - 360.0) < 1e-12
+    boundary = (-360.0) % 360.0
+    if abs(boundary) <= EPS:
+        boundary = 360.0
+    assert abs(boundary - 360.0) < 1e-12
     print("SELF-TEST: angle sum = 300 degrees")
     print("SELF-TEST: dose sum = 600 degrees")
     print("SELF-TEST: modulo boundary handled")
