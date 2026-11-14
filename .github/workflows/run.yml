@@ -1,4 +1,4 @@
-name: Run Prism Engine
+name: Run Prism Engine 6.3.0-beta
 
 on:
   workflow_dispatch:
@@ -13,5 +13,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Run Prism Engine
-        run: python main.py
+      - name: Install dependency
+        run: python -m pip install --upgrade pip pandas
+      - name: Run Prism Engine 6.3.0-beta
+        run: |
+          mkdir -p output
+          set -o pipefail
+          python PROJECTS/prism-engine/6.3.0-beta/main.py 2>&1 | tee output/full.log
+      - name: Upload CSV and full log
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-engine-6.3.0-beta-results
+          path: |
+            output/element-table-6.3.0-beta.csv
+            output/full.log
+          if-no-files-found: error
