@@ -39,7 +39,7 @@ OUTPUT_FIELDS = [
     "a", "b", "c", "a_over_b",
     "Ax", "Ay", "Bx", "By", "Cx", "Cy",
     "Ix", "Iy", "Gx", "Gy", "inradius_r", "area_projected",
-    "Data_Quality", "Family", "GAS", "Flags", "Notes"
+    "Shape_Class", "Geometry_Diagnostics", "Data_Quality", "Family", "GAS", "Flags", "Notes"
 ]
 
 def num(value):
@@ -146,12 +146,10 @@ def compute(row):
         add_flag(flags, "RHO_OUT")
     if not 0.0 <= V_n <= 1.0:
         add_flag(flags, "V_OUT")
-    if not 0.0 <= R_n <= 1.0:
-        add_flag(flags, "R_OUT")
     if not 0.0 <= mp_n <= 1.0:
         add_flag(flags, "MP_OUT")
     if theta3 < 0:
-        add_flag(flags, "THETA3_NEG")
+        add_flag(flags, "θ3_NEG")
 
     # Preserve the constitution's stated side expressions exactly.
     sin3 = math.sin(math.radians(theta3))
@@ -171,14 +169,24 @@ def compute(row):
     inradius = Iy
     area = abs(0.5 * C_SIDE * Cy)
 
+    diagnostics = []
     if abs(sin3) <= EPS:
-        add_flag(flags, "SIDE_DENOMINATOR_ZERO")
+        diagnostics.append("SIDE_DENOMINATOR_ZERO")
     if not all(math.isfinite(v) for v in (a, b, Cx, Cy, Ix, Iy, Gx, Gy)):
-        add_flag(flags, "NONFINITE_GEOMETRY")
+        diagnostics.append("NONFINITE_GEOMETRY")
     if abs(sum_theta - 300.0) > 1e-8:
-        add_flag(flags, "ANGLE_SUM_CHECK_FAIL")
+        diagnostics.append("ANGLE_SUM_CHECK_FAIL")
     if abs(sum_doses - 600.0) > 1e-8:
-        add_flag(flags, "DOSE_SUM_CHECK_FAIL")
+        diagnostics.append("DOSE_SUM_CHECK_FAIL")
+    if math.isfinite(ab):
+        if ab < 1.0:
+            shape_class = "MATERIAL_SOVEREIGN"
+        elif ab > 2.0:
+            shape_class = "LAW_SOVEREIGN"
+        else:
+            shape_class = "BALANCED"
+    else:
+        shape_class = "UNCLASSIFIED"
 
     out = {k: row.get(k, "") for k in ("Z", "Sym", "M", "rho", "R", "mp_C")}
     values = {
@@ -193,6 +201,7 @@ def compute(row):
         "Ax": Ax, "Ay": Ay, "Bx": Bx, "By": By, "Cx": Cx, "Cy": Cy,
         "Ix": Ix, "Iy": Iy, "Gx": Gx, "Gy": Gy,
         "inradius_r": inradius, "area_projected": area,
+        "Shape_Class": shape_class, "Geometry_Diagnostics": "|".join(diagnostics) if diagnostics else "OK",
         "Data_Quality": quality or "UNSPECIFIED", "Family": family, "GAS": gas,
         "Flags": "|".join(flags) if flags else "OK", "Notes": notes
     }
