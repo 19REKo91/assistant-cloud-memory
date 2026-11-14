@@ -218,10 +218,10 @@ def main():
       "لا حساب لمساحة أو أقواس كروية؛ لا توجد معادلات لها في الدستور.","",
       "نجاح الهويات لا يثبت الاتساق الإقليدي للمثلث أو صحة تفسير كروي.",
       "بصمة المصدر تثبت الملف الذي قرأه التشغيل، ولا تثبت صحة القياسات أو مصادرها العلمية."]
-    (OUT/"audit_report.md").write_text("\\n".join(report)+"\\n",encoding="utf-8")
+    (OUT/"audit_report.md").write_text("\n".join(report)+"\n",encoding="utf-8")
     (OUT/"source_manifest.txt").write_text(
-      "source_path="+str(SOURCE.relative_to(ROOT))+"\\nsource_sha256="+digest+
-      "\\nsource_bytes="+str(len(raw))+"\\nsource_rows="+str(len(rows))+"\\n",encoding="utf-8")
+      "source_path="+str(SOURCE.relative_to(ROOT))+"\nsource_sha256="+digest+
+      "\nsource_bytes="+str(len(raw))+"\nsource_rows="+str(len(rows))+"\n",encoding="utf-8")
     print("=== TRIANGLE FRAMEWORK 6.5.0 AUDIT ===")
     print("source_sha256: "+digest)
     print("source_bytes: "+str(len(raw)))
