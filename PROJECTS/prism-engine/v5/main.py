@@ -61,6 +61,8 @@ def old_density_angles(M, rho):
 
 def triangle_geometry(a, b, c):
     """Construct a triangle from side lengths; return I and G coordinates."""
+    if not all(math.isfinite(float(v)) for v in (a, b, c)):
+        raise ValueError("NON_FINITE_SIDE")
     if min(a, b, c) <= 0:
         raise ValueError("NON_POSITIVE_SIDE")
     if (a + b <= c + EPS) or (a + c <= b + EPS) or (b + c <= a + EPS):
@@ -117,19 +119,40 @@ def compute(el):
         "Z": z, "symbol": sym, "M_atomic_mass": mass,
         "rho_original": rho_original,
     }
-    if z is None or sym is None or mass is None or rho_original in (None, 0):
+    if z is None or sym is None or mass is None or rho_original is None:
         return {**base, "status": "MISSING_DATA"}
 
-    rho = float(rho_original)
+    # Validate source values before applying the unchanged v5 equations.
+    try:
+        z_num = int(z)
+        mass_num = float(mass)
+        rho = float(rho_original)
+    except (TypeError, ValueError, OverflowError):
+        return {
+            **base, "status": "INVALID_SOURCE_VALUE",
+            "reason": "Z, atomic_mass, and density must be numeric",
+        }
+
+    if not all(math.isfinite(v) for v in (mass_num, rho)):
+        return {
+            **base, "status": "INVALID_SOURCE_VALUE",
+            "reason": "Non-finite atomic_mass or density",
+        }
+    if z_num < 1 or z_num > 118 or mass_num <= 0.0 or rho <= 0.0:
+        return {
+            **base, "status": "INVALID_SOURCE_VALUE",
+            "reason": "Z must be 1..118 and atomic_mass/density must be positive",
+        }
+
     gas_unit_fix = sym in GAS_SYMBOLS and rho > 0.01
     if gas_unit_fix:
         rho /= 1000.0
 
     # User-defined v5 input relation; M is the source atomic-mass value.
-    neutron_proxy = float(mass) - float(z)
+    neutron_proxy = mass_num - float(z_num)
 
     try:
-        angles = old_density_angles(float(mass), rho)
+        angles = old_density_angles(mass_num, rho)
     except (ArithmeticError, ValueError) as exc:
         return {**base, "status": "ANGLE_CALC_ERROR", "reason": str(exc)}
 
@@ -147,7 +170,7 @@ def compute(el):
         }
 
     b = C_BASE * abs(math.sin(t2)) / sin_t3
-    a = float(z) / 10.0
+    a = float(z_num) / 10.0
     c = C_BASE + C_NEUTRON_FACTOR * neutron_proxy
 
     theta_clock, clock_state, conventional_charge = clock_reading(
@@ -196,7 +219,32 @@ def self_test():
     assert clock_reading(190.0)[0] == 190.0
     assert clock_reading(190.0)[2] == "NEGATIVE"
     assert clock_reading(360.0)[2] == "BOUNDARY"
-    print("SELF-TEST PASSED: triangle geometry, incenter, centroid, clock")
+
+    # The legacy zipper must preserve the 180-degree visible-angle sum.
+    inverse_case = old_density_angles(7.10, 1.74)
+    assert inverse_case["zip_mode"] == "inverse"
+    assert abs(
+        inverse_case["theta_1"] + inverse_case["theta_2_vis"]
+        + inverse_case["theta_3_vis"] - 180.0
+    ) < 1e-9
+
+    extended_case = old_density_angles(31.7898, 1.74)
+    assert extended_case["zip_mode"] == "extended_60f"
+    assert abs(
+        extended_case["theta_1"] + extended_case["theta_2_vis"]
+        + extended_case["theta_3_vis"] - 180.0
+    ) < 1e-9
+
+    invalid_case = compute({
+        "number": 1, "symbol": "H", "atomic_mass": "not-a-number",
+        "density": 0.00008988,
+    })
+    assert invalid_case["status"] == "INVALID_SOURCE_VALUE"
+
+    print(
+        "SELF-TEST PASSED: triangle geometry, incenter, centroid, "
+        "clock, zipper, and source validation"
+    )
 
 
 def main():
