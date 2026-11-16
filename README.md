@@ -13,3 +13,12 @@
 - الفهرس: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/index.html
 - آخر تحديث: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/latest.md
 - المحادثة الكاملة: https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/memory.html
+
+## خريطة المستودع
+
+- [الفهرس العام](./INDEX.md)
+- [فهرس المشاريع](./PROJECTS/README.md)
+- [الجرد الكامل للمسارات والأحجام](./MANIFEST.json)
+- [القواعد الأساسية](./CORE/operating-rules.md)
+
+ابدأ من INDEX.md للتنقل العام، ثم افتح فهرس المشروع المطلوب. الملفات الأصلية القديمة في الجذر لم تُنقل بعد؛ ستبقى في مساراتها إلى أن يكتمل تدقيق الروابط والاعتماديات.
