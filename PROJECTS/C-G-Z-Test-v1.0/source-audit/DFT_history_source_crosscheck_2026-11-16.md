@@ -8,7 +8,7 @@ The DeltaCodesDFT README states that `history.tar.gz` contains input data for al
 - https://github.com/molmod/DeltaCodesDFT/blob/master/README.md
 - Archive: https://github.com/molmod/DeltaCodesDFT/blob/master/history.tar.gz
 
-The archive object previously inspected through GitHub API had size 53,192 bytes and SHA-256-like GitHub blob SHA `d47e46bc99d7caab2c568a7a4d2611846a532318` (Git blob SHA, not a cryptographic SHA-256). Its contents have not yet been extracted in this audit.
+The archive object previously inspected through GitHub API had size 53,192 bytes and SHA-256-like GitHub Git-blob SHA `d47e46bc99d7caab2c568a7a4d2611846a532318` (this is a Git object identifier, not a SHA-256 file checksum). Its contents have not yet been extracted in this audit.
 
 DTU's Computational Materials Repository documents an independent verification path: obtain `dcdft.db`, extract calculator-specific subsets, generate formatted EOS parameter files, and compare them with the corresponding `history` sections using `diff -w`. The page gives AIMS tight as a worked example and documents calculator filters for AIMS, Quantum ESPRESSO, ABINIT, and GPAW:
 - https://cmr.fysik.dtu.dk/dcdft/dcdft.html
