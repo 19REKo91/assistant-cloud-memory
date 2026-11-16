@@ -69,3 +69,18 @@
 - [فهرس RAEQ_MASTER](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/main/PROJECTS/raiq/derived-read/RAEQ_MASTER/00-index.md)
 
 كل جزء أصغر من 90,000 بايت؛ اتبع فهرس كل مجموعة وأعد جمع الأجزاء بالترتيب دون إدخال فواصل.
+
+
+## خريطة المشاريع — تحديث 2026-11-16
+
+للتنقل حسب المشروع بدلاً من البحث بين الملفات:
+- [فهرس المشاريع PROJECTS/README.md](https://github.com/19REKo91/assistant-cloud-memory/blob/main/PROJECTS/README.md)
+- [إطار المثلث — الإصدارات والتدقيق والتعافي](https://github.com/19REKo91/assistant-cloud-memory/tree/main/PROJECTS/triangle-framework)
+- [تسليم Cosmic Triangle v1.0 — 2026-11-16](https://github.com/19REKo91/assistant-cloud-memory/tree/main/PROJECTS/cosmic-triangle-framework/v1.0/handover-2026-11-16)
+- [مضاعفة الكتلة وهندسة العناصر](https://github.com/19REKo91/assistant-cloud-memory/tree/main/PROJECTS/element-mass-doubling)
+- [محرك Prism وإصداراته](https://github.com/19REKo91/assistant-cloud-memory/tree/main/PROJECTS/prism-engine)
+- [فرضية رائق](https://github.com/19REKo91/assistant-cloud-memory/tree/main/PROJECTS/raiq)
+- [ARCHIVES](https://github.com/19REKo91/assistant-cloud-memory/tree/main/ARCHIVES)
+- [Vision Bridge](https://github.com/19REKo91/assistant-cloud-memory/tree/main/vision-bridge)
+
+> ملاحظة تنظيمية: جرى تحديث خريطة المشاريع وإضافة دليل لها. لم تُنقل الملفات الأصلية أو تُحذف؛ ملفات الجذر القديمة ستظل في مساراتها حتى يكتمل تدقيق الارتباطات، منعاً لكسر الروابط أو سير العمل.
