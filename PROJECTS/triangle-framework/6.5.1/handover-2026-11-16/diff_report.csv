@@ -1,0 +1,83 @@
+ErrID,Sym,Field,Source,Corrected,Note
+ERR-01,Be,theta1,93.825,75.839,استخدم V_n بدل rho_n
+ERR-01,Be,theta3end,-253.25,-235.270,ينتج من θ₁ الخاطئة
+ERR-01,Be,S_A,136.913,127.920,
+ERR-01,Be,S_C,23.375,-27.635,
+ERR-01,Be,a_over_b,14.95,14.53,
+ERR-01,B,theta1,95.484,74.268,استخدم V_n بدل rho_n
+ERR-01,B,theta3end,-243.91,-222.690,
+ERR-01,B,S_A,137.742,127.134,
+ERR-01,B,S_C,28.045,-21.345,
+ERR-01,B,a_over_b,10.41,10.66,
+ERR-01,C,theta1,91.235,74.500,استخدم V_n بدل rho_n
+ERR-01,C,theta3end,-216.05,-199.310,
+ERR-01,C,S_A,135.618,127.250,
+ERR-01,C,S_C,41.975,-9.655,المصدر غير متسق: S_C لا يساوي 90+θ₃/2 حتى مع θ₃ الخاطئة
+ERR-01,C,a_over_b,46.40,44.63,
+ERR-02,He,S_B,109.804,139.804,90+θ₂/2 لا يطابق القيمة المصدرية
+ERR-02,He,theta3end,19.292,-40.708,300−(81.101+99.607+80+80)
+ERR-02,He,S_C,99.646,69.646,
+ERR-02,He,a_over_b,1.550,1.002,
+ERR-03,Ce,theta1,120.104,60.208,العمود يحتوي S_A لا θ₁ (θ₁ = 2·S_A − 180)
+ERR-03,Ce,theta4,94.800,9.600,العمود يحتوي S_R لا θ₄
+ERR-03,Ce,theta5,119.889,59.778,العمود يحتوي S_M لا θ₅
+ERR-03,Pr,theta1,120.104,60.208,ينسحب على كل صفوف Ce→Yb (14 عنصراً)
+ERR-03,Pr,theta4,95.000,10.000,
+ERR-03,Pr,theta5,118.601,57.202,
+ERR-03,Th,theta1,112.245,44.490,ينسحب على كل صفوف Th→Cf (9 عناصر)
+ERR-03,Th,theta4,94.402,8.804,
+ERR-03,Th,theta5,110.841,41.682,
+ERR-04,Cn,theta1,108.633,6.478,PREDICTED: لا يتبع الصيغة. rho=23.7 > RHO_MAX → RHO_OUT
+ERR-04,Cn,V_n,1.1870,0.4413,
+ERR-04,Cn,theta3end,52.590,140.748,
+ERR-04,Nh,theta1,105.458,54.360,
+ERR-04,Nh,V_n,0.9650,0.5418,
+ERR-04,Fl,theta1,112.756,47.916,
+ERR-04,Mc,theta1,109.427,52.370,
+ERR-04,Lv,theta1,110.379,42.990,
+ERR-04,Ts,theta1,119.420,37.874,
+ERR-04,Og,theta1,119.420,65.832,PREDICTED: لا يتبع الصيغة
+ERR-04,Og,V_n,3.0190,4.6280,
+ERR-05,Ba,rho,3.51,3.62,θ₁=70.207 يقتضي rho_n=0.1399 → rho=3.62
+CLS-01,La,Data_Quality,MEASURED,Ln,يجب تصنيف مستقل
+CLS-01,Ce,Data_Quality,MEASURED,Ln,
+CLS-01,Pr,Data_Quality,MEASURED,Ln,
+CLS-01,Nd,Data_Quality,MEASURED,Ln,
+CLS-01,Pm,Data_Quality,MEASURED,Ln,
+CLS-01,Sm,Data_Quality,MEASURED,Ln,
+CLS-01,Eu,Data_Quality,MEASURED,Ln,
+CLS-01,Gd,Data_Quality,MEASURED,Ln,
+CLS-01,Tb,Data_Quality,MEASURED,Ln,
+CLS-01,Dy,Data_Quality,MEASURED,Ln,
+CLS-01,Ho,Data_Quality,MEASURED,Ln,
+CLS-01,Er,Data_Quality,MEASURED,Ln,
+CLS-01,Tm,Data_Quality,MEASURED,Ln,
+CLS-01,Yb,Data_Quality,MEASURED,Ln,
+CLS-01,Lu,Data_Quality,MEASURED,Ln,
+CLS-02,Ac,Data_Quality,MEASURED,An,
+CLS-02,Th,Data_Quality,MEASURED,An,
+CLS-02,Pa,Data_Quality,MEASURED,An,
+CLS-02,U,Data_Quality,MEASURED,An,
+CLS-02,Np,Data_Quality,MEASURED,An,
+CLS-02,Pu,Data_Quality,MEASURED,An,
+CLS-02,Am,Data_Quality,MEASURED,An,
+CLS-02,Cm,Data_Quality,MEASURED,An,
+CLS-02,Bk,Data_Quality,MEASURED,An,
+CLS-02,Cf,Data_Quality,MEASURED,An,
+CLS-02,Es,Data_Quality,MEASURED,An,
+CLS-02,Fm,Data_Quality,NO_DATA,An,NO_DATA + An
+CLS-02,Md,Data_Quality,NO_DATA,An,
+CLS-02,No,Data_Quality,NO_DATA,An,
+CLS-02,Lr,Data_Quality,NO_DATA,An,
+CLS-03,H,GAS,TRUE,عمود GAS غير موجود في المصدر
+CLS-03,He,GAS,TRUE,
+CLS-03,N,GAS,TRUE,
+CLS-03,O,GAS,TRUE,
+CLS-03,F,GAS,TRUE,
+CLS-03,Ne,GAS,TRUE,
+CLS-03,Cl,GAS,TRUE,
+CLS-03,Ar,GAS,TRUE,
+CLS-03,Kr,GAS,TRUE,
+CLS-03,Xe,GAS,TRUE,
+CLS-03,Rn,GAS,TRUE,
+CLS-03,Og,GAS,TRUE,
