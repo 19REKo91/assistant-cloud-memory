@@ -8,6 +8,7 @@ This is an independent test dataset. It is not a new release of the triangle geo
 ## Input file
 - `data/elements_118_C_G_Z_input.csv`
 - 118 element rows, preserving the source row order and original source columns from `PROJECTS/triangle-framework/6.5.0/elements_input_118.csv`.
+- 60 provisional G values transcribed from the ChemReference compilation; 58 G values remain missing.
 - The source input's Z, M, rho, and per-field provenance columns were carried forward without recalculation or alteration.
 
 ## C-G-Z equations fixed for this test
@@ -40,16 +41,21 @@ New columns:
 - `G_pressure_GPa`: measurement pressure in GPa.
 - `G_notes`: provenance and limitations.
 
-Only five G values were entered, transcribed from the user's earlier five-element research note:
+Sixty G values were entered from the ChemReference compilation (which reports values for 60 of 118 elements). The five values in the user's original discovery sample are included:
 - Pb = 5.6 GPa
 - Al = 26 GPa
 - Fe = 82 GPa
 - W = 161 GPa
 - Os = 222 GPa
 
-Their source label is `USER_SUPPLIED_FROM_PRIOR_RESEARCH_NOTE`. The original note did not specify the G measurement source, crystal structure/measurement type, direction, temperature, or pressure. These values are therefore retained as supplied but are NOT independently verified and their measurement metadata remain missing.
+The five original sample values (Pb, Al, Fe, W, Os) match the ChemReference compilation. The entered G values are labelled with that compilation as their source. ChemReference does not provide per-row experimental citations or measurement metadata in the retrieved table. Crystal structure/type, direction, temperature and pressure therefore remain unverified/missing for these values. The compilation is a secondary source and is suitable for provisional data intake, not yet a fully condition-harmonized scientific dataset.
 
-All other G values are blank. Do not fill them from memory or from an unsourced table. A sourced G value must carry its own citation/reference and available measurement metadata.
+Cross-source discrepancies are explicitly retained in `G_notes`: Mo is 120 GPa in ChemReference but 20 GPa in PeriodicTable.com/Wolfram ElementData; Co is 75 versus 76 GPa; Yb is 9.9 versus 10 GPa; Eu is reported as 7.9 GPa in the consulted compilations, with a prior alternate value 7.8 requiring checking. Do not silently resolve these conflicts. The other 58-element rows without a published value remain blank. Do not fill them from memory.
+
+Reference pages:
+- ChemReference: https://chemreference.com/properties/shear-modulus
+- PeriodicTable.com / Wolfram ElementData: https://periodictable.com/Properties/A/ShearModulus.al.html
+- WebElements literature notes and cited handbooks: https://webelements.com/periodicity/rigidity_modulus/index.html
 
 ## Source lineage for inherited fields
 The inherited M and rho values and their source labels are in the CSV columns `M_source` and `rho_source`. Their documented assembly rules are in:
@@ -67,7 +73,7 @@ Important: some inherited values were user-supplied; the source audit explicitly
 
 ## Current state
 - Element rows: 118
-- G values transcribed from the user's prior report: 5
-- G values awaiting sourced data: 113
-- Independently verified G values: 0
+- G values entered from the ChemReference compilation: 60
+- G values missing from that compilation: 58
+- G values with fully verified per-row measurement metadata: 0
 - C-G-Z calculations performed: 0
