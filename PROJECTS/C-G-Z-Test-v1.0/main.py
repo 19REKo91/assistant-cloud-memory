@@ -56,6 +56,38 @@ def loocv(frame, subset):
                        "MAE_GPa": float(np.mean(np.abs(e)))})
     return output, preds
 
+def sensitivity_analysis(frame):
+    # Source-conflict scenarios only. The source CSV is never modified.
+    scenarios = [
+        ("baseline_active_values", {}, None,
+         "Uses the active G values exactly as stored."),
+        ("Mo_120_NASA_supported_scenario", {"Mo": 120.0}, None,
+         "Mo=120 GPa is a sensitivity alternative supported by NASA handbooks; not a silent data replacement."),
+        ("exclude_Mo", {}, "Mo",
+         "Checks whether the overall association depends on the Mo row."),
+        ("Co_75_legacy_scenario", {"Co": 75.0}, None,
+         "Alternative value in the legacy compilation and multiple periodic-table compilations."),
+        ("Ta_69_legacy_scenario", {"Ta": 69.0}, None,
+         "Alternative value retained in the legacy compilation."),
+        ("Yb_9_9_legacy_scenario", {"Yb": 9.9}, None,
+         "Alternative value retained in the legacy compilation; difference is rounding-sized."),
+        ("all_four_alternatives", {"Mo": 120.0, "Co": 75.0, "Ta": 69.0, "Yb": 9.9}, None,
+         "Combined scenario only; not a curated or endorsed replacement dataset.")
+    ]
+    rows = []
+    for name, replacements, excluded_sym, note in scenarios:
+        work = frame.copy()
+        if excluded_sym:
+            work = work[work.Sym != excluded_sym].copy()
+        for sym, value in replacements.items():
+            work.loc[work.Sym == sym, "G_active_GPa"] = value
+        for method in ["spearman", "pearson"]:
+            result = corr(work["C_calc"], work["G_active_GPa"], method)
+            rows.append({"scenario": name, "method": method, **result,
+                         "changes": json.dumps(replacements, sort_keys=True),
+                         "excluded_element": excluded_sym, "note": note})
+    return rows
+
 def main():
     if not DATA.exists(): raise FileNotFoundError(DATA)
     digest = hashlib.sha256(DATA.read_bytes()).hexdigest()
@@ -95,6 +127,7 @@ def main():
                (g.Vm_range_recomputed=="IN_CALIBRATION_RANGE")].reset_index(drop=True)
     corr_rows = correlations(g,"all_G_active")
     if len(inside)>=3: corr_rows += correlations(inside,"both_ranges_in_calibration")
+    sensitivity_rows = sensitivity_analysis(g)
     cv, predictions = loocv(g,"all_G_active")
     if len(inside)>=5:
         cv2,p2 = loocv(inside,"both_ranges_in_calibration")
@@ -109,6 +142,7 @@ def main():
     OUT.mkdir(parents=True,exist_ok=True)
     df.to_csv(OUT/"element_level_recalculation_118.csv",index=False)
     pd.DataFrame(corr_rows).to_csv(OUT/"correlations.csv",index=False)
+    pd.DataFrame(sensitivity_rows).to_csv(OUT/"sensitivity_analysis.csv",index=False)
     pd.DataFrame(cv).to_csv(OUT/"loocv_metrics.csv",index=False)
     pd.DataFrame(predictions).to_csv(OUT/"loocv_predictions.csv",index=False)
     summary = {
@@ -124,7 +158,7 @@ def main():
       "OLS_G_from_rho_M":{"n":len(g),"intercept":float(ols.intercept_),
         "coef_rho":float(ols.coef_[0]),"coef_M":float(ols.coef_[1]),
         "R2_in_sample":float(r2),"VIF":vif},
-      "correlations":corr_rows,"LOOCV":cv,
+      "correlations":corr_rows,"source_conflict_sensitivity":sensitivity_rows,"LOOCV":cv,
       "notes":["Only G_active_GPa used; G_legacy_input_GPa excluded.",
        "No imputation or clipping.","C is deterministic from rho and M via Vm.",
        "LOOCV scaling fitted only on each training fold.",
@@ -138,6 +172,9 @@ def main():
     for k,v in checks.items(): lines.append(f"{k}: n={v['n']} max_abs_difference={v['max_abs_difference']} PASS={v['pass']}")
     lines += ["","CORRELATIONS"]
     for r in corr_rows: lines.append(f"{r['subset']} | {r['predictor']} | {r['method']} | n={r['n']} | stat={r['statistic']} | p={r['p_value']}")
+    lines += ["","SOURCE-CONFLICT SENSITIVITY (SCENARIOS ONLY; INPUT DATA UNCHANGED)"]
+    for r in sensitivity_rows:
+        lines.append(f"{r['scenario']} | {r['method']} | n={r['n']} | stat={r['statistic']} | p={r['p_value']}")
     lines += ["","LOOCV"]
     for r in cv: lines.append(f"{r['subset']} | {r['model']} | n={r['n']} | RMSE={r['RMSE_GPa']:.6f} GPa | MAE={r['MAE_GPa']:.6f} GPa")
     lines += ["","OLS G ~ rho + M",f"R2={r2:.8f}; VIF={vif}",
