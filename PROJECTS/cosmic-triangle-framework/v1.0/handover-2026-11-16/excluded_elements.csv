@@ -1,0 +1,8 @@
+Z,Symbol,Name,rho,M,theta1,theta2,theta3,n,Reason,Calibration_Limit,Density_Status,Source
+105,Db,Dubnium,29.3,268,-12.5,NA,NA,NA,"θ₁<0 (ρ>22.59)","RHO_MAX=22.59",تقديرية,6.0
+106,Sg,Seaborgium,35.0,269,-31.7,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
+107,Bh,Bohrium,37.1,270,-38.7,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
+108,Hs,Hassium,40.7,269,-50.8,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
+109,Mt,Meitnerium,37.4,278,-39.7,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
+110,Ds,Darmstadtium,34.8,281,-31.0,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
+111,Rg,Roentgenium,28.7,282,-10.5,NA,NA,NA,"θ₁<0","RHO_MAX=22.59",تقديرية,6.0
