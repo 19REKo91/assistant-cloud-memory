@@ -1,0 +1,41 @@
+name: C-G-Z Test v1.0
+
+on:
+  push:
+    paths:
+      - "PROJECTS/C-G-Z-Test-v1.0/main.py"
+      - "PROJECTS/C-G-Z-Test-v1.0/requirements.txt"
+      - "PROJECTS/C-G-Z-Test-v1.0/data/C_G_Z_unified_accountant_input_118.csv"
+      - ".github/workflows/c-g-z-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c-g-z-test-v1
+  cancel-in-progress: false
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: PROJECTS/C-G-Z-Test-v1.0/requirements.txt
+      - name: Install pinned dependencies
+        run: python -m pip install -r PROJECTS/C-G-Z-Test-v1.0/requirements.txt
+      - name: Run C-G-Z analysis
+        run: python PROJECTS/C-G-Z-Test-v1.0/main.py
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c-g-z-test-report
+          path: PROJECTS/C-G-Z-Test-v1.0/reports/
+          if-no-files-found: warn
+          retention-days: 90
