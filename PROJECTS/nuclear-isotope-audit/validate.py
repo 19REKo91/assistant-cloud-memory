@@ -81,10 +81,15 @@ def validate_cumulative_outputs():
         )
     c = pd.read_csv(path, low_memory=False)
     required = [
-        "Z", "N", "Symbol", "Residual_signed_u", "Residual_absolute_u",
+        "Z", "N", "Symbol", "U_2Z_plus_N", "D_Z_plus_2N", "C_raw_u", "C_cancel_u",
+        "Residual_from_subtraction_u", "Residual_signed_u", "Residual_absolute_u",
         "AME_mass_defect_u_from_binding", "Cumulative_signed_residual_steps_u",
         "Cumulative_absolute_signed_step_magnitudes_u",
-        "Binding_defect_change_from_first_u", "Gap_between_observed_N"
+        "Binding_defect_change_from_first_u", "Gap_between_observed_N",
+        "C_raw_change_from_first_u", "C_cancel_change_from_first_u",
+        "Residual_subtraction_change_from_first_u", "Cumulative_raw_steps_u",
+        "Cumulative_cancelled_steps_u", "Cumulative_subtraction_residual_steps_u",
+        "Cumulative_absolute_subtraction_step_magnitudes_u"
     ]
     missing = [x for x in required if x not in c.columns]
     if missing:
@@ -97,6 +102,7 @@ def validate_cumulative_outputs():
 
     summaries = []
     max_net_error = max_step_error = max_abs_step_sum_error = max_defect_error = 0.0
+    max_raw_cancel_error = max_subtraction_identity_error = max_cumulative_raw_error = 0.0
     total_gaps = 0
     for z, g in c.groupby("Z", sort=True):
         g = g.sort_values("N").copy()
@@ -116,6 +122,24 @@ def validate_cumulative_outputs():
             g["Cumulative_absolute_signed_step_magnitudes_u"] - expected_abs_steps
         ).abs().max())
         max_abs_step_sum_error = max(max_abs_step_sum_error, abs_step_error)
+
+        # Recompute the raw/cancelled/subtraction ledger independently.
+        expected_subtraction = g["C_raw_u"] - g["C_cancel_u"]
+        subtraction_error = float((g["Residual_from_subtraction_u"] - expected_subtraction).abs().max())
+        max_subtraction_identity_error = max(max_subtraction_identity_error, subtraction_error)
+        raw_cancel_steps = g["C_raw_u"].diff().fillna(0) - g["C_cancel_u"].diff().fillna(0)
+        expected_cumulative_subtraction = raw_cancel_steps.cumsum()
+        cumulative_raw_error = float((
+            g["Cumulative_subtraction_residual_steps_u"] - expected_cumulative_subtraction
+        ).abs().max())
+        max_cumulative_raw_error = max(max_cumulative_raw_error, cumulative_raw_error)
+        raw_cancel_error = float((
+            g["C_raw_change_from_first_u"] - g["C_cancel_change_from_first_u"]
+            - g["Residual_subtraction_change_from_first_u"]
+        ).abs().max())
+        max_raw_cancel_error = max(max_raw_cancel_error, raw_cancel_error)
+        if not np.allclose(g["Residual_from_subtraction_u"], g["Residual_absolute_u"], atol=1e-10, rtol=0):
+            raise AssertionError(f"Subtraction residual does not equal absolute residual for Z={z}.")
 
         expected_defect_change = g["AME_mass_defect_u_from_binding"] - d0
         defect_error = float((
@@ -137,15 +161,21 @@ def validate_cumulative_outputs():
             "Max_net_identity_error_u": net_error,
             "Max_step_identity_error_u": step_error,
             "Max_absolute_step_sum_error_u": abs_step_error,
-            "Max_defect_change_error_u": defect_error
+            "Max_defect_change_error_u": defect_error,
+            "Max_raw_cancel_identity_error_u": raw_cancel_error,
+            "Max_cumulative_raw_cancel_error_u": cumulative_raw_error,
+            "Max_subtraction_absolute_identity_error_u": subtraction_error
         })
 
     tol = 1e-10
-    if max(max_net_error, max_step_error, max_abs_step_sum_error, max_defect_error) > tol:
+    if max(max_net_error, max_step_error, max_abs_step_sum_error, max_defect_error,
+           max_raw_cancel_error, max_subtraction_identity_error, max_cumulative_raw_error) > tol:
         raise AssertionError(
             "Independent cumulative validation failed: "
             f"net={max_net_error}, step={max_step_error}, "
-            f"abs_steps={max_abs_step_sum_error}, defect={max_defect_error}"
+            f"abs_steps={max_abs_step_sum_error}, defect={max_defect_error}, "
+            f"raw_cancel={max_raw_cancel_error}, subtraction={max_subtraction_identity_error}, "
+            f"cumulative_raw={max_cumulative_raw_error}"
         )
     summary = pd.DataFrame(summaries)
     summary.to_csv(OUT / "cumulative_independent_validation.csv", index=False)
@@ -158,6 +188,9 @@ def validate_cumulative_outputs():
         f"Maximum step identity error (u): {max_step_error:.12g}",
         f"Maximum absolute-step-sum error (u): {max_abs_step_sum_error:.12g}",
         f"Maximum reference-relative mass-defect error (u): {max_defect_error:.12g}",
+        f"Maximum raw-cancelled-subtraction identity error (u): {max_subtraction_identity_error:.12g}",
+        f"Maximum cumulative raw-cancelled identity error (u): {max_cumulative_raw_error:.12g}",
+        f"Maximum net raw/cancelled change identity error (u): {max_raw_cancel_error:.12g}",
         "PASS: cumulative columns independently recomputed from isotope records."
     ]
     (OUT / "cumulative_independent_validation.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
