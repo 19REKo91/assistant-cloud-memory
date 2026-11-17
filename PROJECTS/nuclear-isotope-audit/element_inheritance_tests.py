@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Independent cumulative inheritance tests: binary-box loss and nuclear mass defect."""
 from __future__ import annotations
+import argparse
 import math
 import re
 from pathlib import Path
@@ -32,20 +33,36 @@ def run_box_loss_test():
         raise AssertionError("Box source must contain exactly one record for each Z=1..118.")
     if f["M"].isna().any() or (f["M"] <= 0).any():
         raise AssertionError("Missing or nonpositive representative element mass.")
-    ns=[]; ls=[]; us=[]; ps=[]; ds=[]
-    for mass in f["M"].astype(float):
+    ns=[]; ls=[]; us=[]; ps=[]; ds=[]; fractions=[]
+    for mass, quality in zip(f["M"].astype(float), f["Data_Quality"].fillna("").astype(str)):
         n=math.floor(math.log2(mass/BRICK_U))
         lo=BRICK_U*(2**n); hi=2.0*lo
         ns.append(n); ls.append(lo); us.append(hi)
-        ps.append(100.0*(mass-lo)/lo); ds.append(hi-mass)
+        ps.append(100.0*(mass-lo)/lo)
+        # A numeric mass must not override an explicit NO_DATA quality flag.
+        if quality.strip().upper() == "NO_DATA":
+            ds.append(float("nan")); fractions.append(float("nan"))
+        else:
+            loss=hi-mass
+            ds.append(loss); fractions.append(100.0*loss/hi)
     f["box_n"]=ns; f["L_u"]=ls; f["U_u"]=us
     f["mass_position_pct"]=ps; f["new_box_loss_u"]=ds
-    f["box_loss_fraction_of_U_pct"]=[100*d/u for d,u in zip(ds,us)]
-    f["inherited_box_loss_u"]=pd.Series(ds).cumsum().shift(1,fill_value=0.0)
-    f["cumulative_box_loss_u"]=pd.Series(ds).cumsum()
+    f["box_loss_fraction_of_U_pct"]=fractions
     f["mass_source"]=f["M_source"]; f["mass_quality_flag"]=f["Data_Quality"]
-    if not ((f["inherited_box_loss_u"]+f["new_box_loss_u"]-f["cumulative_box_loss_u"]).abs()<1e-10).all():
+    running=0.0; inherited=[]; cumulative=[]
+    for loss in ds:
+        inherited.append(running)
+        if math.isfinite(loss):
+            running+=loss
+        cumulative.append(running)
+    f["inherited_box_loss_u"]=inherited
+    f["cumulative_box_loss_u"]=cumulative
+    valid=f["new_box_loss_u"].notna()
+    if not ((f.loc[valid,"inherited_box_loss_u"]+f.loc[valid,"new_box_loss_u"]-
+             f.loc[valid,"cumulative_box_loss_u"]).abs()<1e-10).all():
         raise AssertionError("Box cumulative inheritance recurrence failed.")
+    if not ((f.loc[~valid,"inherited_box_loss_u"]-f.loc[~valid,"cumulative_box_loss_u"]).abs()<1e-10).all():
+        raise AssertionError("A missing box loss changed the inherited cumulative balance.")
     f.to_csv(OUT/"element_inheritance_box_loss_118.csv",index=False,na_rep="NA",encoding="utf-8-sig")
     return f
 
@@ -156,8 +173,21 @@ def choose_longest_lived_radioactive(c):
                          ascending=[False,False,True],kind="mergesort").iloc[0]
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--box-only",action="store_true",help="Run only the binary-box loss test.")
+    args=parser.parse_args()
     OUT.mkdir(parents=True,exist_ok=True)
     box=run_box_loss_test()
+    if args.box_only:
+        counts=box["mass_quality_flag"].fillna("UNSPECIFIED").value_counts().to_dict()
+        print("BOX-ONLY RETEST")
+        print(f"Elements: {len(box)}")
+        print(f"Quality counts: {counts}")
+        print(f"Rows with included new loss: {int(box['new_box_loss_u'].notna().sum())}")
+        print(f"Rows excluded from loss accumulation: {int(box['new_box_loss_u'].isna().sum())}")
+        print(f"Final cumulative box loss at Og: {float(box['cumulative_box_loss_u'].iloc[-1]):.12f} u")
+        print("BOX-ONLY INHERITANCE TEST PASSED")
+        return
     isotopes=load_isotope_table()
     isotopes.to_csv(OUT/"element_inheritance_nuclear_all_isotopes.csv",index=False,na_rep="NA",encoding="utf-8-sig")
     selectors={"most_abundant_natural":choose_most_abundant,
@@ -184,7 +214,9 @@ def main():
       "- مصدر الكتل: PROJECTS/triangle-framework/6.5.0/elements_input_118.csv؛ حُفظ مصدر الكتلة وجودة البيانات لكل عنصر.",
       "- الثابت 0.016 u؛ n=floor(log2(M/0.016))، L=0.016×2^n، U=2L، d_box=U−M.",
       "- التراكم: R_box(Z)=R_box(Z−1)+d_box(Z).",
-      f"- مجموع الفاقد التراكمي عند Og: {float(box['cumulative_box_loss_u'].iloc[-1]):.12f} u.","",
+      f"- مجموع الفاقد التراكمي عند Og بعد استبعاد أي صف بعلامة NO_DATA: {float(box['cumulative_box_loss_u'].iloc[-1]):.12f} u.",
+      f"- أعلام جودة الكتلة: {box['mass_quality_flag'].fillna('UNSPECIFIED').value_counts().to_dict()}.",
+      f"- الصفوف المستبعدة من إضافة الفاقد بسبب NO_DATA/غياب الإضافة: {int(box['new_box_loss_u'].isna().sum())}.","",
       "## عيب الكتلة النووي — جميع النظائر",
       f"- عدد سجلات النظائر المطابقة: {len(isotopes)}؛ عدد العناصر الممثلة: {isotopes['Z'].nunique()}.",
       "- عيب كل نظير محفوظ منفرداً؛ لا تُجمع نظائر العنصر الواحد في قيمة واحدة.",
