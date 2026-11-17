@@ -75,6 +75,8 @@ def load_isotope_table():
     need_n={"Z","A","Half_life_text","Half_life_unit","Decay_modes"}
     if need_a-set(ame.columns): raise ValueError(f"Isotope source missing: {sorted(need_a-set(ame.columns))}")
     if need_n-set(nub.columns): raise ValueError(f"NUBASE source missing: {sorted(need_n-set(nub.columns))}")
+    if "Ground_state_candidate" in nub.columns:
+        nub = nub[nub["Ground_state_candidate"].astype("string").str.lower().isin(["true", "1", "yes"])].copy()
     nub=nub[["Z","A","Half_life_text","Half_life_unit","Decay_modes"]].copy()
     f=ame.merge(nub,on=["Z","A"],how="left",validate="one_to_one")
     f["natural_abundance_pct"]=f["Decay_modes"].map(natural_abundance)
