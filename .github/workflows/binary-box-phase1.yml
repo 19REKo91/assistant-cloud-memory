@@ -1,0 +1,51 @@
+name: Phase 1 - Binary Box Only
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r PROJECTS/nuclear-isotope-audit/requirements.txt
+
+      - name: Run Phase 1 binary box only
+        working-directory: PROJECTS/nuclear-isotope-audit
+        run: python phase1_binary_box.py
+
+      - name: Upload Phase 1 outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-binary-box-results
+          path: PROJECTS/nuclear-isotope-audit/outputs/phase1_*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Archive Phase 1 outputs
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/nuclear-isotope-audit/outputs/phase1_*
+          if git diff --cached --quiet; then
+            echo "No Phase 1 output changes."
+          else
+            git commit -m "Archive Phase 1 binary box results"
+            git push
+          fi
