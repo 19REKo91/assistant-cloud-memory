@@ -1,4 +1,4 @@
-name: Nuclear Isotope Audit
+name: Nuclear Isotope Audit and Cumulative Validation
 
 on:
   workflow_dispatch:
@@ -29,6 +29,10 @@ jobs:
       - name: Run isotope audit
         working-directory: PROJECTS/nuclear-isotope-audit
         run: python main.py
+
+      - name: Run independent validation, including cumulative checks
+        working-directory: PROJECTS/nuclear-isotope-audit
+        run: python validate.py
 
       - name: Upload audit outputs
         if: always()
