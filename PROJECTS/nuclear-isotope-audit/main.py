@@ -97,7 +97,7 @@ def parse_nubase(path: Path) -> pd.DataFrame:
             half_life_text = line[69:78].strip()
             half_life_unit = line[78:80].strip()
             spin_parity = line[88:102].strip() if len(line) >= 102 else ""
-            discovery = line[115:119].strip() if len(line) >= 119 else ""
+            discovery = line[114:118].strip() if len(line) >= 118 else ""
             decay_modes = line[119:209].strip() if len(line) >= 120 else ""
             if z < 0 or z > 118 or a < z:
                 rejected.append((line_no, line[:100], "invalid Z/A"))
@@ -167,8 +167,11 @@ def parse_ame(path: Path) -> pd.DataFrame:
             symbol = line[20:23].strip()
             mass_excess, mass_estimated, mass_noncalc = parse_number(line[28:42])
             binding_per_a, be_estimated, be_noncalc = parse_number(line[54:67])
-            atomic_mass_field = line[110:123].strip()
-            atomic_mass, atomic_estimated, atomic_noncalc = parse_number(atomic_mass_field)
+            atomic_mass_integer = line[106:109].strip()
+            atomic_mass_fraction = line[110:123].strip()
+            atomic_mass, atomic_estimated, atomic_noncalc = parse_number(
+                (atomic_mass_integer + atomic_mass_fraction) if atomic_mass_integer else atomic_mass_fraction
+            )
             mass_unc, _, _ = parse_number(line[42:54])
             be_unc, _, _ = parse_number(line[67:78])
             atomic_unc, _, _ = parse_number(line[123:135])
