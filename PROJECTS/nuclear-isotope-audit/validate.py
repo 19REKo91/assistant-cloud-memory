@@ -215,6 +215,208 @@ def validate_cumulative_outputs():
     print("\n".join(report))
     return summary
 
+
+
+def run_binary_box_tests(clean):
+    """Direct tests of the user's 0.016-u brick, binary mass boxes, and 42% loss hypothesis."""
+    d = clean.copy()
+    required = ["AME_atomic_mass_u", "Binding_defect_u", "Binding_energy_per_nucleon_MeV"]
+    missing = [c for c in required if c not in d.columns]
+    if missing:
+        raise ValueError(f"Binary-box test missing columns: {missing}")
+
+    b = 0.016
+    mass = pd.to_numeric(d["AME_atomic_mass_u"], errors="coerce")
+    d = d[mass.notna() & (mass > 0)].copy()
+    mass = pd.to_numeric(d["AME_atomic_mass_u"], errors="coerce")
+    A = d["A"].astype(float)
+    Z = d["Z"].astype(float)
+    N = d["N"].astype(float)
+
+    # Test 1: binary boxes on mass number A: [2^k, 2^(k+1)].
+    k = np.floor(np.log2(A)).astype(int)
+    lower_A = np.power(2.0, k)
+    upper_A = 2.0 * lower_A
+    d["Binary_box_k"] = k
+    d["Binary_box_lower_A"] = lower_A
+    d["Binary_box_upper_A"] = upper_A
+    d["Binary_box_position_pct"] = 100.0 * (A - lower_A) / (upper_A - lower_A)
+    d["Binary_box_remaining_to_upper_pct"] = 100.0 * (upper_A - A) / upper_A
+
+    # Test 2: 0.016-u brick lattice and brick-scaled binary box.
+    brick_count = mass / b
+    nearest_bricks = np.rint(brick_count)
+    d["Brick_count_0p016"] = brick_count
+    d["Nearest_integer_bricks"] = nearest_bricks
+    d["Brick_lattice_residual_u"] = mass - nearest_bricks * b
+    d["Brick_lattice_error_pct_of_brick"] = (
+        100.0 * d["Brick_lattice_residual_u"].abs() / b
+    )
+    brick_k = np.floor(np.log2(brick_count)).astype(int)
+    brick_lower = b * np.power(2.0, brick_k)
+    brick_upper = 2.0 * brick_lower
+    d["Brick_binary_box_k"] = brick_k
+    d["Brick_box_lower_u"] = brick_lower
+    d["Brick_box_upper_u"] = brick_upper
+    d["Brick_box_position_pct"] = 100.0 * (mass - brick_lower) / (brick_upper - brick_lower)
+    d["Brick_box_remaining_to_upper_pct"] = 100.0 * (brick_upper - mass) / brick_upper
+
+    # Test 3: is the proposed 42% loss explained by neutron excess?
+    d["Neutron_excess_fraction_pct"] = 200.0 * (N - Z) / A
+    d["Proposed_loss_42pct_u"] = 0.42 * A
+    d["Proposed_effective_mass_58pct_u"] = 0.58 * A
+    d["Observed_binding_defect_fraction_pct"] = (
+        100.0 * d["Binding_defect_u"] / mass
+    )
+    d["Neutron_excess_minus_42pct_points"] = d["Neutron_excess_fraction_pct"] - 42.0
+    d["Effective_mass_vs_A_minus_2excess_u"] = (
+        d["Proposed_effective_mass_58pct_u"] - (A - 2.0 * (N - Z))
+    )
+    d["Residual_in_0p016_bricks"] = d["Residual_absolute_u"] / b
+    d["Residual_is_integer_bricks"] = np.isclose(
+        d["Residual_in_0p016_bricks"],
+        np.rint(d["Residual_in_0p016_bricks"]),
+        atol=1e-9, rtol=0
+    )
+
+    d.to_csv(OUT / "binary_box_test_isotope_results.csv", index=False, na_rep="NA")
+
+    # Element-level medians; do not treat isotopes of one element as independent elements.
+    element_rows = []
+    for (z, symbol), g in d.groupby(["Z", "Symbol"], sort=True):
+        element_rows.append({
+            "Z": int(z), "Symbol": str(symbol), "Clean_isotope_records": len(g),
+            "A_median": float(g["A"].median()),
+            "N_over_Z_median": float((g["N"] / g["Z"]).median()),
+            "Neutron_excess_fraction_pct_median": float(g["Neutron_excess_fraction_pct"].median()),
+            "Binding_defect_fraction_pct_median": float(g["Observed_binding_defect_fraction_pct"].median()),
+            "Binding_energy_per_nucleon_MeV_median": float(g["Binding_energy_per_nucleon_MeV"].median()),
+            "Binary_box_k_mode": int(g["Binary_box_k"].mode().iloc[0]),
+            "Binary_box_position_pct_median": float(g["Binary_box_position_pct"].median()),
+            "Brick_lattice_error_pct_median": float(g["Brick_lattice_error_pct_of_brick"].median()),
+            "Effective_mass_0p58A_median": float(g["Proposed_effective_mass_58pct_u"].median())
+        })
+    elements = pd.DataFrame(element_rows).sort_values("Z")
+    elements.to_csv(OUT / "binary_box_test_element_summary.csv", index=False, na_rep="NA")
+
+    # Compare a fixed 42% with the measured neutron-excess fraction in mass regions.
+    region_rows = []
+    regions = [
+        ("Z_1_28", d["Z"].between(1, 28)),
+        ("Z_29_81", d["Z"].between(29, 81)),
+        ("Z_82_118", d["Z"].between(82, 118)),
+        ("All_clean", d["Z"].between(1, 118))
+    ]
+    for label, mask in regions:
+        g = d[mask]
+        x = g["Neutron_excess_fraction_pct"].dropna()
+        region_rows.append({
+            "Region": label, "Records": len(g), "Elements": int(g["Z"].nunique()),
+            "Neutron_excess_fraction_median_pct": float(x.median()) if len(x) else np.nan,
+            "Neutron_excess_fraction_mean_pct": float(x.mean()) if len(x) else np.nan,
+            "Neutron_excess_fraction_q25_pct": float(x.quantile(.25)) if len(x) else np.nan,
+            "Neutron_excess_fraction_q75_pct": float(x.quantile(.75)) if len(x) else np.nan,
+            "MAE_from_fixed_42pct_points": float(np.mean(np.abs(x - 42.0))) if len(x) else np.nan,
+            "Binding_defect_fraction_median_pct": float(g["Observed_binding_defect_fraction_pct"].median()) if len(g) else np.nan
+        })
+    regions_df = pd.DataFrame(region_rows)
+    regions_df.to_csv(OUT / "binary_box_test_regions.csv", index=False, na_rep="NA")
+
+    # Search for a data-driven change point in element-level median neutron excess.
+    xz = elements["Z"].to_numpy(float)
+    yy = elements["Neutron_excess_fraction_pct_median"].to_numpy(float)
+    def line_sse(xv, yv):
+        X = np.column_stack([np.ones(len(xv)), xv])
+        coef = np.linalg.lstsq(X, yv, rcond=None)[0]
+        residual = yv - X @ coef
+        return float(np.sum(residual ** 2))
+    candidates = []
+    unique_z = np.unique(xz)
+    for cut in unique_z:
+        left = xz <= cut
+        right = xz > cut
+        if int(left.sum()) < 10 or int(right.sum()) < 10:
+            continue
+        sse = line_sse(xz[left], yy[left]) + line_sse(xz[right], yy[right])
+        candidates.append((float(sse), int(cut), int(left.sum()), int(right.sum())))
+    candidates.sort()
+    best = candidates[0] if candidates else (np.nan, -1, 0, 0)
+    cu_candidate = next((v for v in candidates if v[1] == 29), None)
+    one_line_sse = line_sse(xz, yy)
+    change_report = {
+        "Best_break_after_Z": best[1],
+        "Best_piecewise_RMSE": float(np.sqrt(best[0] / len(xz))) if candidates else np.nan,
+        "Z29_piecewise_RMSE": float(np.sqrt(cu_candidate[0] / len(xz))) if cu_candidate else np.nan,
+        "Single_line_RMSE": float(np.sqrt(one_line_sse / len(xz))),
+        "Element_count": len(elements)
+    }
+
+    # Target nuclides include the examples discussed: Fe/Ni/Cu/Zn/Pb/U.
+    targets = {(26,56), (28,62), (29,63), (29,65), (30,64), (30,66), (82,208), (92,238)}
+    examples = d[d.apply(lambda r: (int(r["Z"]), int(r["A"])) in targets, axis=1)].copy()
+    examples.to_csv(OUT / "binary_box_test_key_nuclides.csv", index=False, na_rep="NA")
+
+    brick_error = d["Brick_lattice_error_pct_of_brick"]
+    residual_brick_share = float(d["Residual_is_integer_bricks"].mean())
+    summary = [
+        "# اختبار الصندوق الثنائي والفاقد الطوبي — AME2020",
+        "",
+        "## النطاق",
+        f"- السجلات النظائرية النظيفة المستخدمة: {len(d):,}.",
+        f"- العناصر: {d['Z'].nunique():,}.",
+        "- المصدر: سجلات AME2020 المطابقة مع مرشحي الحالة الأرضية في NUBASE2020؛ استُبعدت القيم المقدرة/الموسومة من عينة الاختبار.",
+        "",
+        "## 1) الطوبة الخام b = 0.016 u",
+        f"- وسيط خطأ أقرب عدد صحيح من الطوبات، كنسبة من الطوبة: {brick_error.median():.3f}%.",
+        f"- متوسط خطأ شبكة الطوبات: {brick_error.mean():.3f}%.",
+        f"- نسبة السجلات التي تقع ضمن 1% من طوبة صحيحة: {(brick_error <= 1.0).mean()*100:.2f}%.",
+        f"- نسبة السجلات التي تقع ضمن 5% من طوبة صحيحة: {(brick_error <= 5.0).mean()*100:.2f}%.",
+        f"- نسبة المتبقي النموذجي الذي يساوي عدداً صحيحاً من طوبات 0.016u: {residual_brick_share*100:.2f}% (هذه نتيجة جبرية من كون |N-Z| من مضاعفات 4، وليست قياساً مستقلاً).",
+        "- فحص الهيدروجين-1: كتلة الذرة تقارن بـ 63×0.016u=1.008u، بينما 64×0.016u=1.024u؛ الفارق بين الكتلة و63 طوبة يظهر في ملف النظائر.",
+        "",
+        "## 2) الصناديق الثنائية على عدد الكتلة A",
+        "- لكل نظير استُخدم الصندوق [2^k, 2^(k+1)] الذي يحتوي A، والموقع P=100(A−2^k)/(2^(k+1)−2^k).",
+        "- حُفظت المسافة إلى الحد الأعلى منفصلة؛ الانتقال عند A=64 يغيّر رقم الصندوق حسابياً ولا يثبت انهياراً فيزيائياً.",
+        f"- وسيط موقع الصندوق: {d['Binary_box_position_pct'].median():.3f}%.",
+        f"- وسيط المسافة النسبية إلى الحد الأعلى: {d['Binary_box_remaining_to_upper_pct'].median():.3f}%.",
+        "",
+        "## 3) اختبار فرضية الفاقد 42% / الكتلة الفعالة 58%",
+        "- اختُبرت نسبة فائض النيوترونات المعرّفة هنا بـ 2(N−Z)/A، لأنها تمثل نسبة عددية يمكن مقارنتها مباشرة بفرضية 42%؛ لا تُساوى تلقائياً بعيب الكتلة أو طاقة الربط.",
+        f"- وسيط 2(N−Z)/A في كل العينة: {d['Neutron_excess_fraction_pct'].median():.3f}%.",
+        f"- وسيط عيب الكتلة المشتق من طاقة الربط كنسبة من الكتلة الذرية: {d['Observed_binding_defect_fraction_pct'].median():.3f}%.",
+        f"- وسيط الفرق بين 0.58A و[A−2(N−Z)]: {d['Effective_mass_vs_A_minus_2excess_u'].median():.4f} u.",
+        "- إذا اقتربت 2(N−Z)/A من 42% في النوى الثقيلة فقط، فهذا يدعم وصفاً عددياً محدوداً لتلك العينة، ولا يجعل 42% ثابتاً عاماً أو فاقداً مادياً.",
+        "",
+        "## 4) هل النحاس Z=29 نقطة تحول؟",
+        f"- أفضل نقطة انكسار إحصائية عند السماح بقطعتين خطيتين على وسيط فائض النيوترونات لكل عنصر: بعد Z={change_report['Best_break_after_Z']}.",
+        f"- RMSE القطعتين عند هذه النقطة: {change_report['Best_piecewise_RMSE']:.4f} نقطة مئوية.",
+        f"- RMSE إذا فُرضت نقطة الانكسار بعد Z=29: {change_report['Z29_piecewise_RMSE']:.4f} نقطة مئوية.",
+        f"- RMSE الخط الواحد دون انكسار: {change_report['Single_line_RMSE']:.4f} نقطة مئوية.",
+        "- هذا بحث استكشافي عن نقطة انكسار، وليس اختباراً سببياً؛ لا تُقبل نقطة النحاس إلا إذا تفوقت بوضوح وبثبات على نقاط الانكسار البديلة.",
+        "",
+        "## 5) التقسيمات والبيانات التفصيلية",
+    ]
+    for _, r in regions_df.iterrows():
+        summary.append(
+            f"- {r['Region']}: n={int(r['Records'])}, العناصر={int(r['Elements'])}, "
+            f"وسيط 2(N−Z)/A={r['Neutron_excess_fraction_median_pct']:.3f}%, "
+            f"وسيط عيب الكتلة/الكتلة={r['Binding_defect_fraction_median_pct']:.3f}%."
+        )
+    summary += [
+        "",
+        "## ملفات النتائج",
+        "- binary_box_test_isotope_results.csv",
+        "- binary_box_test_element_summary.csv",
+        "- binary_box_test_regions.csv",
+        "- binary_box_test_key_nuclides.csv",
+        "",
+        "ملاحظة: الكتلة الذرية المستخدمة في اختبار الطوبات هي AME atomic mass؛ أما الصناديق الثنائية الأساسية فاختُبرت على عدد الكتلة A. لا تخلط المحورين."
+    ]
+    (OUT / "report_ar_binary_box_test.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
+    print("\n".join(summary[:38]))
+    return d, elements, regions_df, examples
+
+
 def main():
     if not SOURCE.exists():
         raise FileNotFoundError(f"Required prior audit output not found: {SOURCE}")
@@ -243,6 +445,7 @@ def main():
         pd.to_numeric(clean["Binding_energy_per_A_keV"], errors="coerce")/1000.0
     )
     clean = clean.dropna(subset=["Binding_energy_per_nucleon_MeV"])
+    run_binary_box_tests(clean)
     clean["Residual_to_defect_ratio"] = np.where(clean["Binding_defect_u"] > 0, clean["Residual_absolute_u"]/clean["Binding_defect_u"], np.nan)
 
     # Isotope-by-isotope trend within each element (Z fixed).
