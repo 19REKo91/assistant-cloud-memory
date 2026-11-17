@@ -191,7 +191,7 @@ def build_cumulative(data: pd.DataFrame):
 
     example_symbols = ["Fe", "Ni", "Pb", "Bi", "Po", "Ra", "Th", "U"]
     examples = clean[clean["Symbol"].isin(example_symbols)].copy()
-    examples.to_csv(OUT / "cumulative_Fe_Ni_Pb_U_families.csv", index=False, na_rep="NA", encoding="utf-8-sig")
+    examples.to_csv(OUT / "cumulative_Fe_Ni_Pb_Bi_Po_Ra_Th_U_families.csv", index=False, na_rep="NA", encoding="utf-8-sig")
 
     plot_data = clean[clean["Has_previous_isotope"]].copy()
     if not plot_data.empty:
