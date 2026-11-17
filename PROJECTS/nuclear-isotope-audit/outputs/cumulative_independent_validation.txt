@@ -6,4 +6,7 @@ Maximum net cumulative identity error (u): 1.11022302463e-16
 Maximum step identity error (u): 2.42861286637e-17
 Maximum absolute-step-sum error (u): 1.21430643318e-16
 Maximum reference-relative mass-defect error (u): 7.6327832943e-16
+Maximum raw-cancelled-subtraction identity error (u): 5.27355936697e-16
+Maximum cumulative raw-cancelled identity error (u): 9.15933995316e-16
+Maximum net raw/cancelled change identity error (u): 1.80411241502e-16
 PASS: cumulative columns independently recomputed from isotope records.
