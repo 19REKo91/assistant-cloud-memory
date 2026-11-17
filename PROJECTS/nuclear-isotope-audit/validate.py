@@ -33,20 +33,25 @@ def design_matrix(frame, kind):
         return np.column_stack([np.ones(len(frame)), RS])
     if kind == "R_signed_plus_A":
         return np.column_stack([np.ones(len(frame)), RS, A])
-    if kind == "SEMF":
+    if kind in ("SEMF", "SEMF_plus_R_signed", "SEMF_plus_R_absolute"):
         pair = np.where((Z.astype(int) % 2 == 0) & (N.astype(int) % 2 == 0), 1.0,
                np.where((Z.astype(int) % 2 == 1) & (N.astype(int) % 2 == 1), -1.0, 0.0))
-        return np.column_stack([
+        semf = np.column_stack([
             A, -np.power(A, 2/3), -Z*(Z-1)/np.power(A, 1/3),
             -np.square(A-2*Z)/A, pair/np.power(A, 0.75)
         ])
+        if kind == "SEMF_plus_R_signed":
+            return np.column_stack([semf, RS])
+        if kind == "SEMF_plus_R_absolute":
+            return np.column_stack([semf, R])
+        return semf
     raise ValueError(kind)
 
 def fit_predict(train, test, kind, ycol):
     Xtr = design_matrix(train, kind)
     Xte = design_matrix(test, kind)
     y = train[ycol].to_numpy(float)
-    if kind == "SEMF":
+    if kind.startswith("SEMF"):
         coef = np.linalg.lstsq(Xtr, y, rcond=None)[0]
         return Xte @ coef
     if kind == "mean":
@@ -275,7 +280,8 @@ def main():
     if len(train) < 100 or len(test) < 20:
         raise RuntimeError("Holdout split produced too few train/test records.")
     ycol = "Binding_defect_u"
-    model_names = ["mean","A","R","R_plus_A","R_signed","R_signed_plus_A","SEMF"]
+    model_names = ["mean","A","R","R_plus_A","R_signed","R_signed_plus_A",
+                   "SEMF","SEMF_plus_R_signed","SEMF_plus_R_absolute"]
     metric_rows, pred_rows = [], []
     y = test[ycol].to_numpy(float)
     for kind in model_names:
