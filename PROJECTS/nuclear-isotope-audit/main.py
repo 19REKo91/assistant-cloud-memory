@@ -241,11 +241,15 @@ def build_analysis(nubase: pd.DataFrame, ame: pd.DataFrame) -> pd.DataFrame:
     merged.loc[merged["AME_mass_defect_u_from_binding"].isna() |
                (merged["AME_mass_defect_u_from_binding"] == 0),
                "Residual_to_binding_defect_percent"] = pd.NA
-    merged["AME_estimated_or_flagged"] = (
-        merged["AME_mass_excess_estimated"].fillna(False) |
-        merged["Binding_energy_estimated"].fillna(False) |
-        merged["AME_atomic_mass_estimated"].fillna(False)
-    )
+    estimated_flags = [
+        merged[column].astype("boolean").fillna(False)
+        for column in (
+            "AME_mass_excess_estimated",
+            "Binding_energy_estimated",
+            "AME_atomic_mass_estimated",
+        )
+    ]
+    merged["AME_estimated_or_flagged"] = estimated_flags[0] | estimated_flags[1] | estimated_flags[2]
     merged["NUBASE_and_AME_mass_excess_difference_keV"] = (
         merged["NUBASE_mass_excess_keV"] - merged["AME_mass_excess_keV"]
     )
