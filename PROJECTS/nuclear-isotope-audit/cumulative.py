@@ -233,8 +233,11 @@ def build_cumulative(data: pd.DataFrame):
         "- يثبت العدد الذري Z داخل كل عنصر، وترتب نظائره تصاعدياً حسب N.",
         "- المتبقي الفردي الموقّع: R_signed = 0.004(N-Z).",
         "- المتبقي الفردي المطلق: R_absolute = 0.004|N-Z|.",
+        "- لكل نظير: U=2Z+N وD=Z+2N؛ C_raw=0.004(U+D)=0.012A، وC_cancel=0.008 min(U,D).",
+        "- الفرق C_raw-C_cancel يساوي المتبقي المطلق من الطرح، ولا يساوي المتبقي الموقّع عندما N<Z.",
         "- التراكم الصافي من أول نظير مرصود: مجموع فروق R_signed بين الخطوات؛ وهو يساوي R_signed الحالي ناقص قيمة النظير المرجعي.",
         "- مجموع مقادير الخطوات المطلقة يحفظ منفصلاً عن التغير الصافي، ولا يخلط مع المتبقي المطلق الفردي.",
+        "- يحسب التراكم من النظير المرجعي لكل من C_raw وC_cancel وفرق الطرح وR_signed، وتفصل مجاميع مقادير الخطوات عن صافي التغير.",
         "- المقارنة الفيزيائية تستخدم تغير نقص الكتلة المشتق من طاقة الربط من النظير المرجعي، لا جمع نقص الكتلة المطلق لكل نظير.",
         "",
         "## ضبط الفجوات والجودة",
@@ -260,9 +263,9 @@ def build_cumulative(data: pd.DataFrame):
         "- isotope_cumulative_steps_all.csv",
         "- isotope_cumulative_steps_clean.csv",
         "- isotope_cumulative_element_summary.csv",
-        "- cumulative_Fe_Ni_Pb_U_families.csv",
+        "- cumulative_Fe_Ni_Pb_Bi_Po_Ra_Th_U_families.csv",
         "- cumulative_residual_vs_defect_change.png",
-        "- cumulative_Fe_family.png, cumulative_Ni_family.png, cumulative_Pb_family.png, cumulative_U_family.png",
+        "- رسوم عائلات Fe وNi وPb وBi وPo وRa وTh وU",
         "- report_ar_cumulative.md",
     ]
     (OUT / "report_ar_cumulative.md").write_text("\n".join(report) + "\n", encoding="utf-8")
