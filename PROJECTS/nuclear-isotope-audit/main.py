@@ -21,6 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests
+from cumulative import build_cumulative
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -409,6 +410,7 @@ def main() -> int:
         data = build_analysis(nubase, ame)
         save_diagnostics(nubase, ame)
         make_outputs(data, nubase, ame)
+        build_cumulative(data)
         bad = int((~data["Residual_identity_check"]).sum())
         say(f"Combined records: {len(data):,}")
         say(f"AME matched records: {int(data['AME_match'].sum()):,}")
