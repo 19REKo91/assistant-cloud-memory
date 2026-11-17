@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
 SOURCE_COLUMNS = [
     "Z", "N", "A", "Symbol", "Ground_state_candidate", "AME_match",
+    "U_2Z_plus_N", "D_Z_plus_2N", "C_raw_u", "C_cancel_u",
     "AME_mass_defect_u_from_binding", "Binding_energy_per_A_keV",
     "Residual_signed_u", "Residual_absolute_u", "Residual_from_subtraction_u",
     "AME_estimated_or_flagged",
@@ -31,7 +32,8 @@ def build_cumulative(data: pd.DataFrame):
 
     frame = data.copy()
     for col in ["Z", "N", "A", "AME_mass_defect_u_from_binding",
-                "Binding_energy_per_A_keV", "Residual_signed_u",
+                "Binding_energy_per_A_keV", "U_2Z_plus_N", "D_Z_plus_2N",
+                "C_raw_u", "C_cancel_u", "Residual_signed_u",
                 "Residual_absolute_u", "Residual_from_subtraction_u"]:
         frame[col] = pd.to_numeric(frame[col], errors="coerce")
 
@@ -74,12 +76,22 @@ def build_cumulative(data: pd.DataFrame):
         g["Delta_N_from_previous"] = g["N"].diff()
         g["Has_previous_isotope"] = g["Previous_N"].notna()
         g["Gap_between_observed_N"] = g["Delta_N_from_previous"].gt(1).fillna(False)
+        g["Delta_U"] = g["U_2Z_plus_N"].diff()
+        g["Delta_D"] = g["D_Z_plus_2N"].diff()
+        g["Delta_C_raw_u"] = g["C_raw_u"].diff()
+        g["Delta_C_cancel_u"] = g["C_cancel_u"].diff()
+        g["Delta_residual_from_subtraction_u"] = g["Residual_from_subtraction_u"].diff()
         g["Delta_residual_signed_u"] = g["Residual_signed_u"].diff()
         g["Delta_residual_absolute_u"] = g["Residual_absolute_u"].diff()
         g["Delta_binding_defect_u"] = g["AME_mass_defect_u_from_binding"].diff()
         g["Delta_binding_energy_MeV"] = g["Binding_energy_total_MeV"].diff()
 
         # Reference-relative net changes: the first observed isotope is zero.
+        g["C_raw_change_from_first_u"] = g["C_raw_u"] - float(first["C_raw_u"])
+        g["C_cancel_change_from_first_u"] = g["C_cancel_u"] - float(first["C_cancel_u"])
+        g["Residual_subtraction_change_from_first_u"] = (
+            g["Residual_from_subtraction_u"] - float(first["Residual_from_subtraction_u"])
+        )
         g["Residual_signed_change_from_first_u"] = (
             g["Residual_signed_u"] - float(first["Residual_signed_u"])
         )
@@ -94,9 +106,23 @@ def build_cumulative(data: pd.DataFrame):
         )
 
         # Explicit sums of step magnitudes are kept separate from net changes.
+        raw_steps = g["Delta_C_raw_u"].fillna(0.0)
+        cancel_steps = g["Delta_C_cancel_u"].fillna(0.0)
+        subtraction_steps = g["Delta_residual_from_subtraction_u"].fillna(0.0)
         signed_steps = g["Delta_residual_signed_u"].fillna(0.0)
         absolute_steps = g["Delta_residual_absolute_u"].abs().fillna(0.0)
         defect_steps = g["Delta_binding_defect_u"].fillna(0.0)
+        g["Cumulative_raw_steps_u"] = raw_steps.cumsum()
+        g["Cumulative_cancelled_steps_u"] = cancel_steps.cumsum()
+        g["Cumulative_subtraction_residual_steps_u"] = subtraction_steps.cumsum()
+        g["Cumulative_absolute_subtraction_step_magnitudes_u"] = subtraction_steps.abs().cumsum()
+        g["Raw_minus_cancelled_step_identity_error_u"] = (
+            g["Delta_C_raw_u"] - g["Delta_C_cancel_u"] - g["Delta_residual_from_subtraction_u"]
+        )
+        g["Cumulative_raw_minus_cancelled_identity_error_u"] = (
+            g["Cumulative_raw_steps_u"] - g["Cumulative_cancelled_steps_u"]
+            - g["Cumulative_subtraction_residual_steps_u"]
+        )
         g["Cumulative_signed_residual_steps_u"] = signed_steps.cumsum()
         g["Cumulative_absolute_signed_step_magnitudes_u"] = signed_steps.abs().cumsum()
         g["Cumulative_absolute_residual_variation_u"] = absolute_steps.cumsum()
@@ -150,6 +176,9 @@ def build_cumulative(data: pd.DataFrame):
             "Total_observed_delta_N": int(g["N"].max() - g["N"].min()),
             "Observed_steps": max(0, len(g) - 1),
             "Gaps_delta_N_gt_1": int(g["Gap_between_observed_N"].sum()),
+            "Net_cumulative_C_raw_u": float(g["C_raw_change_from_first_u"].iloc[-1]),
+            "Net_cumulative_C_cancelled_u": float(g["C_cancel_change_from_first_u"].iloc[-1]),
+            "Net_cumulative_subtraction_residual_u": float(g["Residual_subtraction_change_from_first_u"].iloc[-1]),
             "Net_cumulative_R_signed_u": float(g["Residual_signed_change_from_first_u"].iloc[-1]),
             "Sum_absolute_R_step_magnitudes_u": float(g["Cumulative_absolute_signed_step_magnitudes_u"].iloc[-1]),
             "Net_binding_defect_change_u": float(g["Binding_defect_change_from_first_u"].iloc[-1]),
@@ -160,7 +189,8 @@ def build_cumulative(data: pd.DataFrame):
     summary = pd.DataFrame(summary_rows)
     summary.to_csv(OUT / "isotope_cumulative_element_summary.csv", index=False, na_rep="NA", encoding="utf-8-sig")
 
-    examples = clean[clean["Symbol"].isin(["Fe", "Ni", "Pb", "U"])].copy()
+    example_symbols = ["Fe", "Ni", "Pb", "Bi", "Po", "Ra", "Th", "U"]
+    examples = clean[clean["Symbol"].isin(example_symbols)].copy()
     examples.to_csv(OUT / "cumulative_Fe_Ni_Pb_U_families.csv", index=False, na_rep="NA", encoding="utf-8-sig")
 
     plot_data = clean[clean["Has_previous_isotope"]].copy()
@@ -176,7 +206,7 @@ def build_cumulative(data: pd.DataFrame):
         fig.savefig(OUT / "cumulative_residual_vs_defect_change.png", dpi=180)
         plt.close(fig)
 
-    for symbol in ["Fe", "Ni", "Pb", "U"]:
+    for symbol in example_symbols:
         g = examples[examples["Symbol"] == symbol]
         if len(g) < 2:
             continue
