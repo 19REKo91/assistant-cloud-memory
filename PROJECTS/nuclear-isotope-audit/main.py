@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import requests
 from cumulative import build_cumulative
+from incremental_binding_test import run_incremental_binding_test
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -411,6 +412,7 @@ def main() -> int:
         save_diagnostics(nubase, ame)
         make_outputs(data, nubase, ame)
         build_cumulative(data)
+        run_incremental_binding_test()
         bad = int((~data["Residual_identity_check"]).sum())
         say(f"Combined records: {len(data):,}")
         say(f"AME matched records: {int(data['AME_match'].sum()):,}")
