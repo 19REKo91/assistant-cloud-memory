@@ -155,10 +155,12 @@ def parse_ame(path: Path) -> pd.DataFrame:
     rows = []
     rejected = []
     for line_no, line in enumerate(read_text(path), start=1):
-        if len(line) < 135:
+        # AME rows are right-trimmed; trailing blank uncertainty columns may be absent.
+        # The required atomic-mass value ends at column 123, so do not demand 135 chars.
+        if len(line) < 123:
             continue
         try:
-            # AME2020: columns 1-4 NZ, 5-9 N, 10-14 Z, 15-19 A.
+            # AME2020: col 1 control, 2-4 N-Z, 5-9 N, 10-14 Z, 15-19 A.
             z_text = line[9:14].strip()
             a_text = line[14:19].strip()
             if not z_text.isdigit() or not a_text.isdigit():
@@ -173,7 +175,7 @@ def parse_ame(path: Path) -> pd.DataFrame:
                 (atomic_mass_integer + atomic_mass_fraction) if atomic_mass_integer else atomic_mass_fraction
             )
             mass_unc, _, _ = parse_number(line[42:54])
-            be_unc, _, _ = parse_number(line[67:78])
+            be_unc, _, _ = parse_number(line[68:78])
             atomic_unc, _, _ = parse_number(line[123:135])
             if not (0 <= z <= 118 and a >= z):
                 rejected.append((line_no, line[:135], "invalid Z/A"))
@@ -197,8 +199,8 @@ def parse_ame(path: Path) -> pd.DataFrame:
         except Exception as exc:
             rejected.append((line_no, line[:135], str(exc)))
     frame = pd.DataFrame(rows)
-    if frame.empty:
-        raise RuntimeError("AME parser returned zero records. Inspect diagnostics and source layout.")
+    if len(frame) < 3000:
+        raise RuntimeError(f"AME parser returned only {len(frame)} records; expected thousands. Inspect fixed-width offsets and source line lengths.")
     # Duplicate keys are not expected in AME mass table; keep all evidence and stop if found.
     duplicates = frame.duplicated(["Z", "A"], keep=False)
     if duplicates.any():
