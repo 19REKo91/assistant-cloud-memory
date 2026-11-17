@@ -202,7 +202,7 @@ def main():
         "- phase1_A60_A68_boundary.csv",
         "- phase1_A60_A68_boundary_counts.csv",
     ]
-    (OUT / "report_ar_phase1_binary_box.md").write_text(
+    (OUT / "phase1_report_ar_binary_box.md").write_text(
         "\n".join(report) + "\n", encoding="utf-8"
     )
     print("\n".join(report))
