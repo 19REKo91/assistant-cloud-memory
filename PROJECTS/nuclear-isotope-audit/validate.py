@@ -49,6 +49,12 @@ def fit_predict(train, test, kind, ycol):
     coef = np.linalg.lstsq(Xtr, y, rcond=None)[0]
     return Xte @ coef
 
+def spearman_corr(x, y):
+    """Spearman correlation via average ranks; avoids an optional SciPy dependency."""
+    xr = pd.Series(np.asarray(x)).rank(method="average")
+    yr = pd.Series(np.asarray(y)).rank(method="average")
+    return float(xr.corr(yr))
+
 def metrics(y, pred):
     err = pred-y
     mae = float(np.mean(np.abs(err)))
@@ -92,7 +98,7 @@ def main():
         if len(g) < 3 or g["Residual_absolute_u"].nunique() < 2:
             continue
         pearson_r = g["Residual_absolute_u"].corr(g["Binding_defect_u"], method="pearson")
-        spearman_r = g["Residual_absolute_u"].corr(g["Binding_defect_u"], method="spearman")
+        spearman_r = spearman_corr(g["Residual_absolute_u"], g["Binding_defect_u"])
         rows.append({
             "Z": z, "Symbol": sym, "Isotopes_n": len(g),
             "N_min": int(g["N"].min()), "N_max": int(g["N"].max()),
@@ -142,7 +148,7 @@ def main():
 
     # Global descriptive statistics; these are association checks, not causal evidence.
     pearson = clean["Residual_absolute_u"].corr(clean["Binding_defect_u"], method="pearson")
-    spearman = clean["Residual_absolute_u"].corr(clean["Binding_defect_u"], method="spearman")
+    spearman = spearman_corr(clean["Residual_absolute_u"], clean["Binding_defect_u"])
     ratio = clean["Residual_to_defect_ratio"].replace([np.inf,-np.inf], np.nan).dropna()
     ratio_stats = {
         "n": int(len(ratio)), "median_pct": float(100*ratio.median()),
