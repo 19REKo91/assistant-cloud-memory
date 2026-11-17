@@ -84,6 +84,7 @@ def main():
     clean["Z"] = clean["Z"].astype(int)
     clean["N"] = clean["N"].astype(int)
     clean["A"] = clean["A"].astype(int)
+    clean["Symbol"] = clean["Symbol"].fillna("").astype(str)
     clean["Binding_defect_u"] = clean["AME_mass_defect_u_from_binding"]
     clean["Binding_energy_per_nucleon_MeV"] = (
         pd.to_numeric(clean["Binding_energy_per_A_keV"], errors="coerce")/1000.0
