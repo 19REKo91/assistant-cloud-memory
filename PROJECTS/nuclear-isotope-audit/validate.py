@@ -68,6 +68,102 @@ def metrics(y, pred):
     r2 = float(1-np.sum(err**2)/denom) if denom > 0 else float("nan")
     return mae, rmse, r2
 
+
+def _bool_for_validation(series):
+    return series.astype("string").str.lower().isin(["true", "1", "yes"])
+
+def validate_cumulative_outputs():
+    """Independently recompute cumulative isotope-series identities."""
+    path = OUT / "isotope_cumulative_steps_all.csv"
+    if not path.exists():
+        raise FileNotFoundError(
+            "Cumulative output missing. Run main.py first; validation must not silently skip it."
+        )
+    c = pd.read_csv(path, low_memory=False)
+    required = [
+        "Z", "N", "Symbol", "Residual_signed_u", "Residual_absolute_u",
+        "AME_mass_defect_u_from_binding", "Cumulative_signed_residual_steps_u",
+        "Cumulative_absolute_signed_step_magnitudes_u",
+        "Binding_defect_change_from_first_u", "Gap_between_observed_N"
+    ]
+    missing = [x for x in required if x not in c.columns]
+    if missing:
+        raise ValueError(f"Cumulative output missing columns: {missing}")
+    for col in required:
+        if col != "Gap_between_observed_N":
+            c[col] = pd.to_numeric(c[col], errors="coerce")
+    if c.duplicated(["Z", "N"]).any():
+        raise AssertionError("Cumulative output contains duplicate (Z,N) isotope keys.")
+
+    summaries = []
+    max_net_error = max_step_error = max_abs_step_sum_error = max_defect_error = 0.0
+    total_gaps = 0
+    for z, g in c.groupby("Z", sort=True):
+        g = g.sort_values("N").copy()
+        n0 = int(g["N"].iloc[0])
+        d0 = float(g["AME_mass_defect_u_from_binding"].iloc[0])
+        expected_net = 0.004 * (g["N"] - n0)
+        net_error = float((g["Cumulative_signed_residual_steps_u"] - expected_net).abs().max())
+        max_net_error = max(max_net_error, net_error)
+
+        delta_n = g["N"].diff()
+        delta_r = g["Residual_signed_u"].diff()
+        step_error = float((delta_r - 0.004 * delta_n).abs().max())
+        max_step_error = max(max_step_error, step_error)
+
+        expected_abs_steps = delta_r.abs().fillna(0).cumsum()
+        abs_step_error = float((
+            g["Cumulative_absolute_signed_step_magnitudes_u"] - expected_abs_steps
+        ).abs().max())
+        max_abs_step_sum_error = max(max_abs_step_sum_error, abs_step_error)
+
+        expected_defect_change = g["AME_mass_defect_u_from_binding"] - d0
+        defect_error = float((
+            g["Binding_defect_change_from_first_u"] - expected_defect_change
+        ).abs().max())
+        max_defect_error = max(max_defect_error, defect_error)
+
+        expected_gap = delta_n.gt(1).fillna(False).to_numpy()
+        actual_gap = _bool_for_validation(g["Gap_between_observed_N"]).to_numpy()
+        if not np.array_equal(expected_gap, actual_gap):
+            raise AssertionError(f"Incorrect N-gap flags for Z={z}.")
+        gaps = int(expected_gap.sum())
+        total_gaps += gaps
+        summaries.append({
+            "Z": int(z), "Symbol": str(g["Symbol"].iloc[0]),
+            "Isotope_records": len(g), "N_first": n0, "N_last": int(g["N"].iloc[-1]),
+            "Observed_N_gaps": gaps, "Net_R_from_first_u": float(expected_net.iloc[-1]),
+            "Observed_net_defect_change_u": float(expected_defect_change.iloc[-1]),
+            "Max_net_identity_error_u": net_error,
+            "Max_step_identity_error_u": step_error,
+            "Max_absolute_step_sum_error_u": abs_step_error,
+            "Max_defect_change_error_u": defect_error
+        })
+
+    tol = 1e-10
+    if max(max_net_error, max_step_error, max_abs_step_sum_error, max_defect_error) > tol:
+        raise AssertionError(
+            "Independent cumulative validation failed: "
+            f"net={max_net_error}, step={max_step_error}, "
+            f"abs_steps={max_abs_step_sum_error}, defect={max_defect_error}"
+        )
+    summary = pd.DataFrame(summaries)
+    summary.to_csv(OUT / "cumulative_independent_validation.csv", index=False)
+    report = [
+        "INDEPENDENT CUMULATIVE VALIDATION",
+        f"Elements tested: {len(summary)}",
+        f"Isotope records tested: {len(c)}",
+        f"Observed N gaps (not interpolated): {total_gaps}",
+        f"Maximum net cumulative identity error (u): {max_net_error:.12g}",
+        f"Maximum step identity error (u): {max_step_error:.12g}",
+        f"Maximum absolute-step-sum error (u): {max_abs_step_sum_error:.12g}",
+        f"Maximum reference-relative mass-defect error (u): {max_defect_error:.12g}",
+        "PASS: cumulative columns independently recomputed from isotope records."
+    ]
+    (OUT / "cumulative_independent_validation.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
+    print("\n".join(report))
+    return summary
+
 def main():
     if not SOURCE.exists():
         raise FileNotFoundError(f"Required prior audit output not found: {SOURCE}")
@@ -278,6 +374,7 @@ def main():
         ""
     ]
     (OUT/"report_ar_validation.md").write_text("\n".join(lines), encoding="utf-8")
+    validate_cumulative_outputs()
     print(f"Matched records: {len(matched)}")
     print(f"Clean records: {len(clean)}")
     print(f"Within-element groups tested: {len(within)}")
