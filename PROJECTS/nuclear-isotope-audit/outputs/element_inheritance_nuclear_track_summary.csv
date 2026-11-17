@@ -1,0 +1,4 @@
+﻿track,elements_with_selected_isotope,elements_without_selection,final_partial_cumulative_defect_u,meaning
+most_abundant_natural,84,34,77.40811813716518,largest NUBASE2020 IS= natural abundance where published
+most_stable,80,38,69.40900626867118,stable nuclide with highest AME2020 BE/A; abundance then lower A as tie-break
+longest_lived_radioactive,118,0,144.78736441960774,radioactive ground-state nuclide with greatest finite NUBASE2020 half-life
