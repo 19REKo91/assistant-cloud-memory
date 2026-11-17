@@ -94,9 +94,18 @@ def validate_cumulative_outputs():
     missing = [x for x in required if x not in c.columns]
     if missing:
         raise ValueError(f"Cumulative output missing columns: {missing}")
-    for col in required:
-        if col != "Gap_between_observed_N":
-            c[col] = pd.to_numeric(c[col], errors="coerce")
+    numeric_columns = [
+        "Z", "N", "U_2Z_plus_N", "D_Z_plus_2N", "C_raw_u", "C_cancel_u",
+        "Residual_from_subtraction_u", "Residual_signed_u", "Residual_absolute_u",
+        "AME_mass_defect_u_from_binding", "Cumulative_signed_residual_steps_u",
+        "Cumulative_absolute_signed_step_magnitudes_u", "Binding_defect_change_from_first_u",
+        "C_raw_change_from_first_u", "C_cancel_change_from_first_u",
+        "Residual_subtraction_change_from_first_u", "Cumulative_raw_steps_u",
+        "Cumulative_cancelled_steps_u", "Cumulative_subtraction_residual_steps_u",
+        "Cumulative_absolute_subtraction_step_magnitudes_u"
+    ]
+    for col in numeric_columns:
+        c[col] = pd.to_numeric(c[col], errors="coerce")
     if c.duplicated(["Z", "N"]).any():
         raise AssertionError("Cumulative output contains duplicate (Z,N) isotope keys.")
 
@@ -129,9 +138,13 @@ def validate_cumulative_outputs():
         max_subtraction_identity_error = max(max_subtraction_identity_error, subtraction_error)
         raw_cancel_steps = g["C_raw_u"].diff().fillna(0) - g["C_cancel_u"].diff().fillna(0)
         expected_cumulative_subtraction = raw_cancel_steps.cumsum()
-        cumulative_raw_error = float((
-            g["Cumulative_subtraction_residual_steps_u"] - expected_cumulative_subtraction
-        ).abs().max())
+        expected_cumulative_raw = g["C_raw_u"].diff().fillna(0).cumsum()
+        expected_cumulative_cancelled = g["C_cancel_u"].diff().fillna(0).cumsum()
+        cumulative_raw_error = max(
+            float((g["Cumulative_raw_steps_u"] - expected_cumulative_raw).abs().max()),
+            float((g["Cumulative_cancelled_steps_u"] - expected_cumulative_cancelled).abs().max()),
+            float((g["Cumulative_subtraction_residual_steps_u"] - expected_cumulative_subtraction).abs().max())
+        )
         max_cumulative_raw_error = max(max_cumulative_raw_error, cumulative_raw_error)
         raw_cancel_error = float((
             g["C_raw_change_from_first_u"] - g["C_cancel_change_from_first_u"]
