@@ -82,6 +82,7 @@ def main():
     if len(clean) < 100:
         raise RuntimeError(f"Too few clean matched ground-state records: {len(clean)}")
     clean["Z"] = clean["Z"].astype(int)
+    clean = clean[clean["Z"].between(1,118)].copy()  # Exclude free neutron (Z=0) from element/isotope tests.
     clean["N"] = clean["N"].astype(int)
     clean["A"] = clean["A"].astype(int)
     clean["Symbol"] = clean["Symbol"].replace("", np.nan).fillna(clean["AME_symbol"]).fillna("Unknown").astype(str)
