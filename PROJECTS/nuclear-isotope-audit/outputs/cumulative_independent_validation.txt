@@ -1,0 +1,9 @@
+INDEPENDENT CUMULATIVE VALIDATION
+Elements tested: 118
+Isotope records tested: 3557
+Observed N gaps (not interpolated): 0
+Maximum net cumulative identity error (u): 1.11022302463e-16
+Maximum step identity error (u): 2.42861286637e-17
+Maximum absolute-step-sum error (u): 1.21430643318e-16
+Maximum reference-relative mass-defect error (u): 7.6327832943e-16
+PASS: cumulative columns independently recomputed from isotope records.

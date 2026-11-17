@@ -59,7 +59,5 @@
 - element_holdout_model_metrics.csv
 - element_holdout_predictions.csv
 - selected_element_isotope_families.csv
-- repeated_element_holdout_metrics.csv
-- repeated_element_holdout_summary.csv
 - validation_residual_vs_defect.png
 - validation_holdout_mae.png
