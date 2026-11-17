@@ -2,6 +2,15 @@ name: Element Inheritance Tests (Box Loss and Nuclear Defect)
 
 on:
   workflow_dispatch:
+    inputs:
+      test_scope:
+        description: "Which independent test to run"
+        required: true
+        type: choice
+        options:
+          - box-only
+          - all
+        default: box-only
 
 permissions:
   contents: write
@@ -24,11 +33,17 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r PROJECTS/nuclear-isotope-audit/requirements.txt
       - name: Rebuild isotope source tables
+        if: inputs.test_scope == 'all'
         working-directory: PROJECTS/nuclear-isotope-audit
         run: python main.py
       - name: Run separate cumulative inheritance tests
         working-directory: PROJECTS/nuclear-isotope-audit
-        run: python element_inheritance_tests.py
+        run: |
+          if [ "${{ inputs.test_scope }}" = "box-only" ]; then
+            python element_inheritance_tests.py --box-only
+          else
+            python element_inheritance_tests.py
+          fi
       - name: Upload inheritance outputs
         if: always()
         uses: actions/upload-artifact@v4
