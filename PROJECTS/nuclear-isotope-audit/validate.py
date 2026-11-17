@@ -84,13 +84,13 @@ def main():
     clean["Z"] = clean["Z"].astype(int)
     clean["N"] = clean["N"].astype(int)
     clean["A"] = clean["A"].astype(int)
-    clean["Symbol"] = clean["Symbol"].fillna("").astype(str)
+    clean["Symbol"] = clean["Symbol"].replace("", np.nan).fillna(clean["AME_symbol"]).fillna("Unknown").astype(str)
     clean["Binding_defect_u"] = clean["AME_mass_defect_u_from_binding"]
     clean["Binding_energy_per_nucleon_MeV"] = (
         pd.to_numeric(clean["Binding_energy_per_A_keV"], errors="coerce")/1000.0
     )
     clean = clean.dropna(subset=["Binding_energy_per_nucleon_MeV"])
-    clean["Residual_to_defect_ratio"] = clean["Residual_absolute_u"]/clean["Binding_defect_u"]
+    clean["Residual_to_defect_ratio"] = np.where(clean["Binding_defect_u"] > 0, clean["Residual_absolute_u"]/clean["Binding_defect_u"], np.nan)
 
     # Isotope-by-isotope trend within each element (Z fixed).
     rows = []
@@ -144,6 +144,34 @@ def main():
             })
     metrics_df = pd.DataFrame(metric_rows).sort_values("MAE_u")
     metrics_df.to_csv(OUT/"element_holdout_model_metrics.csv", index=False)
+
+    # Repeated group holdout: repeat 30 times with different held-out element sets.
+    repeated_rows = []
+    for split_seed in range(30):
+        split_rng = np.random.default_rng(20261117 + split_seed)
+        split_elements = split_rng.permutation(elements)
+        split_test_z = set(split_elements[:n_test].tolist())
+        split_train = clean[~clean["Z"].isin(split_test_z)].copy()
+        split_test = clean[clean["Z"].isin(split_test_z)].copy()
+        split_y = split_test[ycol].to_numpy(float)
+        for kind in model_names:
+            split_pred = fit_predict(split_train, split_test, kind, ycol)
+            mae, rmse, r2 = metrics(split_y, split_pred)
+            repeated_rows.append({
+                "Split": split_seed + 1, "Model": kind,
+                "Train_records": len(split_train), "Test_records": len(split_test),
+                "Held_out_elements": len(split_test_z),
+                "MAE_u": mae, "RMSE_u": rmse, "R2": r2
+            })
+    repeated = pd.DataFrame(repeated_rows)
+    repeated.to_csv(OUT/"repeated_element_holdout_metrics.csv", index=False)
+    repeated_summary = (repeated.groupby("Model")
+        .agg(Splits=("Split","count"),
+             MAE_median_u=("MAE_u","median"), MAE_mean_u=("MAE_u","mean"),
+             MAE_min_u=("MAE_u","min"), MAE_max_u=("MAE_u","max"),
+             RMSE_median_u=("RMSE_u","median"), R2_median=("R2","median"))
+        .reset_index().sort_values("MAE_median_u"))
+    repeated_summary.to_csv(OUT/"repeated_element_holdout_summary.csv", index=False)
     predictions = pd.DataFrame(pred_rows)
     predictions.to_csv(OUT/"element_holdout_predictions.csv", index=False)
 
@@ -197,6 +225,8 @@ def main():
         "## اختبار النظائر داخل العنصر الواحد",
         f"- عدد العناصر التي لديها 3 نظائر نظيفة على الأقل وتغير في المتبقي: {len(within)}.",
         "- التفاصيل الكاملة في isotope_within_element_correlations.csv.",
+        f"- توزيع Pearson داخل العناصر: الوسيط {within['Pearson_R_vs_defect'].median():.4f}، الأدنى {within['Pearson_R_vs_defect'].min():.4f}، الأعلى {within['Pearson_R_vs_defect'].max():.4f}.",
+        f"- توزيع Spearman داخل العناصر: الوسيط {within['Spearman_R_vs_defect'].median():.4f}، الأدنى {within['Spearman_R_vs_defect'].min():.4f}، الأعلى {within['Spearman_R_vs_defect'].max():.4f}.",
         "- هذا الاختبار يثبت/ينفي وجود انتظام إحصائي داخل العائلة النظائرية؛ لا يكفي وحده لإثبات تفسير فيزيائي.",
         "",
         "## اختبار التنبؤ بعناصر محجوبة",
@@ -208,6 +238,13 @@ def main():
     ]
     for _, r in metrics_df.iterrows():
         lines.append(f"- {r['Model']}: MAE={r['MAE_u']:.6f} u، RMSE={r['RMSE_u']:.6f} u، R²={r['R2']:.5f}")
+    lines += [
+        "",
+        "## ثبات النتيجة عبر 30 تقسيمًا مستقلاً",
+        "- في كل تقسيم حُجبت 25% من العناصر بالكامل، وأعيد ملاءمة النماذج على بقية العناصر.",
+    ]
+    for _, r in repeated_summary.iterrows():
+        lines.append(f"- {r['Model']}: وسيط MAE={r['MAE_median_u']:.6f} u، المتوسط={r['MAE_mean_u']:.6f} u، المجال={r['MAE_min_u']:.6f}–{r['MAE_max_u']:.6f} u، وسيط R²={r['R2_median']:.5f}")
     best = metrics_df.iloc[0]
     lines += [
         "",
