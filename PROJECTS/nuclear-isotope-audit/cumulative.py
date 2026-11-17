@@ -193,6 +193,55 @@ def build_cumulative(data: pd.DataFrame):
     examples = clean[clean["Symbol"].isin(example_symbols)].copy()
     examples.to_csv(OUT / "cumulative_Fe_Ni_Pb_Bi_Po_Ra_Th_U_families.csv", index=False, na_rep="NA", encoding="utf-8-sig")
 
+
+    # Cumulative association is reported pooled and within each element.
+    # Within-element statistics avoid treating unrelated Z families as one series.
+    correlation_rows = []
+    for (z, symbol), g in clean.groupby(["Z", "Symbol"], sort=True):
+        g = g.sort_values("N")
+        if len(g) < 3:
+            continue
+        x_signed = g["Residual_signed_change_from_first_u"]
+        x_sub = g["Residual_subtraction_change_from_first_u"]
+        y_defect = g["Binding_defect_change_from_first_u"]
+        if x_signed.nunique() < 2 or y_defect.nunique() < 2:
+            continue
+        correlation_rows.append({
+            "Z": int(z), "Symbol": symbol, "Clean_isotope_records": len(g),
+            "Pearson_cumulative_signed_R_vs_defect_change": x_signed.corr(y_defect, method="pearson"),
+            "Spearman_cumulative_signed_R_vs_defect_change": x_signed.rank(method="average").corr(y_defect.rank(method="average")),
+            "Pearson_cumulative_subtraction_residual_vs_defect_change": (
+                x_sub.corr(y_defect, method="pearson") if x_sub.nunique() > 1 else np.nan
+            ),
+            "Spearman_cumulative_subtraction_residual_vs_defect_change": (
+                x_sub.rank(method="average").corr(y_defect.rank(method="average")) if x_sub.nunique() > 1 else np.nan
+            ),
+        })
+    cumulative_corr = pd.DataFrame(correlation_rows)
+    if not cumulative_corr.empty:
+        cumulative_corr = cumulative_corr.sort_values("Z")
+    cumulative_corr.to_csv(
+        OUT / "isotope_cumulative_within_element_correlations.csv",
+        index=False, na_rep="NA", encoding="utf-8-sig"
+    )
+
+    pooled_signed_pearson = clean["Residual_signed_change_from_first_u"].corr(
+        clean["Binding_defect_change_from_first_u"], method="pearson"
+    )
+    pooled_signed_spearman = clean["Residual_signed_change_from_first_u"].rank(method="average").corr(
+        clean["Binding_defect_change_from_first_u"].rank(method="average")
+    )
+    pooled_sub_pearson = clean["Residual_subtraction_change_from_first_u"].corr(
+        clean["Binding_defect_change_from_first_u"], method="pearson"
+    )
+    pooled_sub_spearman = clean["Residual_subtraction_change_from_first_u"].rank(method="average").corr(
+        clean["Binding_defect_change_from_first_u"].rank(method="average")
+    )
+    median_within_signed_pearson = (
+        float(cumulative_corr["Pearson_cumulative_signed_R_vs_defect_change"].median())
+        if not cumulative_corr.empty else float("nan")
+    )
+
     plot_data = clean[clean["Has_previous_isotope"]].copy()
     if not plot_data.empty:
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -240,6 +289,15 @@ def build_cumulative(data: pd.DataFrame):
         "- يحسب التراكم من النظير المرجعي لكل من C_raw وC_cancel وفرق الطرح وR_signed، وتفصل مجاميع مقادير الخطوات عن صافي التغير.",
         "- المقارنة الفيزيائية تستخدم تغير نقص الكتلة المشتق من طاقة الربط من النظير المرجعي، لا جمع نقص الكتلة المطلق لكل نظير.",
         "",
+        "## العلاقة بين التراكم وتغير عيب الكتلة",
+        f"- ارتباط بيرسون المجمع بين تغير R الموقّع من المرجع وتغير عيب الكتلة: {pooled_signed_pearson:.5f}.",
+        f"- ارتباط سبيرمان المجمع للمقدارين نفسيهما: {pooled_signed_spearman:.5f}.",
+        f"- ارتباط بيرسون المجمع لتغير فرق الطرح المطلق مع تغير عيب الكتلة: {pooled_sub_pearson:.5f}.",
+        f"- ارتباط سبيرمان المجمع لتغير فرق الطرح المطلق مع تغير عيب الكتلة: {pooled_sub_spearman:.5f}.",
+        f"- عدد العائلات النظائرية النظيفة ذات 3 سجلات أو أكثر والقابلة لحساب الارتباط: {len(cumulative_corr)}.",
+        f"- وسيط بيرسون داخل العناصر (R الموقّع التراكمي مقابل تغير عيب الكتلة): {median_within_signed_pearson:.5f}.",
+        "- الارتباط المجمع وصفي وقد يتأثر بالفروق بين العناصر؛ لذلك يعرض ملف مستقل الارتباط داخل كل عنصر. لا تعني معاملات الارتباط السببية.",
+        "",
         "## ضبط الفجوات والجودة",
         f"- عدد سجلات النظائر الأرضية المطابقة المتاحة: {len(result):,}.",
         f"- عدد العناصر ذات بيانات نظائرية: {result['Z'].nunique():,}.",
@@ -264,6 +322,7 @@ def build_cumulative(data: pd.DataFrame):
         "- isotope_cumulative_steps_clean.csv",
         "- isotope_cumulative_element_summary.csv",
         "- cumulative_Fe_Ni_Pb_Bi_Po_Ra_Th_U_families.csv",
+        "- isotope_cumulative_within_element_correlations.csv",
         "- cumulative_residual_vs_defect_change.png",
         "- رسوم عائلات Fe وNi وPb وBi وPo وRa وTh وU",
         "- report_ar_cumulative.md",
