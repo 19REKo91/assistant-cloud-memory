@@ -181,7 +181,7 @@ def parse_ame(path: Path) -> pd.DataFrame:
                 rejected.append((line_no, line[:135], "invalid Z/A"))
                 continue
             rows.append({
-                "Z": z, "A": a, "N": a-z, "AME_symbol": symbol,
+                "Z": z, "A": a, "AME_N": a-z, "AME_symbol": symbol,
                 "AME_mass_excess_keV": mass_excess,
                 "AME_mass_excess_unc_keV": mass_unc,
                 "AME_mass_excess_estimated": mass_estimated,
@@ -217,6 +217,7 @@ def parse_ame(path: Path) -> pd.DataFrame:
 def build_analysis(nubase: pd.DataFrame, ame: pd.DataFrame) -> pd.DataFrame:
     merged = nubase.merge(ame, on=["Z", "A"], how="left", validate="many_to_one")
     merged["AME_match"] = merged["AME_mass_excess_keV"].notna()
+    merged["N_consistency_check"] = merged["AME_N"].isna() | (merged["N"] == merged["AME_N"])
     merged["U_2Z_plus_N"] = 2 * merged["Z"] + merged["N"]
     merged["D_Z_plus_2N"] = merged["Z"] + 2 * merged["N"]
     merged["C_raw_u"] = 0.012 * merged["A"]
@@ -347,6 +348,7 @@ def make_outputs(data: pd.DataFrame, nubase: pd.DataFrame, ame: pd.DataFrame) ->
         "## فحوصات الاتساق",
         f"- عدد الصفوف التي تحقق Raw - Cancelled = 0.004|N-Z| ضمن السماحية: {int(data['Residual_identity_check'].sum()):,} / {len(data):,}",
         f"- عدد مخالفات الهوية الحسابية: {int((~data['Residual_identity_check']).sum()):,}",
+        f"- عدد مخالفات اتساق عدد النيوترونات بين المصدرين: {int((~data['N_consistency_check']).sum()):,}",
         "- الهوية الجبرية تعني أن الطرح يعطي القيمة المطلقة، وليس المتبقي الموقّع عندما N < Z.",
         "",
         "## المقارنة مع AME2020",
