@@ -68,26 +68,29 @@ def natural_abundance(decay_modes):
     return float(m.group(1)) if m else math.nan
 
 def load_isotope_table():
-    require_file(ISOTOPE_SOURCE); require_file(NUBASE_SOURCE)
-    ame=pd.read_csv(ISOTOPE_SOURCE,low_memory=False)
-    nub=pd.read_csv(NUBASE_SOURCE,low_memory=False)
-    need_a={"Z","N","A","Symbol","AME_mass_defect_u_from_binding","Binding_energy_per_A_keV","AME_estimated_or_flagged"}
-    need_n={"Z","A","Half_life_text","Half_life_unit","Decay_modes"}
-    if need_a-set(ame.columns): raise ValueError(f"Isotope source missing: {sorted(need_a-set(ame.columns))}")
-    if need_n-set(nub.columns): raise ValueError(f"NUBASE source missing: {sorted(need_n-set(nub.columns))}")
-    if "Ground_state_candidate" in nub.columns:
-        nub = nub[nub["Ground_state_candidate"].astype("string").str.lower().isin(["true", "1", "yes"])].copy()
-    nub=nub[["Z","A","Half_life_text","Half_life_unit","Decay_modes"]].copy()
-    f=ame.merge(nub,on=["Z","A"],how="left",validate="one_to_one")
+    require_file(ISOTOPE_SOURCE)
+    f=pd.read_csv(ISOTOPE_SOURCE,low_memory=False)
+    needed={"Z","N","A","Symbol","Ground_state_candidate","Half_life_text","Half_life_unit",
+            "Decay_modes","AME_mass_defect_u_from_binding","Binding_energy_per_A_keV",
+            "AME_estimated_or_flagged"}
+    if needed-set(f.columns):
+        raise ValueError(f"Isotope cumulative source missing: {sorted(needed-set(f.columns))}")
+    # The cumulative source is already the NUBASE/AME matched ground-state table.
+    # Do not merge NUBASE a second time: that creates duplicate suffixed columns.
+    f=f[f["Ground_state_candidate"].astype("string").str.lower().isin(["true","1","yes"])].copy()
+    f=f[pd.to_numeric(f["Z"],errors="coerce").between(1,118)].copy()
+    f["Z"]=pd.to_numeric(f["Z"],errors="raise").astype(int)
+    f["A"]=pd.to_numeric(f["A"],errors="raise").astype(int)
+    f["N"]=pd.to_numeric(f["N"],errors="raise").astype(int)
     f["natural_abundance_pct"]=f["Decay_modes"].map(natural_abundance)
     f["half_life_seconds"]=[half_life_seconds(t,u) for t,u in zip(f["Half_life_text"],f["Half_life_unit"])]
     f["is_stable"]=f["Half_life_text"].astype("string").str.strip().str.lower().isin(["stbl","stable"])
     f["defect_u"]=pd.to_numeric(f["AME_mass_defect_u_from_binding"],errors="coerce")
     f["binding_energy_per_nucleon_MeV"]=pd.to_numeric(f["Binding_energy_per_A_keV"],errors="coerce")/1000.0
-    f["source"]="AME2020 binding energy; NUBASE2020 isotope status/abundance"
+    f["source"]="AME2020 binding energy; NUBASE2020 ground-state half-life/abundance"
     f["quality_flag"]=f["AME_estimated_or_flagged"]
     f=f.sort_values(["Z","A"]).reset_index(drop=True)
-    if f.duplicated(["Z","A"]).any(): raise AssertionError("Duplicate isotope keys after AME/NUBASE join.")
+    if f.duplicated(["Z","A"]).any(): raise AssertionError("Duplicate ground-state isotope keys.")
     return f
 
 def write_track(name, table, selector):
