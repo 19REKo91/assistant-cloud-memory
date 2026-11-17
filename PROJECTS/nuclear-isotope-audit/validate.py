@@ -279,6 +279,27 @@ def run_binary_box_tests(clean):
         atol=1e-9, rtol=0
     )
 
+    # Distinguish neutral-atom mass from approximate nuclear mass.
+    # Electron binding energy is omitted here; this is a first-order correction only.
+    electron_mass_u = 0.000548579909065
+    d["Approx_nuclear_mass_u"] = mass - Z * electron_mass_u
+    d["Approx_nuclear_brick_count"] = d["Approx_nuclear_mass_u"] / b
+    d["Approx_nuclear_brick_error_pct"] = (
+        100.0 * (d["Approx_nuclear_brick_count"] -
+                 np.rint(d["Approx_nuclear_brick_count"])).abs()
+    )
+    d["Binding_defect_in_0p016_bricks"] = d["Binding_defect_u"] / b
+    d["Binding_defect_brick_error_pct"] = (
+        100.0 * (d["Binding_defect_in_0p016_bricks"] -
+                 np.rint(d["Binding_defect_in_0p016_bricks"])).abs()
+    )
+    d["Binding_energy_per_nucleon_u"] = (
+        d["Binding_energy_per_nucleon_MeV"] / MEV_U
+    )
+    d["Binding_energy_per_nucleon_vs_0p008_ratio"] = (
+        d["Binding_energy_per_nucleon_u"] / 0.008
+    )
+
     d.to_csv(OUT / "binary_box_test_isotope_results.csv", index=False, na_rep="NA")
 
     # Element-level medians; do not treat isotopes of one element as independent elements.
@@ -294,6 +315,11 @@ def run_binary_box_tests(clean):
             "Binary_box_k_mode": int(g["Binary_box_k"].mode().iloc[0]),
             "Binary_box_position_pct_median": float(g["Binary_box_position_pct"].median()),
             "Brick_lattice_error_pct_median": float(g["Brick_lattice_error_pct_of_brick"].median()),
+            "Approx_nuclear_brick_error_pct_median": float(g["Approx_nuclear_brick_error_pct"].median()),
+            "Binding_defect_bricks_median": float(g["Binding_defect_in_0p016_bricks"].median()),
+            "Binding_defect_brick_error_pct_median": float(g["Binding_defect_brick_error_pct"].median()),
+            "Binding_energy_per_nucleon_MeV_median": float(g["Binding_energy_per_nucleon_MeV"].median()),
+            "Binding_energy_per_nucleon_vs_0p008_ratio_median": float(g["Binding_energy_per_nucleon_vs_0p008_ratio"].median()),
             "Effective_mass_0p58A_median": float(g["Proposed_effective_mass_58pct_u"].median())
         })
     elements = pd.DataFrame(element_rows).sort_values("Z")
@@ -357,7 +383,11 @@ def run_binary_box_tests(clean):
     examples.to_csv(OUT / "binary_box_test_key_nuclides.csv", index=False, na_rep="NA")
 
     brick_error = d["Brick_lattice_error_pct_of_brick"]
+    nuclear_brick_error = d["Approx_nuclear_brick_error_pct"]
+    defect_brick_error = d["Binding_defect_brick_error_pct"]
     residual_brick_share = float(d["Residual_is_integer_bricks"].mean())
+    half_brick_mev = 0.008 * MEV_U
+    full_brick_mev = 0.016 * MEV_U
     summary = [
         "# اختبار الصندوق الثنائي والفاقد الطوبي — AME2020",
         "",
@@ -371,8 +401,12 @@ def run_binary_box_tests(clean):
         f"- متوسط خطأ شبكة الطوبات: {brick_error.mean():.3f}%.",
         f"- نسبة السجلات التي تقع ضمن 1% من طوبة صحيحة: {(brick_error <= 1.0).mean()*100:.2f}%.",
         f"- نسبة السجلات التي تقع ضمن 5% من طوبة صحيحة: {(brick_error <= 5.0).mean()*100:.2f}%.",
+        f"- بعد طرح كتل الإلكترونات (تقريب أولي يهمل طاقة ارتباطها): وسيط خطأ شبكة الكتلة النووية {nuclear_brick_error.median():.3f}%؛ ضمن 1%: {(nuclear_brick_error <= 1.0).mean()*100:.2f}%، وضمن 5%: {(nuclear_brick_error <= 5.0).mean()*100:.2f}%.",
+        f"- اختبار عيب الكتلة نفسه بوحدة الطوبة: وسيط خطأ أقرب عدد صحيح من 0.016u هو {defect_brick_error.median():.3f}%; ضمن 1%: {(defect_brick_error <= 1.0).mean()*100:.2f}%، وضمن 5%: {(defect_brick_error <= 5.0).mean()*100:.2f}%.",
+        f"- 0.016u تعادل {full_brick_mev:.3f} MeV، ونصفها 0.008u يعادل {half_brick_mev:.3f} MeV؛ وسيط طاقة الربط لكل نيوكليون {d['Binding_energy_per_nucleon_MeV'].median():.3f} MeV، أي {d['Binding_energy_per_nucleon_vs_0p008_ratio'].median():.3f} مرة من 0.008u.",
         f"- نسبة المتبقي النموذجي الذي يساوي عدداً صحيحاً من طوبات 0.016u: {residual_brick_share*100:.2f}% (هذه نتيجة جبرية من كون |N-Z| من مضاعفات 4، وليست قياساً مستقلاً).",
         "- فحص الهيدروجين-1: كتلة الذرة تقارن بـ 63×0.016u=1.008u، بينما 64×0.016u=1.024u؛ الفارق بين الكتلة و63 طوبة يظهر في ملف النظائر.",
+        "- كتلة AME الذرية تشمل الإلكترونات؛ لذلك عُرض فحص ذري وفحص كتلة نووية تقريبي منفصل. تصحيح الكتلة النووية هنا يطرح Z كتلة إلكترونات فقط ويهمل طاقة ارتباطها الإلكترونية.",
         "",
         "## 2) الصناديق الثنائية على عدد الكتلة A",
         "- لكل نظير استُخدم الصندوق [2^k, 2^(k+1)] الذي يحتوي A، والموقع P=100(A−2^k)/(2^(k+1)−2^k).",
