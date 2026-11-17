@@ -20,6 +20,7 @@ def design_matrix(frame, kind):
     Z = frame["Z"].to_numpy(float)
     N = frame["N"].to_numpy(float)
     R = frame["Residual_absolute_u"].to_numpy(float)
+    RS = frame["Residual_signed_u"].to_numpy(float)
     if kind == "mean":
         return np.ones((len(frame), 1))
     if kind == "A":
@@ -28,6 +29,10 @@ def design_matrix(frame, kind):
         return np.column_stack([np.ones(len(frame)), R])
     if kind == "R_plus_A":
         return np.column_stack([np.ones(len(frame)), R, A])
+    if kind == "R_signed":
+        return np.column_stack([np.ones(len(frame)), RS])
+    if kind == "R_signed_plus_A":
+        return np.column_stack([np.ones(len(frame)), RS, A])
     if kind == "SEMF":
         pair = np.where((Z.astype(int) % 2 == 0) & (N.astype(int) % 2 == 0), 1.0,
                np.where((Z.astype(int) % 2 == 1) & (N.astype(int) % 2 == 1), -1.0, 0.0))
@@ -69,11 +74,11 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(SOURCE, low_memory=False)
     required = ["Z","N","A","Symbol","AME_match","AME_mass_defect_u_from_binding",
-                "Residual_absolute_u","AME_estimated_or_flagged"]
+                "Residual_absolute_u","Residual_signed_u","AME_estimated_or_flagged"]
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
-    for c in ["Z","N","A","AME_mass_defect_u_from_binding","Residual_absolute_u"]:
+    for c in ["Z","N","A","AME_mass_defect_u_from_binding","Residual_absolute_u","Residual_signed_u"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     matched = df[df["AME_match"].astype(str).str.lower().isin(["true","1"])].copy()
     matched = matched.dropna(subset=["Z","N","A","AME_mass_defect_u_from_binding","Residual_absolute_u"])
@@ -101,10 +106,13 @@ def main():
             continue
         pearson_r = g["Residual_absolute_u"].corr(g["Binding_defect_u"], method="pearson")
         spearman_r = spearman_corr(g["Residual_absolute_u"], g["Binding_defect_u"])
+        signed_pearson_r = g["Residual_signed_u"].corr(g["Binding_defect_u"], method="pearson")
+        signed_spearman_r = spearman_corr(g["Residual_signed_u"], g["Binding_defect_u"])
         rows.append({
             "Z": z, "Symbol": sym, "Isotopes_n": len(g),
             "N_min": int(g["N"].min()), "N_max": int(g["N"].max()),
             "Pearson_R_vs_defect": pearson_r, "Spearman_R_vs_defect": spearman_r,
+            "Signed_Pearson_R_vs_defect": signed_pearson_r, "Signed_Spearman_R_vs_defect": signed_spearman_r,
             "Residual_min_u": g["Residual_absolute_u"].min(),
             "Residual_max_u": g["Residual_absolute_u"].max(),
             "Defect_min_u": g["Binding_defect_u"].min(),
@@ -125,7 +133,7 @@ def main():
     if len(train) < 100 or len(test) < 20:
         raise RuntimeError("Holdout split produced too few train/test records.")
     ycol = "Binding_defect_u"
-    model_names = ["mean","A","R","R_plus_A","SEMF"]
+    model_names = ["mean","A","R","R_plus_A","R_signed","R_signed_plus_A","SEMF"]
     metric_rows, pred_rows = [], []
     y = test[ycol].to_numpy(float)
     for kind in model_names:
@@ -179,6 +187,8 @@ def main():
     # Global descriptive statistics; these are association checks, not causal evidence.
     pearson = clean["Residual_absolute_u"].corr(clean["Binding_defect_u"], method="pearson")
     spearman = spearman_corr(clean["Residual_absolute_u"], clean["Binding_defect_u"])
+    signed_pearson = clean["Residual_signed_u"].corr(clean["Binding_defect_u"], method="pearson")
+    signed_spearman = spearman_corr(clean["Residual_signed_u"], clean["Binding_defect_u"])
     ratio = clean["Residual_to_defect_ratio"].replace([np.inf,-np.inf], np.nan).dropna()
     ratio_stats = {
         "n": int(len(ratio)), "median_pct": float(100*ratio.median()),
@@ -220,6 +230,7 @@ def main():
         "## الارتباط العام",
         f"- Pearson بين المتبقي المطلق ونقص الكتلة المشتق من طاقة الربط: {pearson:.5f}",
         f"- Spearman: {spearman:.5f}",
+        f"- Pearson للمتبقي الموقّع: {signed_pearson:.5f}، وSpearman: {signed_spearman:.5f}.",
         f"- نسبة المتبقي إلى نقص الكتلة: الوسيط {ratio_stats['median_pct']:.3f}%، والانحراف المعياري {ratio_stats['std_pct']:.3f} نقطة مئوية.",
         f"- المجال من {ratio_stats['min_pct']:.3f}% إلى {ratio_stats['max_pct']:.3f}%، والربيعان العشريان والتسعيني: {ratio_stats['q10_pct']:.3f}% و{ratio_stats['q90_pct']:.3f}%.",
         "",
@@ -227,12 +238,14 @@ def main():
         f"- عدد العناصر التي لديها 3 نظائر نظيفة على الأقل وتغير في المتبقي: {len(within)}.",
         "- التفاصيل الكاملة في isotope_within_element_correlations.csv.",
         f"- توزيع Pearson داخل العناصر: الوسيط {within['Pearson_R_vs_defect'].median():.4f}، الأدنى {within['Pearson_R_vs_defect'].min():.4f}، الأعلى {within['Pearson_R_vs_defect'].max():.4f}.",
-        f"- توزيع Spearman داخل العناصر: الوسيط {within['Spearman_R_vs_defect'].median():.4f}، الأدنى {within['Spearman_R_vs_defect'].min():.4f}، الأعلى {within['Spearman_R_vs_defect'].max():.4f}.",
+        f"- توزيع Spearman المطلق داخل العناصر: الوسيط {within['Spearman_R_vs_defect'].median():.4f}، الأدنى {within['Spearman_R_vs_defect'].min():.4f}، الأعلى {within['Spearman_R_vs_defect'].max():.4f}.",
+        f"- وسيط Pearson للمتبقي الموقّع داخل العناصر: {within['Signed_Pearson_R_vs_defect'].median():.4f}.",
+        f"- وسيط Spearman للمتبقي الموقّع داخل العناصر: {within['Signed_Spearman_R_vs_defect'].median():.4f}.",
         "- هذا الاختبار يثبت/ينفي وجود انتظام إحصائي داخل العائلة النظائرية؛ لا يكفي وحده لإثبات تفسير فيزيائي.",
         "",
         "## اختبار التنبؤ بعناصر محجوبة",
         "- حُجبت عناصر كاملة، وليس نظائر عشوائية من العناصر نفسها، لمنع تسرب معلومات العنصر إلى الاختبار.",
-        "- النماذج: متوسط التدريب، A فقط، المتبقي المطلق فقط، المتبقي + A، وصيغة شبه تجريبية للكتلة النووية (SEMF) بمعاملات ملائمة على التدريب فقط.",
+        "- النماذج: متوسط التدريب، A فقط، المتبقي المطلق أو الموقّع منفرداً، كل منهما مع A، وصيغة شبه تجريبية للكتلة النووية (SEMF) بمعاملات ملائمة على التدريب فقط.",
         "- معاملات SEMF ملائمة على بيانات التدريب، ثم اختبرت على عناصر لم تدخل التدريب.",
         "",
         "### نتائج الاختبار (الأقل MAE أفضل)",
