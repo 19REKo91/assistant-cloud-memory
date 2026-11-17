@@ -202,8 +202,8 @@ def main():
       "- element_inheritance_nuclear_track_longest_lived_radioactive.csv",
       "- element_inheritance_nuclear_track_summary.csv",
       "- report_ar_element_inheritance.md"]
-    (OUT/"report_ar_element_inheritance.md").write_text("\\n".join(report)+"\\n",encoding="utf-8")
-    print("\\n".join(report))
+    (OUT/"report_ar_element_inheritance.md").write_text("\n".join(report)+"\n",encoding="utf-8")
+    print("\n".join(report))
     print("ELEMENT INHERITANCE TESTS PASSED")
 
 if __name__=="__main__":
