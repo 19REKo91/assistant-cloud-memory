@@ -218,6 +218,10 @@ def build_analysis(nubase: pd.DataFrame, ame: pd.DataFrame) -> pd.DataFrame:
     # evaluated masses for every NUBASE isomer/excited level. Do not propagate
     # a ground-state AME value onto a non-ground-state NUBASE record.
     ame_value_columns = [c for c in ame.columns if c not in ("Z", "A")]
+    # Use nullable boolean columns before assigning NA to non-ground-state rows.
+    for column in ame_value_columns:
+        if pd.api.types.is_bool_dtype(merged[column]):
+            merged[column] = merged[column].astype("boolean")
     non_ground = ~merged["Ground_state_candidate"]
     merged.loc[non_ground, ame_value_columns] = pd.NA
     merged["AME_match"] = merged["Ground_state_candidate"] & merged["AME_mass_excess_keV"].notna()
