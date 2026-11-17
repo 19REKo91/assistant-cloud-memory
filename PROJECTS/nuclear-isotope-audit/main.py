@@ -137,14 +137,12 @@ def classify_state(row: pd.Series) -> str:
     suffix = str(row["State_suffix"])
     if idx == 0 and not suffix:
         return "ground_state_candidate"
-    if idx in (1, 2) or suffix in ("m", "n"):
-        return "isomer"
-    if idx in (3, 4) or suffix in ("p", "q"):
-        return "excited_level_or_special_state"
-    if idx == 5 or suffix in ("r", "x"):
-        return "resonance_or_special_state"
     if idx in (8, 9) or suffix in ("i", "j"):
         return "isobaric_analogue_state"
+    if idx in (1, 2) or suffix in ("m", "n"):
+        return "isomer"
+    if idx in (3, 4, 5, 6) or suffix in ("p", "q", "r", "x"):
+        return "isomer_or_excited_state_ambiguous"
     return "other_or_unresolved_state"
 
 def parse_ame(path: Path) -> pd.DataFrame:
@@ -216,8 +214,14 @@ def parse_ame(path: Path) -> pd.DataFrame:
 
 def build_analysis(nubase: pd.DataFrame, ame: pd.DataFrame) -> pd.DataFrame:
     merged = nubase.merge(ame, on=["Z", "A"], how="left", validate="many_to_one")
-    merged["AME_match"] = merged["AME_mass_excess_keV"].notna()
-    merged["N_consistency_check"] = merged["AME_N"].isna() | (merged["N"] == merged["AME_N"])
+    # AME2020 mass table provides ground-state nuclide masses, not separate
+    # evaluated masses for every NUBASE isomer/excited level. Do not propagate
+    # a ground-state AME value onto a non-ground-state NUBASE record.
+    ame_value_columns = [c for c in ame.columns if c not in ("Z", "A")]
+    non_ground = ~merged["Ground_state_candidate"]
+    merged.loc[non_ground, ame_value_columns] = pd.NA
+    merged["AME_match"] = merged["Ground_state_candidate"] & merged["AME_mass_excess_keV"].notna()
+    merged["N_consistency_check"] = (~merged["AME_match"]) | (merged["N"] == merged["AME_N"])
     merged["U_2Z_plus_N"] = 2 * merged["Z"] + merged["N"]
     merged["D_Z_plus_2N"] = merged["Z"] + 2 * merged["N"]
     merged["C_raw_u"] = 0.012 * merged["A"]
@@ -332,7 +336,8 @@ def make_outputs(data: pd.DataFrame, nubase: pd.DataFrame, ame: pd.DataFrame) ->
         "## نطاق البيانات",
         f"- سجلات NUBASE2020 المحللة: {len(nubase):,}",
         f"- سجلات AME2020 المحللة: {len(ame):,}",
-        f"- سجلات NUBASE المطابقة مع AME2020 بالمفتاح (Z,A): {int(data['AME_match'].sum()):,}",
+        f"- سجلات NUBASE المطابقة مع AME2020 كحالات أرضية فقط: {int(data['AME_match'].sum()):,}",
+        f"- سجلات NUBASE غير الأرضية المستبعدة من مطابقة كتلة AME: {int((~data['Ground_state_candidate']).sum()):,}",
         f"- مرشحو الحالة الأرضية في NUBASE: {len(ground):,}",
         f"- مرشحو الحالة الأرضية المطابقون مع AME: {len(matched_ground):,}",
         f"- عدد العناصر ذات Z من 1 إلى 118 الموجودة في التغطية: {int(element_counts['Isotope_and_state_records'].notna().sum())}",
@@ -358,7 +363,9 @@ def make_outputs(data: pd.DataFrame, nubase: pd.DataFrame, ame: pd.DataFrame) ->
         "",
         "## قيود وتفسير",
         "- NUBASE2020 يشمل حالات أرضية ومتزامرات ومستويات وحالات خاصة؛ لا تُعامل كل السجلات كنظائر أرضية.",
-        "- State index ووسم الحالة محفوظان؛ تصنيف ground_state_candidate ترشيح آلي لا إثبات مستقل لترتيب الحالة.",
+        "- AME2020 يورد كتلة الحالة الأرضية؛ لا تُسند كتلته إلى سجلات المتزامرات/المستويات في NUBASE.",
+        "- مؤشرات NUBASE 3–6 واللاحقات p/q/r/x قد تكون مستويات أو متزامرات إضافية؛ تحفظ كحالات ملتبسة ولا يُحسم نوعها آلياً.",
+        "- State index ووسم الحالة محفوظان؛ تصنيف ground_state_candidate ترشيح وفق i=0 وليس إثباتاً مستقلاً لترتيب الحالات."
         "- علامات # و * محفوظة في أعلام مستقلة؛ القيم غير القابلة للحساب تبقى NA.",
         "- لا يُستبدل المفقود بتخمين ولا تُخلط بيانات المصدر بالقيم المشتقة.",
         "- النموذج الحسابي فرضية قيد الاختبار. لا يثبت هذا البرنامج وجود طاقة ربط جديدة أو كتلة كوارك أو آلية QCD.",
