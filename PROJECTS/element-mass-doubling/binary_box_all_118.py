@@ -50,8 +50,14 @@ def load_elements():
     with urllib.request.urlopen(request, timeout=45) as response:
         payload = json.loads(response.read().decode("utf-8"))
     elements = payload.get("elements", [])
+    # Some upstream snapshots may include a placeholder beyond the 118
+    # officially recognized elements. Keep only atomic numbers 1 through 118.
+    elements = [
+        item for item in elements
+        if 1 <= int(item.get("number", 0)) <= 118
+    ]
     if len(elements) != 118:
-        raise RuntimeError(f"Expected 118 elements; received {len(elements)}")
+        raise RuntimeError(f"Expected 118 elements after Z=1..118 filter; received {len(elements)}")
     elements.sort(key=lambda item: int(item["number"]))
     if [int(item["number"]) for item in elements] != list(range(1, 119)):
         raise RuntimeError("Atomic numbers are incomplete or duplicated")
