@@ -194,6 +194,8 @@ def run(framework_csv: Path, ame_csv: Path, output_dir: Path):
     print(corr_weighted.to_string(index=False) if not corr_weighted.empty else "No sufficient overlap.")
     print("\nDominant stable-isotope correlations:")
     print(corr_dominant.to_string(index=False) if not corr_dominant.empty else "No sufficient overlap.")
+    print("\nStable isotope ordered-Z holdout (train Z<=60, test Z>60):")
+    print(holdout_weighted.to_string(index=False) if not holdout_weighted.empty else "No sufficient overlap.")
     print("\nElements without stable nuclides or abundance are left missing; no isotope is guessed.")
     print(f"Results: {output_dir.resolve()}")
 
