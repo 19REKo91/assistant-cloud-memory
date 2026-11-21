@@ -9,16 +9,19 @@ class LevelParserTests(unittest.TestCase):
         self.assertEqual(parse_level_value("[15 867.862]"), (15867.862, "SEMIEMPIRICAL"))
         self.assertEqual(parse_level_value("(33 792.583)"), (33792.583, "THEORETICAL"))
         self.assertEqual(parse_level_value("12 345.6?"), (12345.6, "TENTATIVE"))
+        self.assertEqual(parse_level_value("76 190a"), (76190.0, "FOOTNOTED"))
 
     def test_parse_nist_ascii_level_table(self):
         raw = """<html><pre>
-Configuration | Term | J | Level (cm^-1) | Reference
+Configuration | Term | J | Level
+(cm^-1) | Reference
 --------------|------|---|---------------|----------
 2s^2 2p^4 | 3P | 2 | 0.000 | L7288
-2s^2 2p^4 | 3P | 1 | 158.265 | 
-2s^2 2p^4 | 1D | 2 | 15 867.862 | 
-2s^2 2p^4 | 1S | 0 | (33 792.583) | 
-2s^2 2p^3 3s | 5S | 2 | 73 768.200 | 
+             |    | 1 | 158.265 |
+             |    | 0 | 226.977 |
+2s^2 2p^4 | 1D | 2 | 15 867.862 |
+2s^2 2p^4 | 1S | 0 | (33 792.583) |
+2s^2 2p^3 3s | 5S | 2 | 73 768.200 |
 </pre></html>"""
         parsed = parse_levels_ascii(raw, 8, "O")
         self.assertEqual(len(parsed), 5)
@@ -27,12 +30,14 @@ Configuration | Term | J | Level (cm^-1) | Reference
 
     def test_summary_extracts_excitation_and_distinct_term_gaps(self):
         raw = """<html><pre>
-Configuration | Term | J | Level (cm^-1) | Reference
+Configuration | Term | J | Level
+(cm^-1) | Reference
 --------------|------|---|---------------|----------
 2s^2 2p^4 | 3P | 2 | 0.000 | L7288
-2s^2 2p^4 | 3P | 1 | 158.265 | 
-2s^2 2p^4 | 1D | 2 | 15 867.862 | 
-2s^2 2p^3 3s | 5S | 2 | 73 768.200 | 
+             |    | 1 | 158.265 |
+             |    | 0 | 226.977 |
+2s^2 2p^4 | 1D | 2 | 15 867.862 |
+2s^2 2p^3 3s | 5S | 2 | 73 768.200 |
 </pre></html>"""
         parsed = parse_levels_ascii(raw, 8, "O")
         summary = summarize_levels(parsed).iloc[0]
