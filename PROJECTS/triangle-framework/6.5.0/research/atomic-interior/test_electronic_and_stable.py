@@ -14,7 +14,7 @@ class ElectronicParserTests(unittest.TestCase):
         self.assertEqual(parse_energy_token("5.391714996"), (5.391714996, "MEASURED"))
         self.assertEqual(parse_energy_token("[29.60125]"), (29.60125, "SEMIEMPIRICAL"))
         self.assertEqual(parse_energy_token("(552.06741)"), (552.06741, "THEORETICAL"))
-        self.assertEqual(parse_energy_token(""), (float("nan"), "MISSING"))
+        missing_value, missing_kind = parse_energy_token("")\n        self.assertTrue(math.isnan(missing_value))\n        self.assertEqual(missing_kind, "MISSING")
 
     def test_parse_shell_occupancy(self):
         self.assertEqual(parse_shells("1s^2 2s^2 2p^6 3s^1"), (3, 1))
