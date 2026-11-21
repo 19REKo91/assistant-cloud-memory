@@ -65,7 +65,10 @@ def parse_nist_tsv(text, energy_kind="ionization"):
         try:
             tables = pd.read_html(StringIO(text), flavor='lxml')
         except ValueError as exc:
-            raise ValueError(f"NIST HTML contained no readable data table: {exc}") from exc
+            raise ValueError(
+                f"NIST HTML contained no readable data table: {exc}. "
+                f"Response starts: {text[:1800]}"
+            ) from exc
         for candidate in tables:
             if isinstance(candidate.columns, pd.MultiIndex):
                 candidate.columns = [
@@ -146,8 +149,6 @@ def fetch_nist(energy_kind="ionization"):
     params = {
         "spectra": "H-Og I-III" if energy_kind == "ionization" else "H-Og I",
         "units": "1",              # eV
-        "format": "0",             # formatted HTML table
-        "output": "0",             # all results
         "at_num_out": "on",
         "el_name_out": "on",
         "ion_charge_out": "on",
@@ -156,7 +157,6 @@ def fetch_nist(energy_kind="ionization"):
         "unc_out": "on",
         "biblio": "off",
         "e_out": "1" if energy_kind == "binding" else "0",
-        "submit": "Retrieve Data",
     }
     response = requests.get(
         NIST_IE_URL, params=params, timeout=120,
