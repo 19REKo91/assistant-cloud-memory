@@ -35,7 +35,7 @@ jobs:
 
       - name: Run parser and calculation tests
         working-directory: PROJECTS/triangle-framework/6.5.0/research/atomic-interior
-        run: python -m unittest -v test_search.py test_electronic_and_stable.py test_levels_search.py
+        run: python -m unittest -v test_search.py test_electronic_and_stable.py test_levels_search.py test_zeff_search.py
 
       - name: Run AME2020 nuclear relationship search
         run: >-
@@ -53,6 +53,12 @@ jobs:
       - name: Run NIST ASD electronic relationship search
         run: >-
           python PROJECTS/triangle-framework/6.5.0/research/atomic-interior/electronic_search.py
+          --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
+          --out atomic-interior-results
+
+      - name: Run effective nuclear charge estimates
+        run: >-
+          python PROJECTS/triangle-framework/6.5.0/research/atomic-interior/zeff_search.py
           --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
           --out atomic-interior-results
 
