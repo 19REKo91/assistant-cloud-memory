@@ -27,6 +27,13 @@ class EffectiveNuclearChargeTests(unittest.TestCase):
         self.assertEqual(n, 3.0)
         self.assertGreater(zeff, 0)
 
+    def test_same_principal_shell_sp_group(self):
+        config = parse_configuration("1s2 2s2 2p6 3s2 3p5")
+        zeff, shielding, subshell, n = slater_zeff(config)
+        self.assertEqual(subshell, "3p")
+        self.assertAlmostEqual(shielding, 10.90)
+        self.assertAlmostEqual(zeff, 6.10)
+
     def test_transition_metal_configuration(self):
         config = parse_configuration("[Ar] 3d6 4s2")
         self.assertEqual(sum(config.values()), 26)
