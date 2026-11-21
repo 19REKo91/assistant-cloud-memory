@@ -132,6 +132,40 @@ def make_report(joined, suffix="_abundance_weighted"):
         })
     return pd.DataFrame(rows)
 
+def holdout_report(joined, suffix="_abundance_weighted"):
+    """Compare angle-only, Z-only, and Z+angle predictions on unseen high-Z elements."""
+    measured = joined[joined["Data_Quality"].str.upper() == "MEASURED"].copy()
+    rows = []
+    for prop in PROPERTIES:
+        col = prop + suffix
+        if col not in measured:
+            continue
+        data = measured[["Z", "theta3", col]].dropna()
+        train, test = data[data["Z"] <= 60], data[data["Z"] > 60]
+        if len(train) < 8 or len(test) < 5:
+            rows.append({"property": col, "train_n": len(train), "test_n": len(test),
+                         "model": "INSUFFICIENT_COVERAGE", "MAE": np.nan,
+                         "RMSE": np.nan, "R2": np.nan})
+            continue
+        y_train = train[col].to_numpy()
+        y_test = test[col].to_numpy()
+        for model_name, predictors in [
+            ("Z_only", ["Z"]),
+            ("theta3_only", ["theta3"]),
+            ("Z_plus_theta3", ["Z", "theta3"]),
+        ]:
+            x_train = np.column_stack([np.ones(len(train))] + [train[k].to_numpy() for k in predictors])
+            x_test = np.column_stack([np.ones(len(test))] + [test[k].to_numpy() for k in predictors])
+            coefficients = np.linalg.lstsq(x_train, y_train, rcond=None)[0]
+            prediction = x_test @ coefficients
+            mae = float(np.mean(np.abs(y_test - prediction)))
+            rmse = float(np.sqrt(np.mean((y_test - prediction) ** 2)))
+            denominator = float(np.sum((y_test - y_test.mean()) ** 2))
+            r2 = float(1 - np.sum((y_test - prediction) ** 2) / denominator) if denominator else np.nan
+            rows.append({"property": col, "train_n": len(train), "test_n": len(test),
+                         "model": model_name, "MAE": mae, "RMSE": rmse, "R2": r2})
+    return pd.DataFrame(rows)
+
 def run(framework_csv: Path, ame_csv: Path, output_dir: Path):
     from search import calculate_closure_angles
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -143,12 +177,16 @@ def run(framework_csv: Path, ame_csv: Path, output_dir: Path):
     joined = angles.merge(summary, on="Z", how="left")
     corr_weighted = make_report(joined, "_abundance_weighted")
     corr_dominant = make_report(joined, "_dominant")
+    holdout_weighted = holdout_report(joined, "_abundance_weighted")
+    holdout_dominant = holdout_report(joined, "_dominant")
 
     stable_rows.to_csv(output_dir / "NUBASE2020_stable_ground_states.csv", index=False)
     summary.to_csv(output_dir / "stable_isotope_element_summary.csv", index=False)
     joined.to_csv(output_dir / "element_angle_stable_isotope_summary.csv", index=False)
     corr_weighted.to_csv(output_dir / "stable_isotope_weighted_correlations.csv", index=False)
     corr_dominant.to_csv(output_dir / "dominant_stable_isotope_correlations.csv", index=False)
+    holdout_weighted.to_csv(output_dir / "stable_isotope_weighted_holdout.csv", index=False)
+    holdout_dominant.to_csv(output_dir / "dominant_stable_isotope_holdout.csv", index=False)
 
     print(f"NUBASE2020 stable ground-state nuclides parsed: {len(nubase)}")
     print(f"Elements with stable nuclides and reported abundance: {len(summary)}")
