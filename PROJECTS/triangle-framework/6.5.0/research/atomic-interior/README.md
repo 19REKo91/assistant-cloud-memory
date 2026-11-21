@@ -60,7 +60,7 @@ The workflow now also:
 - Uses NUBASE natural isotopic abundances to compute an abundance-weighted nuclear-property mean for each element, and reports the most abundant stable isotope separately.
 - Leaves elements without stable nuclides or without a reported natural abundance missing.
 - Queries NIST ASD 5.12 for sequential ionization energies across elements, plus neutral ground-state shell configurations. Total electronic binding is derived only when all Z sequential stages are present.
-- Keeps NIST provenance classes separate: unmarked values (evaluated experimental), square-bracketed values (semi-empirical/interpolated), and parenthesized values (theoretical).
+- Keeps NIST provenance classes separate: unmarked values (evaluated experimental data), square-bracketed values (semi-empirical/interpolated), and parenthesized values (ab-initio/theoretical).
 - Tests IE1, IE2, IE3, their strict measured sum, neutral total binding energy, occupied principal-shell count, and outermost-shell electron occupancy against the 6.5.0 closure angle.
 - Reports Pearson, Spearman, partial correlation after controlling for Z, and an ordered-Z holdout (train Z <= 60, test Z > 60) comparing Z-only, angle-only, and Z-plus-angle models.
 
