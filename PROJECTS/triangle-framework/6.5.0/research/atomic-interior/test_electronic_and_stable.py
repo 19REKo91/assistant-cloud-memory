@@ -13,7 +13,7 @@ from stable_isotope_search import parse_nubase2020, build_stable_isotope_summary
 
 class ElectronicParserTests(unittest.TestCase):
     def test_nist_provenance_qualifiers(self):
-        self.assertEqual(parse_energy_token("5.391714996"), (5.391714996, "MEASURED"))
+        self.assertEqual(parse_energy_token("5.391714996"), (5.391714996, "EVALUATED"))
         self.assertEqual(parse_energy_token("[29.60125]"), (29.60125, "SEMIEMPIRICAL"))
         self.assertEqual(parse_energy_token("(552.06741)"), (552.06741, "THEORETICAL"))
         missing_value, missing_kind = parse_energy_token("")
@@ -35,7 +35,7 @@ class ElectronicParserTests(unittest.TestCase):
         )
         parsed = parse_nist_tsv(raw)
         self.assertEqual(len(parsed), 3)
-        self.assertEqual(parsed.iloc[0]["provenance"], "MEASURED")
+        self.assertEqual(parsed.iloc[0]["provenance"], "EVALUATED")
         self.assertEqual(parsed.iloc[1]["provenance"], "SEMIEMPIRICAL")
         self.assertEqual(parsed.iloc[2]["provenance"], "THEORETICAL")
         self.assertEqual(parsed.iloc[0]["ion_charge"], 0)
@@ -66,7 +66,7 @@ At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Ene
 
     def test_sequential_summary_separates_provenance(self):
         ion = pd.DataFrame([
-            {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "MEASURED",
+            {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "EVALUATED",
              "ground_shells": "1s2 2s1", "occupied_principal_shell_count": 2,
              "outermost_shell_electron_count": 1},
             {"Z": 3, "ion_charge": 1, "energy_eV": 75.6, "provenance": "SEMIEMPIRICAL",
@@ -77,28 +77,28 @@ At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Ene
              "outermost_shell_electron_count": 1},
         ])
         summary = electronic_element_summary(ion).iloc[0]
-        self.assertEqual(summary["IE1_measured_eV"], 5.39)
-        self.assertTrue(pd.isna(summary["IE2_measured_eV"]))
-        self.assertTrue(pd.isna(summary["IE1_to_IE3_sum_measured_eV"]))
-        self.assertTrue(pd.isna(summary["total_binding_neutral_measured_eV"]))
-        self.assertTrue(pd.isna(summary["total_binding_neutral_incl_semie_eV"]))
+        self.assertEqual(summary["IE1_evaluated_eV"], 5.39)
+        self.assertTrue(pd.isna(summary["IE2_evaluated_eV"]))
+        self.assertTrue(pd.isna(summary["IE1_to_IE3_sum_evaluated_eV"]))
+        self.assertTrue(pd.isna(summary["total_binding_neutral_all_evaluated_eV"]))
+        self.assertTrue(pd.isna(summary["total_binding_neutral_evaluated_plus_semie_eV"]))
         self.assertAlmostEqual(summary["total_binding_neutral_all_stages_mixed_eV"], 203.39)
         self.assertEqual(summary["IE_stage_coverage_fraction"], 1.0)
 
-    def test_total_binding_is_derived_only_with_complete_measured_stages(self):
+    def test_total_binding_is_derived_only_with_complete_evaluated_stages(self):
         ion = pd.DataFrame([
-            {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "MEASURED",
+            {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "EVALUATED",
              "ground_shells": "1s2 2s1", "occupied_principal_shell_count": 2,
              "outermost_shell_electron_count": 1},
-            {"Z": 3, "ion_charge": 1, "energy_eV": 75.64, "provenance": "MEASURED",
+            {"Z": 3, "ion_charge": 1, "energy_eV": 75.64, "provenance": "EVALUATED",
              "ground_shells": "1s2", "occupied_principal_shell_count": 1,
              "outermost_shell_electron_count": 2},
-            {"Z": 3, "ion_charge": 2, "energy_eV": 122.45, "provenance": "MEASURED",
+            {"Z": 3, "ion_charge": 2, "energy_eV": 122.45, "provenance": "EVALUATED",
              "ground_shells": "1s1", "occupied_principal_shell_count": 1,
              "outermost_shell_electron_count": 1},
         ])
         summary = electronic_element_summary(ion).iloc[0]
-        self.assertAlmostEqual(summary["total_binding_neutral_measured_eV"], 203.48)
+        self.assertAlmostEqual(summary["total_binding_neutral_all_evaluated_eV"], 203.48)
         self.assertAlmostEqual(summary["total_binding_neutral_all_stages_mixed_eV"], 203.48)
         self.assertTrue(summary["total_binding_is_complete"])
 
