@@ -46,7 +46,7 @@ def parse_shells(shells):
     core_shells = {"He": 1, "Ne": 2, "Ar": 3, "Kr": 4, "Cd": 5, "Xe": 5, "Hg": 6, "Rn": 6, "Og": 7}
     core_match = re.search(r"\[(He|Ne|Ar|Kr|Cd|Xe|Hg|Rn|Og)\]", s, flags=re.I)
     core_count = core_shells.get(core_match.group(1).title(), 0) if core_match else 0
-    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*(\d*)", s, flags=re.I)
+    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*\{?\s*(\d*)\s*\}?", s, flags=re.I)
     if not tokens and not core_match:
         return np.nan, np.nan
     ns = [int(t[0]) for t in tokens]
@@ -177,28 +177,62 @@ def parse_nist_tsv(text, energy_kind="ionization"):
     out["Z"] = out["Z"].astype(int)
     out["ion_charge"] = pd.to_numeric(out["ion_charge"], errors="coerce")
     return out
-def fetch_nist(energy_kind="ionization"):
+ELEMENT_SYMBOLS = ["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"]
+
+def fetch_nist_batch(symbols, energy_kind="ionization"):
+    """Fetch one NIST ASD batch. Symbols are semicolon-separated per NIST GSIE syntax."""
+    if energy_kind == "binding":
+        spectra = ";".join(f"{symbol} I" for symbol in symbols)
+    else:
+        spectra = ";".join(symbols)  # no stage means all ionization stages
     params = {
-        "spectra": "H-Og" if energy_kind == "ionization" else "H-Og I",
+        "spectra": spectra,
         "units": "1",              # eV
         "format": "1",             # ASCII pipe-delimited output
         "at_num_out": "on",
         "el_name_out": "on",
-        "ion_charge_out": "on",
         "seq_out": "on",
         "shells_out": "on",
+        "level_out": "on",
         "unc_out": "on",
-        "biblio": "off",
+        "biblio": "on",
         "e_out": "1" if energy_kind == "binding" else "0",
     }
     response = requests.get(
         NIST_IE_URL, params=params, timeout=120,
-        headers={"User-Agent": "AtomicInteriorResearch/1.0 (academic exploratory analysis)"}
+        headers={"User-Agent": "AtomicInteriorResearch/1.0 (research data analysis)"}
     )
     response.raise_for_status()
     if len(response.text) < 1000:
         raise ValueError(f"NIST response unexpectedly short ({len(response.text)} chars): {response.text[:500]}")
     return parse_nist_tsv(response.text, energy_kind=energy_kind)
+
+def fetch_nist_all(symbols, energy_kind="ionization", batch_size=10):
+    """Fetch NIST in modest semicolon-separated batches; isolate failed symbols."""
+    frames, errors = [], []
+    batches = [symbols[i:i + batch_size] for i in range(0, len(symbols), batch_size)]
+
+    def fetch_or_split(batch):
+        try:
+            frame = fetch_nist_batch(batch, energy_kind)
+            return [frame]
+        except Exception as exc:
+            if len(batch) == 1:
+                errors.append({"symbol": batch[0], "energy_kind": energy_kind, "error": str(exc)[:500]})
+                print(f"   NIST missing/error for {batch[0]} ({energy_kind}): {type(exc).__name__}")
+                return []
+            midpoint = len(batch) // 2
+            return fetch_or_split(batch[:midpoint]) + fetch_or_split(batch[midpoint:])
+
+    for index, batch in enumerate(batches):
+        if index:
+            time.sleep(1.0)
+        frames.extend(fetch_or_split(batch))
+    nonempty = [frame for frame in frames if frame is not None and not frame.empty]
+    if not nonempty:
+        raise RuntimeError(f"NIST returned no parseable {energy_kind} data for any element.")
+    return pd.concat(nonempty, ignore_index=True), pd.DataFrame(errors)
+
 
 def electronic_element_summary(ionization, binding):
     rows = []
@@ -287,23 +321,25 @@ def run(framework_csv: Path, output_dir: Path):
     output_dir.mkdir(parents=True, exist_ok=True)
     framework = pd.read_csv(framework_csv)
     angles = calculate_closure_angles(framework)
-    print("Downloading NIST ASD 5.12 sequential ionization energies...")
-    ionization = fetch_nist("ionization")
-    time.sleep(1.0)
-    print("Downloading NIST ASD 5.12 neutral total binding energies...")
-    binding = fetch_nist("binding")
+    print("Downloading NIST ASD 5.12 sequential ionization energies in element batches...")
+    ionization, ion_errors = fetch_nist_all(ELEMENT_SYMBOLS, "ionization")
+    print("Downloading NIST ASD 5.12 neutral total binding energies in element batches...")
+    binding, binding_errors = fetch_nist_all(ELEMENT_SYMBOLS, "binding")
+    fetch_errors = pd.concat([ion_errors, binding_errors], ignore_index=True)
     summary = electronic_element_summary(ionization, binding)
     joined = angles.merge(summary, on="Z", how="left")
     correlations, holdout = make_reports(joined)
 
     ionization.to_csv(output_dir / "NIST_ASD_ionization_all_stages.csv", index=False)
     binding.to_csv(output_dir / "NIST_ASD_total_binding_all_stages.csv", index=False)
+    fetch_errors.to_csv(output_dir / "NIST_ASD_fetch_errors.csv", index=False)
     joined.to_csv(output_dir / "element_angle_electronic_summary.csv", index=False)
     correlations.to_csv(output_dir / "electronic_correlations.csv", index=False)
     holdout.to_csv(output_dir / "electronic_ordered_Z_holdout.csv", index=False)
 
     print(f"NIST ionization records parsed: {len(ionization)}")
     print(f"NIST total-binding records parsed: {len(binding)}")
+    print(f"NIST element/batch errors retained in CSV: {len(fetch_errors)}")
     print("\nElectronic correlations (MEASURED framework elements):")
     print(correlations.to_string(index=False) if not correlations.empty else "No sufficient overlap.")
     print("\nOrdered-Z holdout: train Z<=60; test Z>60")
