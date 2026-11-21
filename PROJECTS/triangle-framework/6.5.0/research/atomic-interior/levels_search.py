@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import html
 import re
+from io import StringIO
 import time
 from pathlib import Path
 
@@ -19,6 +20,7 @@ import requests
 from scipy.stats import pearsonr, spearmanr
 
 NIST_LEVELS_URL = "https://physics.nist.gov/cgi-bin/ASD/energy1.pl"
+PERIODIC_TABLE_URL = "https://raw.githubusercontent.com/Bluegrams/periodic-table-data/master/Periodica.Data/Data/ElementData.csv"
 
 def parse_level_value(value):
     raw = str(value).strip().replace(",", "").replace("−", "-")
@@ -202,9 +204,61 @@ def _partial_corr(x, y, z):
         return np.nan
     return float(np.corrcoef(rx, ry)[0, 1])
 
+def fetch_periodic_controls():
+    """Independent period/block metadata; used only as statistical controls."""
+    response = requests.get(PERIODIC_TABLE_URL, timeout=60)
+    response.raise_for_status()
+    table = pd.read_csv(StringIO(response.text))
+    required = ["AtomicNumber", "Period", "Block"]
+    missing = set(required) - set(table.columns)
+    if missing:
+        raise ValueError(f"Periodic-table control source missing columns: {sorted(missing)}")
+    out = table[required].rename(columns={
+        "AtomicNumber": "Z", "Period": "Period", "Block": "Block"
+    })
+    out["Z"] = pd.to_numeric(out["Z"], errors="coerce")
+    out["Period"] = pd.to_numeric(out["Period"], errors="coerce")
+    out["Block"] = out["Block"].astype(str).str.lower()
+    return out.dropna(subset=["Z", "Period"]).drop_duplicates("Z")
+
+def _partial_corr_controls(frame, ycol, xcol, numeric_controls, categorical_controls):
+    cols = [ycol, xcol] + numeric_controls + categorical_controls
+    d = frame[cols].dropna().copy()
+    if len(d) < 8:
+        return np.nan, len(d)
+    matrices = [np.ones(len(d))]
+    for col in numeric_controls:
+        matrices.append(pd.to_numeric(d[col], errors="coerce").to_numpy())
+    for col in categorical_controls:
+        dummies = pd.get_dummies(d[col], drop_first=True, dtype=float)
+        matrices.extend(dummies[c].to_numpy() for c in dummies.columns)
+    X = np.column_stack(matrices)
+    x, y = d[xcol].to_numpy(), d[ycol].to_numpy()
+    rx = x - X @ np.linalg.lstsq(X, x, rcond=None)[0]
+    ry = y - X @ np.linalg.lstsq(X, y, rcond=None)[0]
+    if np.std(rx) == 0 or np.std(ry) == 0:
+        return np.nan, len(d)
+    return float(np.corrcoef(rx, ry)[0, 1]), len(d)
+
+def _design_with_block(train, test, include_angle):
+    numeric = ["Z", "Period", "outermost_shell_electron_count"]
+    train_blocks = pd.get_dummies(train["Block"], drop_first=True, dtype=float)
+    test_blocks = pd.get_dummies(test["Block"], drop_first=True, dtype=float).reindex(
+        columns=train_blocks.columns, fill_value=0
+    )
+    x_train = [np.ones(len(train))] + [train[c].astype(float).to_numpy() for c in numeric]
+    x_test = [np.ones(len(test))] + [test[c].astype(float).to_numpy() for c in numeric]
+    x_train.extend(train_blocks[c].to_numpy() for c in train_blocks.columns)
+    x_test.extend(test_blocks[c].to_numpy() for c in train_blocks.columns)
+    if include_angle:
+        x_train.append(train["theta3"].astype(float).to_numpy())
+        x_test.append(test["theta3"].astype(float).to_numpy())
+    return np.column_stack(x_train), np.column_stack(x_test)
+
+
 def reports(joined):
     measured = joined[joined["Data_Quality"].str.upper() == "MEASURED"].copy()
-    corr, holdout = [], []
+    corr, holdout, log_corr, block_corr, rolling = [], [], [], [], []
     for prop in PROPERTIES:
         d = measured[["Z", "theta3", prop]].dropna()
         if len(d) >= 5 and d[prop].nunique() > 1:
@@ -215,25 +269,71 @@ def reports(joined):
                 "partial_r_after_Z": _partial_corr(d["theta3"], d[prop], d["Z"]),
             })
         train, test = d[d["Z"] <= 60], d[d["Z"] > 60]
-        if len(train) < 8 or len(test) < 5:
-            holdout.append({"property": prop, "train_n": len(train), "test_n": len(test),
-                            "model": "INSUFFICIENT_COVERAGE", "MAE": np.nan, "RMSE": np.nan, "R2": np.nan})
+        if len(train) >= 8 and len(test) >= 5:
+            y_train, y_test = train[prop].to_numpy(), test[prop].to_numpy()
+            for model_name, predictors in [
+                ("Z_only", ["Z"]), ("theta3_only", ["theta3"]), ("Z_plus_theta3", ["Z", "theta3"])
+            ]:
+                X = np.column_stack([np.ones(len(train))] + [train[k].to_numpy() for k in predictors])
+                Xt = np.column_stack([np.ones(len(test))] + [test[k].to_numpy() for k in predictors])
+                coef = np.linalg.lstsq(X, y_train, rcond=None)[0]
+                pred = Xt @ coef
+                mae = float(np.mean(np.abs(y_test - pred)))
+                rmse = float(np.sqrt(np.mean((y_test - pred) ** 2)))
+                den = float(np.sum((y_test - y_test.mean()) ** 2))
+                r2 = float(1 - np.sum((y_test - pred) ** 2) / den) if den else np.nan
+                holdout.append({"property": prop, "train_n": len(train), "test_n": len(test),
+                                "model": model_name, "MAE": mae, "RMSE": rmse, "R2": r2})
+
+        # Log-energy analysis: energy gaps span orders of magnitude.
+        if "gap" not in prop and "median_first5" not in prop:
             continue
-        y_train, y_test = train[prop].to_numpy(), test[prop].to_numpy()
-        for model_name, predictors in [
-            ("Z_only", ["Z"]), ("theta3_only", ["theta3"]), ("Z_plus_theta3", ["Z", "theta3"])
-        ]:
-            X = np.column_stack([np.ones(len(train))] + [train[k].to_numpy() for k in predictors])
-            Xt = np.column_stack([np.ones(len(test))] + [test[k].to_numpy() for k in predictors])
-            coef = np.linalg.lstsq(X, y_train, rcond=None)[0]
-            pred = Xt @ coef
-            mae = float(np.mean(np.abs(y_test - pred)))
-            rmse = float(np.sqrt(np.mean((y_test - pred) ** 2)))
-            den = float(np.sum((y_test - y_test.mean()) ** 2))
-            r2 = float(1 - np.sum((y_test - pred) ** 2) / den) if den else np.nan
-            holdout.append({"property": prop, "train_n": len(train), "test_n": len(test),
-                            "model": model_name, "MAE": mae, "RMSE": rmse, "R2": r2})
-    return pd.DataFrame(corr), pd.DataFrame(holdout)
+        log_data = measured[["Z", "theta3", "Period", "Block",
+                             "outermost_shell_electron_count", prop]].dropna().copy()
+        log_data = log_data[log_data[prop] > 0]
+        if len(log_data) < 10:
+            continue
+        log_col = "log10_" + prop
+        log_data[log_col] = np.log10(log_data[prop])
+        log_corr.append({
+            "property": log_col, "N_elements": len(log_data),
+            "Pearson_r": float(pearsonr(log_data["theta3"], log_data[log_col]).statistic),
+            "Spearman_rho": float(spearmanr(log_data["theta3"], log_data[log_col]).statistic),
+            "partial_r_after_Z": _partial_corr(log_data["theta3"], log_data[log_col], log_data["Z"]),
+            "partial_r_after_Z_period_block_shell": _partial_corr_controls(
+                log_data, log_col, "theta3",
+                ["Z", "Period", "outermost_shell_electron_count"], ["Block"]
+            )[0],
+        })
+        for block, group in log_data.groupby("Block"):
+            if len(group) >= 5 and group[log_col].nunique() > 1:
+                block_corr.append({
+                    "property": log_col, "block": block, "N_elements": len(group),
+                    "Pearson_r": float(pearsonr(group["theta3"], group[log_col]).statistic),
+                    "Spearman_rho": float(spearmanr(group["theta3"], group[log_col]).statistic),
+                    "partial_r_after_Z": _partial_corr(group["theta3"], group[log_col], group["Z"]),
+                })
+        for cutoff in (40, 50, 60, 70):
+            tr, te = log_data[log_data["Z"] <= cutoff], log_data[log_data["Z"] > cutoff]
+            if len(tr) < 20 or len(te) < 10:
+                continue
+            ytr, yte = tr[log_col].to_numpy(), te[log_col].to_numpy()
+            for model_name, include_angle in (("Z_period_shell_block", False),
+                                               ("Z_period_shell_block_plus_theta3", True)):
+                X, Xt = _design_with_block(tr, te, include_angle)
+                coef = np.linalg.lstsq(X, ytr, rcond=None)[0]
+                pred = Xt @ coef
+                mae = float(np.mean(np.abs(yte - pred)))
+                rmse = float(np.sqrt(np.mean((yte - pred) ** 2)))
+                den = float(np.sum((yte - yte.mean()) ** 2))
+                r2 = float(1 - np.sum((yte - pred) ** 2) / den) if den else np.nan
+                rolling.append({
+                    "property": log_col, "Z_train_max": cutoff,
+                    "train_n": len(tr), "test_n": len(te), "model": model_name,
+                    "MAE_log10": mae, "RMSE_log10": rmse, "R2": r2
+                })
+    return (pd.DataFrame(corr), pd.DataFrame(holdout), pd.DataFrame(log_corr),
+            pd.DataFrame(block_corr), pd.DataFrame(rolling))
 
 def run(framework_csv: Path, output_dir: Path):
     from search import calculate_closure_angles
@@ -255,14 +355,19 @@ def run(framework_csv: Path, output_dir: Path):
         raise RuntimeError("NIST Levels returned no parseable neutral-atom data.")
     levels = pd.concat(all_rows, ignore_index=True)
     summary = summarize_levels(levels)
-    joined = angles.merge(summary, on="Z", how="left")
-    corr, holdout = reports(joined)
+    periodic = fetch_periodic_controls()
+    joined = angles.merge(summary, on="Z", how="left").merge(periodic, on="Z", how="left")
+    corr, holdout, log_corr, block_corr, rolling = reports(joined)
 
     levels.to_csv(output_dir / "NIST_ASD_neutral_energy_levels.csv", index=False)
     summary.to_csv(output_dir / "NIST_ASD_neutral_level_summary.csv", index=False)
     joined.to_csv(output_dir / "element_angle_level_summary.csv", index=False)
     corr.to_csv(output_dir / "level_correlations.csv", index=False)
     holdout.to_csv(output_dir / "level_ordered_Z_holdout.csv", index=False)
+    log_corr.to_csv(output_dir / "level_log_correlations.csv", index=False)
+    block_corr.to_csv(output_dir / "level_block_correlations.csv", index=False)
+    rolling.to_csv(output_dir / "level_rolling_Z_holdout_with_block_controls.csv", index=False)
+    periodic.to_csv(output_dir / "periodic_table_block_controls.csv", index=False)
     pd.DataFrame(errors).to_csv(output_dir / "NIST_ASD_level_fetch_errors.csv", index=False)
 
     print(f"NIST neutral level rows parsed: {len(levels)}")
@@ -272,6 +377,12 @@ def run(framework_csv: Path, output_dir: Path):
     print(corr.to_string(index=False) if not corr.empty else "No sufficient overlap.")
     print("\nOrdered-Z holdout: train Z<=60; test Z>60")
     print(holdout.to_string(index=False) if not holdout.empty else "No sufficient overlap.")
+    print("\nLog-gap correlations, including block-adjusted partial correlations:")
+    print(log_corr.to_string(index=False) if not log_corr.empty else "No sufficient overlap.")
+    print("\nBlock-specific log-gap correlations:")
+    print(block_corr.to_string(index=False) if not block_corr.empty else "No sufficient overlap.")
+    print("\nRolling high-Z holdout with period/block/shell controls:")
+    print(rolling.to_string(index=False) if not rolling.empty else "No sufficient overlap.")
     print("Only unmarked evaluated levels enter strict evaluated-gap metrics; bracketed and theoretical values remain separate.")
     print(f"Results: {output_dir.resolve()}")
 
