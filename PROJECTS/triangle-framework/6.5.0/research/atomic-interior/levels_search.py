@@ -34,6 +34,10 @@ def parse_level_value(value):
     if raw.endswith(("?", "†")):
         kind = "TENTATIVE"
         raw = raw[:-1].strip()
+    footnote = re.fullmatch(r"([0-9][0-9.\s]*)([a-z]+)", raw, flags=re.I)
+    if footnote:
+        kind = "FOOTNOTED"
+        raw = footnote.group(1)
     raw = re.sub(r"\s+", "", raw)
     try:
         return float(raw), kind
@@ -46,7 +50,7 @@ def _norm(value):
 def parse_levels_ascii(text, z, symbol):
     """Parse NIST ASD ASCII pipe table for one neutral spectrum."""
     plain = html.unescape(re.sub(r"<[^>]+>", "", text))
-    lines = [line.strip() for line in plain.splitlines() if line.strip()]
+    lines = [line.rstrip("\r\n") for line in plain.splitlines() if line.strip()]
     header_idx = None
     for i, line in enumerate(lines):
         normalized = _norm(line)
@@ -55,7 +59,11 @@ def parse_levels_ascii(text, z, symbol):
             break
     if header_idx is None:
         raise ValueError(f"NIST levels table header not found for {symbol}. Response: {plain[:1200]}")
-    header = [cell.strip() for cell in lines[header_idx].strip("|").split("|")]
+    header = [cell.strip() for cell in lines[header_idx].split("|")]
+    while header and header[0] == "":
+        header = header[1:]
+    while header and header[-1] == "":
+        header = header[:-1]
     level_idx = None
     conf_idx = None
     term_idx = None
@@ -78,7 +86,12 @@ def parse_levels_ascii(text, z, symbol):
             if rows:
                 break
             continue
-        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        cells = [cell.strip() for cell in line.split("|")]
+        if len(cells) > len(header):
+            while len(cells) > len(header) and cells[0] == "":
+                cells = cells[1:]
+            while len(cells) > len(header) and cells[-1] == "":
+                cells = cells[:-1]
         if not cells or all(set(cell) <= {"-", " "} for cell in cells):
             continue
         if len(cells) < len(header):
@@ -95,6 +108,10 @@ def parse_levels_ascii(text, z, symbol):
     result = pd.DataFrame(rows)
     if result.empty:
         raise ValueError(f"NIST returned no parseable levels for {symbol}.")
+    # NIST suppresses repeated configuration/term labels on consecutive fine-structure rows.
+    # Forward-fill those two grouped columns only; do not fill J, energy, or reference fields.
+    for column in ("configuration", "term"):
+        result[column] = result[column].replace("", np.nan).ffill().fillna("")
     return result
 
 def fetch_levels(symbol, z):
@@ -131,7 +148,7 @@ def summarize_levels(levels):
         ground = numeric.loc[numeric["level_cm1"].idxmin()]
         evaluated = numeric[numeric["provenance"] == "EVALUATED"]
         semi = numeric[numeric["provenance"].isin(["EVALUATED", "SEMIEMPIRICAL"])]
-        all_sources = numeric[numeric["provenance"].isin(["EVALUATED", "SEMIEMPIRICAL", "THEORETICAL", "TENTATIVE"])]
+        all_sources = numeric[numeric["provenance"].isin(["EVALUATED", "SEMIEMPIRICAL", "THEORETICAL", "TENTATIVE", "FOOTNOTED"])]
         def distinct_gap(source, field):
             d = source[(source["level_cm1"] > 0) & (source[field].astype(str) != str(ground[field]))]
             return float(d["level_cm1"].min()) if len(d) else np.nan
@@ -150,6 +167,7 @@ def summarize_levels(levels):
             "semie_level_count": int((numeric["provenance"] == "SEMIEMPIRICAL").sum()),
             "theoretical_level_count": int((numeric["provenance"] == "THEORETICAL").sum()),
             "tentative_level_count": int((numeric["provenance"] == "TENTATIVE").sum()),
+            "footnoted_level_count": int((numeric["provenance"] == "FOOTNOTED").sum()),
             "evaluated_levels_below_10000_cm1": int(((evaluated["level_cm1"] > 0) & (evaluated["level_cm1"] <= 10000)).sum()),
             "evaluated_levels_below_20000_cm1": int(((evaluated["level_cm1"] > 0) & (evaluated["level_cm1"] <= 20000)).sum()),
             "total_numeric_level_rows": int(len(numeric)),
