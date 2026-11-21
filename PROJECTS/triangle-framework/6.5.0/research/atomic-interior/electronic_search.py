@@ -163,8 +163,8 @@ def fetch_nist(energy_kind="ionization"):
         headers={"User-Agent": "AtomicInteriorResearch/1.0 (academic exploratory analysis)"}
     )
     response.raise_for_status()
-    if "<html" in response.text[:500].lower() and "\t" not in response.text[:2000]:
-        raise ValueError("NIST did not return tab-delimited output; inspect the saved response.")
+    if len(response.text) < 1000:
+        raise ValueError(f"NIST response unexpectedly short ({len(response.text)} chars): {response.text[:500]}")
     return parse_nist_tsv(response.text, energy_kind=energy_kind)
 
 def electronic_element_summary(ionization, binding):
