@@ -356,7 +356,17 @@ def run(framework_csv: Path, output_dir: Path):
     levels = pd.concat(all_rows, ignore_index=True)
     summary = summarize_levels(levels)
     periodic = fetch_periodic_controls()
-    joined = angles.merge(summary, on="Z", how="left").merge(periodic, on="Z", how="left")
+    electronic_path = output_dir / "element_angle_electronic_summary.csv"
+    if not electronic_path.exists():
+        raise FileNotFoundError(
+            "Run electronic_search.py first; its NIST neutral shell summary is required as a control."
+        )
+    electronic = pd.read_csv(electronic_path)
+    joined = (
+        angles.merge(summary, on="Z", how="left")
+        .merge(periodic, on="Z", how="left")
+        .merge(electronic[["Z", "outermost_shell_electron_count"]], on="Z", how="left")
+    )
     corr, holdout, log_corr, block_corr, rolling = reports(joined)
 
     levels.to_csv(output_dir / "NIST_ASD_neutral_energy_levels.csv", index=False)
