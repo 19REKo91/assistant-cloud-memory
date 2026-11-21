@@ -179,7 +179,7 @@ def parse_nist_tsv(text, energy_kind="ionization"):
     return out
 def fetch_nist(energy_kind="ionization"):
     params = {
-        "spectra": "H-Og I-III" if energy_kind == "ionization" else "H-Og I",
+        "spectra": "H-Og" if energy_kind == "ionization" else "H-Og I",
         "units": "1",              # eV
         "format": "1",             # ASCII pipe-delimited output
         "at_num_out": "on",
