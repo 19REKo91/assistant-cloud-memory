@@ -50,3 +50,38 @@ The GitHub Actions run uploads these files as an artifact named `atomic-interior
 
 
 The GitHub Actions workflow also starts on pushes affecting this research folder or the unchanged 6.5.0 input CSV; it remains manually runnable through `workflow_dispatch`.
+
+
+## Phase 2 — isotope-aware nuclear and electronic properties
+
+The workflow now also:
+
+- Downloads NUBASE2020 and selects **ground-state stable nuclides only** (`stbl`); isomers and radioactive nuclides are not silently mixed into this subset.
+- Uses NUBASE natural isotopic abundances to compute an abundance-weighted nuclear-property mean for each element, and reports the most abundant stable isotope separately.
+- Leaves elements without stable nuclides or without a reported natural abundance missing.
+- Queries NIST ASD 5.12 for sequential ionization energies and neutral total electron binding energies in eV, plus neutral ground-state shell configurations.
+- Keeps NIST provenance classes separate: unmarked values (evaluated experimental), square-bracketed values (semi-empirical/interpolated), and parenthesized values (theoretical).
+- Tests IE1, IE2, IE3, their strict measured sum, neutral total binding energy, occupied principal-shell count, and outermost-shell electron occupancy against the 6.5.0 closure angle.
+- Reports Pearson, Spearman, partial correlation after controlling for Z, and an ordered-Z holdout (train Z <= 60, test Z > 60).
+
+### Added data-source references
+
+- NUBASE2020 official table: https://www-nds.iaea.org/amdc/ame2020/nubase_4.mas20.txt
+- NUBASE2020 publication: Kondev et al., Chinese Physics C 45, 030001 (2021), DOI: 10.1088/1674-1137/abddae.
+- NIST ASD 5.12: https://www.nist.gov/pml/atomic-spectra-database (DOI: 10.18434/T4W30F).
+- NIST GSIE definitions and provenance conventions: https://physics.nist.gov/PhysRefData/ASD/Html/iehelp.html
+
+### Additional phase-2 outputs
+
+- `NUBASE2020_stable_ground_states.csv`
+- `stable_isotope_element_summary.csv`
+- `element_angle_stable_isotope_summary.csv`
+- `stable_isotope_weighted_correlations.csv`
+- `dominant_stable_isotope_correlations.csv`
+- `NIST_ASD_ionization_all_stages.csv`
+- `NIST_ASD_total_binding_all_stages.csv`
+- `element_angle_electronic_summary.csv`
+- `electronic_correlations.csv`
+- `electronic_ordered_Z_holdout.csv`
+
+The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
