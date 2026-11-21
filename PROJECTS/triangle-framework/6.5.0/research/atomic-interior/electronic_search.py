@@ -42,13 +42,18 @@ def parse_energy_token(value):
 def parse_shells(shells):
     """Extract occupied principal shells and occupancy in the outermost n."""
     s = str(shells).translate(SUPERSCRIPT).replace("²", "2").replace("³", "3")
-    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*(\d*)", s, flags=re.I)
-    if not tokens:
+    core_shells = {"He": 1, "Ne": 2, "Ar": 3, "Kr": 4, "Xe": 5, "Rn": 6, "Og": 7}
+    core_match = re.search(r"\\[(He|Ne|Ar|Kr|Xe|Rn|Og)\\]", s, flags=re.I)
+    core_count = core_shells.get(core_match.group(1).title(), 0) if core_match else 0
+    tokens = re.findall(r"(\\d+)\\s*([spdfgh])\\s*\\^?\\s*(\\d*)", s, flags=re.I)
+    if not tokens and not core_match:
         return np.nan, np.nan
     ns = [int(t[0]) for t in tokens]
-    outer_n = max(ns)
+    outer_n = max(ns) if ns else core_count
     outer_count = sum(int(t[2]) if t[2] else 1 for t in tokens if int(t[0]) == outer_n)
-    return len(set(ns)), outer_count
+    if not tokens and core_match:
+        outer_count = 2 if core_match.group(1).title() == "He" else 8
+    return max(core_count, outer_n), outer_count
 
 def _norm_header(value):
     return re.sub(r"[^a-z0-9]+", "", str(value).lower())
@@ -82,8 +87,12 @@ def parse_nist_tsv(text, energy_kind="ionization"):
 
     def col(*names):
         for name in names:
-            if _norm_header(name) in lookup:
-                return lookup[_norm_header(name)]
+            target = _norm_header(name)
+            if target in lookup:
+                return lookup[target]
+            for normalized, original in lookup.items():
+                if normalized.startswith(target):
+                    return original
         return None
 
     zc = col("At. Num.", "Atomic Number", "At Num")
