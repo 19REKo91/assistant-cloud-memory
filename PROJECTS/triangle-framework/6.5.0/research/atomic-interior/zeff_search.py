@@ -124,11 +124,16 @@ def _model_matrix(train, test, include_angle):
     return np.column_stack(a), np.column_stack(b)
 
 def analyze(joined):
-    targets = ["Zeff_IE1_hydrogenic", "Zeff_Slater"]
+    measured = joined[joined["Data_Quality"].astype(str).str.upper() == "MEASURED"].copy()
+    targets = [
+        "Zeff_IE1_hydrogenic_evaluated_only",
+        "Zeff_IE1_hydrogenic",
+        "Zeff_Slater",
+    ]
     correlations, holdouts, block_rows = [], [], []
     for target in targets:
-        d = joined[["Z", "theta3", "Period", "Block",
-                    "outermost_shell_electron_count", target]].dropna().copy()
+        d = measured[["Z", "theta3", "Period", "Block",
+                      "outermost_shell_electron_count", target]].dropna().copy()
         if len(d) >= 8 and d[target].nunique() > 1:
             r, n = _partial_corr_controls(
                 d, target, "theta3",
