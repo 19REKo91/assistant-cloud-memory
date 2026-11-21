@@ -63,7 +63,7 @@ def parse_nist_tsv(text, energy_kind="ionization"):
     frame = None
     if "<table" in text.lower():
         try:
-            tables = pd.read_html(StringIO(text))
+            tables = pd.read_html(StringIO(text), flavor='lxml')
         except ValueError as exc:
             raise ValueError(f"NIST HTML contained no readable data table: {exc}") from exc
         for candidate in tables:
