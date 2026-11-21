@@ -59,31 +59,55 @@ def _norm_header(value):
     return re.sub(r"[^a-z0-9]+", "", str(value).lower())
 
 def parse_nist_tsv(text, energy_kind="ionization"):
-    """Parse NIST ASD format=3 tab-delimited output."""
-    lines = [line for line in text.splitlines() if line.strip()]
-    if not lines:
-        raise ValueError("NIST returned an empty response.")
-    # Find the actual header row, skipping title, notes, and separator lines.
-    header_idx = None
-    for i, line in enumerate(lines):
-        cells = [c.strip().strip('"') for c in line.split("\t")]
-        normalized = [_norm_header(c) for c in cells]
-        if any("atnum" in h or h in {"atomicnumber", "atnum"} for h in normalized):
-            header_idx = i
-            break
-    if header_idx is None:
-        raise ValueError("Could not locate NIST tabular header (At. Num.).")
-    header = [c.strip().strip('"') for c in lines[header_idx].split("\t")]
-    records = []
-    for line in lines[header_idx + 1:]:
-        if not line.strip() or set(line.strip()) <= {"-", "|"}:
-            continue
-        cells = [c.strip().strip('"') for c in line.split("\t")]
-        if len(cells) < len(header):
-            cells += [""] * (len(header) - len(cells))
-        records.append(dict(zip(header, cells)))
-    frame = pd.DataFrame(records)
-    lookup = {_norm_header(c): c for c in frame.columns}
+    """Parse NIST ASD tab-delimited or formatted HTML output."""
+    frame = None
+    if "<table" in text.lower():
+        try:
+            tables = pd.read_html(StringIO(text))
+        except ValueError as exc:
+            raise ValueError(f"NIST HTML contained no readable data table: {exc}") from exc
+        for candidate in tables:
+            if isinstance(candidate.columns, pd.MultiIndex):
+                candidate.columns = [
+                    " ".join(str(part) for part in col if str(part) != "nan").strip()
+                    for col in candidate.columns
+                ]
+            else:
+                candidate.columns = [str(col).strip() for col in candidate.columns]
+            normalized = [_norm_header(col) for col in candidate.columns]
+            has_z = any(h in {"atnum", "atomicnumber"} or h.startswith("atnum") for h in normalized)
+            energy_prefix = "totalbindingenergy" if energy_kind == "binding" else "ionizationenergy"
+            has_energy = any(h.startswith(energy_prefix) for h in normalized)
+            if has_z and has_energy:
+                frame = candidate.copy()
+                break
+        if frame is None:
+            raise ValueError("Could not locate NIST HTML table with atomic number and requested energy column.")
+    else:
+        lines = [line for line in text.splitlines() if line.strip()]
+        if not lines:
+            raise ValueError("NIST returned an empty response.")
+        header_idx = None
+        for i, line in enumerate(lines):
+            cells = [c.strip().strip('"') for c in line.split("\t")]
+            normalized = [_norm_header(c) for c in cells]
+            if any(h in {"atnum", "atomicnumber"} or h.startswith("atnum") for h in normalized):
+                header_idx = i
+                break
+        if header_idx is None:
+            raise ValueError("Could not locate NIST tabular header (At. Num.).")
+        header = [c.strip().strip('"') for c in lines[header_idx].split("\t")]
+        records = []
+        for line in lines[header_idx + 1:]:
+            if not line.strip() or set(line.strip()) <= {"-", "|"}:
+                continue
+            cells = [c.strip().strip('"') for c in line.split("\t")]
+            if len(cells) < len(header):
+                cells += [""] * (len(header) - len(cells))
+            records.append(dict(zip(header, cells)))
+        frame = pd.DataFrame(records)
+
+    lookup = {_norm_header(col): col for col in frame.columns}
 
     def col(*names):
         for name in names:
@@ -101,29 +125,28 @@ def parse_nist_tsv(text, energy_kind="ionization"):
     shellc = col("Ground Shells", "Ground-state electronic shells", "Shells")
     energy_label = "Total Binding Energy" if energy_kind == "binding" else "Ionization Energy"
     ec = col(energy_label, "Energy")
-    if not zc or not ec:
+    if zc is None or ec is None:
         raise ValueError(f"NIST output lacks required columns. Found: {list(frame.columns)}")
     out = pd.DataFrame()
-    out["Z"] = pd.to_numeric(frame[zc].str.extract(r"(\d+)")[0], errors="coerce")
-    out["element_name"] = frame[elc].str.strip() if elc else ""
+    out["Z"] = pd.to_numeric(frame[zc].astype(str).str.extract(r"(\d+)")[0], errors="coerce")
+    out["element_name"] = frame[elc].astype(str).str.strip() if elc else ""
     out["ion_charge"] = pd.to_numeric(frame[qcc], errors="coerce") if qcc else 0
     out["ground_shells"] = frame[shellc].fillna("").astype(str) if shellc else ""
     parsed = frame[ec].map(parse_energy_token)
-    out["energy_eV"] = parsed.map(lambda x: x[0])
-    out["provenance"] = parsed.map(lambda x: x[1])
-    shells = out["ground_shells"].map(parse_shells)
-    out["occupied_principal_shell_count"] = shells.map(lambda x: x[0])
-    out["outermost_shell_electron_count"] = shells.map(lambda x: x[1])
+    out["energy_eV"] = parsed.map(lambda item: item[0])
+    out["provenance"] = parsed.map(lambda item: item[1])
+    shell_values = out["ground_shells"].map(parse_shells)
+    out["occupied_principal_shell_count"] = shell_values.map(lambda item: item[0])
+    out["outermost_shell_electron_count"] = shell_values.map(lambda item: item[1])
     out = out.dropna(subset=["Z"]).copy()
     out["Z"] = out["Z"].astype(int)
     out["ion_charge"] = pd.to_numeric(out["ion_charge"], errors="coerce")
     return out
-
 def fetch_nist(energy_kind="ionization"):
     params = {
-        "spectra": "H-Og",
+        "spectra": "H-Og I-III" if energy_kind == "ionization" else "H-Og I",
         "units": "1",              # eV
-        "format": "3",             # tab-delimited
+        "format": "0",             # formatted HTML table
         "output": "0",             # all results
         "at_num_out": "on",
         "el_name_out": "on",
