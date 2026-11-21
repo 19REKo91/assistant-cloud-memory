@@ -85,8 +85,9 @@ def calculate_closure_angles(source: pd.DataFrame) -> pd.DataFrame:
 def parse_ame2020_mass_text(text: str) -> pd.DataFrame:
     """Parse AME2020 mass_1.mas20 fixed-width records; preserve estimated flags."""
     rows = []
-    for line in text.splitlines()[36:]:
-        if len(line) < 42 or line[0] not in ("0", "1"):
+    for line in text.splitlines():
+        # AME uses blank, 0, or 1 in the carriage-control column.
+        if len(line) < 42 or line[0] not in (" ", "0", "1"):
             continue
         try:
             neutron_excess = int(line[1:4].strip())
@@ -119,7 +120,7 @@ def parse_ame2020_mass_text(text: str) -> pd.DataFrame:
 def download_ame2020() -> pd.DataFrame:
     response = requests.get(AME_URL, timeout=90)
     response.raise_for_status()
-    if len(response.text) < 100_000 or "Mass Excess" not in response.text[:5000]:
+    if len(response.text) < 100_000 or "mass excess" not in response.text[:10_000].lower() or "<html" in response.text[:500].lower():
         raise ValueError("Downloaded content does not look like the official AME2020 mass table.")
     return parse_ame2020_mass_text(response.text)
 
