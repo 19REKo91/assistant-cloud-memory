@@ -128,3 +128,21 @@ Additional outputs:
 - `periodic_table_block_controls.csv`
 
 Control-data source: https://github.com/Bluegrams/periodic-table-data/blob/master/Periodica.Data/Data/ElementData.csv
+
+
+## Phase 4 — effective nuclear charge estimates (Zeff)
+
+This separate exploratory phase compares the 6.5.0 closure angle with two explicitly approximate Zeff estimates:
+
+1. Hydrogenic IE1 estimate: `Zeff ≈ n × sqrt(IE1 / 13.605693 eV)`, using neutral first ionization energy and the outermost principal shell. It is a one-electron hydrogenic approximation, not a measured effective charge.
+2. Slater screening estimate: `Zeff = Z − S`, calculated from the neutral NIST ground-state configuration with conventional s/p versus d/f screening groups. The target is the outermost occupied subshell as a first-ionization proxy; this is approximate, particularly for open-shell and transition/f-block atoms.
+
+NIST provenance is retained. The primary hydrogenic analysis must be interpreted using evaluated IE1 values; semi-empirical and theoretical values remain labelled. The analysis controls for Z, period, outer-shell occupancy and periodic-table block, reports within-block correlations, and runs ordered-Z holdouts with and without theta3. No Zeff value is described as a direct observation.
+
+Additional outputs:
+- `element_angle_effective_nuclear_charge.csv`
+- `zeff_correlations.csv`
+- `zeff_block_correlations.csv`
+- `zeff_rolling_Z_holdout.csv`
+
+Calculation tests include hydrogen and lithium screening limits, noble-gas core expansion, a transition-metal configuration, and the hydrogenic approximation.
