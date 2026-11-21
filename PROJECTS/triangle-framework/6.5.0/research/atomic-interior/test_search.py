@@ -27,7 +27,7 @@ class AtomicInteriorTests(unittest.TestCase):
             {"Z": 2, "N": 2, "A": 4, "symbol": "He", "mass_excess_keV": -25000.0},
             {"Z": 2, "N": 3, "A": 5, "symbol": "He", "mass_excess_keV": -30000.0},
             {"Z": 2, "N": 4, "A": 6, "symbol": "He", "mass_excess_keV": -35000.0},
-            {"Z": 1, "N": 3, "A": 4, "symbol": "H", "mass_excess_keV": -10000.0},
+            {"Z": 1, "N": 4, "A": 5, "symbol": "H", "mass_excess_keV": -10000.0},
         ])
         result = derive_separation_energies(masses).set_index(["Z", "N"])
         self.assertAlmostEqual(
