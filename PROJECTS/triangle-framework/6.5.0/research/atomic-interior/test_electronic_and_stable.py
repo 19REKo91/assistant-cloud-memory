@@ -82,6 +82,7 @@ At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Ene
         self.assertTrue(pd.isna(summary["IE1_to_IE3_sum_measured_eV"]))
         self.assertTrue(pd.isna(summary["total_binding_neutral_measured_eV"]))
         self.assertTrue(pd.isna(summary["total_binding_neutral_incl_semie_eV"]))
+        self.assertAlmostEqual(summary["total_binding_neutral_all_stages_mixed_eV"], 203.39)
         self.assertEqual(summary["IE_stage_coverage_fraction"], 1.0)
 
     def test_total_binding_is_derived_only_with_complete_measured_stages(self):
@@ -98,6 +99,7 @@ At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Ene
         ])
         summary = electronic_element_summary(ion).iloc[0]
         self.assertAlmostEqual(summary["total_binding_neutral_measured_eV"], 203.48)
+        self.assertAlmostEqual(summary["total_binding_neutral_all_stages_mixed_eV"], 203.48)
         self.assertTrue(summary["total_binding_is_complete"])
 
 class StableIsotopeTests(unittest.TestCase):
