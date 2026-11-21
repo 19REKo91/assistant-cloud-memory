@@ -47,3 +47,6 @@ The GitHub Actions run uploads these files as an artifact named `atomic-interior
 - `element_angle_nuclear_summary.csv`
 - `nuclear_correlations.csv`
 - `ordered_Z_holdout.csv`
+
+
+The GitHub Actions workflow also starts on pushes affecting this research folder or the unchanged 6.5.0 input CSV; it remains manually runnable through `workflow_dispatch`.
