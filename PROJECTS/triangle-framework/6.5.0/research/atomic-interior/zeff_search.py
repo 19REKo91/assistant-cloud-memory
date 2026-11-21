@@ -69,13 +69,12 @@ def slater_zeff(config):
             if n == n0 and orbital in {"s", "p"}:
                 # Slater's (ns,np) group shares the 0.35 coefficient.
                 shielding += count * (0.30 if n0 == 1 else 0.35)
-            elif n == n0:
-                # Same principal shell, other subshells to the left (e.g. nd).
-                shielding += count * 1.0
-            elif n == n0 - 1 and orbital in {"s", "p"}:
+            elif n == n0 - 1:
+                # All groups in the immediately inner principal shell contribute 0.85.
                 shielding += count * 0.85
-            elif n < n0 - 1 or (n == n0 - 1 and orbital in {"d", "f", "g"}):
+            elif n < n0 - 1:
                 shielding += count * 1.0
+            # Same-n d/f groups lie to the right of (ns,np) and do not shield it.
         else:
             # For nd/nf target electrons, all lower groups shield fully.
             if n < n0 or (n == n0 and ORBITAL_ORDER[orbital] < ORBITAL_ORDER[l0]):
