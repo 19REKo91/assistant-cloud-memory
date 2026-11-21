@@ -24,9 +24,9 @@ Configuration | Term | J | Level
 2s^2 2p^3 3s | 5S | 2 | 73 768.200 |
 </pre></html>"""
         parsed = parse_levels_ascii(raw, 8, "O")
-        self.assertEqual(len(parsed), 5)
+        self.assertEqual(len(parsed), 6)
         self.assertEqual(parsed.iloc[0]["provenance"], "EVALUATED")
-        self.assertEqual(parsed.iloc[3]["provenance"], "THEORETICAL")
+        self.assertEqual(parsed.iloc[4]["provenance"], "THEORETICAL")
 
     def test_summary_extracts_excitation_and_distinct_term_gaps(self):
         raw = """<html><pre>
