@@ -28,6 +28,22 @@ Configuration | Term | J | Level
         self.assertEqual(parsed.iloc[0]["provenance"], "EVALUATED")
         self.assertEqual(parsed.iloc[4]["provenance"], "THEORETICAL")
 
+    def test_preserves_blank_group_cells_with_four_column_header(self):
+        raw = """<html><pre>
+Configuration | Term | J | Level
+(cm^-1)
+--------------|------|---|---------------
+2s^2 2p^4 | 3P | 2 | 0.000
+             |    | 1 | 158.265
+             |    | 0 | 226.977
+2s^2 2p^4 | 1D | 2 | 15 867.862
+</pre></html>"""
+        parsed = parse_levels_ascii(raw, 8, "O")
+        self.assertAlmostEqual(parsed.iloc[1]["level_cm1"], 158.265)
+        self.assertEqual(parsed.iloc[1]["term"], "3P")
+        self.assertAlmostEqual(parsed.iloc[2]["level_cm1"], 226.977)
+        self.assertEqual(parsed.iloc[2]["term"], "3P")
+
     def test_summary_extracts_excitation_and_distinct_term_gaps(self):
         raw = """<html><pre>
 Configuration | Term | J | Level
