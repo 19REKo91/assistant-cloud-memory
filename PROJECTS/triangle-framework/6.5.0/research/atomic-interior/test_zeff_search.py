@@ -40,7 +40,8 @@ class EffectiveNuclearChargeTests(unittest.TestCase):
         zeff, shielding, subshell, n = slater_zeff(config)
         self.assertEqual(subshell, "4s")
         self.assertEqual(n, 4.0)
-        self.assertGreater(zeff, 0)
+        self.assertAlmostEqual(shielding, 22.25)
+        self.assertAlmostEqual(zeff, 3.75)
 
     def test_hydrogenic_estimate(self):
         value = hydrogenic_zeff(13.605693122994, 1)
