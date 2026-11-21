@@ -37,11 +37,16 @@ def parse_configuration(text):
     for core, expanded in CORE_CONFIGS.items():
         raw = re.sub(r"\[" + core + r"\]", expanded, raw, flags=re.I)
     # NIST sometimes includes parenthesized configuration labels; keep orbital tokens only.
-    matches = re.findall(r"(\d+)\s*([spdfg])\s*\^?\s*\{?\s*(\d+)\s*\}?", raw, flags=re.I)
+    # NIST configurations often omit the occupancy when it equals one (e.g. "2s").
+    # Accept both explicit forms ("2s1", "2s^1") and implicit unit occupancy ("2s").
+    matches = re.findall(
+        r"(\d+)\s*([spdfg])(?:\s*\^?\s*\{?\s*(\d+)\s*\}?)?",
+        raw, flags=re.I
+    )
     config = {}
     for n, orbital, occupancy in matches:
         key = (int(n), orbital.lower())
-        config[key] = int(occupancy)
+        config[key] = int(occupancy) if occupancy else 1
     return config
 
 def select_ionized_subshell(config):
