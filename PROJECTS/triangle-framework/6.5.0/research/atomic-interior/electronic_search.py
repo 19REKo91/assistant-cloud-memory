@@ -226,22 +226,27 @@ def make_reports(joined):
                 "partial_r_after_Z": _partial_corr(d["theta3"], d[prop], d["Z"]),
             })
         train, test = d[d["Z"] <= 60], d[d["Z"] > 60]
-        if len(train) >= 8 and len(test) >= 5 and train["theta3"].nunique() > 1:
-            slope, intercept = np.polyfit(train["theta3"], train[prop], 1)
-            pred = slope * test["theta3"].to_numpy() + intercept
-            actual = test[prop].to_numpy()
-            mae = float(np.mean(np.abs(actual - pred)))
-            rmse = float(np.sqrt(np.mean((actual - pred) ** 2)))
-            denom = float(np.sum((actual - actual.mean()) ** 2))
-            r2 = float(1 - np.sum((actual - pred) ** 2) / denom) if denom else np.nan
-            status = "OK"
-        else:
-            mae = rmse = r2 = np.nan
-            status = "INSUFFICIENT_COVERAGE"
-        holdout_rows.append({
-            "property": prop, "train_n": len(train), "test_n": len(test),
-            "MAE": mae, "RMSE": rmse, "R2": r2, "status": status,
-        })
+        if len(train) < 8 or len(test) < 5:
+            holdout_rows.append({"property": prop, "train_n": len(train), "test_n": len(test),
+                                 "model": "INSUFFICIENT_COVERAGE", "MAE": np.nan,
+                                 "RMSE": np.nan, "R2": np.nan})
+            continue
+        y_train, y_test = train[prop].to_numpy(), test[prop].to_numpy()
+        for model_name, predictors in [
+            ("Z_only", ["Z"]),
+            ("theta3_only", ["theta3"]),
+            ("Z_plus_theta3", ["Z", "theta3"]),
+        ]:
+            x_train = np.column_stack([np.ones(len(train))] + [train[k].to_numpy() for k in predictors])
+            x_test = np.column_stack([np.ones(len(test))] + [test[k].to_numpy() for k in predictors])
+            coefficients = np.linalg.lstsq(x_train, y_train, rcond=None)[0]
+            prediction = x_test @ coefficients
+            mae = float(np.mean(np.abs(y_test - prediction)))
+            rmse = float(np.sqrt(np.mean((y_test - prediction) ** 2)))
+            denom = float(np.sum((y_test - y_test.mean()) ** 2))
+            r2 = float(1 - np.sum((y_test - prediction) ** 2) / denom) if denom else np.nan
+            holdout_rows.append({"property": prop, "train_n": len(train), "test_n": len(test),
+                                 "model": model_name, "MAE": mae, "RMSE": rmse, "R2": r2})
     return pd.DataFrame(corr_rows), pd.DataFrame(holdout_rows)
 
 def run(framework_csv: Path, output_dir: Path):
