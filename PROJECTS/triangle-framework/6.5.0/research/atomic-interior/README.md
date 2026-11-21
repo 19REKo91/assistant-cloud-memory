@@ -86,4 +86,4 @@ The workflow now also:
 - `electronic_correlations.csv`
 - `electronic_ordered_Z_holdout.csv`
 
-NIST defines total binding energy as the sum of sequential ionization energies. This workflow derives that sum only when every charge stage is available and all included stages meet the stated provenance threshold; it is not treated as an independent measurement. The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
+NIST defines total binding energy as the sum of sequential ionization energies. This workflow derives it only when every charge stage is available, retaining three separate versions: measured-only, measured-plus-semi-empirical, and a clearly labelled mixed-provenance sum. None is treated as an independent measurement. The mixed sum can include theoretical stages and must not be interpreted as an all-experimental result. The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
