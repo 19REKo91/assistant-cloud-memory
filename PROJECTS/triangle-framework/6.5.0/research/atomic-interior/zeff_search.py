@@ -66,7 +66,10 @@ def slater_zeff(config):
             # Same subshell: exclude the electron being considered.
             shielding += max(count - 1, 0) * (0.30 if n0 == 1 and l0 == "s" else 0.35)
         elif l0 in {"s", "p"}:
-            if n == n0:
+            if n == n0 and orbital in {"s", "p"}:
+                # Slater's (ns,np) group shares the 0.35 coefficient.
+                shielding += count * (0.30 if n0 == 1 else 0.35)
+            elif n == n0:
                 # Same principal shell, other subshells to the left (e.g. nd).
                 shielding += count * 1.0
             elif n == n0 - 1 and orbital in {"s", "p"}:
