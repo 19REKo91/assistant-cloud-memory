@@ -241,7 +241,7 @@ def electronic_element_summary(ionization):
         for q in range(3):
             stage = group[group["ion_charge"] == q]
             measured = stage[stage["provenance"] == "EVALUATED"]["energy_eV"].dropna()
-            semi = stage[stage["provenance"].isin(["MEASURED", "SEMIEMPIRICAL"])]["energy_eV"].dropna()
+            semi = stage[stage["provenance"].isin(["EVALUATED", "SEMIEMPIRICAL"])]["energy_eV"].dropna()
             theoretical = stage[stage["provenance"] == "THEORETICAL"]["energy_eV"].dropna()
             row[f"IE{q+1}_evaluated_eV"] = measured.iloc[0] if len(measured) else np.nan
             row[f"IE{q+1}_incl_semie_eV"] = semi.iloc[0] if len(semi) else np.nan
@@ -259,7 +259,7 @@ def electronic_element_summary(ionization):
         row["IE_stage_coverage_fraction"] = len(observed.intersection(expected)) / int(z) if z else np.nan
         complete = observed == expected
         measured_stages = stages[stages["provenance"] == "EVALUATED"]
-        evaluated_stages = stages[stages["provenance"].isin(["MEASURED", "SEMIEMPIRICAL"])]
+        evaluated_stages = stages[stages["provenance"].isin(["EVALUATED", "SEMIEMPIRICAL"])]
         row["total_binding_neutral_all_evaluated_eV"] = (
             float(measured_stages["energy_eV"].sum())
             if complete and len(measured_stages) == int(z) else np.nan
@@ -271,7 +271,7 @@ def electronic_element_summary(ionization):
         row["total_binding_neutral_all_stages_mixed_eV"] = (
             float(stages["energy_eV"].sum()) if complete else np.nan
         )
-        row["total_binding_evaluated_stage_count"] = int((stages["provenance"] == "MEASURED").sum())
+        row["total_binding_evaluated_stage_count"] = int((stages["provenance"] == "EVALUATED").sum())
         row["total_binding_semie_stage_count"] = int((stages["provenance"] == "SEMIEMPIRICAL").sum())
         row["total_binding_theoretical_stage_count"] = int((stages["provenance"] == "THEORETICAL").sum())
         row["total_binding_is_complete"] = bool(complete)
