@@ -268,6 +268,12 @@ def electronic_element_summary(ionization):
             float(evaluated_stages["energy_eV"].sum())
             if complete and len(evaluated_stages) == int(z) else np.nan
         )
+        row["total_binding_neutral_all_stages_mixed_eV"] = (
+            float(stages["energy_eV"].sum()) if complete else np.nan
+        )
+        row["total_binding_measured_stage_count"] = int((stages["provenance"] == "MEASURED").sum())
+        row["total_binding_semie_stage_count"] = int((stages["provenance"] == "SEMIEMPIRICAL").sum())
+        row["total_binding_theoretical_stage_count"] = int((stages["provenance"] == "THEORETICAL").sum())
         row["total_binding_is_complete"] = bool(complete)
 
         neutral = group[group["ion_charge"] == 0].sort_values("ion_charge")
@@ -295,7 +301,7 @@ def _partial_corr(x, y, z):
 
 PROPERTIES = [
     "IE1_measured_eV", "IE2_measured_eV", "IE3_measured_eV",
-    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",
+    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",\n    "total_binding_neutral_all_stages_mixed_eV",
     "occupied_principal_shell_count", "outermost_shell_electron_count",
 ]
 
