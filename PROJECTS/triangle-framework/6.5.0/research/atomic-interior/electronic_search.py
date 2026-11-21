@@ -207,19 +207,27 @@ def fetch_nist_batch(symbols, energy_kind="ionization"):
         raise ValueError(f"NIST response unexpectedly short ({len(response.text)} chars): {response.text[:500]}")
     return parse_nist_tsv(response.text, energy_kind=energy_kind)
 
-def fetch_nist_all(symbols, energy_kind="ionization"):
-    """Fetch one element per request using NIST's documented single-element GSIE syntax."""
+def fetch_nist_all(symbols, energy_kind="ionization", batch_size=10):
+    """Fetch NIST in modest semicolon-separated batches; split only failed batches."""
     frames, errors = [], []
-    for index, symbol in enumerate(symbols):
-        if index:
-            time.sleep(0.5)  # polite pacing for the public NIST CGI service
+    batches = [symbols[i:i + batch_size] for i in range(0, len(symbols), batch_size)]
+
+    def fetch_or_split(batch):
         try:
-            frame = fetch_nist_batch([symbol], energy_kind)
-            if frame is not None and not frame.empty:
-                frames.append(frame)
+            frame = fetch_nist_batch(batch, energy_kind)
+            return [frame] if frame is not None and not frame.empty else []
         except Exception as exc:
-            errors.append({"symbol": symbol, "energy_kind": energy_kind, "error": str(exc)[:500]})
-            print(f"   NIST missing/error for {symbol} ({energy_kind}): {type(exc).__name__}")
+            if len(batch) == 1:
+                errors.append({"symbol": batch[0], "energy_kind": energy_kind, "error": str(exc)[:500]})
+                print(f"   NIST missing/error for {batch[0]} ({energy_kind}): {type(exc).__name__}")
+                return []
+            midpoint = len(batch) // 2
+            return fetch_or_split(batch[:midpoint]) + fetch_or_split(batch[midpoint:])
+
+    for index, batch in enumerate(batches):
+        if index:
+            time.sleep(1.0)
+        frames.extend(fetch_or_split(batch))
     if not frames:
         raise RuntimeError(f"NIST returned no parseable {energy_kind} data for any element.")
     return pd.concat(frames, ignore_index=True), pd.DataFrame(errors)
