@@ -87,3 +87,25 @@ The workflow now also:
 - `electronic_ordered_Z_holdout.csv`
 
 NIST defines total binding energy as the sum of sequential ionization energies. This workflow derives it only when every charge stage is available, retaining three separate versions: measured-only, measured-plus-semi-empirical, and a clearly labelled mixed-provenance sum. None is treated as an independent measurement. The mixed sum can include theoretical stages and must not be interpreted as an all-experimental result. The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
+
+
+## Phase 3 — neutral-atom excitation levels (NIST ASD)
+
+The workflow queries the neutral spectrum (`Element I`) one element at a time, following the NIST Levels-form requirement that one spectrum be specified per query. It retains native `cm^-1` level energies and keeps the NIST provenance markers separate:
+
+- Unmarked: evaluated data
+- `[x]`: semi-empirical/interpolated
+- `(x)`: ab-initio/theoretical
+- Tentative or unconnected levels are flagged and excluded from strict evaluated-gap metrics
+
+Per element it extracts the lowest positive evaluated level gap, first gap to a distinct term, first gap to a distinct configuration, the median of the first five positive evaluated levels, and evaluated level counts below 10,000 and 20,000 cm^-1. It compares these with the closure angle using Pearson, Spearman, partial correlation after controlling for Z, and a Z-ordered holdout comparing Z-only, angle-only, and Z-plus-angle models.
+
+NIST notes that energy levels are stored most accurately in cm^-1 and that some level values are semi-empirical or theoretical; those categories remain separate in this workflow.
+
+Additional outputs:
+- `NIST_ASD_neutral_energy_levels.csv`
+- `NIST_ASD_neutral_level_summary.csv`
+- `element_angle_level_summary.csv`
+- `level_correlations.csv`
+- `level_ordered_Z_holdout.csv`
+- `NIST_ASD_level_fetch_errors.csv`
