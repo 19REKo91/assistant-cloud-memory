@@ -181,6 +181,7 @@ def fetch_nist(energy_kind="ionization"):
     params = {
         "spectra": "H-Og I-III" if energy_kind == "ionization" else "H-Og I",
         "units": "1",              # eV
+        "format": "1",             # ASCII pipe-delimited output
         "at_num_out": "on",
         "el_name_out": "on",
         "ion_charge_out": "on",
