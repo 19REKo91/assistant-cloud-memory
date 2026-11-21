@@ -63,7 +63,7 @@ def count_shell_electrons(shells):
                       "Cd": 48, "Xe": 54, "Hg": 80, "Rn": 86, "Og": 118}
     core_match = re.search(r"\[(He|Ne|Ar|Kr|Cd|Xe|Hg|Rn|Og)\]", s, flags=re.I)
     total = core_electrons.get(core_match.group(1).title(), 0) if core_match else 0
-    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*(\d*)", s, flags=re.I)
+    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*\{?\s*(\d*)\s*\}?", s, flags=re.I)
     total += sum(int(token[2]) if token[2] else 1 for token in tokens)
     return total if total > 0 else np.nan
 
