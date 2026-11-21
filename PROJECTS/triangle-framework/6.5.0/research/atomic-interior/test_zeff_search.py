@@ -19,6 +19,15 @@ class EffectiveNuclearChargeTests(unittest.TestCase):
         self.assertAlmostEqual(shielding, 1.70)
         self.assertAlmostEqual(zeff, 1.30)
 
+    def test_nist_implicit_unit_occupancy(self):
+        # NIST compact configuration style: the final 2s has implicit occupancy one.
+        config = parse_configuration("1s2.2s")
+        self.assertEqual(config, {(1, "s"): 2, (2, "s"): 1})
+        zeff, shielding, subshell, n = slater_zeff(config)
+        self.assertEqual(subshell, "2s")
+        self.assertAlmostEqual(shielding, 1.70)
+        self.assertAlmostEqual(zeff, 1.30)
+
     def test_noble_gas_core_expansion(self):
         config = parse_configuration("[Ne] 3s2 3p5")
         self.assertEqual(sum(config.values()), 17)
