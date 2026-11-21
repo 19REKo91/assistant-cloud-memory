@@ -12,9 +12,9 @@ permissions:
   contents: read
 
 jobs:
-  nuclear-relationship-search:
+  atomic-interior-search:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,9 +29,9 @@ jobs:
       - name: Install research dependencies
         run: python -m pip install -r PROJECTS/triangle-framework/6.5.0/research/atomic-interior/requirements.txt
 
-      - name: Run unit tests
+      - name: Run parser and calculation tests
         working-directory: PROJECTS/triangle-framework/6.5.0/research/atomic-interior
-        run: python -m unittest -v test_search.py
+        run: python -m unittest -v test_search.py test_electronic_and_stable.py
 
       - name: Run AME2020 nuclear relationship search
         run: >-
@@ -39,7 +39,20 @@ jobs:
           --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
           --out atomic-interior-results
 
-      - name: Upload research results
+      - name: Run NUBASE2020 stable isotope analysis
+        run: >-
+          python PROJECTS/triangle-framework/6.5.0/research/atomic-interior/stable_isotope_search.py
+          --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
+          --ame-nuclides atomic-interior-results/AME2020_nuclide_separation_energies.csv
+          --out atomic-interior-results
+
+      - name: Run NIST ASD electronic relationship search
+        run: >-
+          python PROJECTS/triangle-framework/6.5.0/research/atomic-interior/electronic_search.py
+          --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
+          --out atomic-interior-results
+
+      - name: Upload all research results
         uses: actions/upload-artifact@v4
         with:
           name: atomic-interior-results
