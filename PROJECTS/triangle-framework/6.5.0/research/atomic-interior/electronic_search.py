@@ -225,11 +225,11 @@ def fetch_nist_all(symbols, energy_kind="ionization"):
     return pd.concat(frames, ignore_index=True), pd.DataFrame(errors)
 
 
-def electronic_element_summary(ionization, binding):
+def electronic_element_summary(ionization):
+    """Summarize sequential IEs and derive total binding only with complete stage coverage."""
     rows = []
     for z, group in ionization.groupby("Z"):
         row = {"Z": int(z)}
-        neutral = group[group["ion_charge"] == 0].sort_values("ion_charge")
         for q in range(3):
             stage = group[group["ion_charge"] == q]
             measured = stage[stage["provenance"] == "MEASURED"]["energy_eV"].dropna()
@@ -240,6 +240,29 @@ def electronic_element_summary(ionization, binding):
             row[f"IE{q+1}_theoretical_eV"] = theoretical.iloc[0] if len(theoretical) else np.nan
         strict = [row.get(f"IE{i}_measured_eV", np.nan) for i in (1, 2, 3)]
         row["IE1_to_IE3_sum_measured_eV"] = sum(strict) if all(pd.notna(v) for v in strict) else np.nan
+
+        # NIST defines total binding energy as the sum of all sequential ionization energies.
+        # Derive it here only when every charge stage q=0..Z-1 is present.
+        stages = group.dropna(subset=["ion_charge", "energy_eV"]).drop_duplicates("ion_charge")
+        expected = set(range(int(z)))
+        observed = set(stages["ion_charge"].astype(int).tolist())
+        row["IE_stages_available"] = len(observed)
+        row["IE_stages_required"] = int(z)
+        row["IE_stage_coverage_fraction"] = len(observed.intersection(expected)) / int(z) if z else np.nan
+        complete = observed == expected
+        measured_stages = stages[stages["provenance"] == "MEASURED"]
+        evaluated_stages = stages[stages["provenance"].isin(["MEASURED", "SEMIEMPIRICAL"])]
+        row["total_binding_neutral_measured_eV"] = (
+            float(measured_stages["energy_eV"].sum())
+            if complete and len(measured_stages) == int(z) else np.nan
+        )
+        row["total_binding_neutral_incl_semie_eV"] = (
+            float(evaluated_stages["energy_eV"].sum())
+            if complete and len(evaluated_stages) == int(z) else np.nan
+        )
+        row["total_binding_is_complete"] = bool(complete)
+
+        neutral = group[group["ion_charge"] == 0].sort_values("ion_charge")
         if len(neutral):
             row["occupied_principal_shell_count"] = neutral.iloc[0]["occupied_principal_shell_count"]
             row["outermost_shell_electron_count"] = neutral.iloc[0]["outermost_shell_electron_count"]
@@ -248,9 +271,6 @@ def electronic_element_summary(ionization, binding):
             row["occupied_principal_shell_count"] = np.nan
             row["outermost_shell_electron_count"] = np.nan
             row["ground_shells"] = ""
-        b = binding[(binding["Z"] == z) & (binding["ion_charge"] == 0)]
-        b = b[b["provenance"] == "MEASURED"]["energy_eV"].dropna()
-        row["total_binding_neutral_measured_eV"] = b.iloc[0] if len(b) else np.nan
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -267,7 +287,7 @@ def _partial_corr(x, y, z):
 
 PROPERTIES = [
     "IE1_measured_eV", "IE2_measured_eV", "IE3_measured_eV",
-    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV",
+    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",
     "occupied_principal_shell_count", "outermost_shell_electron_count",
 ]
 
@@ -312,31 +332,26 @@ def run(framework_csv: Path, output_dir: Path):
     output_dir.mkdir(parents=True, exist_ok=True)
     framework = pd.read_csv(framework_csv)
     angles = calculate_closure_angles(framework)
-    print("Downloading NIST ASD 5.12 sequential ionization energies in element batches...")
-    ionization, ion_errors = fetch_nist_all(ELEMENT_SYMBOLS, "ionization")
-    print("Downloading NIST ASD 5.12 neutral total binding energies in element batches...")
-    binding, binding_errors = fetch_nist_all(ELEMENT_SYMBOLS, "binding")
-    fetch_errors = pd.concat([ion_errors, binding_errors], ignore_index=True)
-    summary = electronic_element_summary(ionization, binding)
+    print("Downloading NIST ASD 5.12 sequential ionization energies...")
+    ionization, fetch_errors = fetch_nist_all(ELEMENT_SYMBOLS, "ionization")
+    summary = electronic_element_summary(ionization)
     joined = angles.merge(summary, on="Z", how="left")
     correlations, holdout = make_reports(joined)
 
     ionization.to_csv(output_dir / "NIST_ASD_ionization_all_stages.csv", index=False)
-    binding.to_csv(output_dir / "NIST_ASD_total_binding_all_stages.csv", index=False)
     fetch_errors.to_csv(output_dir / "NIST_ASD_fetch_errors.csv", index=False)
     joined.to_csv(output_dir / "element_angle_electronic_summary.csv", index=False)
     correlations.to_csv(output_dir / "electronic_correlations.csv", index=False)
     holdout.to_csv(output_dir / "electronic_ordered_Z_holdout.csv", index=False)
 
     print(f"NIST ionization records parsed: {len(ionization)}")
-    print(f"NIST total-binding records parsed: {len(binding)}")
     print(f"NIST element/batch errors retained in CSV: {len(fetch_errors)}")
     print("\nElectronic correlations (MEASURED framework elements):")
     print(correlations.to_string(index=False) if not correlations.empty else "No sufficient overlap.")
     print("\nOrdered-Z holdout: train Z<=60; test Z>60")
     print(holdout.to_string(index=False) if not holdout.empty else "No sufficient overlap.")
     print("\nProvenance: unmarked=MEASURED; [x]=SEMIEMPIRICAL; (x)=THEORETICAL.")
-    print("Total binding energy is the energy required to remove all electrons; NIST sums sequential ionization energies.")
+    print("Total binding is derived from sequential IEs only when all Z charge stages are present; it is not an independent NIST measurement.")
     print(f"Results: {output_dir.resolve()}")
 
 def main():
