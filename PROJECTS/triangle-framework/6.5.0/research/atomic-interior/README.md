@@ -110,3 +110,21 @@ Additional outputs:
 - `level_correlations.csv`
 - `level_ordered_Z_holdout.csv`
 - `NIST_ASD_level_fetch_errors.csv`
+
+
+### Phase 3b — block-confounding check
+
+Because the excitation-gap signal can reflect periodic-table block structure, the level analysis additionally retrieves independent `Period` and `Block` labels from the public Bluegrams periodic-table dataset. It tests log10-transformed energy gaps and reports:
+- Partial correlation after controlling for Z, period, outer-shell occupancy, and s/p/d/f block
+- Separate correlations within each block
+- Rolling high-Z holdouts at Z cutoffs 40, 50, 60, and 70, comparing a Z/period/shell/block baseline with the same model plus theta3
+
+This control is specifically intended to distinguish a continuous angle relationship from a difference between s-, p-, d-, and f-block populations.
+
+Additional outputs:
+- `level_log_correlations.csv`
+- `level_block_correlations.csv`
+- `level_rolling_Z_holdout_with_block_controls.csv`
+- `periodic_table_block_controls.csv`
+
+Control-data source: https://github.com/Bluegrams/periodic-table-data/blob/master/Periodica.Data/Data/ElementData.csv
