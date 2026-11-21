@@ -5,6 +5,7 @@ import pandas as pd
 from electronic_search import (
     parse_energy_token,
     parse_shells,
+    count_shell_electrons,
     parse_nist_tsv,
     electronic_element_summary,
 )
@@ -22,6 +23,8 @@ class ElectronicParserTests(unittest.TestCase):
     def test_parse_shell_occupancy(self):
         self.assertEqual(parse_shells("1s^2 2s^2 2p^6 3s^1"), (3, 1))
         self.assertEqual(parse_shells("[Ne] 3s2 3p5"), (3, 7))
+        self.assertEqual(parse_shells("1s^{2}2s^{2}2p^{6}3s^{1}"), (3, 1))
+        self.assertEqual(count_shell_electrons("[Ne] 3s^{2}3p^{5}"), 17)
 
     def test_parse_nist_tabular_data(self):
         raw = (
