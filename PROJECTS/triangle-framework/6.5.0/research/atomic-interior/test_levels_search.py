@@ -1,7 +1,8 @@
 import unittest
 import pandas as pd
 
-from levels_search import parse_level_value, parse_levels_ascii, summarize_levels
+from levels_search import (parse_level_value, parse_levels_ascii, summarize_levels,
+                            _partial_corr_controls)
 
 class LevelParserTests(unittest.TestCase):
     def test_level_provenance_and_grouped_digits(self):
@@ -43,6 +44,16 @@ Configuration | Term | J | Level
         self.assertEqual(parsed.iloc[1]["term"], "3P")
         self.assertAlmostEqual(parsed.iloc[2]["level_cm1"], 226.977)
         self.assertEqual(parsed.iloc[2]["term"], "3P")
+
+    def test_block_control_removes_between_block_only_correlation(self):
+        frame = pd.DataFrame({
+            "theta3": [1, 2, 3, 4, 11, 12, 13, 14],
+            "target": [10, 11, 9, 10, 20, 19, 21, 20],
+            "Block": ["s"] * 4 + ["p"] * 4,
+        })
+        partial, n = _partial_corr_controls(frame, "target", "theta3", [], ["Block"])
+        self.assertEqual(n, 8)
+        self.assertLess(abs(partial), 0.2)
 
     def test_summary_extracts_excitation_and_distinct_term_gaps(self):
         raw = """<html><pre>
