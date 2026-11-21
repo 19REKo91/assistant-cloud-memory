@@ -1,0 +1,48 @@
+name: Atomic Interior Relationship Search
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'PROJECTS/triangle-framework/6.5.0/research/atomic-interior/**'
+      - 'PROJECTS/triangle-framework/6.5.0/elements_input_118.csv'
+      - '.github/workflows/atomic-interior-search.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  nuclear-relationship-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'PROJECTS/triangle-framework/6.5.0/research/atomic-interior/requirements.txt'
+
+      - name: Install research dependencies
+        run: python -m pip install -r PROJECTS/triangle-framework/6.5.0/research/atomic-interior/requirements.txt
+
+      - name: Run unit tests
+        working-directory: PROJECTS/triangle-framework/6.5.0/research/atomic-interior
+        run: python -m unittest -v test_search.py
+
+      - name: Run AME2020 nuclear relationship search
+        run: >-
+          python PROJECTS/triangle-framework/6.5.0/research/atomic-interior/search.py
+          --framework PROJECTS/triangle-framework/6.5.0/elements_input_118.csv
+          --out atomic-interior-results
+
+      - name: Upload research results
+        uses: actions/upload-artifact@v4
+        with:
+          name: atomic-interior-results
+          path: atomic-interior-results/*.csv
+          if-no-files-found: error
+          retention-days: 30
