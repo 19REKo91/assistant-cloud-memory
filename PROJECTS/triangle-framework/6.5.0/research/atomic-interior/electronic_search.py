@@ -29,7 +29,7 @@ def parse_energy_token(value):
     raw = str(value).strip().replace(",", "").replace("−", "-")
     if not raw or raw.lower() in {"nan", "none", "--", "unknown"}:
         return np.nan, "MISSING"
-    kind = "MEASURED"
+    kind = "EVALUATED"
     if raw.startswith("[") and raw.endswith("]"):
         kind, raw = "SEMIEMPIRICAL", raw[1:-1].strip()
     elif raw.startswith("(") and raw.endswith(")"):
@@ -240,14 +240,14 @@ def electronic_element_summary(ionization):
         row = {"Z": int(z)}
         for q in range(3):
             stage = group[group["ion_charge"] == q]
-            measured = stage[stage["provenance"] == "MEASURED"]["energy_eV"].dropna()
+            measured = stage[stage["provenance"] == "EVALUATED"]["energy_eV"].dropna()
             semi = stage[stage["provenance"].isin(["MEASURED", "SEMIEMPIRICAL"])]["energy_eV"].dropna()
             theoretical = stage[stage["provenance"] == "THEORETICAL"]["energy_eV"].dropna()
-            row[f"IE{q+1}_measured_eV"] = measured.iloc[0] if len(measured) else np.nan
+            row[f"IE{q+1}_evaluated_eV"] = measured.iloc[0] if len(measured) else np.nan
             row[f"IE{q+1}_incl_semie_eV"] = semi.iloc[0] if len(semi) else np.nan
             row[f"IE{q+1}_theoretical_eV"] = theoretical.iloc[0] if len(theoretical) else np.nan
-        strict = [row.get(f"IE{i}_measured_eV", np.nan) for i in (1, 2, 3)]
-        row["IE1_to_IE3_sum_measured_eV"] = sum(strict) if all(pd.notna(v) for v in strict) else np.nan
+        strict = [row.get(f"IE{i}_evaluated_eV", np.nan) for i in (1, 2, 3)]
+        row["IE1_to_IE3_sum_evaluated_eV"] = sum(strict) if all(pd.notna(v) for v in strict) else np.nan
 
         # NIST defines total binding energy as the sum of all sequential ionization energies.
         # Derive it here only when every charge stage q=0..Z-1 is present.
@@ -258,20 +258,20 @@ def electronic_element_summary(ionization):
         row["IE_stages_required"] = int(z)
         row["IE_stage_coverage_fraction"] = len(observed.intersection(expected)) / int(z) if z else np.nan
         complete = observed == expected
-        measured_stages = stages[stages["provenance"] == "MEASURED"]
+        measured_stages = stages[stages["provenance"] == "EVALUATED"]
         evaluated_stages = stages[stages["provenance"].isin(["MEASURED", "SEMIEMPIRICAL"])]
-        row["total_binding_neutral_measured_eV"] = (
+        row["total_binding_neutral_all_evaluated_eV"] = (
             float(measured_stages["energy_eV"].sum())
             if complete and len(measured_stages) == int(z) else np.nan
         )
-        row["total_binding_neutral_incl_semie_eV"] = (
+        row["total_binding_neutral_evaluated_plus_semie_eV"] = (
             float(evaluated_stages["energy_eV"].sum())
             if complete and len(evaluated_stages) == int(z) else np.nan
         )
         row["total_binding_neutral_all_stages_mixed_eV"] = (
             float(stages["energy_eV"].sum()) if complete else np.nan
         )
-        row["total_binding_measured_stage_count"] = int((stages["provenance"] == "MEASURED").sum())
+        row["total_binding_evaluated_stage_count"] = int((stages["provenance"] == "MEASURED").sum())
         row["total_binding_semie_stage_count"] = int((stages["provenance"] == "SEMIEMPIRICAL").sum())
         row["total_binding_theoretical_stage_count"] = int((stages["provenance"] == "THEORETICAL").sum())
         row["total_binding_is_complete"] = bool(complete)
@@ -300,8 +300,8 @@ def _partial_corr(x, y, z):
     return float(np.corrcoef(rx, ry)[0, 1])
 
 PROPERTIES = [
-    "IE1_measured_eV", "IE2_measured_eV", "IE3_measured_eV",
-    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",
+    "IE1_evaluated_eV", "IE2_evaluated_eV", "IE3_evaluated_eV",
+    "IE1_to_IE3_sum_evaluated_eV", "total_binding_neutral_all_evaluated_eV", "total_binding_neutral_evaluated_plus_semie_eV",
     "total_binding_neutral_all_stages_mixed_eV",
     "occupied_principal_shell_count", "outermost_shell_electron_count",
 ]
@@ -365,7 +365,7 @@ def run(framework_csv: Path, output_dir: Path):
     print(correlations.to_string(index=False) if not correlations.empty else "No sufficient overlap.")
     print("\nOrdered-Z holdout: train Z<=60; test Z>60")
     print(holdout.to_string(index=False) if not holdout.empty else "No sufficient overlap.")
-    print("\nProvenance: unmarked=MEASURED; [x]=SEMIEMPIRICAL; (x)=THEORETICAL.")
+    print("\nProvenance: unmarked=EVALUATED; [x]=SEMIEMPIRICAL; (x)=THEORETICAL.")
     print("Total binding is derived from sequential IEs only when all Z charge stages are present; it is not an independent NIST measurement.")
     print(f"Results: {output_dir.resolve()}")
 
