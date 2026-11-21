@@ -9,6 +9,7 @@ and (parenthesized) theoretical values are kept separately.
 from __future__ import annotations
 
 import argparse
+import html
 import re
 import time
 from io import StringIO
@@ -55,15 +56,50 @@ def parse_shells(shells):
         outer_count = 2 if core_match.group(1).title() == "He" else 8
     return max(core_count, outer_n), outer_count
 
+def count_shell_electrons(shells):
+    """Count electrons from NIST shell notation, expanding noble-gas cores."""
+    s = str(shells).translate(SUPERSCRIPT)
+    core_electrons = {"He": 2, "Ne": 10, "Ar": 18, "Kr": 36,
+                      "Cd": 48, "Xe": 54, "Hg": 80, "Rn": 86, "Og": 118}
+    core_match = re.search(r"\[(He|Ne|Ar|Kr|Cd|Xe|Hg|Rn|Og)\]", s, flags=re.I)
+    total = core_electrons.get(core_match.group(1).title(), 0) if core_match else 0
+    tokens = re.findall(r"(\d+)\s*([spdfgh])\s*\^?\s*(\d*)", s, flags=re.I)
+    total += sum(int(token[2]) if token[2] else 1 for token in tokens)
+    return total if total > 0 else np.nan
+
 def _norm_header(value):
     return re.sub(r"[^a-z0-9]+", "", str(value).lower())
 
 def parse_nist_tsv(text, energy_kind="ionization"):
-    """Parse NIST ASD tab-delimited or formatted HTML output."""
+    """Parse NIST ASD pipe-delimited ASCII, tab-delimited, or HTML output."""
     frame = None
-    if "<table" in text.lower():
+    # GSIE format=1 is an ASCII table rendered inside a preformatted HTML page.
+    plain = html.unescape(re.sub(r"<[^>]+>", "", text))
+    lines = [line.strip() for line in plain.splitlines() if line.strip()]
+    header_idx = None
+    for i, line in enumerate(lines):
+        if "|" in line and "at. num" in line.lower():
+            header_idx = i
+            break
+    if header_idx is not None:
+        header = [cell.strip() for cell in lines[header_idx].strip("|").split("|")]
+        records = []
+        for line in lines[header_idx + 1:]:
+            if "|" not in line:
+                if records:
+                    break
+                continue
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            if not cells or all(set(cell) <= {"-", " "} for cell in cells):
+                continue
+            if len(cells) < len(header):
+                cells += [""] * (len(header) - len(cells))
+            records.append(dict(zip(header, cells)))
+        frame = pd.DataFrame(records)
+
+    if frame is None and "<table" in text.lower():
         try:
-            tables = pd.read_html(StringIO(text), flavor='lxml')
+            tables = pd.read_html(StringIO(text), flavor="lxml")
         except ValueError as exc:
             raise ValueError(
                 f"NIST HTML contained no readable data table: {exc}. "
@@ -84,31 +120,23 @@ def parse_nist_tsv(text, energy_kind="ionization"):
             if has_z and has_energy:
                 frame = candidate.copy()
                 break
-        if frame is None:
-            raise ValueError("Could not locate NIST HTML table with atomic number and requested energy column.")
-    else:
-        lines = [line for line in text.splitlines() if line.strip()]
-        if not lines:
-            raise ValueError("NIST returned an empty response.")
-        header_idx = None
-        for i, line in enumerate(lines):
-            cells = [c.strip().strip('"') for c in line.split("\t")]
-            normalized = [_norm_header(c) for c in cells]
-            if any(h in {"atnum", "atomicnumber"} or h.startswith("atnum") for h in normalized):
-                header_idx = i
+    if frame is None and "|" not in plain:
+        # Fallback for tab-delimited output.
+        tsv_lines = [line for line in plain.splitlines() if line.strip()]
+        for i, line in enumerate(tsv_lines):
+            cells = [cell.strip().strip('"') for cell in line.split("\t")]
+            if any(_norm_header(cell).startswith("atnum") for cell in cells):
+                header = cells
+                records = []
+                for data_line in tsv_lines[i + 1:]:
+                    row = [cell.strip().strip('"') for cell in data_line.split("\t")]
+                    if len(row) < len(header):
+                        row += [""] * (len(header) - len(row))
+                    records.append(dict(zip(header, row)))
+                frame = pd.DataFrame(records)
                 break
-        if header_idx is None:
-            raise ValueError("Could not locate NIST tabular header (At. Num.).")
-        header = [c.strip().strip('"') for c in lines[header_idx].split("\t")]
-        records = []
-        for line in lines[header_idx + 1:]:
-            if not line.strip() or set(line.strip()) <= {"-", "|"}:
-                continue
-            cells = [c.strip().strip('"') for c in line.split("\t")]
-            if len(cells) < len(header):
-                cells += [""] * (len(header) - len(cells))
-            records.append(dict(zip(header, cells)))
-        frame = pd.DataFrame(records)
+    if frame is None:
+        raise ValueError(f"Could not parse NIST ASD output. Response starts: {text[:1800]}")
 
     lookup = {_norm_header(col): col for col in frame.columns}
 
@@ -133,8 +161,12 @@ def parse_nist_tsv(text, energy_kind="ionization"):
     out = pd.DataFrame()
     out["Z"] = pd.to_numeric(frame[zc].astype(str).str.extract(r"(\d+)")[0], errors="coerce")
     out["element_name"] = frame[elc].astype(str).str.strip() if elc else ""
-    out["ion_charge"] = pd.to_numeric(frame[qcc], errors="coerce") if qcc else 0
     out["ground_shells"] = frame[shellc].fillna("").astype(str) if shellc else ""
+    if qcc:
+        out["ion_charge"] = pd.to_numeric(frame[qcc], errors="coerce")
+    else:
+        electron_counts = out["ground_shells"].map(count_shell_electrons)
+        out["ion_charge"] = out["Z"] - electron_counts
     parsed = frame[ec].map(parse_energy_token)
     out["energy_eV"] = parsed.map(lambda item: item[0])
     out["provenance"] = parsed.map(lambda item: item[1])
