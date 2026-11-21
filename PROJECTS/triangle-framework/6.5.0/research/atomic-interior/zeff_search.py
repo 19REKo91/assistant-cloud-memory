@@ -192,7 +192,7 @@ def run(framework_csv: Path, output_dir: Path):
     neutral = neutral.sort_values(["Z"]).drop_duplicates("Z")
     periodic = fetch_periodic_controls()
     joined = angles.merge(neutral[["Z", "energy_eV", "provenance", "ground_shells",
-                                   "outermost_shell_electron_count"]],
+                                   "occupied_principal_shell_count", "outermost_shell_electron_count"]],
                           on="Z", how="left")
     joined = joined.merge(periodic, on="Z", how="left")
     joined["Zeff_IE1_hydrogenic"] = [
