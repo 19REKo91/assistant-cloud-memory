@@ -36,7 +36,8 @@ def parse_level_value(value):
         raw = raw[:-1].strip()
     footnote = re.fullmatch(r"([0-9][0-9.\s]*)([a-z]+)", raw, flags=re.I)
     if footnote:
-        kind = "FOOTNOTED"
+        if kind == "EVALUATED":
+            kind = "FOOTNOTED"
         raw = footnote.group(1)
     raw = re.sub(r"\s+", "", raw)
     try:
@@ -64,6 +65,14 @@ def parse_levels_ascii(text, z, symbol):
         header = header[1:]
     while header and header[-1] == "":
         header = header[:-1]
+    skip_header_rows = {header_idx}
+    # NIST commonly places the Level unit and Reference label on a second header line.
+    if header_idx + 1 < len(lines) and "|" in lines[header_idx + 1]:
+        next_header = [cell.strip() for cell in lines[header_idx + 1].split("|")]
+        if len(next_header) == 2 and "cm" in next_header[0].lower() and "reference" in next_header[1].lower():
+            header[-1] = header[-1] + " " + next_header[0]
+            header.append(next_header[1])
+            skip_header_rows.add(header_idx + 1)
     level_idx = None
     conf_idx = None
     term_idx = None
@@ -81,7 +90,9 @@ def parse_levels_ascii(text, z, symbol):
     if level_idx is None:
         raise ValueError(f"NIST levels column missing for {symbol}; headers={header}")
     rows = []
-    for line in lines[header_idx + 1:]:
+    for line_index, line in enumerate(lines[header_idx + 1:], start=header_idx + 1):
+        if line_index in skip_header_rows:
+            continue
         if "|" not in line:
             if rows:
                 break
@@ -124,7 +135,6 @@ def fetch_levels(symbol, z):
         "conf_out": "on",
         "term_out": "on",
         "level_out": "on",
-        "unc_out": "1",
         "j_out": "on",
         "submit": "Retrieve Data",
     }
