@@ -8,6 +8,10 @@ on:
       - 'PROJECTS/triangle-framework/6.5.0/elements_input_118.csv'
       - '.github/workflows/atomic-interior-search.yml'
 
+concurrency:
+  group: atomic-interior-relationship-search
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
