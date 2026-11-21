@@ -301,7 +301,8 @@ def _partial_corr(x, y, z):
 
 PROPERTIES = [
     "IE1_measured_eV", "IE2_measured_eV", "IE3_measured_eV",
-    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",\n    "total_binding_neutral_all_stages_mixed_eV",
+    "IE1_to_IE3_sum_measured_eV", "total_binding_neutral_measured_eV", "total_binding_neutral_incl_semie_eV",
+    "total_binding_neutral_all_stages_mixed_eV",
     "occupied_principal_shell_count", "outermost_shell_electron_count",
 ]
 
