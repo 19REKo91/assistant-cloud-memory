@@ -48,6 +48,19 @@ class ElectronicParserTests(unittest.TestCase):
         self.assertEqual(parsed.iloc[0]["Z"], 3)
         self.assertEqual(parsed.iloc[0]["energy_eV"], 5.391714996)
 
+    def test_parse_nist_pipe_ascii_and_infer_charge(self):
+        raw = """<html><pre>
+At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Energy (eV)
+--------|----------|-------------|---------------|--------------|-----------------------
+3 | Lithium | He | 1s^2 2s | 2S | 5.391714996
+3 | Lithium | He | 1s^2 | 1S | [75.6400]
+</pre></html>"""
+        parsed = parse_nist_tsv(raw)
+        self.assertEqual(len(parsed), 2)
+        self.assertEqual(parsed.iloc[0]["ion_charge"], 0)
+        self.assertEqual(parsed.iloc[1]["ion_charge"], 1)
+        self.assertEqual(parsed.iloc[1]["provenance"], "SEMIEMPIRICAL")
+
     def test_sequential_summary_separates_provenance(self):
         ion = pd.DataFrame([
             {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "MEASURED",
