@@ -59,10 +59,10 @@ The workflow now also:
 - Downloads NUBASE2020 and selects **ground-state stable nuclides only** (`stbl`); isomers and radioactive nuclides are not silently mixed into this subset.
 - Uses NUBASE natural isotopic abundances to compute an abundance-weighted nuclear-property mean for each element, and reports the most abundant stable isotope separately.
 - Leaves elements without stable nuclides or without a reported natural abundance missing.
-- Queries NIST ASD 5.12 for sequential ionization energies and neutral total electron binding energies in eV, plus neutral ground-state shell configurations.
+- Queries NIST ASD 5.12 for sequential ionization energies across elements, plus neutral ground-state shell configurations. Total electronic binding is derived only when all Z sequential stages are present.
 - Keeps NIST provenance classes separate: unmarked values (evaluated experimental), square-bracketed values (semi-empirical/interpolated), and parenthesized values (theoretical).
 - Tests IE1, IE2, IE3, their strict measured sum, neutral total binding energy, occupied principal-shell count, and outermost-shell electron occupancy against the 6.5.0 closure angle.
-- Reports Pearson, Spearman, partial correlation after controlling for Z, and an ordered-Z holdout (train Z <= 60, test Z > 60).
+- Reports Pearson, Spearman, partial correlation after controlling for Z, and an ordered-Z holdout (train Z <= 60, test Z > 60) comparing Z-only, angle-only, and Z-plus-angle models.
 
 ### Added data-source references
 
@@ -77,11 +77,13 @@ The workflow now also:
 - `stable_isotope_element_summary.csv`
 - `element_angle_stable_isotope_summary.csv`
 - `stable_isotope_weighted_correlations.csv`
+- `stable_isotope_weighted_holdout.csv`
+- `dominant_stable_isotope_holdout.csv`
 - `dominant_stable_isotope_correlations.csv`
 - `NIST_ASD_ionization_all_stages.csv`
-- `NIST_ASD_total_binding_all_stages.csv`
+- `NIST_ASD_fetch_errors.csv`
 - `element_angle_electronic_summary.csv`
 - `electronic_correlations.csv`
 - `electronic_ordered_Z_holdout.csv`
 
-The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
+NIST defines total binding energy as the sum of sequential ionization energies. This workflow derives that sum only when every charge stage is available and all included stages meet the stated provenance threshold; it is not treated as an independent measurement. The new phase is exploratory. A correlation does not establish a causal or physical law; missing or theoretical data are not promoted to measured observations.
