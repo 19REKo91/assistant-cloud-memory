@@ -76,14 +76,29 @@ At. num | El. Name | Isoel. Seq. | Ground Shells | Ground Level | Ionization Ene
              "ground_shells": "1s1", "occupied_principal_shell_count": 1,
              "outermost_shell_electron_count": 1},
         ])
-        binding = pd.DataFrame([
-            {"Z": 3, "ion_charge": 0, "energy_eV": 203.39, "provenance": "MEASURED"}
-        ])
-        summary = electronic_element_summary(ion, binding).iloc[0]
+        summary = electronic_element_summary(ion).iloc[0]
         self.assertEqual(summary["IE1_measured_eV"], 5.39)
         self.assertTrue(pd.isna(summary["IE2_measured_eV"]))
         self.assertTrue(pd.isna(summary["IE1_to_IE3_sum_measured_eV"]))
-        self.assertEqual(summary["total_binding_neutral_measured_eV"], 203.39)
+        self.assertTrue(pd.isna(summary["total_binding_neutral_measured_eV"]))
+        self.assertTrue(pd.isna(summary["total_binding_neutral_incl_semie_eV"]))
+        self.assertEqual(summary["IE_stage_coverage_fraction"], 1.0)
+
+    def test_total_binding_is_derived_only_with_complete_measured_stages(self):
+        ion = pd.DataFrame([
+            {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "MEASURED",
+             "ground_shells": "1s2 2s1", "occupied_principal_shell_count": 2,
+             "outermost_shell_electron_count": 1},
+            {"Z": 3, "ion_charge": 1, "energy_eV": 75.64, "provenance": "MEASURED",
+             "ground_shells": "1s2", "occupied_principal_shell_count": 1,
+             "outermost_shell_electron_count": 2},
+            {"Z": 3, "ion_charge": 2, "energy_eV": 122.45, "provenance": "MEASURED",
+             "ground_shells": "1s1", "occupied_principal_shell_count": 1,
+             "outermost_shell_electron_count": 1},
+        ])
+        summary = electronic_element_summary(ion).iloc[0]
+        self.assertAlmostEqual(summary["total_binding_neutral_measured_eV"], 203.48)
+        self.assertTrue(summary["total_binding_is_complete"])
 
 class StableIsotopeTests(unittest.TestCase):
     def test_nubase_filters_to_stable_ground_states(self):
