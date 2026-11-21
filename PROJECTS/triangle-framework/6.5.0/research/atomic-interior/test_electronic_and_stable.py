@@ -37,6 +37,17 @@ class ElectronicParserTests(unittest.TestCase):
         self.assertEqual(parsed.iloc[2]["provenance"], "THEORETICAL")
         self.assertEqual(parsed.iloc[0]["ion_charge"], 0)
 
+    def test_parse_nist_html_output(self):
+        raw = """<html><body><table>
+        <tr><th>At. Num.</th><th>El. name</th><th>Ion Charge</th>
+        <th>Ground Shells</th><th>Ionization Energy (eV)</th></tr>
+        <tr><td>3</td><td>Lithium</td><td>0</td><td>1s2 2s1</td><td>5.391714996</td></tr>
+        </table></body></html>"""
+        parsed = parse_nist_tsv(raw)
+        self.assertEqual(len(parsed), 1)
+        self.assertEqual(parsed.iloc[0]["Z"], 3)
+        self.assertEqual(parsed.iloc[0]["energy_eV"], 5.391714996)
+
     def test_sequential_summary_separates_provenance(self):
         ion = pd.DataFrame([
             {"Z": 3, "ion_charge": 0, "energy_eV": 5.39, "provenance": "MEASURED",
