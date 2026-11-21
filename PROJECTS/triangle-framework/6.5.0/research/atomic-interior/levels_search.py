@@ -97,12 +97,9 @@ def parse_levels_ascii(text, z, symbol):
             if rows:
                 break
             continue
+        # Do not trim leading empty cells: NIST uses them to indicate repeated
+        # configuration/term fields on fine-structure rows.
         cells = [cell.strip() for cell in line.split("|")]
-        if len(cells) > len(header):
-            while len(cells) > len(header) and cells[0] == "":
-                cells = cells[1:]
-            while len(cells) > len(header) and cells[-1] == "":
-                cells = cells[:-1]
         if not cells or all(set(cell) <= {"-", " "} for cell in cells):
             continue
         if len(cells) < len(header):
