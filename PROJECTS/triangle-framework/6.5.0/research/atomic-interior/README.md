@@ -96,7 +96,8 @@ The workflow queries the neutral spectrum (`Element I`) one element at a time, f
 - Unmarked: evaluated data
 - `[x]`: semi-empirical/interpolated
 - `(x)`: ab-initio/theoretical
-- Tentative or unconnected levels are flagged and excluded from strict evaluated-gap metrics
+- Tentative, footnoted, or unconnected levels are flagged and excluded from strict evaluated-gap metrics
+- NIST suppresses repeated configuration and term labels on fine-structure rows; the parser carries those labels forward only within their grouped rows
 
 Per element it extracts the lowest positive evaluated level gap, first gap to a distinct term, first gap to a distinct configuration, the median of the first five positive evaluated levels, and evaluated level counts below 10,000 and 20,000 cm^-1. It compares these with the closure angle using Pearson, Spearman, partial correlation after controlling for Z, and a Z-ordered holdout comparing Z-only, angle-only, and Z-plus-angle models.
 
