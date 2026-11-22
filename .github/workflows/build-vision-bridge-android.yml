@@ -2,10 +2,6 @@ name: Build Vision Bridge Android
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'vision-bridge-android/**'
-
 jobs:
   build:
     runs-on: ubuntu-latest
