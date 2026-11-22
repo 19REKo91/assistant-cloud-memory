@@ -141,7 +141,7 @@ def render_svg(rows):
             spanx=max(maxx-minx,1e-12); spany=max(maxy-miny,1e-12)
             scale=min(205/spanx,112/spany)
             ox=x+cw/2-(minx+maxx)/2*scale
-            oy=y+166+(miny+maxy)/2*scale
+            oy=y+150+(miny+maxy)/2*scale
             def tr(p): return (ox+p[0]*scale,oy-p[1]*scale)
             q=[tr(p) for p in pts]; qi=tr((ix,iy))
             colors=["#36a657","#2878d0","#f2c744"]
@@ -211,7 +211,7 @@ def main():
         base=dict(r)
         base.pop("_phase")
         base["Phase_Cohort"]=r["_phase"]
-        base["Cohort_N"]={"Gas":11,"Solid":105,"Liquid":2}.get(r["_phase"],0)
+        base["Cohort_N"]={"Gas":12,"Solid":104,"Liquid":2}.get(r["_phase"],0)
         base["Lambda"]=LAMBDA
         if x is None or y is None:
             base.update({"Angle_A_deg":"NA","Angle_B_deg":"NA","Angle_C_deg":"NA",
