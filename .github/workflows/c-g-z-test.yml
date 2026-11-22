@@ -1,12 +1,6 @@
 name: C-G-Z Test v1.0
 
 on:
-  push:
-    paths:
-      - "PROJECTS/C-G-Z-Test-v1.0/main.py"
-      - "PROJECTS/C-G-Z-Test-v1.0/requirements.txt"
-      - "PROJECTS/C-G-Z-Test-v1.0/data/C_G_Z_unified_accountant_input_118.csv"
-      - ".github/workflows/c-g-z-test.yml"
   workflow_dispatch:
 
 permissions:
