@@ -173,10 +173,14 @@ def main():
         temp=pr["Temperature_C"]; pressure=pr["Pressure_kPa"]
         if ph=="Gas" and z in gmap:
             gr=gmap[z]
-            rho20=fnum(gr["Density_20C_derived_g_cm3"])
-            if rho20:
-                rho=rho20; temp="20"; pressure="101.325"
-                gas_status=gr["Density_reference_status"]
+            rho20_ref=fnum(gr.get("Density_20C_reference_g_cm3"))
+            rho20_derived=fnum(gr["Density_20C_derived_g_cm3"])
+            if rho20_ref is not None:
+                rho=rho20_ref; temp="20"; pressure="101.325"
+                gas_status="DIRECT_20C_REFERENCE_VALUE_USED"
+            elif rho20_derived is not None:
+                rho=rho20_derived; temp="20"; pressure="101.325"
+                gas_status="IDEAL_GAS_SCALED_FROM_0C_NO_DIRECT_20C_VALUE"
         vol=mass/rho if mass and rho else None
         source_class=pr["Density_Source_Class"]
         quality=pr["Data_Quality_Flag"]
@@ -187,10 +191,10 @@ def main():
             status="PREDICTED_OR_EXPECTED_INPUT"
         elif ph=="Liquid":
             status="LOW_N_LIQUID_COHORT"
-        elif ph=="Gas" and gas_status.startswith("NO_DIRECT"):
+        elif ph=="Gas" and gas_status.startswith("IDEAL_GAS"):
             status="GAS_IDEAL_SCALED_20C"
         elif ph=="Gas":
-            status="GAS_20C_DERIVED_WITH_DIRECT_CROSSCHECK"
+            status="GAS_DIRECT_20C_REFERENCE_USED"
         elif source_class!="PubChem":
             status="SECONDARY_SOURCE_INPUT"
         else:
