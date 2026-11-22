@@ -21,3 +21,15 @@ For the elemental diatomic gases H₂, N₂, O₂, F₂, and Cl₂, the molecula
 
 ## File
 `ELEMENTS_118_RAW_MOLAR_VOLUME_SCREENING_NOT_FOR_NORMALIZATION_2026-11-22.csv`
+
+
+## 8. Distribution diagnostic from the raw screening file
+A grouped summary was computed from the 118-row derivative, without adopting any normalization range:
+- PubChem-listed gases (11): 11,029.87 to 22,817.84 cm³/mol atoms.
+- PubChem-listed solids (83): 4.5612 to 68.8629 cm³/mol atoms.
+- PubChem-listed liquids (2): 14.8216 to 25.6913 cm³/mol atoms.
+- PSE Info solid entries (9 measured/unspecified plus separate expected-state entries): the values remain secondary and are not pooled with PubChem.
+- ChemicalAid solid entries (4): secondary-source cohort.
+- Expected solid entries (8) and expected gas entry Og (1): predicted/expected phase labels; do not treat as measured.
+
+This reveals an immediate scale problem: gas molar volumes are roughly three orders of magnitude larger than solid/liquid values. A pooled min-max normalization would therefore be dominated by phase, not just by elemental differences. This is a mathematical warning from the raw data, not a final physical conclusion. It supports keeping phase-specific cohorts separate until a defensible common-state treatment exists.
