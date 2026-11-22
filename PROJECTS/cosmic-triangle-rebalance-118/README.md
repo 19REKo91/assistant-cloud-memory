@@ -40,3 +40,13 @@ Independent experimental workspace. The frozen reference framework is not modifi
 - CIAAW 2024 publishes standard atomic weights for 84 elements in the current table; 34 elements have no CIAAW standard atomic weight entry and need nuclide-specific mass identity.
 - Raw M/rho values are calculated for all 118 rows as a diagnostic only. The PubChem gas subset is about 11,030–22,818 cm³/mol atoms, while the PubChem solid subset is about 4.56–68.86 cm³/mol atoms. A single pooled min-max scale would be dominated by phase.
 - No normalization cohort, angle parameter, or element geometry has been approved or computed.
+
+- `ELEMENTS_94_PUBCHEM_PHASE_RANK_TRIANGLE_SWEEP_2026-11-22.csv` — 282 exploratory triangle rows (94 PubChem solid/gas elements × 3 lambda values), with incenter coordinates.
+- `PHASE_RANK_TRIANGLE_SWEEP_AUDIT_2026-11-22.md` — method and interpretation limits for the 94-element prototype.
+
+## Prototype calculation status
+- Calculated a phase-specific empirical-rank prototype for 83 PubChem solid entries and 11 PubChem gas entries.
+- Each element was computed at lambda = 0.25, 0.50, and 1.00; 282 triangles total.
+- Every triangle has three positive interior angles summing to 180 degrees within floating-point error.
+- The incenter coordinates are included using side-length weighting and a normalized base side c=1.
+- This is not yet the final 118-element map. Two liquid entries, 22 secondary-source entries, and nine expected-state entries are not in this controlled prototype.
