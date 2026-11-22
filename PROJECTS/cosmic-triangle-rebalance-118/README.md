@@ -50,3 +50,14 @@ Independent experimental workspace. The frozen reference framework is not modifi
 - Every triangle has three positive interior angles summing to 180 degrees within floating-point error.
 - The incenter coordinates are included using side-length weighting and a normalized base side c=1.
 - This is not yet the final 118-element map. Two liquid entries, 22 secondary-source entries, and nine expected-state entries are not in this controlled prototype.
+
+- `ELEMENTS_118_PHASE_RANK_TRIANGLES_LAMBDA_0_50_EXPLORATORY_2026-11-22.csv` — one independent exploratory triangle and incenter for each of the 118 elements.
+- `ALL_118_PHASE_RANK_SCENARIO_AUDIT_2026-11-22.md` — full-coverage scenario, cohort sizes, and sensitivity to secondary/expected entries.
+
+## Full-coverage exploratory run
+- All 118 elements now have a separate triangle in the exploratory CSV.
+- Phase cohorts: 104 solid/expected-solid, 12 gas/expected-gas, 2 liquid.
+- The two-member liquid cohort is explicitly low-N and its rank-based triangle is unstable.
+- Secondary and expected values are included only as flagged illustrative inputs.
+- Adding secondary/expected rows shifts PubChem-only percentile ranks: mean absolute shift 0.0643 for density and 0.0237 for molar volume; maximum shifts 0.1161 and 0.0909 respectively.
+- The run uses lambda=0.50 only as a demonstration setting. It is not approved as the final model and does not resolve cross-phase comparability.
