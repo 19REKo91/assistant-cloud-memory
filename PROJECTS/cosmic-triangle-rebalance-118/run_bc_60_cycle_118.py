@@ -9,7 +9,7 @@ import csv, math
 from pathlib import Path
 from html import escape
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[2]
 PROJECT = ROOT / "PROJECTS" / "cosmic-triangle-rebalance-118"
 SOURCE = PROJECT / "ELEMENTS_118_BC_60_CYCLE_TEST_2026-11-22.csv"
 OUT_CSV = PROJECT / "ELEMENTS_118_BC_60_CYCLE_COMPLETE_2026-11-22.csv"
