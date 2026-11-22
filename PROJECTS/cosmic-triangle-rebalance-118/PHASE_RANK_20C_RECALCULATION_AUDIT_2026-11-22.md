@@ -23,7 +23,7 @@
 - Cohort sizes: {'Gas': 12, 'Solid': 104, 'Liquid': 2}
 
 ## Input quality distribution
-- GAS_20C_DERIVED_WITH_DIRECT_CROSSCHECK: 7
+- GAS_DIRECT_20C_REFERENCE_USED: 7
 - GAS_IDEAL_SCALED_20C: 4
 - LOW_N_LIQUID_COHORT: 2
 - PREDICTED_OR_EXPECTED_INPUT: 15
