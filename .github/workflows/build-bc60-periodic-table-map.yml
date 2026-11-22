@@ -1,0 +1,26 @@
+name: Build B-C 60 Cycle Periodic Table Map
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install plotting dependency
+        run: python -m pip install --upgrade pip matplotlib
+      - name: Build periodic table map
+        run: python PROJECTS/cosmic-triangle-rebalance-118/build_bc60_periodic_table_map_118.py
+      - name: Commit outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_PERIODIC_TABLE_MAP_2026-11-22.png
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_PERIODIC_TABLE_MAP_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/BC60_PERIODIC_TABLE_MAP_AUDIT_2026-11-22.md
+          git commit -m "Add B-C 60 cycle periodic table map"
+          git push
