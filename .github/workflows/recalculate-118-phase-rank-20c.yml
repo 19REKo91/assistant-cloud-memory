@@ -1,0 +1,29 @@
+name: Recalculate 118 Phase-Rank Map at 20C
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  recalculate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install plotting dependency
+        run: python -m pip install --upgrade pip matplotlib
+      - name: Recalculate 118 rows and render map
+        run: python PROJECTS/cosmic-triangle-rebalance-118/rebuild_118_phase_rank_map_20c.py
+      - name: Commit outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_PHASE_RANK_20C_RECALCULATED_EXPLORATORY_2026-11-22.csv
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_PERIODIC_TABLE_TRIANGLES_20C_EXPLORATORY_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_PERIODIC_TABLE_TRIANGLES_20C_EXPLORATORY_2026-11-22.png
+          git add PROJECTS/cosmic-triangle-rebalance-118/PHASE_RANK_20C_RECALCULATION_AUDIT_2026-11-22.md
+          git commit -m "Add exploratory 20C 118-element periodic triangle map"
+          git push
