@@ -461,19 +461,85 @@ function showInfo() {
 }
 
 // ═══════════ SAVE / LOAD ═══════════
-function exportData() {
+async function exportData() {
   const data = { version:1, faces:{} };
   for (const [f, d] of Object.entries(state.faces)) {
     data.faces[f] = { angles:{...d.angles}, sides:{...d.sides} };
   }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `elemental-lab-${Date.now()}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  const json = JSON.stringify(data, null, 2);
+  const filename = \`elemental-lab-\${Date.now()}.json\`;
+
+  // المحاولة 1: Web Share API (يعمل ممتاز على أندرويد)
+  try {
+    const file = new File([json], filename, { type:'application/json' });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Elemental Laboratory',
+        text: 'بيانات الهرم'
+      });
+      showToast('✓ تم مشاركة الملف');
+      return;
+    }
+  } catch (e) {
+    if (e.name === 'AbortError') return; // المستخدم ألغى
+  }
+
+  // المحاولة 2: نسخ إلى الحافظة
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(json);
+      showToast('✓ تم نسخ البيانات للحافظة — الصقها في ملف .json');
+      return;
+    }
+  } catch {}
+
+  // المحاولة 3: عرض البيانات في نافذة للنسخ اليدوي
+  showJsonModal(json, filename);
 }
 
+function showJsonModal(json, filename) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = \`position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;
+    display:flex;flex-direction:column;padding:14px;gap:10px\`;
+
+  const title = document.createElement('div');
+  title.style.cssText = 'color:#e8e8f0;font-size:13px;text-align:center';
+  title.textContent = \`انسخ المحتوى واحفظه كملف \${filename}\`;
+
+  const ta = document.createElement('textarea');
+  ta.value = json;
+  ta.readOnly = true;
+  ta.style.cssText = \`flex:1;background:#141420;color:#e8e8f0;border:1px solid #2a2a3e;
+    border-radius:8px;padding:10px;font-family:monospace;font-size:11px;resize:none;direction:ltr\`;
+
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = 'نسخ';
+  copyBtn.className = 'btn primary';
+  copyBtn.onclick = async () => {
+    ta.select();
+    ta.setSelectionRange(0, json.length);
+    try {
+      await navigator.clipboard.writeText(json);
+      copyBtn.textContent = '✓ تم النسخ';
+    } catch {
+      document.execCommand('copy');
+      copyBtn.textContent = '✓ تم النسخ';
+    }
+  };
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'إغلاق';
+  closeBtn.className = 'btn';
+  closeBtn.onclick = () => overlay.remove();
+
+  row.append(copyBtn, closeBtn);
+  overlay.append(title, ta, row);
+  document.body.appendChild(overlay);
+}
 function importData(file) {
   const r = new FileReader();
   r.onload = e => {
