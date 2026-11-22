@@ -1,6 +1,7 @@
 name: CHRONO CROSS GPT browser command bridge
 
 on:
+  workflow_dispatch:
 permissions:
   contents: read
 
