@@ -11,7 +11,7 @@
 
 ## Completeness
 - All 11/11 gases have a 20 °C value on a consistent calculation basis.
-- Direct 20 °C table cross-check values were located for 7/11: H, He, N, O, F, Cl, Ar.
+- Direct 20 °C table cross-check values were located for 7/11: H, He, N, O, F, Cl, Ar. For H, the initial NTP table entry (0.0893 kg/m³) conflicts with the independent 20 °C table (0.08377 kg/m³); the latter is used in the cross-check column and the conflict is not silently merged.
 - No direct 20 °C table value was located in the checked source for Ne, Kr, Xe, Rn; these remain explicitly marked as ideal-gas-scaled estimates from their 0 °C source densities.
 
 ## Important limitations
@@ -21,8 +21,8 @@
 - Historical 60° cycle counts are carried only as references and have not been recalculated.
 
 ## External cross-check sources
-- Density table defines NTP as 20 °C and 1 atm and lists direct densities for several gases: https://www.densitiestable.com/gases
-- Independent temperature/pressure table and gas density temperature dependence: https://rulesofthumb.info/materials/gas-density
+- Density table defines NTP as 20 °C and 1 atm and lists direct densities for several gases; its H₂ NTP entry conflicts with the independent table and is not used: https://www.densitiestable.com/gases
+- Independent temperature/pressure table and gas density temperature dependence (including H₂ at 20 °C): https://rulesofthumb.info/materials/gas-density
 - Elemental gases list confirms the 11 room-temperature elemental gases: https://www.periodictable.one/elements/gas?view=table
 
 ## Output
