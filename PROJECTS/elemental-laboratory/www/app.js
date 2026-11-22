@@ -136,7 +136,7 @@ function renderPanel() {
     </div>`;
   }).join('');
 
-  const sideRows = [`${v1}${v2}`, `${v2}${v3}`, `${v3}${v1}`].map(s => {
+  const sideRows = [edgeKey(v1,v2), edgeKey(v2,v3), edgeKey(v3,v1)].map(s => {
     const val = data.sides[s];
     const computed = data.result && data._computedSides?.includes(s) ? 'computed' : '';
     return `<div class="row">
