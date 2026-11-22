@@ -120,3 +120,55 @@ Consequences:
 
 ---
 **Current conclusion:** A complete geometric/phase screening exists for 118 elements, but a scientifically meaningful element-by-element trait-match verdict remains pending independent property collection and an explicit operational scoring protocol.
+
+
+## 10. 360° dosage application — added 2026-11-22
+The 6.0 dosage transformation was applied to the existing lambda=0.50 angles as a **derived comparison layer only**:
+`S_A=90+Angle_A/2`, `S_B=90+Angle_B/2`, `S_C=90+Angle_C/2`.
+
+### Output
+- [118-element 360° dosage CSV](https://github.com/19REKo91/assistant-cloud-memory/blob/main/PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_PHASE_RANK_20C_DOSAGES_360_2026-11-22.csv)
+
+### Arithmetic validation
+- 118 records processed.
+- Source angle sums are 180° per row; derived dosage sums are 360° per row.
+- Maximum floating-point sum deviation from 360°: approximately (5.7\times10^{-14}\) degrees.
+- No extra 60° cycles or rescue adjustments were applied. The current lambda=0.50 triangles are already Euclidean angle triplets; this dosage transformation is not the spherical rescue method and does not create an n value.
+
+### Dominant dosage counts
+Because (S=90+\theta/2) is a strictly increasing linear transformation, the largest dosage is mathematically guaranteed to be the same sector as the largest angle. Counts therefore remain A=38, B=44, C=36. The dosage representation adds a 360° sector interpretation and allows comparison against the balanced reference 120°/120°/120°, but it does not independently change the classification.
+
+### Dose distribution by phase cohort
+| Cohort | n | Mean S_A | Mean S_B | Mean S_C | Dominant A/B/C |
+|---|---:|---:|---:|---:|---|
+| Gas | 12 | 119.541° | 119.547° | 120.912° | 2 / 5 / 5 |
+| Liquid | 2 | 121.176° | 121.176° | 117.648° | 1 / 1 / 0 |
+| Solid | 104 | 119.912° | 119.912° | 120.177° | 35 / 38 / 31 |
+
+### Strongest sector excess above the balanced 120° reference
+| Element | S_A | S_B | S_C | Dominant | Excess over 120° |
+|---|---:|---:|---:|---|---:|
+| Be | 105.470° | 104.595° | 149.935° | C | +29.935° |
+| C | 106.231° | 105.018° | 148.751° | C | +28.751° |
+| B | 106.544° | 104.724° | 148.732° | C | +28.732° |
+| Al | 108.722° | 110.631° | 140.646° | C | +20.646° |
+| V | 111.298° | 108.411° | 140.291° | C | +20.291° |
+
+### Near-balanced / weakly separated dominant sectors
+Eight elements have a top-vs-second dosage margin below 1°; eleven are below 2°; 25 are below 5°. Examples:
+- Lu: A=B=122.366° (tie; dominant-sector tie policy should be explicit).
+- Ru: C=125.430°, A=125.258° (margin 0.172°).
+- Rh: A=125.540°, C=125.368° (margin 0.172°).
+- Fl: A=126.890°, B=126.711° (margin 0.179°).
+- Ag: A=123.704°, C=123.216° (margin 0.487°).
+- Th: B=125.176°, A=124.500° (margin 0.676°).
+- Sb: B=123.223°, C=122.426° (margin 0.797°).
+- Pd: A=125.203°, C=124.359° (margin 0.844°).
+
+### Interpretation and safeguards
+1. Dosages expose the magnitude of deviation from the balanced 120° sectors, which is more informative than reporting only A/B/C as a label.
+2. The linear dosage transformation preserves the exact ranking of the three angles. Therefore, it is not an independent validation and cannot by itself establish physical/chemical trait matching.
+3. Small margins identify borderline classifications; Lu is a tie and should not be forced into a unique dominant class without a declared tie rule.
+4. A sector above 120° is an internal geometric imbalance relative to the model's equal-sector baseline, not a direct measurement of physical strength or causal control.
+5. The dosage CSV is a derived table. Original input angles and provenance remain in the source CSV.
+6. This is an exploratory application of the 6.0 dosage formula to the lambda=0.50 angle output, not a claim that lambda=0.50 is the 6.0 engine and not an amendment to frozen 6.2.1.
