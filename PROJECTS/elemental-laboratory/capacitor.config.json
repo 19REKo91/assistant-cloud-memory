@@ -1,8 +1,5 @@
 {
   "appId": "com.cosmictriangle.elementallab",
   "appName": "Elemental Laboratory",
-  "webDir": "www",
-  "server": {
-    "androidScheme": "https"
-  }
+  "webDir": "dist"
 }
