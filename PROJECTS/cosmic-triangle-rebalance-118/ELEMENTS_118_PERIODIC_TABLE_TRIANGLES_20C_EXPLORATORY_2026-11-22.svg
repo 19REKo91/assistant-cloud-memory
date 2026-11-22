@@ -1,0 +1,950 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="5000" height="2255" viewBox="0 0 5000 2255">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,sans-serif;fill:#17202a}.sym{font-size:22px;font-weight:bold}.z{font-size:12px;fill:#59636e}.small{font-size:10px;fill:#46515c}.cell{fill:#fbfcfd;stroke:#d7dde4;stroke-width:1}.missing{fill:#f3f4f6;stroke:#9ca3af;stroke-dasharray:4 3}.dot{fill:#c62828;stroke:#fff;stroke-width:1}</style>
+<text x="70" y="36" font-size="24" font-weight="bold">118 Elements — 20°C gas update / phase-rank exploratory map (lambda=0.50)</text>
+<text x="70" y="55" font-size="12" fill="#58616b">A: green · B: blue · C: yellow · red point: incenter · periodic-table positions</text>
+<rect class="cell" x="74" y="74" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="95">Z=1</text>
+<text class="sym" x="85" y="121">H</text>
+<polygon points="230.06,226.53 102.50,264.57 307.50,264.57" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="230.06,226.53 307.50,264.57 238.66,175.43" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="230.06,226.53 238.66,175.43 102.50,264.57" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="230.06" cy="226.53" r="4"/>
+<text class="small" x="85" y="290">A/B/C=33.2/52.3/94.5°</text>
+<rect class="cell" x="4664" y="74" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="95">Z=2</text>
+<text class="sym" x="4675" y="121">He</text>
+<polygon points="4826.54,234.26 4706.47,276.00 4883.53,276.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4826.54,234.26 4883.53,276.00 4848.09,164.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4826.54,234.26 4848.09,164.00 4706.47,276.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4826.54" cy="234.26" r="4"/>
+<text class="small" x="4675" y="290">A/B/C=38.3/72.4/69.2°</text>
+<rect class="cell" x="74" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="330">Z=3</text>
+<text class="sym" x="85" y="356">Li</text>
+<polygon points="226.87,460.60 102.50,497.13 307.50,497.13" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="226.87,460.60 307.50,497.13 233.58,412.87" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="226.87,460.60 233.58,412.87 102.50,497.13" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="226.87" cy="460.60" r="4"/>
+<text class="small" x="85" y="525">A/B/C=32.7/48.7/98.5°</text>
+<rect class="cell" x="344" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="330">Z=4</text>
+<text class="sym" x="355" y="356">Be</text>
+<polygon points="471.87,457.14 372.50,484.64 577.50,484.64" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="471.87,457.14 577.50,484.64 471.39,425.36" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="471.87,457.14 471.39,425.36 372.50,484.64" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="471.87" cy="457.14" r="4"/>
+<text class="small" x="355" y="525">A/B/C=30.9/29.2/119.9°</text>
+<rect class="cell" x="3314" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="330">Z=5</text>
+<text class="sym" x="3325" y="356">B</text>
+<polygon points="3438.73,457.42 3342.50,486.00 3547.50,486.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3438.73,457.42 3547.50,486.00 3437.67,424.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3438.73,457.42 3437.67,424.00 3342.50,486.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3438.73" cy="457.42" r="4"/>
+<text class="small" x="3325" y="525">A/B/C=33.1/29.4/117.5°</text>
+<rect class="cell" x="3584" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="330">Z=6</text>
+<text class="sym" x="3595" y="356">C</text>
+<polygon points="3710.82,457.42 3612.50,486.05 3817.50,486.05" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3710.82,457.42 3817.50,486.05 3710.11,423.95" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3710.82,457.42 3710.11,423.95 3612.50,486.05" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3710.82" cy="457.42" r="4"/>
+<text class="small" x="3595" y="525">A/B/C=32.5/30.0/117.5°</text>
+<rect class="cell" x="3854" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="330">Z=7</text>
+<text class="sym" x="3865" y="356">N</text>
+<polygon points="3985.00,463.98 3882.50,506.71 4087.50,506.71" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3985.00,463.98 4087.50,506.71 3985.00,403.29" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3985.00,463.98 3985.00,403.29 3882.50,506.71" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3985.00" cy="463.98" r="4"/>
+<text class="small" x="3865" y="525">A/B/C=45.3/45.3/89.5°</text>
+<rect class="cell" x="4124" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="330">Z=8</text>
+<text class="sym" x="4135" y="356">O</text>
+<polygon points="4244.67,463.90 4152.50,506.35 4357.50,506.35" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4244.67,463.90 4357.50,506.35 4240.34,403.65" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4244.67,463.90 4240.34,403.65 4152.50,506.35" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4244.67" cy="463.90" r="4"/>
+<text class="small" x="4135" y="525">A/B/C=49.5/41.2/89.3°</text>
+<rect class="cell" x="4394" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="330">Z=9</text>
+<text class="sym" x="4405" y="356">F</text>
+<polygon points="4520.73,469.73 4444.43,511.00 4605.57,511.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4520.73,469.73 4605.57,511.00 4517.68,399.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4520.73,469.73 4517.68,399.00 4444.43,511.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4520.73" cy="469.73" r="4"/>
+<text class="small" x="4405" y="525">A/B/C=56.8/51.9/71.3°</text>
+<rect class="cell" x="4664" y="309" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="330">Z=10</text>
+<text class="sym" x="4675" y="356">Ne</text>
+<polygon points="4821.44,473.06 4723.15,511.00 4866.85,511.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4821.44,473.06 4866.85,511.00 4846.62,399.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4821.44,473.06 4846.62,399.00 4723.15,511.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4821.44" cy="473.06" r="4"/>
+<text class="small" x="4675" y="525">A/B/C=42.2/79.8/58.0°</text>
+<rect class="cell" x="74" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="565">Z=11</text>
+<text class="sym" x="85" y="591">Na</text>
+<polygon points="245.44,704.67 114.68,746.00 295.32,746.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="245.44,704.67 295.32,746.00 274.15,634.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="245.44,704.67 274.15,634.00 114.68,746.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="245.44" cy="704.67" r="4"/>
+<text class="small" x="85" y="760">A/B/C=35.1/79.3/65.6°</text>
+<rect class="cell" x="344" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="565">Z=12</text>
+<text class="sym" x="355" y="591">Mg</text>
+<polygon points="496.06,697.06 372.50,736.26 577.50,736.26" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="496.06,697.06 577.50,736.26 503.65,643.74" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="496.06,697.06 503.65,643.74 372.50,736.26" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="496.06" cy="697.06" r="4"/>
+<text class="small" x="355" y="760">A/B/C=35.2/51.4/93.4°</text>
+<rect class="cell" x="3314" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="565">Z=13</text>
+<text class="sym" x="3325" y="591">Al</text>
+<polygon points="3450.38,695.35 3342.50,731.91 3547.50,731.91" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3450.38,695.35 3547.50,731.91 3451.96,648.09" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3450.38,695.35 3451.96,648.09 3342.50,731.91" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3450.38" cy="695.35" r="4"/>
+<text class="small" x="3325" y="760">A/B/C=37.4/41.3/101.3°</text>
+<rect class="cell" x="3584" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="565">Z=14</text>
+<text class="sym" x="3595" y="591">Si</text>
+<polygon points="3728.01,696.65 3612.50,735.52 3817.50,735.52" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3728.01,696.65 3817.50,735.52 3732.47,644.48" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3728.01,696.65 3732.47,644.48 3612.50,735.52" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3728.01" cy="696.65" r="4"/>
+<text class="small" x="3595" y="760">A/B/C=37.2/47.0/95.8°</text>
+<rect class="cell" x="3854" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="565">Z=15</text>
+<text class="sym" x="3865" y="591">P</text>
+<polygon points="4011.17,699.36 3882.50,741.57 4087.50,741.57" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4011.17,699.36 4087.50,741.57 4022.78,638.43" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4011.17,699.36 4022.78,638.43 3882.50,741.57" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4011.17" cy="699.36" r="4"/>
+<text class="small" x="3865" y="760">A/B/C=36.3/57.9/85.8°</text>
+<rect class="cell" x="4124" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="565">Z=16</text>
+<text class="sym" x="4135" y="591">S</text>
+<polygon points="4276.32,698.81 4152.50,740.64 4357.50,740.64" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4276.32,698.81 4357.50,740.64 4285.30,639.36" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4276.32,698.81 4285.30,639.36 4152.50,740.64" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4276.32" cy="698.81" r="4"/>
+<text class="small" x="4135" y="760">A/B/C=37.3/54.5/88.2°</text>
+<rect class="cell" x="4394" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="565">Z=17</text>
+<text class="sym" x="4405" y="591">Cl</text>
+<polygon points="4495.88,702.63 4429.14,746.00 4620.86,746.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4495.88,702.63 4620.86,746.00 4478.91,634.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4495.88,702.63 4478.91,634.00 4429.14,746.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4495.88" cy="702.63" r="4"/>
+<text class="small" x="4405" y="760">A/B/C=66.0/38.3/75.7°</text>
+<rect class="cell" x="4664" y="544" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="565">Z=18</text>
+<text class="sym" x="4675" y="591">Ar</text>
+<polygon points="4797.95,712.88 4743.09,746.00 4846.91,746.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4797.95,712.88 4846.91,746.00 4802.04,634.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4797.95,712.88 4802.04,634.00 4743.09,746.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4797.95" cy="712.88" r="4"/>
+<text class="small" x="4675" y="760">A/B/C=62.2/68.2/49.6°</text>
+<rect class="cell" x="74" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="800">Z=19</text>
+<text class="sym" x="85" y="826">K</text>
+<polygon points="248.73,941.74 120.92,981.00 289.08,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="248.73,941.74 289.08,981.00 286.02,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="248.73,941.74 286.02,869.00 120.92,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="248.73" cy="941.74" r="4"/>
+<text class="small" x="85" y="995">A/B/C=34.2/88.4/57.4°</text>
+<rect class="cell" x="344" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="800">Z=20</text>
+<text class="sym" x="355" y="826">Ca</text>
+<polygon points="514.36,940.81 389.72,981.00 560.28,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="514.36,940.81 560.28,981.00 545.31,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="514.36,940.81 545.31,869.00 389.72,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="514.36" cy="940.81" r="4"/>
+<text class="small" x="355" y="995">A/B/C=35.7/82.4/61.9°</text>
+<rect class="cell" x="614" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="625" y="800">Z=21</text>
+<text class="sym" x="625" y="826">Sc</text>
+<polygon points="762.19,935.53 642.50,979.81 847.50,979.81" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="762.19,935.53 847.50,979.81 770.37,870.19" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="762.19,935.53 770.37,870.19 642.50,979.81" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="762.19" cy="935.53" r="4"/>
+<text class="small" x="625" y="995">A/B/C=40.6/54.9/84.5°</text>
+<rect class="cell" x="884" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="800">Z=22</text>
+<text class="sym" x="895" y="826">Ti</text>
+<polygon points="1019.91,931.93 912.50,971.48 1117.50,971.48" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1019.91,931.93 1117.50,971.48 1021.63,878.52" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1019.91,931.93 1021.63,878.52 912.50,971.48" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1019.91" cy="931.93" r="4"/>
+<text class="small" x="895" y="995">A/B/C=40.4/44.1/95.5°</text>
+<rect class="cell" x="1154" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="800">Z=23</text>
+<text class="sym" x="1165" y="826">V</text>
+<polygon points="1276.92,930.49 1182.50,967.30 1387.50,967.30" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1276.92,930.49 1387.50,967.30 1274.51,882.70" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1276.92,930.49 1274.51,882.70 1182.50,967.30" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1276.92" cy="930.49" r="4"/>
+<text class="small" x="1165" y="995">A/B/C=42.6/36.8/100.6°</text>
+<rect class="cell" x="1424" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="800">Z=24</text>
+<text class="sym" x="1435" y="826">Cr</text>
+<polygon points="1538.27,931.40 1452.50,969.68 1657.50,969.68" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1538.27,931.40 1657.50,969.68 1532.68,880.32" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1538.27,931.40 1532.68,880.32 1452.50,969.68" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1538.27" cy="931.40" r="4"/>
+<text class="small" x="1435" y="995">A/B/C=48.1/35.6/96.3°</text>
+<rect class="cell" x="1694" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="800">Z=25</text>
+<text class="sym" x="1705" y="826">Mn</text>
+<polygon points="1806.55,932.33 1722.50,972.12 1927.50,972.12" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1806.55,932.33 1927.50,972.12 1799.75,877.88" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1806.55,932.33 1799.75,877.88 1722.50,972.12" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1806.55" cy="932.33" r="4"/>
+<text class="small" x="1705" y="995">A/B/C=50.7/36.4/92.9°</text>
+<rect class="cell" x="1964" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="800">Z=26</text>
+<text class="sym" x="1975" y="826">Fe</text>
+<polygon points="2073.38,932.25 1992.50,971.72 2197.50,971.72" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2073.38,932.25 2197.50,971.72 2065.44,878.28" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2073.38,932.25 2065.44,878.28 1992.50,971.72" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2073.38" cy="932.25" r="4"/>
+<text class="small" x="1975" y="995">A/B/C=52.0/35.3/92.7°</text>
+<rect class="cell" x="2234" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="800">Z=27</text>
+<text class="sym" x="2245" y="826">Co</text>
+<polygon points="2338.99,933.40 2262.50,974.31 2467.50,974.31" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2338.99,933.40 2467.50,974.31 2328.31,875.69" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2338.99,933.40 2328.31,875.69 2262.50,974.31" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2338.99" cy="933.40" r="4"/>
+<text class="small" x="2245" y="995">A/B/C=56.3/35.3/88.4°</text>
+<rect class="cell" x="2504" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="800">Z=28</text>
+<text class="sym" x="2515" y="826">Ni</text>
+<polygon points="2607.95,933.35 2532.50,974.12 2737.50,974.12" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2607.95,933.35 2737.50,974.12 2596.87,875.88" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2607.95,933.35 2596.87,875.88 2532.50,974.12" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2607.95" cy="933.35" r="4"/>
+<text class="small" x="2515" y="995">A/B/C=56.8/34.9/88.3°</text>
+<rect class="cell" x="2774" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="800">Z=29</text>
+<text class="sym" x="2785" y="826">Cu</text>
+<polygon points="2878.83,934.36 2802.50,976.57 3007.50,976.57" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2878.83,934.36 3007.50,976.57 2867.22,873.43" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2878.83,934.36 2867.22,873.43 2802.50,976.57" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2878.83" cy="934.36" r="4"/>
+<text class="small" x="2785" y="995">A/B/C=57.9/36.3/85.8°</text>
+<rect class="cell" x="3044" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="800">Z=30</text>
+<text class="sym" x="3055" y="826">Zn</text>
+<polygon points="3164.54,933.61 3072.50,975.65 3277.50,975.65" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3164.54,933.61 3277.50,975.65 3160.26,874.35" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3164.54,933.61 3160.26,874.35 3072.50,975.65" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3164.54" cy="933.61" r="4"/>
+<text class="small" x="3055" y="995">A/B/C=49.1/40.8/90.1°</text>
+<rect class="cell" x="3314" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="800">Z=31</text>
+<text class="sym" x="3325" y="826">Ga</text>
+<polygon points="3449.45,934.96 3342.50,978.95 3547.50,978.95" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3449.45,934.96 3547.50,978.95 3451.47,871.05" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3449.45,934.96 3451.47,871.05 3342.50,978.95" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3449.45" cy="934.96" r="4"/>
+<text class="small" x="3325" y="995">A/B/C=44.7/48.3/87.0°</text>
+<rect class="cell" x="3584" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="800">Z=32</text>
+<text class="sym" x="3595" y="826">Ge</text>
+<polygon points="3725.28,936.49 3616.18,981.00 3813.82,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3725.28,936.49 3813.82,981.00 3730.59,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3725.28,936.49 3730.59,869.00 3616.18,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3725.28" cy="936.49" r="4"/>
+<text class="small" x="3595" y="995">A/B/C=44.4/53.4/82.2°</text>
+<rect class="cell" x="3854" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="800">Z=33</text>
+<text class="sym" x="3865" y="826">As</text>
+<polygon points="3993.26,936.15 3884.18,981.00 4085.82,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3993.26,936.15 4085.82,981.00 3997.38,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3993.26,936.15 3997.38,869.00 3884.18,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3993.26" cy="936.15" r="4"/>
+<text class="small" x="3865" y="995">A/B/C=44.7/51.7/83.6°</text>
+<rect class="cell" x="4124" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="800">Z=34</text>
+<text class="sym" x="4135" y="826">Se</text>
+<polygon points="4271.63,937.31 4160.34,981.00 4349.66,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4271.63,937.31 4349.66,981.00 4281.00,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4271.63,937.31 4281.00,869.00 4160.34,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4271.63" cy="937.31" r="4"/>
+<text class="small" x="4135" y="995">A/B/C=42.9/58.5/78.6°</text>
+<rect class="cell" x="4394" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="800">Z=35</text>
+<text class="sym" x="4405" y="826">Br</text>
+<polygon points="4569.21,942.22 4440.52,981.00 4607.20,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4569.21,942.22 4607.20,981.00 4609.48,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4569.21,942.22 4609.48,869.00 4440.52,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4569.21" cy="942.22" r="4"/>
+<text class="small" x="4405" y="995">A/B/C=33.5/91.2/55.3°</text>
+<rect class="cell" x="4664" y="779" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="800">Z=36</text>
+<text class="sym" x="4675" y="826">Kr</text>
+<polygon points="4798.62,958.47 4765.64,981.00 4824.36,981.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4798.62,958.47 4824.36,981.00 4809.36,869.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4798.62,958.47 4809.36,869.00 4765.64,981.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4798.62" cy="958.47" r="4"/>
+<text class="small" x="4675" y="995">A/B/C=68.7/82.4/29.0°</text>
+<rect class="cell" x="74" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="1035">Z=37</text>
+<text class="sym" x="85" y="1061">Rb</text>
+<polygon points="247.11,1177.56 124.37,1216.00 285.51,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="247.11,1177.56 285.51,1216.00 285.63,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="247.11,1177.56 285.63,1104.00 124.37,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="247.11" cy="1177.56" r="4"/>
+<text class="small" x="85" y="1230">A/B/C=34.8/90.1/55.2°</text>
+<rect class="cell" x="344" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="1035">Z=38</text>
+<text class="sym" x="355" y="1061">Sr</text>
+<polygon points="507.83,1178.98 403.44,1216.00 546.56,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="507.83,1178.98 546.56,1216.00 541.50,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="507.83,1178.98 541.50,1104.00 403.44,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="507.83" cy="1178.98" r="4"/>
+<text class="small" x="355" y="1230">A/B/C=39.0/87.4/53.5°</text>
+<rect class="cell" x="614" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="625" y="1035">Z=39</text>
+<text class="sym" x="625" y="1061">Y</text>
+<polygon points="769.19,1175.54 664.49,1216.00 825.51,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="769.19,1175.54 825.51,1216.00 787.77,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="769.19,1175.54 787.77,1104.00 664.49,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="769.19" cy="1175.54" r="4"/>
+<text class="small" x="625" y="1230">A/B/C=42.3/71.4/66.4°</text>
+<rect class="cell" x="884" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="1035">Z=40</text>
+<text class="sym" x="895" y="1061">Zr</text>
+<polygon points="1022.50,1172.94 925.08,1216.00 1104.92,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1022.50,1172.94 1104.92,1216.00 1027.00,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1022.50,1172.94 1027.00,1104.00 925.08,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1022.50" cy="1172.94" r="4"/>
+<text class="small" x="895" y="1230">A/B/C=47.7/55.2/77.1°</text>
+<rect class="cell" x="1154" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="1035">Z=41</text>
+<text class="sym" x="1165" y="1061">Nb</text>
+<polygon points="1275.27,1173.48 1197.79,1216.00 1372.21,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1275.27,1173.48 1372.21,1216.00 1269.10,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1275.27,1173.48 1269.10,1104.00 1197.79,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1275.27" cy="1173.48" r="4"/>
+<text class="small" x="1165" y="1230">A/B/C=57.5/47.4/75.1°</text>
+<rect class="cell" x="1424" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="1035">Z=42</text>
+<text class="sym" x="1435" y="1061">Mo</text>
+<polygon points="1534.00,1174.08 1468.80,1216.00 1641.20,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1534.00,1174.08 1641.20,1216.00 1519.89,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1534.00,1174.08 1519.89,1104.00 1468.80,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1534.00" cy="1174.08" r="4"/>
+<text class="small" x="1435" y="1230">A/B/C=65.5/42.7/71.8°</text>
+<rect class="cell" x="1694" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="1035">Z=43</text>
+<text class="sym" x="1705" y="1061">Tc</text>
+<polygon points="1799.46,1173.62 1735.33,1216.00 1914.67,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1799.46,1173.62 1914.67,1216.00 1783.05,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1799.46,1173.62 1783.05,1104.00 1735.33,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1799.46" cy="1173.62" r="4"/>
+<text class="small" x="1705" y="1230">A/B/C=66.9/40.4/72.7°</text>
+<rect class="cell" x="1964" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="1035">Z=44</text>
+<text class="sym" x="1975" y="1061">Ru</text>
+<polygon points="2064.69,1173.87 2005.10,1216.00 2184.90,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2064.69,1173.87 2184.90,1216.00 2044.73,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2064.69,1173.87 2044.73,1104.00 2005.10,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2064.69" cy="1173.87" r="4"/>
+<text class="small" x="1975" y="1230">A/B/C=70.5/38.6/70.9°</text>
+<rect class="cell" x="2234" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="1035">Z=45</text>
+<text class="sym" x="2245" y="1061">Rh</text>
+<polygon points="2333.61,1173.85 2274.60,1216.00 2455.40,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2333.61,1173.85 2455.40,1216.00 2312.99,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2333.61,1173.85 2312.99,1104.00 2274.60,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2333.61" cy="1173.85" r="4"/>
+<text class="small" x="2245" y="1230">A/B/C=71.1/38.2/70.7°</text>
+<rect class="cell" x="2504" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="1035">Z=46</text>
+<text class="sym" x="2515" y="1061">Pd</text>
+<polygon points="2608.87,1174.72 2550.37,1216.00 2719.63,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2608.87,1174.72 2719.63,1216.00 2590.24,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2608.87,1174.72 2590.24,1104.00 2550.37,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2608.87" cy="1174.72" r="4"/>
+<text class="small" x="2515" y="1230">A/B/C=70.4/40.9/68.7°</text>
+<rect class="cell" x="2774" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="1035">Z=47</text>
+<text class="sym" x="2785" y="1061">Ag</text>
+<polygon points="2888.01,1175.92 2827.92,1216.00 2982.08,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2888.01,1175.92 2982.08,1216.00 2874.52,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2888.01,1175.92 2874.52,1104.00 2827.92,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2888.01" cy="1175.92" r="4"/>
+<text class="small" x="2785" y="1230">A/B/C=67.4/46.2/66.4°</text>
+<rect class="cell" x="3044" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="1035">Z=48</text>
+<text class="sym" x="3055" y="1061">Cd</text>
+<polygon points="3170.21,1175.68 3098.65,1216.00 3251.35,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3170.21,1175.68 3251.35,1216.00 3166.48,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3170.21,1175.68 3166.48,1104.00 3098.65,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3170.21" cy="1175.68" r="4"/>
+<text class="small" x="3055" y="1230">A/B/C=58.8/52.8/68.4°</text>
+<rect class="cell" x="3314" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="1035">Z=49</text>
+<text class="sym" x="3325" y="1061">In</text>
+<polygon points="3447.54,1176.31 3371.41,1216.00 3518.59,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3447.54,1176.31 3518.59,1216.00 3449.62,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3447.54,1176.31 3449.62,1104.00 3371.41,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3447.54" cy="1176.31" r="4"/>
+<text class="small" x="3325" y="1230">A/B/C=55.1/58.4/66.6°</text>
+<rect class="cell" x="3584" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="1035">Z=50</text>
+<text class="sym" x="3595" y="1061">Sn</text>
+<polygon points="3719.23,1176.30 3641.30,1216.00 3788.70,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3719.23,1176.30 3788.70,1216.00 3722.71,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3719.23,1176.30 3722.71,1104.00 3641.30,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3719.23" cy="1176.30" r="4"/>
+<text class="small" x="3595" y="1230">A/B/C=54.0/59.5/66.5°</text>
+<rect class="cell" x="3854" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="1035">Z=51</text>
+<text class="sym" x="3865" y="1061">Sb</text>
+<polygon points="3998.45,1176.60 3911.39,1216.00 4058.61,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3998.45,1176.60 4058.61,1216.00 4009.78,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3998.45,1176.60 4009.78,1104.00 3911.39,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3998.45" cy="1176.60" r="4"/>
+<text class="small" x="3865" y="1230">A/B/C=48.7/66.4/64.9°</text>
+<rect class="cell" x="4124" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="1035">Z=52</text>
+<text class="sym" x="4135" y="1061">Te</text>
+<polygon points="4273.06,1178.79 4188.26,1216.00 4321.74,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4273.06,1178.79 4321.74,1216.00 4291.29,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4273.06,1178.79 4291.29,1104.00 4188.26,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4273.06" cy="1178.79" r="4"/>
+<text class="small" x="4135" y="1230">A/B/C=47.4/74.8/57.8°</text>
+<rect class="cell" x="4394" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="1035">Z=53</text>
+<text class="sym" x="4405" y="1061">I</text>
+<polygon points="4550.79,1179.52 4458.06,1216.00 4591.94,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4550.79,1179.52 4591.94,1216.00 4578.40,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4550.79,1179.52 4578.40,1104.00 4458.06,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4550.79" cy="1179.52" r="4"/>
+<text class="small" x="4405" y="1230">A/B/C=42.9/83.1/54.0°</text>
+<rect class="cell" x="4664" y="1014" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="1035">Z=54</text>
+<text class="sym" x="4675" y="1061">Xe</text>
+<polygon points="4787.60,1187.08 4752.77,1216.00 4837.23,1216.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4787.60,1187.08 4837.23,1216.00 4773.73,1104.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4787.60,1187.08 4773.73,1104.00 4752.77,1216.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4787.60" cy="1187.08" r="4"/>
+<text class="small" x="4675" y="1230">A/B/C=79.4/60.4/40.2°</text>
+<rect class="cell" x="74" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="1270">Z=55</text>
+<text class="sym" x="85" y="1296">Cs</text>
+<polygon points="241.71,1413.92 129.63,1451.00 278.02,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="241.71,1413.92 278.02,1451.00 280.37,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="241.71,1413.92 280.37,1339.00 129.63,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="241.71" cy="1413.92" r="4"/>
+<text class="small" x="85" y="1465">A/B/C=36.6/91.2/52.2°</text>
+<rect class="cell" x="344" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="1270">Z=56</text>
+<text class="sym" x="355" y="1296">Ba</text>
+<polygon points="504.98,1415.14 408.10,1451.00 541.90,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="504.98,1415.14 541.90,1451.00 538.65,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="504.98,1415.14 538.65,1339.00 408.10,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="504.98" cy="1415.14" r="4"/>
+<text class="small" x="355" y="1465">A/B/C=40.6/88.3/51.0°</text>
+<rect class="cell" x="614" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="625" y="1740">Z=57</text>
+<text class="sym" x="625" y="1766">La</text>
+<polygon points="765.58,1885.39 682.50,1921.00 807.50,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="765.58,1885.39 807.50,1921.00 789.15,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="765.58,1885.39 789.15,1809.00 682.50,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="765.58" cy="1885.39" r="4"/>
+<text class="small" x="625" y="1935">A/B/C=46.4/80.7/52.9°</text>
+<rect class="cell" x="884" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="1740">Z=58</text>
+<text class="sym" x="895" y="1766">Ce</text>
+<polygon points="1031.54,1885.02 952.58,1921.00 1077.42,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1031.54,1885.02 1077.42,1921.00 1049.94,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1031.54,1885.02 1049.94,1809.00 952.58,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1031.54" cy="1885.02" r="4"/>
+<text class="small" x="895" y="1935">A/B/C=49.0/76.2/54.8°</text>
+<rect class="cell" x="1154" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="1740">Z=59</text>
+<text class="sym" x="1165" y="1766">Pr</text>
+<polygon points="1301.98,1885.43 1223.72,1921.00 1346.28,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1301.98,1885.43 1346.28,1921.00 1321.49,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1301.98,1885.43 1321.49,1809.00 1223.72,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1301.98" cy="1885.43" r="4"/>
+<text class="small" x="1165" y="1935">A/B/C=48.9/77.5/53.6°</text>
+<rect class="cell" x="1424" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="1740">Z=60</text>
+<text class="sym" x="1435" y="1766">Nd</text>
+<polygon points="1569.46,1885.63 1494.97,1921.00 1615.03,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1569.46,1885.63 1615.03,1921.00 1586.33,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1569.46,1885.63 1586.33,1809.00 1494.97,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1569.46" cy="1885.63" r="4"/>
+<text class="small" x="1435" y="1935">A/B/C=50.8/75.6/53.6°</text>
+<rect class="cell" x="1694" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="1740">Z=61</text>
+<text class="sym" x="1705" y="1766">Pm</text>
+<polygon points="1836.78,1885.94 1766.47,1921.00 1883.53,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1836.78,1885.94 1883.53,1921.00 1850.85,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1836.78,1885.94 1850.85,1809.00 1766.47,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1836.78" cy="1885.94" r="4"/>
+<text class="small" x="1705" y="1935">A/B/C=53.0/73.7/53.3°</text>
+<rect class="cell" x="1964" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="1740">Z=62</text>
+<text class="sym" x="1975" y="1766">Sm</text>
+<polygon points="2105.19,1887.11 2040.10,1921.00 2149.90,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2105.19,1887.11 2149.90,1921.00 2118.49,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2105.19,1887.11 2118.49,1809.00 2040.10,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2105.19" cy="1887.11" r="4"/>
+<text class="small" x="1975" y="1935">A/B/C=55.0/74.3/50.7°</text>
+<rect class="cell" x="2234" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="1740">Z=63</text>
+<text class="sym" x="2245" y="1766">Eu</text>
+<polygon points="2390.34,1886.00 2302.49,1921.00 2427.51,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2390.34,1886.00 2427.51,1921.00 2420.76,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2390.34,1886.00 2420.76,1809.00 2302.49,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2390.34" cy="1886.00" r="4"/>
+<text class="small" x="2245" y="1935">A/B/C=43.4/86.6/50.0°</text>
+<rect class="cell" x="2504" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="1740">Z=64</text>
+<text class="sym" x="2515" y="1766">Gd</text>
+<polygon points="2643.84,1887.14 2580.44,1921.00 2689.56,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2643.84,1887.14 2689.56,1921.00 2655.41,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2643.84,1887.14 2655.41,1809.00 2580.44,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2643.84" cy="1887.14" r="4"/>
+<text class="small" x="2515" y="1935">A/B/C=56.2/73.0/50.8°</text>
+<rect class="cell" x="2774" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="1740">Z=65</text>
+<text class="sym" x="2785" y="1766">Tb</text>
+<polygon points="2912.66,1886.72 2849.43,1921.00 2960.57,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2912.66,1886.72 2960.57,1921.00 2922.37,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2912.66,1886.72 2922.37,1809.00 2849.43,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2912.66" cy="1886.72" r="4"/>
+<text class="small" x="2785" y="1935">A/B/C=56.9/71.2/51.9°</text>
+<rect class="cell" x="3044" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="1740">Z=66</text>
+<text class="sym" x="3055" y="1766">Dy</text>
+<polygon points="3181.99,1886.73 3119.56,1921.00 3230.44,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3181.99,1886.73 3230.44,1921.00 3190.85,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3181.99,1886.73 3190.85,1809.00 3119.56,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3181.99" cy="1886.73" r="4"/>
+<text class="small" x="3055" y="1935">A/B/C=57.5/70.5/51.9°</text>
+<rect class="cell" x="3314" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="1740">Z=67</text>
+<text class="sym" x="3325" y="1766">Ho</text>
+<polygon points="3450.53,1887.22 3391.08,1921.00 3498.92,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3450.53,1887.22 3498.92,1921.00 3457.80,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3450.53,1887.22 3457.80,1809.00 3391.08,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3450.53" cy="1887.22" r="4"/>
+<text class="small" x="3325" y="1935">A/B/C=59.2/69.8/50.9°</text>
+<rect class="cell" x="3584" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="1740">Z=68</text>
+<text class="sym" x="3595" y="1766">Er</text>
+<polygon points="3718.50,1887.70 3662.59,1921.00 3767.41,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3718.50,1887.70 3767.41,1921.00 3723.27,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3718.50,1887.70 3723.27,1809.00 3662.59,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3718.50" cy="1887.70" r="4"/>
+<text class="small" x="3595" y="1935">A/B/C=61.6/68.5/50.0°</text>
+<rect class="cell" x="3854" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="1740">Z=69</text>
+<text class="sym" x="3865" y="1766">Tm</text>
+<polygon points="3986.79,1887.15 3931.13,1921.00 4038.87,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3986.79,1887.15 4038.87,1921.00 3989.13,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3986.79,1887.15 3989.13,1809.00 3931.13,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3986.79" cy="1887.15" r="4"/>
+<text class="small" x="3865" y="1935">A/B/C=62.6/66.1/51.3°</text>
+<rect class="cell" x="4124" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="1740">Z=70</text>
+<text class="sym" x="4135" y="1766">Yb</text>
+<polygon points="4272.77,1887.47 4199.16,1921.00 4310.84,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4272.77,1887.47 4310.84,1921.00 4296.58,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4272.77,1887.47 4296.58,1809.00 4199.16,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4272.77" cy="1887.47" r="4"/>
+<text class="small" x="4135" y="1935">A/B/C=49.0/82.7/48.3°</text>
+<rect class="cell" x="4394" y="1719" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="1740">Z=71</text>
+<text class="sym" x="4405" y="1766">Lu</text>
+<polygon points="4525.00,1887.49 4472.13,1921.00 4577.87,1921.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4525.00,1887.49 4577.87,1921.00 4525.00,1809.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4525.00,1887.49 4525.00,1809.00 4472.13,1921.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4525.00" cy="1887.49" r="4"/>
+<text class="small" x="4405" y="1935">A/B/C=64.7/64.7/50.5°</text>
+<rect class="cell" x="884" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="1270">Z=72</text>
+<text class="sym" x="895" y="1296">Hf</text>
+<polygon points="1003.91,1416.63 958.60,1451.00 1071.40,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1003.91,1416.63 1071.40,1451.00 989.95,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1003.91,1416.63 989.95,1339.00 958.60,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1003.91" cy="1416.63" r="4"/>
+<text class="small" x="895" y="1465">A/B/C=74.4/54.0/51.7°</text>
+<rect class="cell" x="1154" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="1270">Z=73</text>
+<text class="sym" x="1165" y="1296">Ta</text>
+<polygon points="1265.59,1415.87 1224.27,1451.00 1345.73,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1265.59,1415.87 1345.73,1451.00 1242.52,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1265.59,1415.87 1242.52,1339.00 1224.27,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1265.59" cy="1415.87" r="4"/>
+<text class="small" x="1165" y="1465">A/B/C=80.7/47.3/51.9°</text>
+<rect class="cell" x="1424" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="1270">Z=74</text>
+<text class="sym" x="1435" y="1296">W</text>
+<polygon points="1529.03,1414.72 1488.58,1451.00 1621.42,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1529.03,1414.72 1621.42,1451.00 1500.79,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1529.03,1414.72 1500.79,1339.00 1488.58,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1529.03" cy="1414.72" r="4"/>
+<text class="small" x="1435" y="1465">A/B/C=83.8/42.9/53.3°</text>
+<rect class="cell" x="1694" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="1270">Z=75</text>
+<text class="sym" x="1705" y="1296">Re</text>
+<polygon points="1794.96,1414.12 1755.09,1451.00 1894.91,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1794.96,1414.12 1894.91,1451.00 1763.81,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1794.96,1414.12 1763.81,1339.00 1755.09,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1794.96" cy="1414.12" r="4"/>
+<text class="small" x="1705" y="1465">A/B/C=85.5/40.5/53.9°</text>
+<rect class="cell" x="1964" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="1270">Z=76</text>
+<text class="sym" x="1975" y="1296">Os</text>
+<polygon points="2060.41,1413.70 2021.76,1451.00 2168.24,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2060.41,1413.70 2168.24,1451.00 2025.74,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2060.41,1413.70 2025.74,1339.00 2021.76,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2060.41" cy="1413.70" r="4"/>
+<text class="small" x="1975" y="1465">A/B/C=88.0/38.2/53.9°</text>
+<rect class="cell" x="2234" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="1270">Z=77</text>
+<text class="sym" x="2245" y="1296">Ir</text>
+<polygon points="2332.17,1413.98 2293.44,1451.00 2436.56,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2332.17,1413.98 2436.56,1451.00 2298.50,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2332.17,1413.98 2298.50,1339.00 2293.44,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2332.17" cy="1413.98" r="4"/>
+<text class="small" x="2245" y="1465">A/B/C=87.4/39.0/53.5°</text>
+<rect class="cell" x="2504" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="1270">Z=78</text>
+<text class="sym" x="2515" y="1296">Pt</text>
+<polygon points="2605.52,1414.55 2566.63,1451.00 2703.37,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2605.52,1414.55 2703.37,1451.00 2573.89,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2605.52,1414.55 2573.89,1339.00 2566.63,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2605.52" cy="1414.55" r="4"/>
+<text class="small" x="2515" y="1465">A/B/C=86.3/40.9/52.8°</text>
+<rect class="cell" x="2774" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="1270">Z=79</text>
+<text class="sym" x="2785" y="1296">Au</text>
+<polygon points="2881.82,1415.48 2841.87,1451.00 2968.13,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2881.82,1415.48 2968.13,1451.00 2855.09,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2881.82,1415.48 2855.09,1339.00 2841.87,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2881.82" cy="1415.48" r="4"/>
+<text class="small" x="2785" y="1465">A/B/C=83.3/44.7/52.0°</text>
+<rect class="cell" x="3044" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="1270">Z=80</text>
+<text class="sym" x="3055" y="1296">Hg</text>
+<polygon points="3130.79,1412.22 3092.80,1451.00 3259.48,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3130.79,1412.22 3259.48,1451.00 3090.52,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3130.79,1412.22 3090.52,1339.00 3092.80,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3130.79" cy="1412.22" r="4"/>
+<text class="small" x="3055" y="1465">A/B/C=91.2/33.5/55.3°</text>
+<rect class="cell" x="3314" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="1270">Z=81</text>
+<text class="sym" x="3325" y="1296">Tl</text>
+<polygon points="3441.11,1419.08 3396.17,1451.00 3493.83,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3441.11,1419.08 3493.83,1451.00 3435.23,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3441.11,1419.08 3435.23,1339.00 3396.17,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3441.11" cy="1419.08" r="4"/>
+<text class="small" x="3325" y="1465">A/B/C=70.8/62.4/46.8°</text>
+<rect class="cell" x="3584" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="1270">Z=82</text>
+<text class="sym" x="3595" y="1296">Pb</text>
+<polygon points="3713.86,1420.27 3669.23,1451.00 3760.77,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3713.86,1420.27 3760.77,1451.00 3712.00,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3713.86,1420.27 3712.00,1339.00 3669.23,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3713.86" cy="1420.27" r="4"/>
+<text class="small" x="3595" y="1465">A/B/C=69.1/66.5/44.4°</text>
+<rect class="cell" x="3854" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="1270">Z=83</text>
+<text class="sym" x="3865" y="1296">Bi</text>
+<polygon points="3990.79,1422.04 3942.92,1451.00 4027.08,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3990.79,1422.04 4027.08,1451.00 4001.61,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3990.79,1422.04 4001.61,1339.00 3942.92,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3990.79" cy="1422.04" r="4"/>
+<text class="small" x="3865" y="1465">A/B/C=62.3/77.2/40.5°</text>
+<rect class="cell" x="4124" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="1270">Z=84</text>
+<text class="sym" x="4135" y="1296">Po</text>
+<polygon points="4262.04,1421.88 4212.38,1451.00 4297.62,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4262.04,1421.88 4297.62,1451.00 4275.04,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4262.04,1421.88 4275.04,1339.00 4212.38,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4262.04" cy="1421.88" r="4"/>
+<text class="small" x="4135" y="1465">A/B/C=60.8/78.6/40.6°</text>
+<rect class="cell" x="4394" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="1270">Z=85</text>
+<text class="sym" x="4405" y="1296">At</text>
+<polygon points="4543.44,1419.18 4473.18,1451.00 4576.82,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4543.44,1419.18 4576.82,1451.00 4571.46,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4543.44,1419.18 4571.46,1339.00 4473.18,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4543.44" cy="1419.18" r="4"/>
+<text class="small" x="4405" y="1465">A/B/C=48.7/87.3/44.0°</text>
+<rect class="cell" x="4664" y="1249" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="1270">Z=86</text>
+<text class="sym" x="4675" y="1296">Rn</text>
+<polygon points="4796.30,1434.13 4774.78,1451.00 4815.22,1451.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4796.30,1434.13 4815.22,1451.00 4802.33,1339.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4796.30,1434.13 4802.33,1339.00 4774.78,1451.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4796.30" cy="1434.13" r="4"/>
+<text class="small" x="4675" y="1465">A/B/C=76.2/83.4/20.4°</text>
+<rect class="cell" x="74" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="85" y="1505">Z=87</text>
+<text class="sym" x="85" y="1531">Fr</text>
+<polygon points="235.14,1650.81 136.54,1686.00 268.93,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="235.14,1650.81 268.93,1686.00 273.46,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="235.14,1650.81 273.46,1574.00 136.54,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="235.14" cy="1650.81" r="4"/>
+<text class="small" x="85" y="1700">A/B/C=39.3/92.3/48.4°</text>
+<rect class="cell" x="344" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="355" y="1505">Z=88</text>
+<text class="sym" x="355" y="1531">Ra</text>
+<polygon points="501.44,1651.96 413.79,1686.00 535.17,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="501.44,1651.96 535.17,1686.00 536.21,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="501.44,1651.96 536.21,1574.00 413.79,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="501.44" cy="1651.96" r="4"/>
+<text class="small" x="355" y="1700">A/B/C=42.5/90.5/47.0°</text>
+<rect class="cell" x="614" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="625" y="1975">Z=89</text>
+<text class="sym" x="625" y="2001">Ac</text>
+<polygon points="750.44,2128.42 705.90,2156.00 784.10,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="750.44,2128.42 784.10,2156.00 761.65,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="750.44,2128.42 761.65,2044.00 705.90,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="750.44" cy="2128.42" r="4"/>
+<text class="small" x="625" y="2170">A/B/C=63.5/78.7/37.8°</text>
+<rect class="cell" x="884" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="1975">Z=90</text>
+<text class="sym" x="895" y="2001">Th</text>
+<polygon points="1015.52,2127.13 973.51,2156.00 1056.49,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1015.52,2127.13 1056.49,2156.00 1016.50,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1015.52,2127.13 1016.50,2044.00 973.51,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1015.52" cy="2127.13" r="4"/>
+<text class="small" x="895" y="2170">A/B/C=69.0/70.4/40.6°</text>
+<rect class="cell" x="1154" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="1975">Z=91</text>
+<text class="sym" x="1165" y="2001">Pa</text>
+<polygon points="1274.13,2124.12 1235.21,2156.00 1334.79,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1274.13,2124.12 1334.79,2156.00 1257.68,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1274.13,2124.12 1257.68,2044.00 1235.21,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1274.13" cy="2124.12" r="4"/>
+<text class="small" x="1165" y="2170">A/B/C=78.7/55.5/45.9°</text>
+<rect class="cell" x="1424" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="1975">Z=92</text>
+<text class="sym" x="1435" y="2001">U</text>
+<polygon points="1539.29,2123.45 1502.30,2156.00 1607.70,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1539.29,2123.45 1607.70,2156.00 1516.66,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1539.29,2123.45 1516.66,2044.00 1502.30,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1539.29" cy="2123.45" r="4"/>
+<text class="small" x="1435" y="2170">A/B/C=82.7/50.9/46.4°</text>
+<rect class="cell" x="1694" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="1975">Z=93</text>
+<text class="sym" x="1705" y="2001">Np</text>
+<polygon points="1805.98,2123.06 1770.25,2156.00 1879.75,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1805.98,2123.06 1879.75,2156.00 1779.37,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1805.98,2123.06 1779.37,2044.00 1770.25,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1805.98" cy="2123.06" r="4"/>
+<text class="small" x="1705" y="2170">A/B/C=85.3/48.1/46.5°</text>
+<rect class="cell" x="1964" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="1975">Z=94</text>
+<text class="sym" x="1975" y="2001">Pu</text>
+<polygon points="2077.75,2123.59 2042.17,2156.00 2147.83,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2077.75,2123.59 2147.83,2156.00 2052.63,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2077.75,2123.59 2052.63,2044.00 2042.17,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2077.75" cy="2123.59" r="4"/>
+<text class="small" x="1975" y="2170">A/B/C=84.7/49.6/45.7°</text>
+<rect class="cell" x="2234" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="1975">Z=95</text>
+<text class="sym" x="2245" y="2001">Am</text>
+<polygon points="2359.85,2126.37 2321.50,2156.00 2408.50,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2359.85,2126.37 2408.50,2156.00 2350.68,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2359.85,2126.37 2350.68,2044.00 2321.50,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2359.85" cy="2126.37" r="4"/>
+<text class="small" x="2245" y="2170">A/B/C=75.4/62.7/41.9°</text>
+<rect class="cell" x="2504" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="1975">Z=96</text>
+<text class="sym" x="2515" y="2001">Cm</text>
+<polygon points="2631.92,2127.56 2594.35,2156.00 2675.65,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2631.92,2127.56 2675.65,2156.00 2625.96,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2631.92,2127.56 2625.96,2044.00 2594.35,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2631.92" cy="2127.56" r="4"/>
+<text class="small" x="2515" y="2170">A/B/C=74.2/66.1/39.7°</text>
+<rect class="cell" x="2774" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="1975">Z=97</text>
+<text class="sym" x="2785" y="2001">Bk</text>
+<polygon points="2899.19,2126.46 2861.64,2156.00 2948.36,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2899.19,2126.46 2948.36,2156.00 2888.78,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2899.19,2126.46 2888.78,2044.00 2861.64,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2899.19" cy="2126.46" r="4"/>
+<text class="small" x="2785" y="2170">A/B/C=76.4/62.0/41.6°</text>
+<rect class="cell" x="3044" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="1975">Z=98</text>
+<text class="sym" x="3055" y="2001">Cf</text>
+<polygon points="3167.11,2125.59 3129.34,2156.00 3220.66,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3167.11,2125.59 3220.66,2156.00 3153.83,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3167.11,2125.59 3153.83,2044.00 3129.34,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3167.11" cy="2125.59" r="4"/>
+<text class="small" x="3055" y="2170">A/B/C=77.7/59.2/43.2°</text>
+<rect class="cell" x="3314" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="1975">Z=99</text>
+<text class="sym" x="3325" y="2001">Es</text>
+<polygon points="3442.72,2127.80 3404.92,2156.00 3485.08,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3442.72,2127.80 3485.08,2156.00 3438.22,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3442.72,2127.80 3438.22,2044.00 3404.92,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3442.72" cy="2127.80" r="4"/>
+<text class="small" x="3325" y="2170">A/B/C=73.4/67.3/39.3°</text>
+<rect class="cell" x="3584" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="1975">Z=100</text>
+<text class="sym" x="3595" y="2001">Fm</text>
+<polygon points="3723.32,2129.42 3677.39,2156.00 3752.61,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3723.32,2129.42 3752.61,2156.00 3741.73,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3723.32,2129.42 3741.73,2044.00 3677.39,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3723.32" cy="2129.42" r="4"/>
+<text class="small" x="3595" y="2170">A/B/C=60.1/84.5/35.4°</text>
+<rect class="cell" x="3854" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="1975">Z=101</text>
+<text class="sym" x="3865" y="2001">Md</text>
+<polygon points="3990.40,2129.55 3948.19,2156.00 4021.81,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3990.40,2129.55 4021.81,2156.00 4002.46,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3990.40,2129.55 4002.46,2044.00 3948.19,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3990.40" cy="2129.55" r="4"/>
+<text class="small" x="3865" y="2170">A/B/C=64.1/80.2/35.7°</text>
+<rect class="cell" x="4124" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="1975">Z=102</text>
+<text class="sym" x="4135" y="2001">No</text>
+<polygon points="4262.01,2129.71 4218.23,2156.00 4291.77,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4262.01,2129.71 4291.77,2156.00 4277.86,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4262.01,2129.71 4277.86,2044.00 4218.23,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4262.01" cy="2129.71" r="4"/>
+<text class="small" x="4135" y="2170">A/B/C=62.0/82.9/35.1°</text>
+<rect class="cell" x="4394" y="1954" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="1975">Z=103</text>
+<text class="sym" x="4405" y="2001">Lr</text>
+<polygon points="4517.78,2126.76 4482.09,2156.00 4567.91,2156.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4517.78,2126.76 4567.91,2156.00 4504.58,2044.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4517.78,2126.76 4504.58,2044.00 4482.09,2156.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4517.78" cy="2126.76" r="4"/>
+<text class="small" x="4405" y="2170">A/B/C=78.6/60.5/40.8°</text>
+<rect class="cell" x="884" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="895" y="1505">Z=104</text>
+<text class="sym" x="895" y="1531">Rf</text>
+<polygon points="1004.79,1656.18 970.21,1686.00 1059.79,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1004.79,1656.18 1059.79,1686.00 986.87,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1004.79,1656.18 986.87,1574.00 970.21,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1004.79" cy="1656.18" r="4"/>
+<text class="small" x="895" y="1700">A/B/C=81.5/56.9/41.5°</text>
+<rect class="cell" x="1154" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="1165" y="1505">Z=105</text>
+<text class="sym" x="1165" y="1531">Db</text>
+<polygon points="1267.59,1654.68 1234.70,1686.00 1335.30,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1267.59,1654.68 1335.30,1686.00 1240.17,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1267.59,1654.68 1240.17,1574.00 1234.70,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1267.59" cy="1654.68" r="4"/>
+<text class="small" x="1165" y="1700">A/B/C=87.2/49.7/43.1°</text>
+<rect class="cell" x="1424" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="1435" y="1505">Z=106</text>
+<text class="sym" x="1435" y="1531">Sg</text>
+<polygon points="1534.47,1654.05 1502.09,1686.00 1607.91,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1534.47,1654.05 1607.91,1686.00 1503.56,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1534.47,1654.05 1503.56,1574.00 1502.09,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1534.47" cy="1654.05" r="4"/>
+<text class="small" x="1435" y="1700">A/B/C=89.3/47.0/43.7°</text>
+<rect class="cell" x="1694" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="1705" y="1505">Z=107</text>
+<text class="sym" x="1705" y="1531">Bh</text>
+<polygon points="1799.25,1652.20 1765.77,1686.00 1885.31,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1799.25,1652.20 1885.31,1686.00 1764.69,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="1799.25,1652.20 1764.69,1574.00 1765.77,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="1799.25" cy="1652.20" r="4"/>
+<text class="small" x="1705" y="1700">A/B/C=90.6/42.9/46.6°</text>
+<rect class="cell" x="1964" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="1975" y="1505">Z=108</text>
+<text class="sym" x="1975" y="1531">Hs</text>
+<polygon points="2068.66,1652.05 2036.16,1686.00 2158.71,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2068.66,1652.05 2158.71,1686.00 2031.29,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2068.66,1652.05 2031.29,1574.00 2036.16,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2068.66" cy="1652.05" r="4"/>
+<text class="small" x="1975" y="1700">A/B/C=92.5/41.3/46.2°</text>
+<rect class="cell" x="2234" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="2245" y="1505">Z=109</text>
+<text class="sym" x="2245" y="1531">Mt</text>
+<polygon points="2339.57,1652.35 2307.00,1686.00 2426.65,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2339.57,1652.35 2426.65,1686.00 2303.35,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2339.57,1652.35 2303.35,1574.00 2307.00,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2339.57" cy="1652.35" r="4"/>
+<text class="small" x="2245" y="1700">A/B/C=91.9/42.3/45.9°</text>
+<rect class="cell" x="2504" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="2515" y="1505">Z=110</text>
+<text class="sym" x="2515" y="1531">Ds</text>
+<polygon points="2612.31,1653.41 2580.42,1686.00 2692.02,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2612.31,1653.41 2692.02,1686.00 2577.98,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2612.31,1653.41 2577.98,1574.00 2580.42,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2612.31" cy="1653.41" r="4"/>
+<text class="small" x="2515" y="1700">A/B/C=91.2/44.5/44.3°</text>
+<rect class="cell" x="2774" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="2785" y="1505">Z=111</text>
+<text class="sym" x="2785" y="1531">Rg</text>
+<polygon points="2883.75,1654.00 2851.71,1686.00 2958.29,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2883.75,1654.00 2958.29,1686.00 2851.87,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="2883.75,1654.00 2851.87,1574.00 2851.71,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="2883.75" cy="1654.00" r="4"/>
+<text class="small" x="2785" y="1700">A/B/C=89.9/46.5/43.6°</text>
+<rect class="cell" x="3044" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="3055" y="1505">Z=112</text>
+<text class="sym" x="3055" y="1531">Cn</text>
+<polygon points="3166.85,1657.18 3132.83,1686.00 3217.17,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3166.85,1657.18 3217.17,1686.00 3151.49,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3166.85,1657.18 3151.49,1574.00 3132.83,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3166.85" cy="1657.18" r="4"/>
+<text class="small" x="3055" y="1700">A/B/C=80.5/59.6/39.8°</text>
+<rect class="cell" x="3314" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="3325" y="1505">Z=113</text>
+<text class="sym" x="3325" y="1531">Nh</text>
+<polygon points="3439.25,1658.18 3405.36,1686.00 3484.64,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3439.25,1658.18 3484.64,1686.00 3427.59,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3439.25,1658.18 3427.59,1574.00 3405.36,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3439.25" cy="1658.18" r="4"/>
+<text class="small" x="3325" y="1700">A/B/C=78.8/63.0/38.2°</text>
+<rect class="cell" x="3584" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="3595" y="1505">Z=114</text>
+<text class="sym" x="3595" y="1531">Fl</text>
+<polygon points="3714.89,1661.34 3682.04,1686.00 3747.96,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3714.89,1661.34 3747.96,1686.00 3714.62,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3714.89,1661.34 3714.62,1574.00 3682.04,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3714.89" cy="1661.34" r="4"/>
+<text class="small" x="3595" y="1700">A/B/C=73.8/73.4/32.8°</text>
+<rect class="cell" x="3854" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="3865" y="1505">Z=115</text>
+<text class="sym" x="3865" y="1531">Mc</text>
+<polygon points="3986.76,1660.77 3950.92,1686.00 4019.08,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3986.76,1660.77 4019.08,1686.00 3991.07,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="3986.76,1660.77 3991.07,1574.00 3950.92,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="3986.76" cy="1660.77" r="4"/>
+<text class="small" x="3865" y="1700">A/B/C=70.3/76.0/33.8°</text>
+<rect class="cell" x="4124" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="4135" y="1505">Z=116</text>
+<text class="sym" x="4135" y="1531">Lv</text>
+<polygon points="4260.39,1661.33 4221.58,1686.00 4288.42,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4260.39,1661.33 4288.42,1686.00 4274.09,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4260.39,1661.33 4274.09,1574.00 4221.58,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4260.39" cy="1661.33" r="4"/>
+<text class="small" x="4135" y="1700">A/B/C=64.9/82.7/32.4°</text>
+<rect class="cell" x="4394" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="4405" y="1505">Z=117</text>
+<text class="sym" x="4405" y="1531">Ts</text>
+<polygon points="4541.87,1655.80 4477.42,1686.00 4572.58,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4541.87,1655.80 4572.58,1686.00 4570.70,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4541.87,1655.80 4570.70,1574.00 4477.42,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4541.87" cy="1655.80" r="4"/>
+<text class="small" x="4405" y="1700">A/B/C=50.2/89.0/40.8°</text>
+<rect class="cell" x="4664" y="1484" width="262" height="227" rx="8"/>
+<text class="z" x="4675" y="1505">Z=118</text>
+<text class="sym" x="4675" y="1531">Og</text>
+<polygon points="4750.79,1647.22 4712.80,1686.00 4879.48,1686.00" fill="#36a657" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4750.79,1647.22 4879.48,1686.00 4710.52,1574.00" fill="#2878d0" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<polygon points="4750.79,1647.22 4710.52,1574.00 4712.80,1686.00" fill="#f2c744" fill-opacity="0.78" stroke="#263238" stroke-width="1.5"/>
+<circle class="dot" cx="4750.79" cy="1647.22" r="4"/>
+<text class="small" x="4675" y="1700">A/B/C=91.2/33.5/55.3°</text>
+</svg>
