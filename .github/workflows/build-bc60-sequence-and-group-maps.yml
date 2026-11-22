@@ -1,0 +1,35 @@
+name: Build B-Cycle G Maps — Atomic Sequence and Groups
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install matplotlib adjustText
+      - name: Build both maps
+        run: python PROJECTS/cosmic-triangle-rebalance-118/build_bc60_sequence_and_group_maps_118.py
+      - name: Commit generated maps and audit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_ATOMIC_SEQUENCE_2026-11-22.png
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_ATOMIC_SEQUENCE_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_BY_PERIODIC_GROUP_2026-11-22.png
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_BY_PERIODIC_GROUP_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/BC60_G_MAP_SEQUENCE_AND_GROUPS_AUDIT_2026-11-22.md
+          git commit -m "Add sequential and periodic-group B/C G maps"
+          git push
