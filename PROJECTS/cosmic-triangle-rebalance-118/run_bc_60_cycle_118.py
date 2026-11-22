@@ -67,7 +67,7 @@ def build_svg(rows):
             spanx, spany = max(maxx-minx, 1e-12), max(maxy-miny, 1e-12)
             scale = min(145.0/spanx, 82.0/spany)
             ox = x0 + (cell_w - spanx*scale)/2 - minx*scale
-            oy = y0 + 112 + maxy*scale/2
+            oy = y0 + 112
             screen = [(ox+px*scale, oy-py*scale) for px,py in pts]
             points = " ".join(f"{px:.2f},{py:.2f}" for px,py in screen)
             parts.append(f'<polygon class="tri" points="{points}"/>')
