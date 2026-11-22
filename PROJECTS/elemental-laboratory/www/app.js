@@ -191,7 +191,7 @@ function validateCurrent() {
   const res = solveTriangle(anglesIn, sidesIn, FACE_VERTS[f]);
   if (res.valid) {
     // Mark computed fields
-    data._computedAngles = ['A','B','C'].filter(k => anglesIn[k]==null);
+    data._computedAngles = FACE_VERTS[f].filter(k => anglesIn[k]==null);
     data._computedSides = [edgeKey(...FACE_VERTS[f].slice(0,2)), edgeKey(...FACE_VERTS[f].slice(1,3)), edgeKey(FACE_VERTS[f][2],FACE_VERTS[f][0])].filter(k => sidesIn[k]==null);
     data.result = res;
     // Fill UI fields with computed values
