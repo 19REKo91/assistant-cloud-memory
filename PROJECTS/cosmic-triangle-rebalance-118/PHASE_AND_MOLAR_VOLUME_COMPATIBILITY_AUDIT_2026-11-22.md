@@ -52,3 +52,14 @@ A general independent data reference also warns that some elemental densities ar
 - This memo: rationale, source references, and eligibility policy.
 
 No angles, triangle dimensions, centers, or element geometry were calculated. No reference-version files were changed.
+
+
+## 8. Reconciled row counts and caution on the estimate count
+The saved phase register was re-read after creation and contains exactly 118 data rows:
+- Phase labels: 12 Gas (this includes Og, whose source label is "Expected to be Gas"), 2 Liquid, 104 Solid (including entries labelled "Expected to be Solid").
+- Density-source classes: 96 PubChem, 18 PSE Info, 4 ChemicalAid.
+- The 15 entries explicitly tagged "Predicted/estimated" in the input CSV are Rf–Og. This is only the count explicitly labelled in that CSV, not proof that all other values are measured.
+- Astatine (At) is a specific caution: PubChem lists 7 g/cm³, while PSE Info shows a parenthesized estimate of 6.4 g/cm³. Its PubChem-listed status must not be interpreted as confirmation of a direct measurement. It remains under source/status review.
+- PSE Info and ChemicalAid disagreement is documented separately in `SECONDARY_DENSITY_SOURCE_CONFLICTS_2026-11-22.csv`.
+
+The 118-row phase register is an audit overlay; the original density draft remains unchanged.
