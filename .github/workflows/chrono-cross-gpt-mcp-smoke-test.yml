@@ -1,16 +1,6 @@
 name: CHRONO CROSS GPT MCP smoke-test utility
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".mcp.json"
-      - ".vscode/mcp.json"
-      - ".github/agents/chrono-cross-gpt-reader.agent.md"
-      - ".github/workflows/chrono-cross-gpt-mcp-production-handshake.yml"
-      - "tools/chrono-cross-gpt-mcp-smoke-test.mjs"
-      - "tools/test-chrono-cross-gpt-mcp-smoke-test.mjs"
-      - ".github/workflows/chrono-cross-gpt-mcp-smoke-test.yml"
   workflow_dispatch:
 
 permissions:
