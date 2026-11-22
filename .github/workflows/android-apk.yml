@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'PROJECTS/elemental-laboratory/**'
+      - '.github/workflows/android-apk.yml'
 
 permissions:
   contents: read
@@ -31,6 +32,8 @@ jobs:
         uses: android-actions/setup-android@v3
       - name: Install dependencies
         run: npm install
+      - name: Bundle web app
+        run: npm run build
       - name: Add Android platform
         run: npx cap add android
       - name: Sync web assets
