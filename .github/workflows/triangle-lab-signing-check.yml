@@ -1,9 +1,6 @@
 name: Triangle Lab signing key validation
 
 on:
-  push:
-    paths:
-      - ".github/workflows/triangle-lab-signing-check.yml"
   workflow_dispatch:
 
 permissions:
