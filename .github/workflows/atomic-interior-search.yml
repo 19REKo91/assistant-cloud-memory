@@ -2,12 +2,6 @@ name: Atomic Interior Relationship Search
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'PROJECTS/triangle-framework/6.5.0/research/atomic-interior/**'
-      - 'PROJECTS/triangle-framework/6.5.0/elements_input_118.csv'
-      - '.github/workflows/atomic-interior-search.yml'
-
 concurrency:
   group: atomic-interior-relationship-search
   cancel-in-progress: true
