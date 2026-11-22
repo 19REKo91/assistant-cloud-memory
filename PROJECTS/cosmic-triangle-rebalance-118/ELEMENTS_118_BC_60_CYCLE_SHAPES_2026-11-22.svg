@@ -1,0 +1,485 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1835" viewBox="0 0 1900 1835">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,sans-serif;fill:#202124}.sym{font-size:15px;font-weight:bold}.meta{font-size:10px}.invalid{fill:#b3261e;font-size:12px;font-weight:bold}.tri{fill:#eef3f8;stroke:#263746;stroke-width:2}</style>
+<text x="18" y="24" font-size="18" font-weight="bold">B/C 60-degree cycle — 118 elements (shape-only display)</text>
+<rect x="3" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="56">H · Z=1</text>
+<polygon class="tri" points="54.08,147.00 135.92,147.00 60.04,65.00"/>
+<text class="meta" x="10" y="172">n=1170 · A/B/C positive</text>
+<rect x="193" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="56">He · Z=2</text>
+<polygon class="tri" points="281.28,147.00 288.72,147.00 287.24,65.00"/>
+<text class="meta" x="200" y="172">n=2340 · A/B/C positive</text>
+<rect x="383" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="56">Li · Z=3</text>
+<polygon class="tri" points="433.36,147.00 516.64,147.00 441.91,65.00"/>
+<text class="meta" x="390" y="172">n=0 · A/B/C positive</text>
+<rect x="573" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="56">Be · Z=4</text>
+<polygon class="tri" points="629.88,147.00 700.12,147.00 644.88,65.00"/>
+<text class="meta" x="580" y="172">n=-1 · A/B/C positive</text>
+<rect x="763" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="56">B · Z=5</text>
+<polygon class="tri" points="816.51,147.00 893.49,147.00 834.11,65.00"/>
+<text class="meta" x="770" y="172">n=-1 · A/B/C positive</text>
+<rect x="953" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="56">C · Z=6</text>
+<polygon class="tri" points="1011.54,147.00 1078.46,147.00 1028.62,65.00"/>
+<text class="meta" x="960" y="172">n=-1 · A/B/C positive</text>
+<rect x="1143" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="56">N · Z=7</text>
+<polygon class="tri" points="1220.96,147.00 1249.04,147.00 1226.93,65.00"/>
+<text class="meta" x="1150" y="172">n=1168 · A/B/C positive</text>
+<rect x="1333" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="56">O · Z=8</text>
+<polygon class="tri" points="1385.19,147.00 1464.81,147.00 1391.16,65.00"/>
+<text class="meta" x="1340" y="172">n=1168 · A/B/C positive</text>
+<rect x="1523" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="56">F · Z=9</text>
+<polygon class="tri" points="1608.68,147.00 1621.32,147.00 1614.65,65.00"/>
+<text class="meta" x="1530" y="172">n=1168 · A/B/C positive</text>
+<rect x="1713" y="38" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="56">Ne · Z=10</text>
+<polygon class="tri" points="1746.38,147.00 1863.62,147.00 1752.35,65.00"/>
+<text class="meta" x="1720" y="172">n=2341 · A/B/C positive</text>
+<rect x="3" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="206">Na · Z=11</text>
+<polygon class="tri" points="59.91,297.00 130.09,297.00 70.58,215.00"/>
+<text class="meta" x="10" y="322">n=1 · A/B/C positive</text>
+<rect x="193" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="206">Mg · Z=12</text>
+<polygon class="tri" points="246.92,297.00 323.08,297.00 261.38,215.00"/>
+<text class="meta" x="200" y="322">n=0 · A/B/C positive</text>
+<rect x="383" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="206">Al · Z=13</text>
+<polygon class="tri" points="402.50,297.00 547.50,297.00 418.68,228.13"/>
+<text class="meta" x="390" y="322">n=0 · A/B/C positive</text>
+<rect x="573" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="206">Si · Z=14</text>
+<polygon class="tri" points="609.23,297.00 720.77,297.00 626.63,215.00"/>
+<text class="meta" x="580" y="322">n=0 · A/B/C positive</text>
+<rect x="763" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="206">P · Z=15</text>
+<polygon class="tri" points="834.37,297.00 875.63,297.00 849.23,215.00"/>
+<text class="meta" x="770" y="322">n=0 · A/B/C positive</text>
+<rect x="953" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="206">S · Z=16</text>
+<polygon class="tri" points="1015.83,297.00 1074.17,297.00 1031.91,215.00"/>
+<text class="meta" x="960" y="322">n=0 · A/B/C positive</text>
+<rect x="1143" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="206">Cl · Z=17</text>
+<polygon class="tri" points="1230.10,297.00 1239.90,297.00 1236.08,215.00"/>
+<text class="meta" x="1150" y="322">n=1150 · A/B/C positive</text>
+<rect x="1333" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="206">Ar · Z=18</text>
+<polygon class="tri" points="1385.99,297.00 1464.01,297.00 1391.97,215.00"/>
+<text class="meta" x="1340" y="322">n=2335 · A/B/C positive</text>
+<rect x="1523" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="206">K · Z=19</text>
+<polygon class="tri" points="1586.95,297.00 1643.05,297.00 1597.24,215.00"/>
+<text class="meta" x="1530" y="322">n=3 · A/B/C positive</text>
+<rect x="1713" y="188" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="206">Ca · Z=20</text>
+<polygon class="tri" points="1782.20,297.00 1827.80,297.00 1795.67,215.00"/>
+<text class="meta" x="1720" y="322">n=1 · A/B/C positive</text>
+<rect x="3" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="356">Sc · Z=21</text>
+<polygon class="tri" points="60.70,447.00 129.30,447.00 81.44,365.00"/>
+<text class="meta" x="10" y="472">n=0 · A/B/C positive</text>
+<rect x="193" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="356">Ti · Z=22</text>
+<polygon class="tri" points="212.50,447.00 357.50,447.00 238.63,372.24"/>
+<text class="meta" x="200" y="472">n=0 · A/B/C positive</text>
+<rect x="383" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="356">V · Z=23</text>
+<polygon class="tri" points="402.50,447.00 547.50,447.00 421.74,404.40"/>
+<text class="meta" x="390" y="472">n=0 · A/B/C positive</text>
+<rect x="573" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="356">Cr · Z=24</text>
+<polygon class="tri" points="592.50,447.00 737.50,447.00 606.26,421.30"/>
+<text class="meta" x="580" y="472">n=0 · A/B/C positive</text>
+<rect x="763" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="356">Mn · Z=25</text>
+<polygon class="tri" points="782.50,447.00 927.50,447.00 798.37,417.97"/>
+<text class="meta" x="770" y="472">n=0 · A/B/C positive</text>
+<rect x="953" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="356">Fe · Z=26</text>
+<polygon class="tri" points="972.50,447.00 1117.50,447.00 986.12,423.96"/>
+<text class="meta" x="960" y="472">n=0 · A/B/C positive</text>
+<rect x="1143" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="356">Co · Z=27</text>
+<polygon class="tri" points="1162.50,447.00 1307.50,447.00 1173.83,430.14"/>
+<text class="meta" x="1150" y="472">n=0 · A/B/C positive</text>
+<rect x="1333" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="356">Ni · Z=28</text>
+<polygon class="tri" points="1352.50,447.00 1497.50,447.00 1363.29,431.05"/>
+<text class="meta" x="1340" y="472">n=0 · A/B/C positive</text>
+<rect x="1523" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="356">Cu · Z=29</text>
+<polygon class="tri" points="1542.50,447.00 1687.50,447.00 1558.11,423.98"/>
+<text class="meta" x="1530" y="472">n=0 · A/B/C positive</text>
+<rect x="1713" y="338" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="356">Zn · Z=30</text>
+<polygon class="tri" points="1732.50,447.00 1877.50,447.00 1759.25,396.92"/>
+<text class="meta" x="1720" y="472">n=0 · A/B/C positive</text>
+<rect x="3" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="506">Ga · Z=31</text>
+<polygon class="tri" points="26.90,597.00 163.10,597.00 63.41,515.00"/>
+<text class="meta" x="10" y="622">n=0 · A/B/C positive</text>
+<rect x="193" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="506">Ge · Z=32</text>
+<polygon class="tri" points="235.23,597.00 334.77,597.00 268.40,515.00"/>
+<text class="meta" x="200" y="622">n=0 · A/B/C positive</text>
+<rect x="383" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="506">As · Z=33</text>
+<polygon class="tri" points="418.62,597.00 531.38,597.00 454.36,515.00"/>
+<text class="meta" x="390" y="622">n=0 · A/B/C positive</text>
+<rect x="573" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="506">Se · Z=34</text>
+<polygon class="tri" points="633.61,597.00 696.39,597.00 663.95,515.00"/>
+<text class="meta" x="580" y="622">n=0 · A/B/C positive</text>
+<rect x="763" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="506">Br · Z=35</text>
+<polygon class="tri" points="826.50,597.00 883.50,597.00 847.86,515.00"/>
+<text class="meta" x="770" y="622">n=1 · A/B/C positive</text>
+<rect x="953" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="506">Kr · Z=36</text>
+<polygon class="tri" points="1022.92,597.00 1067.08,597.00 1028.90,515.00"/>
+<text class="meta" x="960" y="622">n=2343 · A/B/C positive</text>
+<rect x="1143" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="506">Rb · Z=37</text>
+<polygon class="tri" points="1217.75,597.00 1252.25,597.00 1231.17,515.00"/>
+<text class="meta" x="1150" y="622">n=4 · A/B/C positive</text>
+<rect x="1333" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="506">Sr · Z=38</text>
+<polygon class="tri" points="1385.18,597.00 1464.82,597.00 1404.14,515.00"/>
+<text class="meta" x="1340" y="622">n=2 · A/B/C positive</text>
+<rect x="1523" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="506">Y · Z=39</text>
+<polygon class="tri" points="1600.75,597.00 1629.04,597.00 1629.25,515.00"/>
+<text class="meta" x="1530" y="622">n=0 · A/B/C positive</text>
+<rect x="1713" y="488" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="506">Zr · Z=40</text>
+<polygon class="tri" points="1754.27,597.00 1855.73,597.00 1794.35,515.00"/>
+<text class="meta" x="1720" y="622">n=0 · A/B/C positive</text>
+<rect x="3" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="656">Nb · Z=41</text>
+<polygon class="tri" points="22.50,747.00 167.50,747.00 65.94,679.93"/>
+<text class="meta" x="10" y="772">n=0 · A/B/C positive</text>
+<rect x="193" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="656">Mo · Z=42</text>
+<polygon class="tri" points="212.50,747.00 357.50,747.00 250.92,698.53"/>
+<text class="meta" x="200" y="772">n=0 · A/B/C positive</text>
+<rect x="383" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="656">Tc · Z=43</text>
+<polygon class="tri" points="402.50,747.00 547.50,747.00 438.46,705.77"/>
+<text class="meta" x="390" y="772">n=0 · A/B/C positive</text>
+<rect x="573" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="656">Ru · Z=44</text>
+<polygon class="tri" points="592.50,747.00 737.50,747.00 627.64,711.59"/>
+<text class="meta" x="580" y="772">n=0 · A/B/C positive</text>
+<rect x="763" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="656">Rh · Z=45</text>
+<polygon class="tri" points="782.50,747.00 927.50,747.00 818.01,712.45"/>
+<text class="meta" x="770" y="772">n=0 · A/B/C positive</text>
+<rect x="953" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="656">Pd · Z=46</text>
+<polygon class="tri" points="972.50,747.00 1117.50,747.00 1012.28,706.44"/>
+<text class="meta" x="960" y="772">n=0 · A/B/C positive</text>
+<rect x="1143" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="656">Ag · Z=47</text>
+<polygon class="tri" points="1162.50,747.00 1307.50,747.00 1209.01,690.41"/>
+<text class="meta" x="1150" y="772">n=0 · A/B/C positive</text>
+<rect x="1333" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="656">Cd · Z=48</text>
+<polygon class="tri" points="1359.22,747.00 1490.78,747.00 1413.15,665.00"/>
+<text class="meta" x="1340" y="772">n=0 · A/B/C positive</text>
+<rect x="1523" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="656">In · Z=49</text>
+<polygon class="tri" points="1572.50,747.00 1657.50,747.00 1617.40,665.00"/>
+<text class="meta" x="1530" y="772">n=0 · A/B/C positive</text>
+<rect x="1713" y="638" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="656">Sn · Z=50</text>
+<polygon class="tri" points="1765.72,747.00 1844.28,747.00 1810.47,665.00"/>
+<text class="meta" x="1720" y="772">n=0 · A/B/C positive</text>
+<rect x="3" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="806">Sb · Z=51</text>
+<polygon class="tri" points="66.98,897.00 123.02,897.00 108.04,815.00"/>
+<text class="meta" x="10" y="922">n=0 · A/B/C positive</text>
+<rect x="193" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="806">Te · Z=52</text>
+<polygon class="tri" points="265.81,897.00 298.72,897.00 304.19,815.00"/>
+<text class="meta" x="200" y="922">n=0 · A/B/C positive</text>
+<rect x="383" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="806">I · Z=53</text>
+<polygon class="tri" points="441.94,897.00 508.06,897.00 472.95,815.00"/>
+<text class="meta" x="390" y="922">n=1 · A/B/C positive</text>
+<rect x="573" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="806">Xe · Z=54</text>
+<polygon class="tri" points="621.54,897.00 708.46,897.00 627.53,815.00"/>
+<text class="meta" x="580" y="922">n=2328 · A/B/C positive</text>
+<rect x="763" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="806">Cs · Z=55</text>
+<polygon class="tri" points="847.30,897.00 852.55,897.00 862.70,815.00"/>
+<text class="meta" x="770" y="922">n=5 · A/B/C positive</text>
+<rect x="953" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="806">Ba · Z=56</text>
+<polygon class="tri" points="1028.15,897.00 1061.85,897.00 1052.14,815.00"/>
+<text class="meta" x="960" y="922">n=2 · A/B/C positive</text>
+<rect x="1143" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="806">La · Z=57</text>
+<polygon class="tri" points="1216.05,897.00 1228.80,897.00 1253.95,815.00"/>
+<text class="meta" x="1150" y="922">n=0 · A/B/C positive</text>
+<rect x="1333" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="806">Ce · Z=58</text>
+<polygon class="tri" points="1404.21,897.00 1438.32,897.00 1445.79,815.00"/>
+<text class="meta" x="1340" y="922">n=0 · A/B/C positive</text>
+<rect x="1523" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="806">Pr · Z=59</text>
+<polygon class="tri" points="1594.21,897.00 1627.26,897.00 1635.79,815.00"/>
+<text class="meta" x="1530" y="922">n=0 · A/B/C positive</text>
+<rect x="1713" y="788" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="806">Nd · Z=60</text>
+<polygon class="tri" points="1783.48,897.00 1820.13,897.00 1826.52,815.00"/>
+<text class="meta" x="1720" y="922">n=0 · A/B/C positive</text>
+<rect x="3" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="956">Pm · Z=61</text>
+<polygon class="tri" points="72.71,1047.00 116.44,1047.00 117.29,965.00"/>
+<text class="meta" x="10" y="1072">n=0 · A/B/C positive</text>
+<rect x="193" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="956">Sm · Z=62</text>
+<polygon class="tri" points="261.89,1047.00 306.90,1047.00 308.11,965.00"/>
+<text class="meta" x="200" y="1072">n=0 · A/B/C positive</text>
+<rect x="383" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="956">Eu · Z=63</text>
+<polygon class="tri" points="456.67,1047.00 493.33,1047.00 489.39,965.00"/>
+<text class="meta" x="390" y="1072">n=1 · A/B/C positive</text>
+<rect x="573" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="956">Gd · Z=64</text>
+<polygon class="tri" points="640.67,1047.00 688.97,1047.00 689.33,965.00"/>
+<text class="meta" x="580" y="1072">n=0 · A/B/C positive</text>
+<rect x="763" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="956">Tb · Z=65</text>
+<polygon class="tri" points="827.10,1047.00 882.90,1047.00 877.92,965.00"/>
+<text class="meta" x="770" y="1072">n=0 · A/B/C positive</text>
+<rect x="953" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="956">Dy · Z=66</text>
+<polygon class="tri" points="1014.65,1047.00 1075.35,1047.00 1067.62,965.00"/>
+<text class="meta" x="960" y="1072">n=0 · A/B/C positive</text>
+<rect x="1143" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="956">Ho · Z=67</text>
+<polygon class="tri" points="1202.59,1047.00 1267.41,1047.00 1257.28,965.00"/>
+<text class="meta" x="1150" y="1072">n=0 · A/B/C positive</text>
+<rect x="1333" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="956">Er · Z=68</text>
+<polygon class="tri" points="1390.27,1047.00 1459.73,1047.00 1446.85,965.00"/>
+<text class="meta" x="1340" y="1072">n=0 · A/B/C positive</text>
+<rect x="1523" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="956">Tm · Z=69</text>
+<polygon class="tri" points="1577.91,1047.00 1652.09,1047.00 1636.29,965.00"/>
+<text class="meta" x="1530" y="1072">n=0 · A/B/C positive</text>
+<rect x="1713" y="938" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="956">Yb · Z=70</text>
+<polygon class="tri" points="1762.63,1047.00 1847.37,1047.00 1805.00,965.00"/>
+<text class="meta" x="1720" y="1072">n=1 · A/B/C positive</text>
+<rect x="3" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="1106">Lu · Z=71</text>
+<polygon class="tri" points="54.37,1197.00 135.63,1197.00 116.60,1115.00"/>
+<text class="meta" x="10" y="1222">n=0 · A/B/C positive</text>
+<rect x="193" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="1106">Hf · Z=72</text>
+<polygon class="tri" points="212.50,1197.00 357.50,1197.00 295.62,1124.27"/>
+<text class="meta" x="200" y="1222">n=0 · A/B/C positive</text>
+<rect x="383" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="1106">Ta · Z=73</text>
+<polygon class="tri" points="402.50,1197.00 547.50,1197.00 480.38,1150.61"/>
+<text class="meta" x="390" y="1222">n=0 · A/B/C positive</text>
+<rect x="573" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="1106">W · Z=74</text>
+<polygon class="tri" points="592.50,1197.00 737.50,1197.00 672.27,1166.31"/>
+<text class="meta" x="580" y="1222">n=0 · A/B/C positive</text>
+<rect x="763" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="1106">Re · Z=75</text>
+<polygon class="tri" points="782.50,1197.00 927.50,1197.00 866.59,1172.87"/>
+<text class="meta" x="770" y="1222">n=0 · A/B/C positive</text>
+<rect x="953" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="1106">Os · Z=76</text>
+<polygon class="tri" points="972.50,1197.00 1117.50,1197.00 1066.88,1180.24"/>
+<text class="meta" x="960" y="1222">n=0 · A/B/C positive</text>
+<rect x="1143" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="1106">Ir · Z=77</text>
+<polygon class="tri" points="1162.50,1197.00 1307.50,1197.00 1256.97,1179.37"/>
+<text class="meta" x="1150" y="1222">n=0 · A/B/C positive</text>
+<rect x="1333" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="1106">Pt · Z=78</text>
+<polygon class="tri" points="1352.50,1197.00 1497.50,1197.00 1443.50,1174.66"/>
+<text class="meta" x="1340" y="1222">n=0 · A/B/C positive</text>
+<rect x="1523" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="1106">Au · Z=79</text>
+<polygon class="tri" points="1542.50,1197.00 1687.50,1197.00 1628.73,1163.72"/>
+<text class="meta" x="1530" y="1222">n=0 · A/B/C positive</text>
+<rect x="1713" y="1088" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="1106">Hg · Z=80</text>
+<polygon class="tri" points="1732.50,1197.00 1877.50,1197.00 1827.65,1116.00"/>
+<text class="meta" x="1720" y="1222">n=0 · A/B/C positive</text>
+<rect x="3" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="1256">Tl · Z=81</text>
+<polygon class="tri" points="44.00,1347.00 146.00,1347.00 122.57,1265.00"/>
+<text class="meta" x="10" y="1372">n=0 · A/B/C positive</text>
+<rect x="193" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="1256">Pb · Z=82</text>
+<polygon class="tri" points="240.46,1347.00 329.54,1347.00 314.91,1265.00"/>
+<text class="meta" x="200" y="1372">n=0 · A/B/C positive</text>
+<rect x="383" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="1256">Bi · Z=83</text>
+<polygon class="tri" points="444.01,1347.00 492.93,1347.00 505.99,1265.00"/>
+<text class="meta" x="390" y="1372">n=0 · A/B/C positive</text>
+<rect x="573" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="1256">Po · Z=84</text>
+<polygon class="tri" points="635.81,1347.00 670.64,1347.00 694.19,1265.00"/>
+<text class="meta" x="580" y="1372">n=0 · A/B/C positive</text>
+<rect x="763" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="1256">At · Z=85</text>
+<polygon class="tri" points="833.51,1347.00 871.48,1347.00 876.49,1265.00"/>
+<text class="meta" x="770" y="1372">n=1 · A/B/C positive</text>
+<rect x="953" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="1256">Rn · Z=86</text>
+<polygon class="tri" points="993.18,1347.00 1096.82,1347.00 999.19,1265.00"/>
+<text class="meta" x="960" y="1372">n=2382 · A/B/C positive</text>
+<rect x="1143" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="1256">Fr · Z=87</text>
+<polygon class="tri" points="1223.03,1347.00 1246.97,1347.00 1243.31,1265.00"/>
+<text class="meta" x="1150" y="1372">n=6 · A/B/C positive</text>
+<rect x="1333" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="1256">Ra · Z=88</text>
+<polygon class="tri" points="1393.40,1347.00 1456.60,1347.00 1424.79,1265.00"/>
+<text class="meta" x="1340" y="1372">n=3 · A/B/C positive</text>
+<rect x="1523" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="1256">Ac · Z=89</text>
+<polygon class="tri" points="1583.01,1347.00 1622.25,1347.00 1646.99,1265.00"/>
+<text class="meta" x="1530" y="1372">n=0 · A/B/C positive</text>
+<rect x="1713" y="1238" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="1256">Th · Z=90</text>
+<polygon class="tri" points="1765.78,1347.00 1844.22,1347.00 1843.61,1265.00"/>
+<text class="meta" x="1720" y="1372">n=0 · A/B/C positive</text>
+<rect x="3" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="1406">Pa · Z=91</text>
+<polygon class="tri" points="22.50,1497.00 167.50,1497.00 126.25,1426.39"/>
+<text class="meta" x="10" y="1522">n=0 · A/B/C positive</text>
+<rect x="193" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="1406">U · Z=92</text>
+<polygon class="tri" points="212.50,1497.00 357.50,1497.00 314.63,1455.28"/>
+<text class="meta" x="200" y="1522">n=0 · A/B/C positive</text>
+<rect x="383" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="1406">Np · Z=93</text>
+<polygon class="tri" points="402.50,1497.00 547.50,1497.00 506.09,1463.63"/>
+<text class="meta" x="390" y="1522">n=0 · A/B/C positive</text>
+<rect x="573" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="1406">Pu · Z=94</text>
+<polygon class="tri" points="592.50,1497.00 737.50,1497.00 697.62,1460.33"/>
+<text class="meta" x="580" y="1522">n=0 · A/B/C positive</text>
+<rect x="763" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="1406">Am · Z=95</text>
+<polygon class="tri" points="796.29,1497.00 913.71,1497.00 894.43,1415.00"/>
+<text class="meta" x="770" y="1522">n=0 · A/B/C positive</text>
+<rect x="953" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="1406">Cm · Z=96</text>
+<polygon class="tri" points="989.82,1497.00 1100.18,1497.00 1085.88,1415.00"/>
+<text class="meta" x="960" y="1522">n=0 · A/B/C positive</text>
+<rect x="1143" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="1406">Bk · Z=97</text>
+<polygon class="tri" points="1173.93,1497.00 1296.07,1497.00 1275.78,1415.00"/>
+<text class="meta" x="1150" y="1522">n=0 · A/B/C positive</text>
+<rect x="1333" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="1406">Cf · Z=98</text>
+<polygon class="tri" points="1352.50,1497.00 1497.50,1497.00 1467.55,1416.00"/>
+<text class="meta" x="1340" y="1522">n=0 · A/B/C positive</text>
+<rect x="1523" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="1406">Es · Z=99</text>
+<polygon class="tri" points="1561.65,1497.00 1668.35,1497.00 1657.59,1415.00"/>
+<text class="meta" x="1530" y="1522">n=0 · A/B/C positive</text>
+<rect x="1713" y="1388" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="1406">Fm · Z=100</text>
+<polygon class="tri" points="1760.78,1497.00 1849.22,1497.00 1821.95,1415.00"/>
+<text class="meta" x="1720" y="1522">n=1 · A/B/C positive</text>
+<rect x="3" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="1556">Md · Z=101</text>
+<polygon class="tri" points="62.11,1647.00 75.57,1647.00 127.89,1565.00"/>
+<text class="meta" x="10" y="1672">n=0 · A/B/C positive</text>
+<rect x="193" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="1556">No · Z=102</text>
+<polygon class="tri" points="238.34,1647.00 331.66,1647.00 301.03,1565.00"/>
+<text class="meta" x="200" y="1672">n=1 · A/B/C positive</text>
+<rect x="383" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="1556">Lr · Z=103</text>
+<polygon class="tri" points="402.50,1647.00 547.50,1647.00 522.38,1567.75"/>
+<text class="meta" x="390" y="1672">n=0 · A/B/C positive</text>
+<rect x="573" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="1556">Rf · Z=104</text>
+<polygon class="tri" points="592.50,1647.00 737.50,1647.00 706.85,1584.22"/>
+<text class="meta" x="580" y="1672">n=0 · A/B/C positive</text>
+<rect x="763" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="1556">Db · Z=105</text>
+<polygon class="tri" points="782.50,1647.00 927.50,1647.00 898.38,1619.56"/>
+<text class="meta" x="770" y="1672">n=0 · A/B/C positive</text>
+<rect x="953" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="1556">Sg · Z=106</text>
+<polygon class="tri" points="972.50,1647.00 1117.50,1647.00 1095.64,1629.80"/>
+<text class="meta" x="960" y="1672">n=0 · A/B/C positive</text>
+<rect x="1143" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="1556">Bh · Z=107</text>
+<text class="invalid" x="1150" y="1600">NO TRIANGLE</text>
+<text class="meta" x="1150" y="1619">A=-5.4772° (unchanged)</text>
+<text class="meta" x="1150" y="1636">n=0 · B/C adjusted</text>
+<text class="meta" x="1150" y="1672">A is non-positive</text>
+<rect x="1333" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="1556">Hs · Z=108</text>
+<text class="invalid" x="1340" y="1600">NO TRIANGLE</text>
+<text class="meta" x="1340" y="1619">A=-10.1775° (unchanged)</text>
+<text class="meta" x="1340" y="1636">n=0 · B/C adjusted</text>
+<text class="meta" x="1340" y="1672">A is non-positive</text>
+<rect x="1523" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1530" y="1556">Mt · Z=109</text>
+<text class="invalid" x="1530" y="1600">NO TRIANGLE</text>
+<text class="meta" x="1530" y="1619">A=-8.8345° (unchanged)</text>
+<text class="meta" x="1530" y="1636">n=0 · B/C adjusted</text>
+<text class="meta" x="1530" y="1672">A is non-positive</text>
+<rect x="1713" y="1538" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1720" y="1556">Ds · Z=110</text>
+<text class="invalid" x="1720" y="1600">NO TRIANGLE</text>
+<text class="meta" x="1720" y="1619">A=-6.1487° (unchanged)</text>
+<text class="meta" x="1720" y="1636">n=0 · B/C adjusted</text>
+<text class="meta" x="1720" y="1672">A is non-positive</text>
+<rect x="3" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="10" y="1706">Rg · Z=111</text>
+<polygon class="tri" points="22.50,1797.00 167.50,1797.00 155.79,1787.86"/>
+<text class="meta" x="10" y="1822">n=0 · A/B/C positive</text>
+<rect x="193" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="200" y="1706">Cn · Z=112</text>
+<polygon class="tri" points="212.50,1797.00 357.50,1797.00 335.32,1727.68"/>
+<text class="meta" x="200" y="1822">n=0 · A/B/C positive</text>
+<rect x="383" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="390" y="1706">Nh · Z=113</text>
+<polygon class="tri" points="402.50,1797.00 547.50,1797.00 529.91,1717.00"/>
+<text class="meta" x="390" y="1822">n=0 · A/B/C positive</text>
+<rect x="573" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="580" y="1706">Fl · Z=114</text>
+<polygon class="tri" points="614.08,1797.00 708.17,1797.00 715.92,1715.00"/>
+<text class="meta" x="580" y="1822">n=0 · A/B/C positive</text>
+<rect x="763" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="770" y="1706">Mc · Z=115</text>
+<polygon class="tri" points="809.78,1797.00 877.64,1797.00 900.22,1715.00"/>
+<text class="meta" x="770" y="1822">n=0 · A/B/C positive</text>
+<rect x="953" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="960" y="1706">Lv · Z=116</text>
+<polygon class="tri" points="1008.39,1797.00 1013.86,1797.00 1081.61,1715.00"/>
+<text class="meta" x="960" y="1822">n=0 · A/B/C positive</text>
+<rect x="1143" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1150" y="1706">Ts · Z=117</text>
+<polygon class="tri" points="1212.90,1797.00 1240.30,1797.00 1257.10,1715.00"/>
+<text class="meta" x="1150" y="1822">n=2 · A/B/C positive</text>
+<rect x="1333" y="1688" width="184" height="144" rx="7" fill="#fafafa" stroke="#d7dce1"/>
+<text class="sym" x="1340" y="1706">Og · Z=118</text>
+<polygon class="tri" points="1407.35,1797.00 1412.68,1797.00 1442.65,1715.00"/>
+<text class="meta" x="1340" y="1822">n=3 · A/B/C positive</text>
+</svg>
