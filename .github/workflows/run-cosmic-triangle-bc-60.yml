@@ -1,0 +1,41 @@
+name: Cosmic Triangle — B/C 60° Cycle (118 Elements)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run 118-element B/C 60° cycle
+        run: python PROJECTS/cosmic-triangle-rebalance-118/run_bc_60_cycle_118.py
+      - name: Commit generated outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_COMPLETE_2026-11-22.csv
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_SHAPES_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/BC_60_CYCLE_COMPLETE_AUDIT_2026-11-22.md
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Run B/C 60-degree cycle for all 118 elements"
+            git push
+          fi
+      - name: Upload generated outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmic-triangle-bc-60-cycle-118
+          path: |
+            PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_COMPLETE_2026-11-22.csv
+            PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_SHAPES_2026-11-22.svg
+            PROJECTS/cosmic-triangle-rebalance-118/BC_60_CYCLE_COMPLETE_AUDIT_2026-11-22.md
