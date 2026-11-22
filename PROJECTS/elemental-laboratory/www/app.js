@@ -439,9 +439,9 @@ function showInfo() {
   body.innerHTML = `
     <div class="face-title" style="color:${el.hex}">${el.icon} ${f} — ${el.name}</div>
     <div class="data-grid">
-      <div class="data-cell"><div class="k">∠A</div>${res.angles.A.toFixed(2)}°</div>
-      <div class="data-cell"><div class="k">∠B</div>${res.angles.B.toFixed(2)}°</div>
-      <div class="data-cell"><div class="k">∠C</div>${res.angles.C.toFixed(2)}°</div>
+      <div class="data-cell"><div class="k">∠${v1}</div>${res.angles[v1].toFixed(2)}°</div>
+      <div class="data-cell"><div class="k">∠${v2}</div>${res.angles[v2].toFixed(2)}°</div>
+      <div class="data-cell"><div class="k">∠${v3}</div>${res.angles[v3].toFixed(2)}°</div>
       <div class="data-cell"><div class="k">${v1}${v2}</div>${res.sides[edgeKey(v1,v2)].toFixed(3)}</div>
       <div class="data-cell"><div class="k">${v2}${v3}</div>${res.sides[edgeKey(v2,v3)].toFixed(3)}</div>
       <div class="data-cell"><div class="k">${v3}${v1}</div>${res.sides[edgeKey(v3,v1)].toFixed(3)}</div>
