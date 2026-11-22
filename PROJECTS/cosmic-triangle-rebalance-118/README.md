@@ -61,3 +61,15 @@ Independent experimental workspace. The frozen reference framework is not modifi
 - Secondary and expected values are included only as flagged illustrative inputs.
 - Adding secondary/expected rows shifts PubChem-only percentile ranks: mean absolute shift 0.0643 for density and 0.0237 for molar volume; maximum shifts 0.1161 and 0.0909 respectively.
 - The run uses lambda=0.50 only as a demonstration setting. It is not approved as the final model and does not resolve cross-phase comparability.
+
+- `ELEMENTS_118_UNIFIED_TRIANGLE_MAP_EXPLORATORY_LAMBDA_0_50_2026-11-22.svg` — single unified SVG image containing 118 separate triangles and one incenter marker per element.
+
+## Geometry validation
+The 118-row output was re-read from GitHub and checked:
+- 118 rows and 118 unique atomic numbers.
+- All angles and side lengths positive.
+- All angle sums equal 180° within the stored precision.
+- Every incenter coordinate matches the side-length-weighted vertex construction.
+- The SVG image exists and contains all 118 tiles.
+
+This verifies the computation and file integrity only. It does not validate the input data as a homogeneous physical dataset.
