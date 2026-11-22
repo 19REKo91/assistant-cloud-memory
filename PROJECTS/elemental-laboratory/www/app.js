@@ -467,7 +467,7 @@ async function exportData() {
     data.faces[f] = { angles:{...d.angles}, sides:{...d.sides} };
   }
   const json = JSON.stringify(data, null, 2);
-  const filename = \`elemental-lab-\${Date.now()}.json\`;
+  const filename = `elemental-lab-${Date.now()}.json`;
 
   // المحاولة 1: Web Share API (يعمل ممتاز على أندرويد)
   try {
@@ -500,18 +500,18 @@ async function exportData() {
 
 function showJsonModal(json, filename) {
   const overlay = document.createElement('div');
-  overlay.style.cssText = \`position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;
-    display:flex;flex-direction:column;padding:14px;gap:10px\`;
+  overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;
+    display:flex;flex-direction:column;padding:14px;gap:10px`;
 
   const title = document.createElement('div');
   title.style.cssText = 'color:#e8e8f0;font-size:13px;text-align:center';
-  title.textContent = \`انسخ المحتوى واحفظه كملف \${filename}\`;
+  title.textContent = `انسخ المحتوى واحفظه كملف ${filename}`;
 
   const ta = document.createElement('textarea');
   ta.value = json;
   ta.readOnly = true;
-  ta.style.cssText = \`flex:1;background:#141420;color:#e8e8f0;border:1px solid #2a2a3e;
-    border-radius:8px;padding:10px;font-family:monospace;font-size:11px;resize:none;direction:ltr\`;
+  ta.style.cssText = `flex:1;background:#141420;color:#e8e8f0;border:1px solid #2a2a3e;
+    border-radius:8px;padding:10px;font-family:monospace;font-size:11px;resize:none;direction:ltr`;
 
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;gap:8px';
