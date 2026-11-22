@@ -4,7 +4,7 @@
   "private": true,
   "description": "Elemental Laboratory tetrahedron geometry app",
   "scripts": {
-    "android": "cap sync android"
+    "build": "vite build"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
@@ -12,6 +12,7 @@
     "three": "0.160.0"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.2.1"
+    "@capacitor/cli": "^6.2.1",
+    "vite": "^5.4.14"
   }
 }
