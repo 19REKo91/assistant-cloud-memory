@@ -1,0 +1,16 @@
+{
+  "name": "Elemental Laboratory",
+  "short_name": "ElementalLab",
+  "description": "مختبر العناصر — بناء هرم رباعي الأوجه",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a14",
+  "theme_color": "#0a0a14",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
