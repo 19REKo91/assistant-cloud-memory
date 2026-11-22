@@ -2,12 +2,6 @@ name: CHRONO CROSS GPT live browser-control E2E
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "tools/chrono-cross-gpt-mcp-live-control-test.mjs"
-      - ".github/workflows/chrono-cross-gpt-mcp-live-control-e2e.yml"
-
 permissions:
   contents: read
 
