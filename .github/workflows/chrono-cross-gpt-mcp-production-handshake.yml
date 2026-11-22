@@ -8,11 +8,6 @@ on:
         required: false
         type: string
         default: ""
-  push:
-    paths:
-      - 'tools/chrono-cross-gpt-mcp-smoke-test.mjs'
-      - '.github/workflows/chrono-cross-gpt-mcp-production-handshake.yml'
-
 permissions:
   contents: read
 
