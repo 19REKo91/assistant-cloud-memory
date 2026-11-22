@@ -170,17 +170,23 @@ def main():
         phase_label=pr["Phase_Group"]
         ph="Gas" if phase_label in ("Gas","Expected to be Gas") else ("Liquid" if phase_label=="Liquid" else "Solid")
         gas_status="NOT_APPLICABLE"
+        direct20="NA"; direct20_delta="NA"
         temp=pr["Temperature_C"]; pressure=pr["Pressure_kPa"]
         if ph=="Gas" and z in gmap:
             gr=gmap[z]
-            rho20_ref=fnum(gr.get("Density_20C_reference_g_cm3"))
             rho20_derived=fnum(gr["Density_20C_derived_g_cm3"])
-            if rho20_ref is not None:
-                rho=rho20_ref; temp="20"; pressure="101.325"
-                gas_status="DIRECT_20C_REFERENCE_VALUE_USED"
-            elif rho20_derived is not None:
+            rho20_ref=fnum(gr.get("Density_20C_reference_g_cm3"))
+            if rho20_derived is not None:
+                # Follow the prior gas audit: the consistent 0C-to-20C ideal-gas
+                # scaling is the calculation basis; direct 20C table values remain
+                # comparison-only and must not silently replace it.
                 rho=rho20_derived; temp="20"; pressure="101.325"
-                gas_status="IDEAL_GAS_SCALED_FROM_0C_NO_DIRECT_20C_VALUE"
+                if rho20_ref is not None:
+                    direct20=rho20_ref
+                    direct20_delta=(rho20_ref/rho20_derived-1.0)*100.0
+                    gas_status="IDEAL_GAS_SCALED_20C; DIRECT_20C_CROSSCHECK_ONLY"
+                else:
+                    gas_status="IDEAL_GAS_SCALED_20C; NO_DIRECT_20C_CROSSCHECK"
         vol=mass/rho if mass and rho else None
         source_class=pr["Density_Source_Class"]
         quality=pr["Data_Quality_Flag"]
@@ -191,10 +197,10 @@ def main():
             status="PREDICTED_OR_EXPECTED_INPUT"
         elif ph=="Liquid":
             status="LOW_N_LIQUID_COHORT"
-        elif ph=="Gas" and gas_status.startswith("IDEAL_GAS"):
-            status="GAS_IDEAL_SCALED_20C"
+        elif ph=="Gas" and "NO_DIRECT_20C" in gas_status:
+            status="GAS_IDEAL_SCALED_20C_NO_DIRECT_CROSSCHECK"
         elif ph=="Gas":
-            status="GAS_DIRECT_20C_REFERENCE_USED"
+            status="GAS_IDEAL_SCALED_20C_WITH_DIRECT_CROSSCHECK"
         elif source_class!="PubChem":
             status="SECONDARY_SOURCE_INPUT"
         else:
@@ -202,7 +208,7 @@ def main():
         rows.append({"Z":z,"Symbol":s["Symbol"],"Element":s["Element"],"_phase":ph,
           "Phase_Source_Label":phase_label,"Source_Class":source_class,"Mass_u":mass,
           "Density_g_cm3_used":rho,"Density_Source_URL":s["Density_Source"],
-          "Temperature_C":temp,"Pressure_kPa":pressure,"Gas_20C_Status":gas_status,
+          "Temperature_C":temp,"Pressure_kPa":pressure,"Gas_20C_Status":gas_status,"Density_20C_Direct_Reference_Crosscheck_g_cm3":direct20,"Direct_20C_Crosscheck_Delta_percent":direct20_delta,
           "Density_Status_Source":s["Density_Status"],"Quality_Flag":quality,
           "Molar_Volume_cm3_per_mol_atoms":vol,"Input_Status":status})
     # Midrank normalization is explicitly within phase, not across phases.
@@ -277,7 +283,7 @@ def main():
 - Source mass/density table: {SRC.name}
 - Phase/source compatibility register: {PHASE.name}
 - Gas harmonization table: {GAS.name}
-- Gas density inputs replaced with the separately audited 20°C, 101.325 kPa values where present (11 gas rows); direct-reference and ideal-scaled statuses remain distinct.
+- Gas calculation basis follows the prior gas audit: all 11 values use the consistently ideal-gas-scaled 0°C-to-20°C densities. Seven independent direct-20°C table values are retained only as separate cross-check columns; they do not overwrite the calculation basis. Four gases have no direct 20°C cross-check and remain ideal-scaled only.
 - Solid/liquid density values are carried from their source rows without an unsupported thermal correction. Their source-specific temperature/pressure/allotrope limitations remain visible in the row status and flags.
 - Elemental molar volume is calculated as atomic mass / density, in cm³ per mole of atoms.
 - Density and molar-volume percentiles are midranks within each phase cohort, never pooled across phases.
