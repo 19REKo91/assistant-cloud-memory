@@ -10,7 +10,7 @@ SVG=P/"ELEMENTS_118_BC_60_CYCLE_PERIODIC_TABLE_MAP_2026-11-22.svg"
 REPORT=P/"BC60_PERIODIC_TABLE_MAP_AUDIT_2026-11-22.md"
 BASE=3.0
 DISPLAY_SCALE=0.05
-CELL=3.0
+CELL=3.4
 # Standard periodic-table group positions; f-block is displayed on separate rows.
 pos={}
 periods={
@@ -57,14 +57,13 @@ def main():
         r=byz[z]
         ax.add_patch(Rectangle((x+.04,y+.04),CELL-.08,CELL-.08,fill=False,edgecolor="#aeb7c2",linewidth=.75))
         ax.text(x+.16,y+.38,f'Z={z}',fontsize=7,color="#536170")
-        ax.text(x+.16,y+.78,r["Symbol"],fontsize=13,weight="bold",color="#17202a")
+        ax.text(x+.16,y+.68,r["Symbol"],fontsize=13,weight="bold",color="#17202a")
         tri=geom(r) if r["Status"]=="VALID" else None
         if tri:
-            cx=x+CELL/2; cy=y+1.93
+            cx=x+CELL/2; cy=y+2.08
             points=[(cx+px,cy-py) for px,py in tri]
             ax.add_patch(Polygon(points,closed=True,facecolor="#dbeafe",edgecolor="#1d4ed8",linewidth=1.0,alpha=.78))
             ax.scatter([cx],[cy],s=11,color="#dc2626",zorder=5)
-            ax.text(x+.16,y+2.78,f'n={r["n_selected"]}',fontsize=6,color="#56616d")
         else:
             invalid.append(r["Symbol"])
             ax.text(x+.16,y+1.9,"NO EUCLIDEAN",fontsize=8,color="#b3261e",weight="bold")
