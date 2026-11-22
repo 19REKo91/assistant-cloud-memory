@@ -1,14 +1,6 @@
 name: CHRONO CROSS GPT browser command bridge
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "tools/chrono-browser-command.json"
-      - "tools/chrono-cross-gpt-browser-command.mjs"
-      - ".github/workflows/chrono-cross-gpt-browser-command-bridge.yml"
-
 permissions:
   contents: read
 
