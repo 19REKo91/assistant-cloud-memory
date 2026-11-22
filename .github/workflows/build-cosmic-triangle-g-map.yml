@@ -1,0 +1,28 @@
+name: Build 118-element G Map placement
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-g-map:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install plotting dependencies
+        run: python -m pip install --upgrade pip matplotlib adjustText
+      - name: Build G Map
+        run: python PROJECTS/cosmic-triangle-rebalance-118/build_bc_60_cycle_g_map_118.py
+      - name: Commit outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_2026-11-22.svg
+          git add PROJECTS/cosmic-triangle-rebalance-118/ELEMENTS_118_BC_60_CYCLE_G_MAP_2026-11-22.png
+          git add PROJECTS/cosmic-triangle-rebalance-118/BC_60_CYCLE_G_MAP_PLACEMENT_AUDIT_2026-11-22.md
+          git commit -m "Add 118-element B/C cycle G map placement"
+          git push
