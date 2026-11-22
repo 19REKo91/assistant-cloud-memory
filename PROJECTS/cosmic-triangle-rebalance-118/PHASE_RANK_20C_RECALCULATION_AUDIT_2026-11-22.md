@@ -6,7 +6,7 @@
 - Source mass/density table: ELEMENTS_118_MASS_DENSITY_SOURCE_AUDITED_DRAFT_2026-11-22.csv
 - Phase/source compatibility register: ELEMENTS_118_PHASE_COMPATIBILITY_REGISTER_2026-11-22.csv
 - Gas harmonization table: ELEMENTAL_GASES_11_ROOM_TEMPERATURE_20C_1ATM_2026-11-22.csv
-- Gas density inputs replaced with the separately audited 20°C, 101.325 kPa values where present (11 gas rows); direct-reference and ideal-scaled statuses remain distinct.
+- Gas calculation basis follows the prior gas audit: all 11 values use the consistently ideal-gas-scaled 0°C-to-20°C densities. Seven independent direct-20°C table values are retained only as separate cross-check columns; they do not overwrite the calculation basis. Four gases have no direct 20°C cross-check and remain ideal-scaled only.
 - Solid/liquid density values are carried from their source rows without an unsupported thermal correction. Their source-specific temperature/pressure/allotrope limitations remain visible in the row status and flags.
 - Elemental molar volume is calculated as atomic mass / density, in cm³ per mole of atoms.
 - Density and molar-volume percentiles are midranks within each phase cohort, never pooled across phases.
@@ -23,8 +23,8 @@
 - Cohort sizes: {'Gas': 12, 'Solid': 104, 'Liquid': 2}
 
 ## Input quality distribution
-- GAS_DIRECT_20C_REFERENCE_USED: 7
-- GAS_IDEAL_SCALED_20C: 4
+- GAS_IDEAL_SCALED_20C_NO_DIRECT_CROSSCHECK: 4
+- GAS_IDEAL_SCALED_20C_WITH_DIRECT_CROSSCHECK: 7
 - LOW_N_LIQUID_COHORT: 2
 - PREDICTED_OR_EXPECTED_INPUT: 15
 - PRIMARY_LISTED_CONDITIONS_UNSPECIFIED: 83
