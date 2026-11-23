@@ -81,3 +81,12 @@
 - ملف التعارضات: `OPEN_CONFLICTS_AND_EVIDENCE.md`.
 - مدقق البصمات والجرد: `check_continuity.py`.
 - سير العمل `.github/workflows/check-triangle-continuity.yml` يدوي فقط ولم يتم تشغيله. لا يشغّل محرك Prism.
+
+
+## نقطة القراءة والتحقق الحالية — 2026-11-23
+- ملفات `PROJECTS/triangle-framework/`: 102.
+- سجل القراءة: 98 `READ_FULL`، و4 `READ_PARTIAL` (صور ثنائية)، و0 `NOT_YET_READ`.
+- جميع ملفات النصوص والبيانات المنظمة والبرمجيات والاختبارات في مجلد الإطار قُرئت/فُحصت؛ لا تزال معاينة PNG/JPG الأربعة غير منجزة.
+- ملف التعارضات: `OPEN_CONFLICTS_AND_EVIDENCE.md`.
+- مدقق البصمات والجرد: `check_continuity.py`.
+- سير العمل `.github/workflows/check-triangle-continuity.yml` يدوي فقط ولم يتم تشغيله. لا يشغّل محرك Prism.
