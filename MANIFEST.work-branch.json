@@ -3,15 +3,15 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "74c9e7186536cbcbb553a248b797917143502119",
-  "tree_sha": "6dcf0d20b96ea96e96f72dbd220a7b05ac0f4f8d",
+  "generated_from_commit": "280fb7c324424168d1969b5f56ba4112e7df3be7",
+  "tree_sha": "80ecbd4c14e2a4448f1fade5af40e6e09a328584",
   "complete": true,
   "tree_truncated": false,
-  "entries_count": 764,
-  "files": 628,
-  "dirs": 136,
-  "triangle_framework_files": 107,
-  "triangle_framework_bytes": 1619545,
+  "entries_count": 789,
+  "files": 652,
+  "dirs": 137,
+  "triangle_framework_files": 108,
+  "triangle_framework_bytes": 1643863,
   "checksum": "Git blob SHA-1",
   "manifest_self_excluded": true,
   "entries": [
@@ -24,7 +24,7 @@
     {
       "type": "directory",
       "path": ".github",
-      "git_tree_sha1": "cc74784c3358e7a6cc72af059e40c65794065489"
+      "git_tree_sha1": "ad6cf7ee41a8d1bafc507b1594907e693807ee3e"
     },
     {
       "type": "directory",
@@ -40,7 +40,7 @@
     {
       "type": "directory",
       "path": ".github/workflows",
-      "git_tree_sha1": "42706bfea86f9cd81c76eb061d04fabdd28a42a6"
+      "git_tree_sha1": "387b66cd1ee44e2b2973bb841d0fb5ff53bd1109"
     },
     {
       "type": "file",
@@ -179,6 +179,12 @@
       "path": ".github/workflows/recalculate-118-phase-rank-20c.yml",
       "size": 1341,
       "git_blob_sha1": "fc6a13d9e0132de4104f1bcffb7aff635ed1cda3"
+    },
+    {
+      "type": "file",
+      "path": ".github/workflows/render-triangle-atlas-review.yml",
+      "size": 4072,
+      "git_blob_sha1": "a3ba6a050624f1f16c30266b8877e762e416943b"
     },
     {
       "type": "file",
@@ -478,8 +484,8 @@
     {
       "type": "file",
       "path": "ASSISTANT_START_HERE.md",
-      "size": 6841,
-      "git_blob_sha1": "b367293fc62ccf51fe1061fab23d04d93ba8d81c"
+      "size": 7213,
+      "git_blob_sha1": "975f778ee0e9a5fcb9ef80bc5b738e18570ea4f8"
     },
     {
       "type": "file",
@@ -675,7 +681,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "711ad17569a12308feaec61a18758d4031ebd6a2"
+      "git_tree_sha1": "2fe700e6ce2860e101ed19ac1e7272ab5570615e"
     },
     {
       "type": "directory",
@@ -1349,7 +1355,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/element-mass-doubling",
-      "git_tree_sha1": "07f3afc21e080259eef505680c78a3d677a2da38"
+      "git_tree_sha1": "9bc91a8ce8de90641ff8edc2248b5e979776cd0b"
     },
     {
       "type": "file",
@@ -1474,7 +1480,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12",
-      "git_tree_sha1": "166a2fd0cf7127aeefe5b7233530bb807fc142e6"
+      "git_tree_sha1": "79847a3012f3c040a9ad66ae5fb6ffcc62d96e64"
     },
     {
       "type": "file",
@@ -1493,6 +1499,143 @@
       "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/elements_118_triangle_atlas_index.csv",
       "size": 4990,
       "git_blob_sha1": "84b9aa6869136f2d8baa3523397968e3566980ca"
+    },
+    {
+      "type": "directory",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review",
+      "git_tree_sha1": "f01cd5d5de6ba288f37276f4445cffcf8ee4641d"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/PDF_RENDER_REPORT.md",
+      "size": 1888,
+      "git_blob_sha1": "f69cecc703757a0c8384def29e24bda722d7031f"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/contact-sheet.png",
+      "size": 406672,
+      "git_blob_sha1": "d192d39f7c8950557702ce5ea88baa81e0dc40bd"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-01.png",
+      "size": 101788,
+      "git_blob_sha1": "b716ba11845a85c7d002c9091c775461cbb0b34d"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-01.txt",
+      "size": 595,
+      "git_blob_sha1": "592abedaa6126b49f9d27cb081631c07be41d626"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-02.png",
+      "size": 180640,
+      "git_blob_sha1": "2f5c40228b7d7dbc4174b7d8abf9bc52e048cab0"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-02.txt",
+      "size": 820,
+      "git_blob_sha1": "fefa36fef5ad0614145f9e728dab9f22fd6e67f8"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-03.png",
+      "size": 172187,
+      "git_blob_sha1": "edd175745bc0e1eba40d7641a78211cb4f256165"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-03.txt",
+      "size": 905,
+      "git_blob_sha1": "077a06a54fb72f48672586f7ed28e2ccc80e0fcf"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-04.png",
+      "size": 184082,
+      "git_blob_sha1": "e69cc683a860dda59ff63e9e43ec6c9b01e3c4d3"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-04.txt",
+      "size": 972,
+      "git_blob_sha1": "72ad1f928da978db24da08e342a2f96a1c701ebb"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-05.png",
+      "size": 151065,
+      "git_blob_sha1": "bdd2387a0b3e3c6ed47073832140527e8412bb47"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-05.txt",
+      "size": 668,
+      "git_blob_sha1": "3fcae48958a99e9648a8ae856b349bd5d8e03ecf"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-06.png",
+      "size": 186866,
+      "git_blob_sha1": "0ba5039c351e00af7aa4073d958aff50bf4e5382"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-06.txt",
+      "size": 803,
+      "git_blob_sha1": "71bc80970add6805c7cea7188ae05288be09d074"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-07.png",
+      "size": 179996,
+      "git_blob_sha1": "3e76629f5e30f590a13f884e455866f35342dc96"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-07.txt",
+      "size": 952,
+      "git_blob_sha1": "1572fe3fbbe2ea1b968faa615f51248d6eff51d7"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-08.png",
+      "size": 202873,
+      "git_blob_sha1": "10aceb8f5d5d427ff75a9c4e662f2d86db6395a6"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-08.txt",
+      "size": 988,
+      "git_blob_sha1": "18ba7b7724a03e5a7b1e966c4697a37fc3680b2e"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-09.png",
+      "size": 154267,
+      "git_blob_sha1": "45057729aa2a527f99c2ade8995bcf869c0059fd"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-09.txt",
+      "size": 731,
+      "git_blob_sha1": "c3af9512e9807dfac545d2c80723b99c3bd8ba08"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-10.png",
+      "size": 135439,
+      "git_blob_sha1": "3566932699c51217b10304e24b0b005a926ddc1f"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review/page-10.txt",
+      "size": 600,
+      "git_blob_sha1": "bbf892f1226989473c632ba349df0c5093597618"
     },
     {
       "type": "directory",
@@ -2511,7 +2654,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "5ce99c471ae1bd3220209e1019c7056ab9703e51"
+      "git_tree_sha1": "63e084970c69e97c1c1bbbffef2bfd985a4b114f"
     },
     {
       "type": "directory",
@@ -2869,7 +3012,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "3c8b54b784633fb3e76279572d621be5974c47a6"
+      "git_tree_sha1": "a8d8c5e41ec29c1eb4ac6ee85f168cd0633a01f8"
     },
     {
       "type": "file",
@@ -2886,20 +3029,20 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_READING_REGISTER.csv",
-      "size": 41009,
-      "git_blob_sha1": "2fbae13c521c3574fbd7bd7801ff94330dd7495a"
+      "size": 49148,
+      "git_blob_sha1": "1839065b56fe2c3b31566d4733544bb48530aa40"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md",
-      "size": 7963,
-      "git_blob_sha1": "2581b56e0ac4cf6261331ab6cd267df3db0bc539"
+      "size": 16325,
+      "git_blob_sha1": "560771f9d862b03d25d6132f2737b3e40c7896ce"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md",
-      "size": 12713,
-      "git_blob_sha1": "29ac45ddd5eeec2a6638c90b8f3fae1fe50891a6"
+      "size": 12904,
+      "git_blob_sha1": "7a6825e9c5df025773ac0371adc7d367180e32cd"
     },
     {
       "type": "file",
@@ -2916,14 +3059,20 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
-      "size": 28043,
-      "git_blob_sha1": "3ec0674281677d1124ff9061cad341aed2ff4445"
+      "size": 28351,
+      "git_blob_sha1": "2f28229bf508071aa97b9c854b5e173d9a59fe32"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/START_HERE.md",
-      "size": 9179,
-      "git_blob_sha1": "0a5a0c4a9609693c722d8b3febb2fb6fc3a75fec"
+      "size": 6871,
+      "git_blob_sha1": "7e1abfde3e8038661c485a13166b1036cfde3faa"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/triangle-framework/continuity/VISUAL_ASSET_REVIEW_2026-11-23.md",
+      "size": 9626,
+      "git_blob_sha1": "db8bdfad6c589aff42d14676841f8741362e7ab1"
     },
     {
       "type": "file",
@@ -3754,8 +3903,8 @@
     {
       "type": "file",
       "path": "latest.md",
-      "size": 4079,
-      "git_blob_sha1": "010ed146fa4003d0d43475b4f09d18a0fbbd6f4e"
+      "size": 4745,
+      "git_blob_sha1": "ac3f3f8fafc137d2bec22b1ea43e295db9f4cc2e"
     },
     {
       "type": "file",
