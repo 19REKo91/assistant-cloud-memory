@@ -3,15 +3,15 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "143bdba93e815f181a288d4374be3bf89a2d563b",
-  "tree_sha": "fa624c9c47217908396ca9f1f660fd361be2ec70",
+  "generated_from_commit": "5898439cbf0de13090996f354a5eeb04db8e434f",
+  "tree_sha": "87d0f2df16e950d0999d3baaef95bbe1bcb5c09c",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 789,
   "files": 652,
   "dirs": 137,
   "triangle_framework_files": 108,
-  "triangle_framework_bytes": 1643889,
+  "triangle_framework_bytes": 1644010,
   "checksum": "Git blob SHA-1",
   "manifest_self_excluded": true,
   "entries": [
@@ -681,7 +681,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "fec3e0b7d1983164e33cee64f472e52cc40a53c9"
+      "git_tree_sha1": "22c98af28c60750d7cd54ca01525bde630f73c2b"
     },
     {
       "type": "directory",
@@ -2654,7 +2654,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "5ce191e893c3b17bd8bc6c6e4c011fd478ac6dd7"
+      "git_tree_sha1": "af27c3a34d16d1f6f5c7b7fbdaed59ce53ff955b"
     },
     {
       "type": "directory",
@@ -3012,7 +3012,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "52743e84310a7fbf3e631e72fcc53c3a0b780ce3"
+      "git_tree_sha1": "045e14b9aceeb9003eb84d8ebf233139ca36279f"
     },
     {
       "type": "file",
@@ -3041,8 +3041,8 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md",
-      "size": 12905,
-      "git_blob_sha1": "633ffb493a62ca147217b834e9bd3599d8919dbf"
+      "size": 13026,
+      "git_blob_sha1": "db24221d8bac01a2636c0e71ed95cb813bc9821d"
     },
     {
       "type": "file",
@@ -3060,7 +3060,7 @@
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
       "size": 28511,
-      "git_blob_sha1": "4bfe76e4e3c1ef9b7a62b80ad6d5ec3907671986"
+      "git_blob_sha1": "38d7d84cdae820f37b87b613f9426f54238f8557"
     },
     {
       "type": "file",
