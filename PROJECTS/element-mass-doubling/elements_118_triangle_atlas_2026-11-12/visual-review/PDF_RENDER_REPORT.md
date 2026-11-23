@@ -23,3 +23,10 @@
 
 This workflow renders the archived PDF and extracts its embedded text. It does not recalculate element values, validate the framework, or modify the source PDF.
 The contact sheet and page images are generated review derivatives only.
+
+## Visual review correction
+
+- The PDF contains **118 element panels**, not 100: pages 1–9 contain 12 panels each and page 10 contains 10.
+- Element headings were extracted and checked across all ten page text files; Z=1–118 appears exactly once.
+- Full-resolution visual inspection of page 1 is documented separately. The remaining page PNGs are shown in the contact sheet and are pending individual full-size inspection.
+- The authoritative review notes and the CSV status reconciliation are in `PROJECTS/triangle-framework/continuity/VISUAL_ASSET_REVIEW_2026-11-23.md`.
