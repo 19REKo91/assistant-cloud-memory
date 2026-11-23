@@ -28,7 +28,7 @@
 
 - أطلس PDF: 10 صفحات، 118 لوحة؛ 76 Recorded valid و21 valid after balanced 60° transfer و14 unresolved و7 excluded بحسب CSV.
 - خريطة AME2020: عوينت مباشرة، ومحاورها N/Z وخطوط magic numbers موثقة في تقرير المراجعة.
-- صفحات PDF رُندرت عبر GitHub Actions؛ contact sheet وpage-01 full-resolution محفوظة.
+- صفحات PDF رُندرت عبر GitHub Actions؛ جميع صور الصفحات العشر فُحصت منفردة بالحجم الكامل.
 
 ## استبعاد Triangle.zip
 
@@ -39,7 +39,7 @@
 - ربط كل خطوة حوارية وتجربة زمنياً من 6.5.0 إلى أحدث حالة يحتاج استكمالاً من سجلات commits والمحادثات المؤرشفة.
 - تمت معاينة PDF الأطلس وPNG خريطة AME2020؛ التقرير الكامل في `PROJECTS/triangle-framework/continuity/VISUAL_ASSET_REVIEW_2026-11-23.md`.
 - جدول الزوايا الأحدث الكامل (118 صفاً) غير مستعاد من المصدر؛ لا يُعاد بناؤه من نسخة أقدم.
-- Prism v6 لم يُشغّل في مهمة الاستمرارية.
+- Prism v6 source file was read completely; the engine was not run.
 - لا تُشغّل المحركات أو التجارب أثناء هذه المهمة، ولا تعدّل الدساتير أو تدمج إلى main.
 
 ## حدود الإصدارات
