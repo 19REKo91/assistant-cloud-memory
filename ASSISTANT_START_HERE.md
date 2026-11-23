@@ -39,7 +39,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Prism v6: `PROJECTS/prism-engine/v6/main.py` was read completely; no execution was performed.
 
 The continuity checks passed:
-  - Core framework: latest run `45165383112` — PASS; 108 tracked files, 108 READ_FULL, all fingerprints match.
+  - Core framework: latest run `45165664694` — PASS; 108 tracked files, 108 READ_FULL, all fingerprints match.
   - Connected projects: run `45164738297` — PASS; 182 tracked files, 182 READ_FULL, 0 partial, 0 missing/unregistered/duplicate paths, 0 fingerprint or size errors.
 - All work remains on this working branch. No merge into `main` has been performed.
 
