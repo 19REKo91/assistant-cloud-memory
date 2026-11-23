@@ -1,0 +1,37 @@
+name: Check Connected Project Continuity
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - work/triangle-geometry-role-map-v0.1
+    paths:
+      - PROJECTS/prism-engine/**
+      - PROJECTS/cosmic-triangle-rebalance-118/**
+      - PROJECTS/element-mass-doubling/**
+      - PROJECTS/C-G-Z-Test-v1.0/**
+      - PROJECTS/cosmic-triangle-framework/v1.0/**
+      - triangle-lab/**
+      - PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_READING_REGISTER.csv
+      - PROJECTS/triangle-framework/continuity/check_connected_projects.py
+      - .github/workflows/check-connected-projects.yml
+
+permissions:
+  contents: read
+
+jobs:
+  connected-projects-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate connected project inventory and fingerprints
+        run: python PROJECTS/triangle-framework/continuity/check_connected_projects.py
