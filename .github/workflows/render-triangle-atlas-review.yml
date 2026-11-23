@@ -1,0 +1,101 @@
+name: Render Triangle Atlas for Visual Review
+
+on:
+  push:
+    branches:
+      - work/triangle-geometry-role-map-v0.1
+    paths:
+      - .github/workflows/render-triangle-atlas-review.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-atlas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out working branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Render PDF pages and extract text
+        shell: bash
+        run: |
+          python -m pip install --quiet pymupdf pillow
+          python - <<'PY'
+          from pathlib import Path
+          import fitz
+          from PIL import Image, ImageOps, ImageDraw, ImageFont
+
+          pdf = Path("PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/elements_118_triangle_atlas_10_pages.pdf")
+          out = Path("PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review")
+          out.mkdir(parents=True, exist_ok=True)
+          if not pdf.is_file():
+              raise SystemExit(f"PDF not found: {pdf}")
+
+          doc = fitz.open(pdf)
+          if len(doc) != 10:
+              raise SystemExit(f"Expected 10 pages; found {len(doc)}")
+
+          thumbs = []
+          report = [
+              "# Triangle Atlas PDF — rendered visual review",
+              "",
+              f"- Source: `{pdf.as_posix()}`",
+              f"- Pages: {len(doc)}",
+              f"- PDF metadata: {doc.metadata}",
+              "",
+              "## Page inspection metrics",
+              "",
+              "| Page | Width (pt) | Height (pt) | Extracted words | Rendered image |",
+              "|---:|---:|---:|---:|---|",
+          ]
+          for i, page in enumerate(doc, 1):
+              pix = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5), alpha=False)
+              page_path = out / f"page-{i:02d}.png"
+              pix.save(page_path)
+              text = page.get_text("text")
+              (out / f"page-{i:02d}.txt").write_text(text, encoding="utf-8")
+              report.append(f"| {i} | {page.rect.width:.1f} | {page.rect.height:.1f} | {len(text.split())} | `{page_path.name}` |")
+              img = Image.open(page_path).convert("RGB")
+              img.thumbnail((420, 560))
+              canvas = Image.new("RGB", (440, 600), "white")
+              canvas.paste(img, ((440-img.width)//2, 24))
+              d = ImageDraw.Draw(canvas)
+              d.text((12, 5), f"Page {i}", fill="black")
+              thumbs.append(canvas)
+
+          cols = 5
+          rows = (len(thumbs) + cols - 1) // cols
+          sheet = Image.new("RGB", (cols*440, rows*600), "#dddddd")
+          for i, thumb in enumerate(thumbs):
+              sheet.paste(thumb, ((i%cols)*440, (i//cols)*600))
+          sheet.save(out / "contact-sheet.png", optimize=True)
+          report += [
+              "",
+              "## Interpretation boundary",
+              "",
+              "This workflow renders the archived PDF and extracts its embedded text. It does not recalculate element values, validate the framework, or modify the source PDF.",
+              "The contact sheet and page images are generated review derivatives only."
+          ]
+          (out / "PDF_RENDER_REPORT.md").write_text("\n".join(report) + "\n", encoding="utf-8")
+          print(f"Rendered pages: {len(doc)}")
+          print(f"Contact sheet: {out / 'contact-sheet.png'}")
+          print(f"Report: {out / 'PDF_RENDER_REPORT.md'}")
+          PY
+
+      - name: Commit visual review derivatives only
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECTS/element-mass-doubling/elements_118_triangle_atlas_2026-11-12/visual-review
+          if git diff --cached --quiet; then
+            echo "Visual review derivatives are unchanged."
+            exit 0
+          fi
+          git commit -m "Render archived triangle atlas for visual review"
+          git push
