@@ -2,6 +2,12 @@ name: Check Triangle Framework Continuity
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - work/triangle-geometry-role-map-v0.1
+    paths:
+      - PROJECTS/triangle-framework/**
+      - .github/workflows/check-triangle-continuity.yml
 
 permissions:
   contents: read
@@ -20,5 +26,5 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate source register and content fingerprints
-        run: python PROJECTS/triangle-framework/continuity/check_continuity.py
+      - name: Validate complete source register and content fingerprints
+        run: python PROJECTS/triangle-framework/continuity/check_continuity.py --require-full
