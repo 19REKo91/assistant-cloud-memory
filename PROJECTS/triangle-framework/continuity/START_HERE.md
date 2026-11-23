@@ -7,7 +7,7 @@
 
 ## تعليمات إلزامية في كل جلسة
 
-1. افتح هذه الوثيقة أولاً، ثم `CURRENT_STATE_AND_DECISIONS.md)، ثم `PROJECT_HISTORY_AND_CONCEPT_MAP.md)، ثم `CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md`.
+1. افتح هذه الوثيقة أولاً، ثم `CURRENT_STATE_AND_DECISIONS.md`، ثم `PROJECT_HISTORY_AND_CONCEPT_MAP.md`، ثم `CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md`.
 2. تحقق من فرع GitHub وآخر commit وشجرة الملفات قبل الاعتماد على أرقام أو مسارات محفوظة.
 3. راجع `SOURCE_READING_REGISTER.csv` و`CONNECTED_PROJECTS_READING_REGISTER.csv`. لا تعتبر وجود الملف في الفهرس دليلاً على قراءته.
 4. افتح المصدر الأصلي عند الحاجة؛ الملخصات وملفات التسليم أدوات تنقل وليست بديلاً عن الأصل.
