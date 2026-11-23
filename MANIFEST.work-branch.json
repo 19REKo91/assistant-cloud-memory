@@ -3,8 +3,8 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "48ec242227c549adaedaf1855383a966358e4e62",
-  "tree_sha": "3b7570e86af85931931b8aa4c16286024cced0ef",
+  "generated_from_commit": "efc05975187a8edd9de0781b4cdd4ad6748e7c6a",
+  "tree_sha": "14d35d0337df87b1668b4a25e3d86b4e5cb486f0",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 789,
@@ -681,7 +681,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "a2e81172cf01f01ab0edbaaab30e03af08d0d38e"
+      "git_tree_sha1": "5040cf714eec77ddd348930312a5a3c7f8f574f2"
     },
     {
       "type": "directory",
@@ -2654,7 +2654,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "1c2328f365c706cb7213fa077a243a845961a61a"
+      "git_tree_sha1": "52c36383cbb8e190c13d0673c7eb5c1e59068236"
     },
     {
       "type": "directory",
@@ -3012,7 +3012,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "039407c44c13293f6b358da6018fdb4b91a39a75"
+      "git_tree_sha1": "b4796a1caa7f92a95858169d76ed53547e94c4fd"
     },
     {
       "type": "file",
@@ -3060,7 +3060,7 @@
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
       "size": 28511,
-      "git_blob_sha1": "38d7d84cdae820f37b87b613f9426f54238f8557"
+      "git_blob_sha1": "17691561db7793d68191053fd23f9bdfd2775473"
     },
     {
       "type": "file",
