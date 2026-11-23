@@ -1,4 +1,4 @@
-> **بوابة الاستمرارية — 2026-11-23:** لمنع فقدان سياق المشروع بين الجلسات، أصبحت [نقطة الإقلاع الإلزامية](continuity/START_HERE.md) هي أول ملف يُقرأ عند كل استئناف. منها تصل إلى [الحالة والقرارات](continuity/CURRENT_STATE_AND_DECISIONS.md)، و[خريطة تاريخ الإطار](continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md)، و[سجل قراءة المصادر](continuity/SOURCE_READING_REGISTER.csv). هذه الملفات قيد البناء؛ لا تدّعي اكتمال قراءة كل الأرشيف بعد.
+> **بوابة الاستمرارية — 2026-11-23:** لمنع فقدان سياق المشروع بين الجلسات، أصبحت [نقطة الإقلاع الإلزامية](continuity/START_HERE.md) هي أول ملف يُقرأ عند كل استئناف. منها تصل إلى [الحالة والقرارات](continuity/CURRENT_STATE_AND_DECISIONS.md)، و[خريطة تاريخ الإطار](continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md)، و[سجل قراءة المصادر](continuity/SOURCE_READING_REGISTER.csv). اكتملت قراءة النصوص والبيانات المنظمة في مجلد الإطار؛ بقيت أربع صور ثنائية بحاجة إلى معاينة بصرية.
 
 ---
 
@@ -16,20 +16,20 @@
 
 ## ابدأ من هنا
 
-0. [نقطة إقلاع الاستمرارية](continuity/START_HERE.md) — المرجع الأول لكل جلسة جديدة.
-0. [سجل التعارضات والأدلة](continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — راجعه قبل اختيار قاعدة أو إصدار.
-0. [مدقق الاستمرارية](continuity/check_continuity.py) — فحص جرد الملفات والبصمات؛ سير عمله يدوي فقط.
-1. [CONTINUITY_MEMORY_ADDENDUM.md](handover/CONTINUITY_MEMORY_ADDENDUM.md) — ملحق الاستمرارية المعرفية؛ اقرأه بعد ملف نقل الوعي لتستعيد القرارات والمنهج ونقطة التوقف.
-2. [COGNITIVE_HANDOVER.md](handover/COGNITIVE_HANDOVER.md) — تعليمات القراءة والانضباط وأهم التحذيرات.
-3. [HANDOVER_README.md](handover/HANDOVER_README.md) — وصف قاعدة البيانات التجميعية وقيودها.
-4. [version-lineage-6.2.1.md](recovery/version-lineage-6.2.1.md) — تسلسل الإصدارات وحالة المرجعية.
-5. [erratum-6.2.1.md](recovery/erratum-6.2.1.md) — التصحيحات التفسيرية الملزمة.
-6. [original_equations.md](recovery/original_equations.md) — مرجع المعادلات والقواعد المحفوظ في المستودع.
-7. [elements_118.csv](recovery/elements_118.csv) — جدول العناصر الحالي، 118 صفاً.
-8. [data_audit.md](recovery/data_audit.md) — تقرير التدقيق الحالي، مع ضرورة قراءة التنبيهات الواردة في تقرير المراجعة.
-9. [data-audit-theta3-gases-correction-addendum-2026-11-10.md](recovery/data-audit-theta3-gases-correction-addendum-2026-11-10.md) — ملحق تصحيح حسابات الغازات.
-10. [blind-test-controlled-correction-closure-2026-11-10.md](recovery/blind-test-controlled-correction-closure-2026-11-10.md) — سجل الاختبار المنضبط وإغلاق الادعاءات المرفوضة.
-11. [REPOSITORY_AUDIT_2026-11-10.md](audit/REPOSITORY_AUDIT_2026-11-10.md) — نتيجة فحص المستودع والفجوات والتعارضات.
+1. [نقطة إقلاع الاستمرارية](continuity/START_HERE.md) — المرجع الأول لكل جلسة جديدة.
+2. [سجل التعارضات والأدلة](continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — راجعه قبل اختيار قاعدة أو إصدار.
+3. [مدقق الاستمرارية](continuity/check_continuity.py) — فحص جرد الملفات والبصمات؛ سير عمله يدوي فقط.
+4. [CONTINUITY_MEMORY_ADDENDUM.md](handover/CONTINUITY_MEMORY_ADDENDUM.md) — ملحق الاستمرارية المعرفية؛ اقرأه بعد ملف نقل الوعي لتستعيد القرارات والمنهج ونقطة التوقف.
+5. [COGNITIVE_HANDOVER.md](handover/COGNITIVE_HANDOVER.md) — تعليمات القراءة والانضباط وأهم التحذيرات.
+6. [HANDOVER_README.md](handover/HANDOVER_README.md) — وصف قاعدة البيانات التجميعية وقيودها.
+7. [version-lineage-6.2.1.md](recovery/version-lineage-6.2.1.md) — تسلسل الإصدارات وحالة المرجعية.
+8. [erratum-6.2.1.md](recovery/erratum-6.2.1.md) — التصحيحات التفسيرية الملزمة.
+9. [original_equations.md](recovery/original_equations.md) — مرجع المعادلات والقواعد المحفوظ في المستودع.
+10. [elements_118.csv](recovery/elements_118.csv) — جدول العناصر الحالي، 118 صفاً.
+11. [data_audit.md](recovery/data_audit.md) — تقرير التدقيق الحالي، مع ضرورة قراءة التنبيهات الواردة في تقرير المراجعة.
+12. [data-audit-theta3-gases-correction-addendum-2026-11-10.md](recovery/data-audit-theta3-gases-correction-addendum-2026-11-10.md) — ملحق تصحيح حسابات الغازات.
+13. [blind-test-controlled-correction-closure-2026-11-10.md](recovery/blind-test-controlled-correction-closure-2026-11-10.md) — سجل الاختبار المنضبط وإغلاق الادعاءات المرفوضة.
+14. [REPOSITORY_AUDIT_2026-11-10.md](audit/REPOSITORY_AUDIT_2026-11-10.md) — نتيجة فحص المستودع والفجوات والتعارضات.
 
 ## خريطة المجلدات
 
