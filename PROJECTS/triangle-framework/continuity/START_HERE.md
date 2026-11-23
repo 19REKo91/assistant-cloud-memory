@@ -32,7 +32,7 @@
 - [مدقق الاستمرارية](check_continuity.py) — فحص آلي للبصمات وتغطية السجل، لا يثبت القراءة الدلالية.
 - [مراجعة أرشيف Triangle.zip والصور](ARCHIVE_TRIANGLE_ZIP_AND_VISUAL_REVIEW_2026-11-23.md).
 - [خريطة المشاريع المتصلة وحدود الإصدارات](CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md).
-- [سجل قراءة المشاريع المتصلة الـ160](CONNECTED_PROJECTS_READING_REGISTER.csv) — 149 كاملة و11 جزئية مع توضيح سبب الجزئية.
+- [سجل قراءة المشاريع المتصلة الـ160](CONNECTED_PROJECTS_READING_REGISTER.csv) — 149 كاملة و2 جزئية مع توضيح سبب الجزئية.
 - [مدقق المشاريع المتصلة](check_connected_projects.py) — يتحقق من جرد المشاريع المتصلة وبصماتها.
 - [خريطة تنظيم المجلد](../REPOSITORY_ORGANIZATION_MAP_2026-11-23.md)
 - [دليل الإطار](../README.md)
@@ -78,5 +78,5 @@
 
 ## حالة المشاريع المتصلة
 - نطاق القراءة المسجل: 160 ملفاً عبر Prism Engine وRebalance 118 وElement Mass Doubling وC-G-Z وTriangle Lab وحزمة تسليم v1.0.
-- الحالة: 149 `READ_FULL` و11 `READ_PARTIAL`؛ الملفات الجزئية هي 8 ملفات CASTEP خام وملف CASTEP-history وPDF الأطلس وصورة خريطة AME2020 التي لم يتوفر محتواها الثنائي للمعاينة.
+- الحالة: 158 `READ_FULL` و2 `READ_PARTIAL`؛ الملفات الجزئية هي 8 ملفات CASTEP خام وملف CASTEP-history وPDF الأطلس وصورة خريطة AME2020 التي لم يتوفر محتواها الثنائي للمعاينة.
 - تحقق GitHub Actions بنجاح: 160 tracked، 160 register rows، صفر ملفات مفقودة أو غير مسجلة، صفر أخطاء بصمات/أحجام. Run: `45148131427`.
