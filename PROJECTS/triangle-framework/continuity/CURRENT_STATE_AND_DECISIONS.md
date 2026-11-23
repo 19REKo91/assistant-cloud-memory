@@ -92,7 +92,7 @@
 - ملف التعارضات: `OPEN_CONFLICTS_AND_EVIDENCE.md`.
 - مدقق البصمات والجرد: `check_continuity.py`.
 - سير العمل `.github/workflows/check-triangle-continuity.yml` يعمل يدوياً وعند أي تغيير في مجلد الإطار على فرع العمل.
-- تحقق آلياً بنجاح في 2026-11-23: 108 ملفات tracked، و108 صفوف سجل، و108 READ_FULL، وصفر partial أو unread، وتطابقت جميع بصمات Git. رقم آخر تشغيل ناجح محفوظ في `ASSISTANT_START_HERE.md` و`latest.md` على جذر الفرع.
+- تحقق آلياً بنجاح في 2026-11-23: 108 ملفات tracked، و108 صفوف سجل، و108 READ_FULL، وصفر partial أو unread، وتطابقت جميع بصمات Git. أحدث تشغيل موثق حتى هذا التحديث هو run `45162991720` على commit `5898439cbf0de13090996f354a5eeb04db8e434f`؛ أُعيد فحصه من سجل الوظيفة.
 - هذا التحقق يثبت سلامة الجرد والبصمات واتساق سجل القراءة، ولا يثبت وحده صحة الاستنتاجات العلمية أو الدلالية.
 - خريطة المشاريع المتصلة وحدود الإصدارات: `CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md`؛ تتضمن الآن تدقيق Prism وRebalance 118 وElement Mass Doubling وTriangle Lab وC-G-Z، مع فصل التعارضات والبيانات المفقودة.
 
