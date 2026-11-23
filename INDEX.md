@@ -8,6 +8,8 @@
 
 - [`ASSISTANT_START_HERE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/ASSISTANT_START_HERE.md) — بروتوكول الاستمرارية العام للمساعد.
 - [`PROJECTS/triangle-framework/continuity/START_HERE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/START_HERE.md) — نقطة الإقلاع الإلزامية لإطار المثلث.
+- [`OPEN_CONFLICTS_AND_EVIDENCE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — سجل التعارضات المفتوحة.
+- [`check_continuity.py`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/check_continuity.py) — فحص يدوي للجرد والبصمات.
 - [`MANIFEST.work-branch.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/MANIFEST.work-branch.json) — جرد فرع العمل، منفصل عن MANIFEST.json التاريخي على main.
 
 
