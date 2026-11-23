@@ -3,15 +3,15 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "4660a818369702fdb7103f6f505cde61ee9ad8fc",
-  "tree_sha": "e333e409cc0443d7ea8efee9352377dbc91eed8a",
+  "generated_from_commit": "4f83f4d7ccfbd65f794440f93e3736848e91105e",
+  "tree_sha": "36d68b0f6740a1a6315721318c020a3c74161e7d",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 764,
   "files": 628,
   "dirs": 136,
   "triangle_framework_files": 107,
-  "triangle_framework_bytes": 1619617,
+  "triangle_framework_bytes": 1619545,
   "checksum": "Git blob SHA-1",
   "manifest_self_excluded": true,
   "entries": [
@@ -675,7 +675,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "0eec62edcdf6ba3e594ecee43f17c0808f9874ef"
+      "git_tree_sha1": "5a4ae7444df73aca5f68324ca8f821685e07fd1e"
     },
     {
       "type": "directory",
@@ -2511,7 +2511,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "c36c7b30405dc26422de60b21f7aa7b55e769670"
+      "git_tree_sha1": "443912d180bf1990017860dcb81c3e2975300350"
     },
     {
       "type": "directory",
@@ -2869,7 +2869,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "7ed0282b33fe382666f140179638fc3958c376af"
+      "git_tree_sha1": "d6c32737cd57c882ef2749115f9f7e7cf462d1ad"
     },
     {
       "type": "file",
@@ -2899,7 +2899,7 @@
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md",
       "size": 12713,
-      "git_blob_sha1": "b26200e31fa9c2c1af7e8a4f9cbf1f9efc779b1d"
+      "git_blob_sha1": "29ac45ddd5eeec2a6638c90b8f3fae1fe50891a6"
     },
     {
       "type": "file",
@@ -2917,13 +2917,13 @@
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
       "size": 28043,
-      "git_blob_sha1": "7dcf7e2a8be1fbeab7ea78936058bb2b9d51c360"
+      "git_blob_sha1": "e04a2df7f4779cbf2976c26c6e2650655a6d6c35"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/START_HERE.md",
-      "size": 9251,
-      "git_blob_sha1": "3b7dc504d835e36e508287d1d5560bbd878154ab"
+      "size": 9179,
+      "git_blob_sha1": "9279a31028ddab00baa4f0c22d222a1f7ccede6e"
     },
     {
       "type": "file",
