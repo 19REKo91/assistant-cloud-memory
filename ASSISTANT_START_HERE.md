@@ -9,6 +9,10 @@
 
 GitHub files are durable external memory, but they are not automatically injected into every new ChatGPT conversation. At the beginning of each session, the assistant must open this entry point and follow the procedures below. If repository access is unavailable, say so; do not pretend to remember the complete archive.
 
+## Current development baseline — IMPORTANT
+
+The user's explicit clarification on 2026-11-23: the current development line returned to **6.5.0** and proceeded from it to the present state. Treat 6.5.0 as the current line's starting baseline. Keep 6.5.1/6.5.2 as comparison handovers, not automatically adopted current baselines. The 6.2.1 Erratum priority applies only to the historical 6.0–6.2.1 data-audit lineage. Read `PROJECTS/triangle-framework/continuity/CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md` before interpreting version history. Do not run engines or transfer later corrections into 6.5.0 without explicit authorization.
+
 ## Mandatory entry procedure — Triangle Framework
 
 1. Read `PROJECTS/triangle-framework/continuity/START_HERE.md`.
