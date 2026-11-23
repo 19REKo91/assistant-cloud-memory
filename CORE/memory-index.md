@@ -13,3 +13,13 @@
 
 ## مبدأ الحفظ
 لا تُعامل كل محادثة كذاكرة دائمة. تُحفظ فقط المعلومات التي لها قيمة مستمرة أو التي نقرر صراحةً الاحتفاظ بها.
+
+
+## بوابة استمرارية إطار المثلث
+- `ASSISTANT_START_HERE.md` — بوابة عامة لقراءة المستودع واستئناف العمل.
+- `PROJECTS/triangle-framework/continuity/START_HERE.md` — بوابة إلزامية لإطار المثلث.
+- `PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md` — آخر حالة وقرارات وحدود المسارات.
+- `PROJECTS/triangle-framework/continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md` — تاريخ الإطار وتطور المفاهيم.
+- `PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv` — سجل ما قرئ وما لم يقرأ.
+
+**ملاحظة:** هذه البوابة على فرع العمل `work/triangle-geometry-role-map-v0.1` ولم تُدمج في `main`.
