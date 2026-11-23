@@ -11,7 +11,7 @@ GitHub files are durable external memory, but they are not automatically injecte
 
 ## Current development baseline — IMPORTANT
 
-The user's explicit clarification on 2026-11-23: the current development line returned to **6.5.0** and proceeded from it to the present state. Treat 6.5.0 as the current line's starting baseline. Keep 6.5.1/6.5.2 as comparison handovers, not automatically adopted current baselines. The 6.2.1 Erratum priority applies only to the historical 6.0–6.2.1 data-audit lineage. Read `PROJECTS/triangle-framework/continuity/CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md` before interpreting version history. Do not run engines or transfer later corrections into 6.5.0 without explicit authorization.
+The user's explicit clarification on 2026-11-23: the current development line returned to **6.5.0** and proceeded from it to the present state. Treat 6.5.0 as the current line's starting baseline. Keep 6.5.1/6.5.2 as comparison handovers, not automatically adopted current baselines. The 6.2.1 Erratum priority applies only to the historical 6.0–6.2.1 data-audit lineage. Read `PROJECTS/triangle-framework/continuity/CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md` and `PROJECTS/triangle-framework/continuity/VISUAL_ASSET_REVIEW_2026-11-23.md` before interpreting version history or visual archives. Do not run engines or transfer later corrections into 6.5.0 without explicit authorization.
 
 ## Mandatory entry procedure — Triangle Framework
 
@@ -31,14 +31,14 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 
 ## Repository status at this checkpoint
 
-- Working tree: **765 entries** — 629 files and 136 directories, after adding the current 6.5.0 lineage guide; complete, not truncated.
-- `PROJECTS/triangle-framework/`: **107 files**.
-- Core reading register: **107 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **160 files** — 158 READ_FULL and 2 READ_PARTIAL. The remaining partial items are the 10-page PDF atlas and the AME2020 nuclide-map image.
-- `MANIFEST.work-branch.json` is the current branch snapshot. It excludes itself to avoid a self-hash cycle; its 764 entries (628 files, 136 directories) plus the manifest file account for the 765-entry branch tree. The framework contains 107 files.
+- Working tree: **790 entries** — 654 files and 136 directories; complete, not truncated.
+- `PROJECTS/triangle-framework/`: **108 files**.
+- Core reading register: **108 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
+- Connected-project register: **182 files** — 173 READ_FULL and 9 READ_PARTIAL. The remaining partial items are the rendered page images 2–10 of the archived atlas; all nine appear in the reviewed contact sheet but have not yet been opened individually at full resolution.
+- `MANIFEST.work-branch.json` is the current branch snapshot. It excludes itself to avoid a self-hash cycle; its current snapshot must be regenerated after the latest review commits; the current branch tree has 790 entries. The framework contains 108 files.
 - The continuity checks passed:
-  - Core framework: run `45157519831` — 107/107 files, all READ_FULL, fingerprints match.
-  - Connected projects: run `45157055479` — 160/160 files, no missing/unregistered paths or fingerprint errors; reading status is 158 READ_FULL and 2 READ_PARTIAL.
+  - Core framework: run `45160135295` — 108/108 files, all READ_FULL, fingerprints match.
+  - Connected projects: the expanded 182-file check is pending a new run after the register update.
 - All work remains on this working branch. No merge into `main` has been performed.
 
 ## Automated continuity gates
