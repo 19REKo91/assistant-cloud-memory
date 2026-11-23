@@ -35,9 +35,9 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - `PROJECTS/triangle-framework/`: **107 files**.
 - Core reading register: **107 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
 - Connected-project register: **160 files** — 158 READ_FULL and 2 READ_PARTIAL. The remaining partial items are the 10-page PDF atlas and the AME2020 nuclide-map image.
-- `MANIFEST.work-branch.json` is an earlier branch snapshot and is now stale because the 6.5.0 lineage guide was added; do not use it as the current inventory until regenerated.
+- `MANIFEST.work-branch.json` was regenerated from commit `e1340f48ff935fc1d7622b3c66c10253ca6a0873`. It excludes itself to avoid a self-hash cycle; its 764 entries (628 files, 136 directories) plus the manifest file account for the 765-entry branch tree. The framework contains 107 files.
 - The continuity checks passed:
-  - Core framework: run `45156730281` — 107/107 files, all READ_FULL, fingerprints match.
+  - Core framework: run `45157187978` — 107/107 files, all READ_FULL, fingerprints match.
   - Connected projects: run `45157055479` — 160/160 files, no missing/unregistered paths or fingerprint errors; reading status is 158 READ_FULL and 2 READ_PARTIAL.
 - All work remains on this working branch. No merge into `main` has been performed.
 
