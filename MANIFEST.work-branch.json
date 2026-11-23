@@ -3,8 +3,8 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "a7a770677140d1508a6753bf99ac4eb7e2d50249",
-  "tree_sha": "a7a770677140d1508a6753bf99ac4eb7e2d50249",
+  "generated_from_commit": "c23859cfe288da1e54e8bc1763bbabcc07a37ca0",
+  "tree_sha": "c23859cfe288da1e54e8bc1763bbabcc07a37ca0",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 763,
@@ -478,8 +478,8 @@
     {
       "type": "file",
       "path": "ASSISTANT_START_HERE.md",
-      "size": 4159,
-      "git_blob_sha1": "915c282b9d529ba0da65ed778bfd74bd47892f87"
+      "size": 6124,
+      "git_blob_sha1": "2f0e6e8997e089db61bcbcc294d03b7cb7764f32"
     },
     {
       "type": "file",
@@ -657,8 +657,8 @@
     {
       "type": "file",
       "path": "INDEX.md",
-      "size": 14589,
-      "git_blob_sha1": "f2928e84a152b0aaa3976e5a2cd31009f2a76409"
+      "size": 15503,
+      "git_blob_sha1": "7dfaed5d2dfcb9d037b7e5eab19aa664f7cc3019"
     },
     {
       "type": "file",
@@ -3748,8 +3748,8 @@
     {
       "type": "file",
       "path": "latest.md",
-      "size": 6678,
-      "git_blob_sha1": "4bd30e8a8994385bf2e7bff4be3cdab5ac179e3e"
+      "size": 7999,
+      "git_blob_sha1": "0c7fe8107dfb51e7b44d73a5780fcd68dbd34c20"
     },
     {
       "type": "file",
