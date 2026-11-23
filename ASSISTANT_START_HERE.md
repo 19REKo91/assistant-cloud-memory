@@ -49,4 +49,6 @@ The user wants the cycle count (n) retained as an independent per-element value,
 - [Source reading register](PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv)
 - [Unresolved conflicts and evidence](PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md)
 - [Continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py) (manual workflow only)
+- [Unresolved conflicts and evidence](PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md)
+- [Continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py) (manual workflow only)
 - [Current branch manifest](MANIFEST.work-branch.json)
