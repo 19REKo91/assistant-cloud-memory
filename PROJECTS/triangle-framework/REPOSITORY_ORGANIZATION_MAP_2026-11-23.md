@@ -9,6 +9,9 @@
 
 ابدأ من هذا الترتيب:
 
+0. [نقطة إقلاع الاستمرارية](continuity/START_HERE.md) — أول ملف في كل جلسة جديدة.
+0. [سجل التعارضات والأدلة](continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — مراجعة التعارضات قبل اعتماد أي قاعدة.
+0. [سجل قراءة المصادر](continuity/SOURCE_READING_REGISTER.csv) — يبين ما قُرئ وما بقي جزئياً.
 1. [README.md](README.md) — بوابة المجلد وروابط القراءة الأساسية.
 2. [ملحق الاستمرارية](handover/CONTINUITY_MEMORY_ADDENDUM.md) — قرارات المستخدم، المنهج، ونقطة التوقف.
 3. [تعليمات التسليم المعرفي](handover/COGNITIVE_HANDOVER.md) — قيود التعامل مع الأرشيف.
