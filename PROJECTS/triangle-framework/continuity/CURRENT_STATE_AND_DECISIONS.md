@@ -86,7 +86,7 @@
 
 ## نقطة القراءة والتحقق الحالية — 2026-11-23
 
-- ملفات `PROJECTS/triangle-framework/`: 106.
+- ملفات `PROJECTS/triangle-framework/`: 107.
 - سجل القراءة بعد التحديث: 107 `READ_FULL`، و0 `READ_PARTIAL`، و0 `NOT_YET_READ`.
 - تمت معاينة الصور الأربع بصرياً، وإضافة مذكرة مراجعة أرشيف Triangle.zip.
 - ملف التعارضات: `OPEN_CONFLICTS_AND_EVIDENCE.md`.
