@@ -34,7 +34,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Working tree: **790 entries** — 653 files and 137 directories; complete, not truncated.
 - `PROJECTS/triangle-framework/`: **108 files**.
 - Core reading register: **108 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **184 files** — all 184 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; two previously unregistered Element Mass Doubling CSV files were added to the register.
+- Connected-project register: **182 files** — all 182 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; two previously unregistered Element Mass Doubling CSV files were added to the register.
 - `MANIFEST.work-branch.json` is a self-excluding branch snapshot and must be regenerated from the latest tree after documentation/register updates. The current branch tree has 790 entries: 653 files and 137 directories. The framework contains 108 files.
 - The continuity checks passed:
   - Core framework: run `45160135295` — 108/108 files, all READ_FULL, fingerprints match.
