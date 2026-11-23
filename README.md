@@ -1,4 +1,4 @@
-> **بوابة استمرارية المساعد — 2026-11-23:** عند العمل على إطار المثلث، ابدأ من [ASSISTANT_START_HERE.md](./ASSISTANT_START_HERE.md)، ثم [نقطة إقلاع الإطار](./PROJECTS/triangle-framework/continuity/START_HERE.md). لا تعتمد على `latest.md` وحده إذا كان تاريخه أقدم من فرع العمل.
+> **بوابة استمرارية المساعد — 2026-11-23:** عند العمل على إطار المثلث، ابدأ من [ASSISTANT_START_HERE.md](./ASSISTANT_START_HERE.md)، ثم [نقطة إقلاع الإطار](./PROJECTS/triangle-framework/continuity/START_HERE.md) و[سجل التعارضات](./PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md). لا تعتمد على `latest.md` وحده إذا كان تاريخه أقدم من فرع العمل.
 
 ---
 
