@@ -3,33 +3,45 @@
 **Repository:** `19REKo91/assistant-cloud-memory`  
 **Working branch:** `work/triangle-geometry-role-map-v0.1`  
 **Updated:** 2026-11-23  
-**Purpose:** Make project continuity depend on the repository, not on temporary chat memory.
+**Purpose:** Make continuity depend on the repository, not on temporary chat memory.
 
 ## Important limitation
 
-GitHub files are durable external memory, but they are not automatically injected into every new ChatGPT conversation. At the beginning of each session, the assistant must open this entry point and follow the framework reading procedure. If repository access is unavailable, it must say so rather than pretend to remember the complete archive.
+GitHub files are durable external memory, but they are not automatically injected into every new ChatGPT conversation. At the beginning of each session, the assistant must open this entry point and follow the procedures below. If repository access is unavailable, say so; do not pretend to remember the complete archive.
 
-## Mandatory entry procedure for Triangle Framework work
+## Mandatory entry procedure — Triangle Framework
 
 1. Read `PROJECTS/triangle-framework/continuity/START_HERE.md`.
-2. Read `CURRENT_STATE_AND_DECISIONS.md` and `PROJECT_HISTORY_AND_CONCEPT_MAP.md`.
-3. Check `SOURCE_READING_REGISTER.csv`. Do not claim to have read a source unless its status is `READ_FULL`.
-4. Open the original source files relevant to the question. Summaries and handover notes are navigation aids, not substitutes when originals exist.
-5. Check the latest commit and tree on the working branch. Do not assume the branch or files are unchanged.
-6. Search the repository before asking the user where a file is or asking them to repeat information.
-7. If a needed source is absent, say exactly what was searched and what is missing. Never fill gaps by guessing.
-8. Update the reading register and continuity records after actual reading or work.
+2. Read `CURRENT_STATE_AND_DECISIONS.md`, `PROJECT_HISTORY_AND_CONCEPT_MAP.md`, and `OPEN_CONFLICTS_AND_EVIDENCE.md`.
+3. Check `SOURCE_READING_REGISTER.csv`. A source is fully reviewed only if its status is `READ_FULL`.
+4. For connected work, read `CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md` and `CONNECTED_PROJECTS_READING_REGISTER.csv`. Do not confuse a connected project with the framework itself.
+5. Open original source files relevant to the current question. Summaries and handover notes are navigation aids, not substitutes when originals exist.
+6. Check the latest commit and Git tree on the working branch. Do not assume the branch or files are unchanged.
+7. Search the repository and available prior context before asking the user where a file is or asking them to repeat information.
+8. If a needed source is absent, say exactly what was searched and what is missing. Never fill gaps by guessing or rebuilding a lost table from an older CSV.
+9. Update the appropriate reading register and continuity records after actual reading or work.
 
 ## User's terminology for discoveries inside the framework
 
-The user clarified on 2026-11-23 that statements such as **"we discovered"** refer to a discovery local to this framework and its internal work. They do not necessarily claim a globally new discovery or an externally established scientific fact. Use this local meaning naturally; distinguish external claims only when comparison with outside knowledge is relevant.
+The user clarified on 2026-11-23 that statements such as **"we discovered"** refer to a discovery local to this framework and its internal work. They do not claim a globally new discovery or an externally established scientific fact. Use this local meaning naturally. Separate internal framework findings from external scientific claims.
 
 ## Repository status at this checkpoint
 
-- Git tree: 750 entries (615 files, 135 directories), complete=true.
-- `PROJECTS/triangle-framework/`: 102 files, 1,517,741 bytes.
-- Reading register: 98 full, 4 partial (binary images), 0 not yet read.
-- Branch contains independent working documents and continuity infrastructure. No merge into `main` has been performed.
+- Working tree: **764 entries** — 628 files and 136 directories; complete, not truncated.
+- `PROJECTS/triangle-framework/`: **106 files**, 1,604,883 bytes.
+- Core reading register: **106 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
+- Connected-project register: **160 files** — 149 READ_FULL and 11 READ_PARTIAL. The 11 partial items are 8 raw CASTEP datasets, CASTEP-history.txt, the 10-page PDF atlas, and the AME2020 nuclide-map image.
+- `MANIFEST.work-branch.json` is the current branch snapshot generated from commit `a7a770677140d1508a6753bf99ac4eb7e2d50249`; it excludes itself to avoid a self-hash cycle. Its 763 entries plus the manifest file equal the 764-entry tree.
+- The continuity checks passed:
+  - Core framework: run `45148360400` — 106/106 files and fingerprints match.
+  - Connected projects: run `45148131427` — 160/160 files, no missing/unregistered paths or fingerprint errors.
+- All work remains on this working branch. No merge into `main` has been performed.
+
+## Automated continuity gates
+
+- `.github/workflows/check-triangle-continuity.yml` runs manually and automatically when `PROJECTS/triangle-framework/**` changes. It verifies complete registration and Git blob fingerprints.
+- `.github/workflows/check-connected-projects.yml` runs manually and automatically when any registered connected project changes. It verifies path coverage, file sizes, and Git blob fingerprints.
+- These gates verify inventory and source integrity, not semantic understanding or scientific validity. The 11 partial sources remain explicitly marked partial.
 
 ## Non-negotiable project safeguards
 
@@ -37,20 +49,23 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Keep each version, engine, dataset, and experiment separate.
 - Preserve conflicts; record both sides, source paths, and version dates.
 - Separate user decisions, source values, derived values, local discoveries, hypotheses, test results, and assistant analysis.
-- Do not execute calculations, tests, or workflows as a side effect of reading or organizing.
+- Do not run scientific calculations, Prism engines, or experimental models as a side effect of reading or organizing. Dedicated inventory/continuity checks are allowed.
 - Do not say a GitHub Action passed unless its actual run log confirms it.
 - Keep all changes on the working branch unless the user explicitly authorizes a merge.
 
 ## 60-degree experiment continuity
 
-The user wants the cycle count (n) retained as an independent per-element value, not discarded or collapsed after correction, for later study (including possible relationships to gas/liquid behavior). The user also asked to explore 60-degree application beyond only negative raw angles in a separate experiment. This does not silently replace any historical 6.2.1 rescue, B/C cycle, or 6.5.0 modulo rule. First identify the exact experiment rule before applying it.
+The user wants each element's cycle count `n` retained as an independent value, not discarded or collapsed after correction, for later study (including possible relationships to gas/liquid behavior). When a raw angle is negative, the correction direction must be studied in relation to that sign and position. Do not assume the minimum-|n| policy used in one experiment is the general rule. Keep every 60-degree experiment separate from historical 6.2.1 rescue, B/C-cycle variants, and 6.5.0 modulo rules.
 
 ## Navigation
 
 - [Triangle Framework continuity entry](PROJECTS/triangle-framework/continuity/START_HERE.md)
 - [Current state and decisions](PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md)
 - [Project history and concept map](PROJECTS/triangle-framework/continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md)
-- [Source reading register](PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv)
+- [Core source reading register](PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv)
+- [Connected projects and version boundaries](PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md)
+- [Connected project reading register](PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_READING_REGISTER.csv)
 - [Unresolved conflicts and evidence](PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md)
-- [Continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py) (manual workflow only)
+- [Core continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py)
+- [Connected project checker](PROJECTS/triangle-framework/continuity/check_connected_projects.py)
 - [Current branch manifest](MANIFEST.work-branch.json)
