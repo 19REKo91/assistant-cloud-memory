@@ -34,10 +34,12 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Working tree: **790 entries** — 653 files and 137 directories; complete, not truncated.
 - `PROJECTS/triangle-framework/`: **108 files**.
 - Core reading register: **108 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **182 files** — all 182 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; the atlas index and mass-position CSV were fully reviewed and their contents documented.
+- Connected-project register: **182 files** — all 182 READ_FULL and 0 READ_PARTIAL. All ten rendered atlas page images 1–10 were opened individually at full resolution; the atlas index and mass-position CSV were fully reviewed and their contents documented.
 - `MANIFEST.work-branch.json` is a self-excluding branch snapshot; verify its `generated_from_commit` and counts against the current branch before relying on it. The current branch tree has 790 entries: 653 files and 137 directories. The framework contains 108 files.
-- The continuity checks passed:
-  - Core framework: run `45162764761` — PASS; 108 tracked files, 108 READ_FULL, all fingerprints match.
+- Prism v6: `PROJECTS/prism-engine/v6/main.py` was read completely; no execution was performed.
+
+The continuity checks passed:
+  - Core framework: latest run `45162991720` — PASS; 108 tracked files, 108 READ_FULL, all fingerprints match.
   - Connected projects: run `45162614539` — PASS; 182 tracked files, 182 READ_FULL, 0 partial, 0 missing/unregistered/duplicate paths, 0 fingerprint or size errors.
 - All work remains on this working branch. No merge into `main` has been performed.
 
