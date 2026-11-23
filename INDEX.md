@@ -9,7 +9,10 @@
 - [`ASSISTANT_START_HERE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/ASSISTANT_START_HERE.md) — بروتوكول الاستمرارية العام للمساعد.
 - [`PROJECTS/triangle-framework/continuity/START_HERE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/START_HERE.md) — نقطة الإقلاع الإلزامية لإطار المثلث.
 - [`OPEN_CONFLICTS_AND_EVIDENCE.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — سجل التعارضات المفتوحة.
-- [`check_continuity.py`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/check_continuity.py) — فحص يدوي للجرد والبصمات.
+- [`check_continuity.py`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/check_continuity.py) — فحص تلقائي ويدوي لجرد الإطار وبصماته.
+- [`CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md) — خريطة المشاريع المتصلة وحدود الإصدارات.
+- [`CONNECTED_PROJECTS_READING_REGISTER.csv`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_READING_REGISTER.csv) — حالة قراءة 160 ملفاً متصلاً.
+- [`check_connected_projects.py`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/PROJECTS/triangle-framework/continuity/check_connected_projects.py) — فحص جرد وبصمات المشاريع المتصلة.
 - [`MANIFEST.work-branch.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/MANIFEST.work-branch.json) — جرد فرع العمل، منفصل عن MANIFEST.json التاريخي على main.
 
 
