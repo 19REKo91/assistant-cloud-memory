@@ -27,6 +27,7 @@
 - [سجل التعارضات والأدلة](OPEN_CONFLICTS_AND_EVIDENCE.md)
 - [مدقق الاستمرارية](check_continuity.py) — فحص آلي للبصمات وتغطية السجل، لا يثبت القراءة الدلالية.
 - [مراجعة أرشيف Triangle.zip والصور](ARCHIVE_TRIANGLE_ZIP_AND_VISUAL_REVIEW_2026-11-23.md).
+- [خريطة المشاريع المتصلة وحدود الإصدارات](CONNECTED_PROJECTS_AND_VERSION_BOUNDARIES_2026-11-23.md).
 - [خريطة تنظيم المجلد](../REPOSITORY_ORGANIZATION_MAP_2026-11-23.md)
 - [دليل الإطار](../README.md)
 
