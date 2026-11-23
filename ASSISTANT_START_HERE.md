@@ -31,13 +31,13 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 
 ## Repository status at this checkpoint
 
-- Working tree: **764 entries** — 628 files and 136 directories; complete, not truncated.
-- `PROJECTS/triangle-framework/`: **106 files**, 1,604,886 bytes.
-- Core reading register: **106 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
+- Working tree: **765 entries** — 629 files and 136 directories, after adding the current 6.5.0 lineage guide; complete, not truncated.
+- `PROJECTS/triangle-framework/`: **107 files**.
+- Core reading register: **107 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
 - Connected-project register: **160 files** — 149 READ_FULL and 11 READ_PARTIAL. The 11 partial items are 8 raw CASTEP datasets, CASTEP-history.txt, the 10-page PDF atlas, and the AME2020 nuclide-map image.
-- `MANIFEST.work-branch.json` is the current branch snapshot generated from the current branch snapshot; it excludes itself to avoid a self-hash cycle. Its 763 entries plus the manifest file equal the 764-entry tree.
+- `MANIFEST.work-branch.json` is an earlier branch snapshot and is now stale because the 6.5.0 lineage guide was added; do not use it as the current inventory until regenerated.
 - The continuity checks passed:
-  - Core framework: run `45149286944` — 106/106 files and fingerprints match.
+  - Core framework: run `45156730281` — 107/107 files, all READ_FULL, fingerprints match.
   - Connected projects: run `45148131427` — 160/160 files, no missing/unregistered paths or fingerprint errors.
 - All work remains on this working branch. No merge into `main` has been performed.
 
