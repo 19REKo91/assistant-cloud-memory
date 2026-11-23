@@ -5,6 +5,10 @@
 **Updated:** 2026-11-23  
 **Purpose:** Make project continuity depend on the repository, not on temporary chat memory.
 
+## Important limitation
+
+GitHub files are durable external memory, but they are not automatically injected into every new ChatGPT conversation. At the beginning of each session, the assistant must open this entry point and follow the framework reading procedure. If repository access is unavailable, it must say so rather than pretend to remember the complete archive.
+
 ## Mandatory entry procedure for Triangle Framework work
 
 1. Read `PROJECTS/triangle-framework/continuity/START_HERE.md`.
@@ -23,7 +27,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 ## Repository status at this checkpoint
 
 - Git tree: 750 entries (615 files, 135 directories), complete=true.
-- `PROJECTS/triangle-framework/`: 100 files, 1,496,955 bytes.
+- `PROJECTS/triangle-framework/`: 102 files, 1,517,741 bytes.
 - Reading register: 98 full, 4 partial (binary images), 0 not yet read.
 - Branch contains independent working documents and continuity infrastructure. No merge into `main` has been performed.
 
@@ -47,8 +51,6 @@ The user wants the cycle count (n) retained as an independent per-element value,
 - [Current state and decisions](PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md)
 - [Project history and concept map](PROJECTS/triangle-framework/continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md)
 - [Source reading register](PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv)
-- [Unresolved conflicts and evidence](PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md)
-- [Continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py) (manual workflow only)
 - [Unresolved conflicts and evidence](PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md)
 - [Continuity checker](PROJECTS/triangle-framework/continuity/check_continuity.py) (manual workflow only)
 - [Current branch manifest](MANIFEST.work-branch.json)
