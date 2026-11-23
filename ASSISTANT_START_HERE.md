@@ -34,11 +34,11 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Working tree: **790 entries** — 653 files and 137 directories; complete, not truncated.
 - `PROJECTS/triangle-framework/`: **108 files**.
 - Core reading register: **108 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **182 files** — all 182 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; two previously unregistered Element Mass Doubling CSV files were added to the register.
+- Connected-project register: **182 files** — all 182 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; the atlas index and mass-position CSV were fully reviewed and their contents documented.
 - `MANIFEST.work-branch.json` is a self-excluding branch snapshot and must be regenerated from the latest tree after documentation/register updates. The current branch tree has 790 entries: 653 files and 137 directories. The framework contains 108 files.
 - The continuity checks passed:
   - Core framework: run `45160135295` — 108/108 files, all READ_FULL, fingerprints match.
-  - Connected projects: run a new check after the 184-file register update; record its actual result and run ID.
+  - Connected projects: the 182-file register is being checked after the final CSV-format repair; record the actual successful run ID below.
 - All work remains on this working branch. No merge into `main` has been performed.
 
 ## Automated continuity gates
@@ -47,7 +47,11 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - `.github/workflows/check-connected-projects.yml` runs manually and automatically when any registered connected project changes. It verifies path coverage, file sizes, and Git blob fingerprints.
 - These gates verify inventory and source integrity, not semantic understanding or scientific validity. The connected-project register currently has no partial sources.
 
-## Explicit scope exclusion\n\nThe user clarified on 2026-11-23 that `Triangle.zip` is a custom program for the first face and asked that it be ignored. Do not unpack, inspect, run, or use it as a source in this continuity task. Leave its archived files untouched.\n\n## Non-negotiable project safeguards
+## Explicit scope exclusion
+
+The user clarified on 2026-11-23 that `Triangle.zip` is a custom program for the first face and asked that it be ignored. Do not unpack, inspect, run, or use it as a source in this continuity task. Leave its archived files untouched.
+
+## Non-negotiable project safeguards
 
 - Never overwrite historical or approved source files merely to make versions consistent.
 - Keep each version, engine, dataset, and experiment separate.
