@@ -2,7 +2,7 @@
 
 > المستودع: `19REKo91/assistant-cloud-memory`  
 > فرع هذه النسخة: `work/triangle-geometry-role-map-v0.1` (مساحة عمل مستقلة؛ لم تُدمج في main)  
-> جميع روابط الملفات في هذا الفهرس تشير إلى الفرع نفسه حتى يتم الاختبار والدمج. تم توحيد روابط الملفات في هذا الفهرس إلى `main` بعد الدمج.
+> جميع روابط الملفات في هذه النسخة تشير إلى فرع العمل `work/triangle-geometry-role-map-v0.1`. لم تُدمج التغييرات في `main`.
 
 ## ابدأ هنا
 
@@ -18,7 +18,8 @@
 | [`INDEX.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/INDEX.md) | فهرس القراءة الآلية | عام |
 | [`CONTEXT.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/CONTEXT.md) | تعليمات القراءة والاستئناف | عام |
 | [`latest.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/latest.md) | آخر حالة موثقة والخطوة التالية | عام |
-| [`MANIFEST.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/MANIFEST.json) | جرد الشجرة والأحجام ومعرّفات Git blob | عام |
+| [`MANIFEST.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/MANIFEST.json) | جرد تاريخي موروث من main بتاريخ 2026-11-16؛ لا يمثل فرع العمل الحالي | عام |
+| [`MANIFEST.work-branch.json`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/MANIFEST.work-branch.json) | جرد فرع العمل الحالي | عام |
 | [`README.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/README.md) | تعريف المستودع | عام |
 | [`CORE/operating-rules.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/CORE/operating-rules.md) | قواعد التشغيل والقراءة الآلية | عام |
 | [`CORE/memory-index.md`](https://raw.githubusercontent.com/19REKo91/assistant-cloud-memory/work/triangle-geometry-role-map-v0.1/CORE/memory-index.md) | فهرس الذاكرة | عام |
