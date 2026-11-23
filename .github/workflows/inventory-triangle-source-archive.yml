@@ -1,11 +1,7 @@
 name: Inventory Triangle Source Archive
 
 on:
-  push:
-    branches:
-      - work/triangle-geometry-role-map-v0.1
-    paths:
-      - .github/workflows/inventory-triangle-source-archive.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
