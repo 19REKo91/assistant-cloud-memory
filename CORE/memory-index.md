@@ -23,3 +23,6 @@
 - `PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv` — سجل ما قرئ وما لم يقرأ.
 
 **ملاحظة:** هذه البوابة على فرع العمل `work/triangle-geometry-role-map-v0.1` ولم تُدمج في `main`.
+
+- `PROJECTS/triangle-framework/continuity/OPEN_CONFLICTS_AND_EVIDENCE.md` — سجل التعارضات المفتوحة ومصادرها.
+- `PROJECTS/triangle-framework/continuity/check_continuity.py` — مدقق تطابق سجل القراءة مع Git.
