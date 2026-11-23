@@ -1,0 +1,74 @@
+Unresolved / no valid triangle
+1 
+ H
+Unresolved / no valid triangle
+2 
+ He
+0
+1
+2
+3
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+ G
+84.1° / 47.0° / 49.0°
+3 
+ Li
+Unresolved / no valid triangle
+4 
+ Be
+Unresolved / no valid triangle
+5 
+ B
+Unresolved / no valid triangle
+6 
+ C
+Unresolved / no valid triangle
+7 
+ N
+Unresolved / no valid triangle
+8 
+ O
+Unresolved / no valid triangle
+9 
+ F
+Unresolved / no valid triangle
+10 
+ Ne
+0
+1
+2
+3
+0
+1
+2
+3
+4
+ G
+82.6° / 54.3° / 43.1°
+11 
+ Na
+0
+1
+2
+3
+0.5
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+3.5
+ G
+80.0° / 53.1° / 46.9°
+12 
+ Mg
+Elements 1 118 
+ enlarged triangle atlas | page 1/10
