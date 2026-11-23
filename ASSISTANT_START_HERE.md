@@ -33,7 +33,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Connected-project register: **160 files** — 149 READ_FULL and 11 READ_PARTIAL. The 11 partial items are 8 raw CASTEP datasets, CASTEP-history.txt, the 10-page PDF atlas, and the AME2020 nuclide-map image.
 - `MANIFEST.work-branch.json` is the current branch snapshot generated from the current branch snapshot; it excludes itself to avoid a self-hash cycle. Its 763 entries plus the manifest file equal the 764-entry tree.
 - The continuity checks passed:
-  - Core framework: run `45148866457` — 106/106 files and fingerprints match.
+  - Core framework: run `45149016735` — 106/106 files and fingerprints match.
   - Connected projects: run `45148131427` — 160/160 files, no missing/unregistered paths or fingerprint errors.
 - All work remains on this working branch. No merge into `main` has been performed.
 
