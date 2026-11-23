@@ -1,0 +1,24 @@
+name: Check Triangle Framework Continuity
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  continuity-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate source register and content fingerprints
+        run: python PROJECTS/triangle-framework/continuity/check_continuity.py
