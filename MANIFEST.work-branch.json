@@ -3,15 +3,15 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "41c70ea818946203a4973ab5741fd5142f9a775a",
-  "tree_sha": "41c70ea818946203a4973ab5741fd5142f9a775a",
+  "generated_from_commit": "e1340f48ff935fc1d7622b3c66c10253ca6a0873",
+  "tree_sha": "aead147787eb0c12a487b55a9a752292bf042ea2",
   "complete": true,
   "tree_truncated": false,
-  "entries_count": 763,
-  "files": 627,
+  "entries_count": 764,
+  "files": 628,
   "dirs": 136,
-  "triangle_framework_files": 106,
-  "triangle_framework_bytes": 1604998,
+  "triangle_framework_files": 107,
+  "triangle_framework_bytes": 1619597,
   "checksum": "Git blob SHA-1",
   "manifest_self_excluded": true,
   "entries": [
@@ -478,8 +478,8 @@
     {
       "type": "file",
       "path": "ASSISTANT_START_HERE.md",
-      "size": 6102,
-      "git_blob_sha1": "aeaa2dcc505535e5f1d592c8812d2fbd607bd513"
+      "size": 6769,
+      "git_blob_sha1": "9c4cab25192d025c8b3ff7851dd924533017fc40"
     },
     {
       "type": "file",
@@ -675,7 +675,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "2aa39b2e17f19e76e1cbabf01a2cbe8e182dd34d"
+      "git_tree_sha1": "ccf855aaf2ce6bc25c78f4c66d3663c8b9904a75"
     },
     {
       "type": "directory",
@@ -2511,7 +2511,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "62981d8292ed16eb9e4a562a644f6381edca5b9f"
+      "git_tree_sha1": "1c94a5eea1b7ab1ceeeb02b7036f18ee7bcd9e69"
     },
     {
       "type": "directory",
@@ -2869,7 +2869,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "3ad48ad7023ee6be8cf7541da02e505ce3d31a6a"
+      "git_tree_sha1": "781b53348a0aacf4bf602ff669809bc01a357401"
     },
     {
       "type": "file",
@@ -2886,14 +2886,20 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CONNECTED_PROJECTS_READING_REGISTER.csv",
-      "size": 40752,
-      "git_blob_sha1": "4c9a3a653af96ab2777651af3963541bcb2ead67"
+      "size": 41009,
+      "git_blob_sha1": "2fbae13c521c3574fbd7bd7801ff94330dd7495a"
+    },
+    {
+      "type": "file",
+      "path": "PROJECTS/triangle-framework/continuity/CURRENT_DEVELOPMENT_LINEAGE_6.5.0_ONWARD_2026-11-23.md",
+      "size": 7963,
+      "git_blob_sha1": "2581b56e0ac4cf6261331ab6cd267df3db0bc539"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/CURRENT_STATE_AND_DECISIONS.md",
-      "size": 10076,
-      "git_blob_sha1": "74d5adb14f880da7cf29a5e4eafa45bbba1699e0"
+      "size": 12713,
+      "git_blob_sha1": "b26200e31fa9c2c1af7e8a4f9cbf1f9efc779b1d"
     },
     {
       "type": "file",
@@ -2904,20 +2910,20 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/PROJECT_HISTORY_AND_CONCEPT_MAP.md",
-      "size": 13048,
-      "git_blob_sha1": "edab132ad0ac11ef34659b70231b7af28e102ec9"
+      "size": 15844,
+      "git_blob_sha1": "0bf9d77563308f0758f406b81c2894c5af102813"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
-      "size": 27682,
-      "git_blob_sha1": "b98c5224dbabb50c267d39df9af34e5eb48f2c2f"
+      "size": 28043,
+      "git_blob_sha1": "a7a7074868dd946e8fc26a0c65810f8969b30486"
     },
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/START_HERE.md",
-      "size": 8646,
-      "git_blob_sha1": "7365a1b135a08f6b8ad0ea147469614220040b44"
+      "size": 9231,
+      "git_blob_sha1": "c9ed36b8a04afcc182e704c00eb32160905e6cea"
     },
     {
       "type": "file",
@@ -3748,8 +3754,8 @@
     {
       "type": "file",
       "path": "latest.md",
-      "size": 7999,
-      "git_blob_sha1": "4a679fd5de2b7dfff7e17a87c83055475f7b418c"
+      "size": 3812,
+      "git_blob_sha1": "29e62e13bcca79f5a5427962679fc1b9bdd23e6f"
     },
     {
       "type": "file",
