@@ -22,7 +22,7 @@
 
 ## جرد الفرع
 
-- `MANIFEST.work-branch.json` أُعيد توليده من commit `07e8fee8ad42fa95f00c836b31a5fff1d34cf7ac`، مع استثناء manifest نفسه: 764 مدخلاً (628 ملفاً و136 مجلداً) إضافة إلى ملف manifest، أي 765 مدخلاً في شجرة الفرع.
+- `MANIFEST.work-branch.json` هو جرد الفرع الحالي، مع استثناء manifest نفسه: 764 مدخلاً (628 ملفاً و136 مجلداً) إضافة إلى ملف manifest، أي 765 مدخلاً في شجرة الفرع.
 
 ## أرشيف Triangle.zip
 
