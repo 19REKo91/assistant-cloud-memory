@@ -34,7 +34,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 - Working tree: **765 entries** — 629 files and 136 directories, after adding the current 6.5.0 lineage guide; complete, not truncated.
 - `PROJECTS/triangle-framework/`: **107 files**.
 - Core reading register: **107 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **160 files** — 149 READ_FULL and 11 READ_PARTIAL. The 11 partial items are 8 raw CASTEP datasets, CASTEP-history.txt, the 10-page PDF atlas, and the AME2020 nuclide-map image.
+- Connected-project register: **160 files** — 149 READ_FULL and 2 READ_PARTIAL. The 2 partial items are 8 raw CASTEP datasets, CASTEP-history.txt, the 10-page PDF atlas, and the AME2020 nuclide-map image.
 - `MANIFEST.work-branch.json` is an earlier branch snapshot and is now stale because the 6.5.0 lineage guide was added; do not use it as the current inventory until regenerated.
 - The continuity checks passed:
   - Core framework: run `45156730281` — 107/107 files, all READ_FULL, fingerprints match.
@@ -45,7 +45,7 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 
 - `.github/workflows/check-triangle-continuity.yml` runs manually and automatically when `PROJECTS/triangle-framework/**` changes. It verifies complete registration and Git blob fingerprints.
 - `.github/workflows/check-connected-projects.yml` runs manually and automatically when any registered connected project changes. It verifies path coverage, file sizes, and Git blob fingerprints.
-- These gates verify inventory and source integrity, not semantic understanding or scientific validity. The 11 partial sources remain explicitly marked partial.
+- These gates verify inventory and source integrity, not semantic understanding or scientific validity. The 2 partial sources remain explicitly marked partial.
 
 ## Non-negotiable project safeguards
 
