@@ -31,23 +31,23 @@ The user clarified on 2026-11-23 that statements such as **"we discovered"** ref
 
 ## Repository status at this checkpoint
 
-- Working tree: **790 entries** — 654 files and 136 directories; complete, not truncated.
+- Working tree: **790 entries** — 653 files and 137 directories; complete, not truncated.
 - `PROJECTS/triangle-framework/`: **108 files**.
 - Core reading register: **108 READ_FULL**, 0 READ_PARTIAL, 0 NOT_YET_READ.
-- Connected-project register: **182 files** — 173 READ_FULL and 9 READ_PARTIAL. The remaining partial items are the rendered page images 2–10 of the archived atlas; all nine appear in the reviewed contact sheet but have not yet been opened individually at full resolution.
-- `MANIFEST.work-branch.json` is the current branch snapshot. It excludes itself to avoid a self-hash cycle; its current snapshot must be regenerated after the latest review commits; the current branch tree has 790 entries. The framework contains 108 files.
+- Connected-project register: **184 files** — all 184 READ_FULL and 0 READ_PARTIAL. The nine rendered atlas page images 2–10 were opened individually at full resolution; two previously unregistered Element Mass Doubling CSV files were added to the register.
+- `MANIFEST.work-branch.json` is a self-excluding branch snapshot and must be regenerated from the latest tree after documentation/register updates. The current branch tree has 790 entries: 653 files and 137 directories. The framework contains 108 files.
 - The continuity checks passed:
   - Core framework: run `45160135295` — 108/108 files, all READ_FULL, fingerprints match.
-  - Connected projects: the expanded 182-file check is pending a new run after the register update.
+  - Connected projects: run a new check after the 184-file register update; record its actual result and run ID.
 - All work remains on this working branch. No merge into `main` has been performed.
 
 ## Automated continuity gates
 
 - `.github/workflows/check-triangle-continuity.yml` runs manually and automatically when `PROJECTS/triangle-framework/**` changes. It verifies complete registration and Git blob fingerprints.
 - `.github/workflows/check-connected-projects.yml` runs manually and automatically when any registered connected project changes. It verifies path coverage, file sizes, and Git blob fingerprints.
-- These gates verify inventory and source integrity, not semantic understanding or scientific validity. The 2 partial sources remain explicitly marked partial.
+- These gates verify inventory and source integrity, not semantic understanding or scientific validity. The connected-project register currently has no partial sources.
 
-## Non-negotiable project safeguards
+## Explicit scope exclusion\n\nThe user clarified on 2026-11-23 that `Triangle.zip` is a custom program for the first face and asked that it be ignored. Do not unpack, inspect, run, or use it as a source in this continuity task. Leave its archived files untouched.\n\n## Non-negotiable project safeguards
 
 - Never overwrite historical or approved source files merely to make versions consistent.
 - Keep each version, engine, dataset, and experiment separate.
