@@ -3,8 +3,8 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "07e8fee8ad42fa95f00c836b31a5fff1d34cf7ac",
-  "tree_sha": "99813a5838f726dd056f3f40061b5af71b2b7b96",
+  "generated_from_commit": "4660a818369702fdb7103f6f505cde61ee9ad8fc",
+  "tree_sha": "e333e409cc0443d7ea8efee9352377dbc91eed8a",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 764,
@@ -478,8 +478,8 @@
     {
       "type": "file",
       "path": "ASSISTANT_START_HERE.md",
-      "size": 6881,
-      "git_blob_sha1": "7cb198dfb1c9fbb265b17d15ef64c4378fcb7f6c"
+      "size": 6841,
+      "git_blob_sha1": "83994f32960d15c09c7bcc49ab36488d28b099e7"
     },
     {
       "type": "file",
@@ -3754,8 +3754,8 @@
     {
       "type": "file",
       "path": "latest.md",
-      "size": 4122,
-      "git_blob_sha1": "f9ee2000102d458c71dba114fbda1d40744c3d28"
+      "size": 4079,
+      "git_blob_sha1": "e46b3946b3782072f8a77c19902cd64980a349ea"
     },
     {
       "type": "file",
