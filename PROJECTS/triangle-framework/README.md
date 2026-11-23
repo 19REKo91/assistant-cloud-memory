@@ -16,6 +16,9 @@
 
 ## ابدأ من هنا
 
+0. [نقطة إقلاع الاستمرارية](continuity/START_HERE.md) — المرجع الأول لكل جلسة جديدة.
+0. [سجل التعارضات والأدلة](continuity/OPEN_CONFLICTS_AND_EVIDENCE.md) — راجعه قبل اختيار قاعدة أو إصدار.
+0. [مدقق الاستمرارية](continuity/check_continuity.py) — فحص جرد الملفات والبصمات؛ سير عمله يدوي فقط.
 1. [CONTINUITY_MEMORY_ADDENDUM.md](handover/CONTINUITY_MEMORY_ADDENDUM.md) — ملحق الاستمرارية المعرفية؛ اقرأه بعد ملف نقل الوعي لتستعيد القرارات والمنهج ونقطة التوقف.
 2. [COGNITIVE_HANDOVER.md](handover/COGNITIVE_HANDOVER.md) — تعليمات القراءة والانضباط وأهم التحذيرات.
 3. [HANDOVER_README.md](handover/HANDOVER_README.md) — وصف قاعدة البيانات التجميعية وقيودها.
