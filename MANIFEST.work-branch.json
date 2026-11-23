@@ -3,15 +3,15 @@
   "repository": "19REKo91/assistant-cloud-memory",
   "branch": "work/triangle-geometry-role-map-v0.1",
   "generated": "2026-11-23",
-  "generated_from_commit": "c91fdaa6f7a2aae4e2dd634c8c7be9d7de0f2246",
-  "tree_sha": "c91fdaa6f7a2aae4e2dd634c8c7be9d7de0f2246",
+  "generated_from_commit": "41c70ea818946203a4973ab5741fd5142f9a775a",
+  "tree_sha": "41c70ea818946203a4973ab5741fd5142f9a775a",
   "complete": true,
   "tree_truncated": false,
   "entries_count": 763,
   "files": 627,
   "dirs": 136,
   "triangle_framework_files": 106,
-  "triangle_framework_bytes": 1604966,
+  "triangle_framework_bytes": 1604998,
   "checksum": "Git blob SHA-1",
   "manifest_self_excluded": true,
   "entries": [
@@ -479,7 +479,7 @@
       "type": "file",
       "path": "ASSISTANT_START_HERE.md",
       "size": 6102,
-      "git_blob_sha1": "6ba348120f2b083f235ba35363c2afc4570916cf"
+      "git_blob_sha1": "aeaa2dcc505535e5f1d592c8812d2fbd607bd513"
     },
     {
       "type": "file",
@@ -675,7 +675,7 @@
     {
       "type": "directory",
       "path": "PROJECTS",
-      "git_tree_sha1": "599064832b3bdc2308ef6c35ef7929179c2b4b25"
+      "git_tree_sha1": "2aa39b2e17f19e76e1cbabf01a2cbe8e182dd34d"
     },
     {
       "type": "directory",
@@ -2511,7 +2511,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework",
-      "git_tree_sha1": "607b298f88ff0c0695f36a7b1375ec923502c697"
+      "git_tree_sha1": "62981d8292ed16eb9e4a562a644f6381edca5b9f"
     },
     {
       "type": "directory",
@@ -2869,7 +2869,7 @@
     {
       "type": "directory",
       "path": "PROJECTS/triangle-framework/continuity",
-      "git_tree_sha1": "999bcb73317294a5e2054d7260e6fd9fd49997ac"
+      "git_tree_sha1": "3ad48ad7023ee6be8cf7541da02e505ce3d31a6a"
     },
     {
       "type": "file",
@@ -2910,8 +2910,8 @@
     {
       "type": "file",
       "path": "PROJECTS/triangle-framework/continuity/SOURCE_READING_REGISTER.csv",
-      "size": 27650,
-      "git_blob_sha1": "898550a8b177d3855194fe81d7ed7ffa8cca8887"
+      "size": 27682,
+      "git_blob_sha1": "b98c5224dbabb50c267d39df9af34e5eb48f2c2f"
     },
     {
       "type": "file",
@@ -3749,7 +3749,7 @@
       "type": "file",
       "path": "latest.md",
       "size": 7999,
-      "git_blob_sha1": "dee3595323637f69812df1334fb25e87384088cb"
+      "git_blob_sha1": "4a679fd5de2b7dfff7e17a87c83055475f7b418c"
     },
     {
       "type": "file",
